@@ -1,7 +1,11 @@
 [package]
-name = "pse-mensa-backend"
+name = "mensa-app-backend"
 version = "0.1.0"
 edition = "2021"
+authors = ["Alexander Albers <usvan@student.kit.edu>", "Peer Booken <uglrl@student.kit.edu>", "Elena Häußler <uqhnu@student.kit.edu>", "Alexander Kutschera <ubsbo@student.kit.edu>", "Jonatan Ziegler <udslu@student.kit.edu"]
+description = "Backend application for providing and synchronizing meal plan data of the canteens of the Studierendenwerk Karlsruhe."
+repository = "https://github.com/kronos-et-al/MensaApp"
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
