@@ -8,7 +8,12 @@ class MensaSlider extends StatelessWidget {
   final int? _divisions;
 
   const MensaSlider(
-      {super.key, required onChanged, required value, min = 0.0, max = 1.0, divisions})
+      {super.key,
+      required onChanged,
+      required value,
+      min = 0.0,
+      max = 1.0,
+      divisions})
       : _onChanged = onChanged,
         _value = value,
         _min = min,
@@ -18,7 +23,10 @@ class MensaSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliderTheme(
-        data: const SliderThemeData(trackHeight: 2),
+        data: SliderThemeData(
+          trackHeight: 2,
+          inactiveTrackColor: Theme.of(context).colorScheme.surface,
+        ),
         child: Slider(
           min: _min,
           max: _max,
