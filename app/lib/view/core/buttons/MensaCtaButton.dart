@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 
 class MensaCtaButton extends StatelessWidget {
-  final void Function() onPressed;
-  final String text;
+  final void Function()? _onPressed;
+  final void Function()? _onLongPressed;
+  final String _text;
 
-  const MensaCtaButton({super.key, required this.onPressed, required this.text});
+  const MensaCtaButton({super.key, required onPressed, onLongPressed, required text}): _onPressed = onPressed, _onLongPressed = onLongPressed, _text = text;
 
   @override
   Widget build(BuildContext context) {
     return (MaterialButton(
-      onPressed: onPressed,
       textColor: Theme.of(context).colorScheme.onPrimary,
       color: Theme.of(context).colorScheme.primary,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(4.0),
       ),
       elevation: 0,
-      child: Text(text),
+      highlightElevation: 0,
+      onPressed: _onPressed,
+      onLongPress: _onLongPressed,
+      child: Text(_text),
     ));
   }
 }
