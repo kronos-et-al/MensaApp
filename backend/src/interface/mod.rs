@@ -1,7 +1,9 @@
-mod admin_notification;
-mod api_command;
-mod image_hoster;
-mod image_review;
-mod melplan_management;
-mod mensa_parser;
-mod persistent_data;
+//! This packages provides interfaces for standardized communication between the layers specified in [`crate::layer`].
+
+pub mod admin_notification;
+pub mod api_command;
+pub mod image_hoster;
+pub mod image_review;
+pub mod melplan_management;
+pub mod mensa_parser;
+pub mod persistent_data;

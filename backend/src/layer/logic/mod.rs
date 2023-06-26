@@ -1,3 +1,6 @@
-mod api_command;
-mod image_review;
-mod mealplan_management;
+//! This layer contains all application-specific logic.
+//! It is completely independent of the implementations of the other layers and does not interact with the outside world.
+
+pub mod api_command;
+pub mod image_review;
+pub mod mealplan_management;
