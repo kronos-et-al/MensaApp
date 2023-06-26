@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class MensaCtaButton extends StatelessWidget {
-  void Function() onPressed;
-  String text;
+  final void Function() onPressed;
+  final String text;
 
-  MensaCtaButton({super.key, required this.onPressed, required this.text});
+  const MensaCtaButton({super.key, required this.onPressed, required this.text});
 
   @override
   Widget build(BuildContext context) {
