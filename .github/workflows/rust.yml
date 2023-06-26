@@ -2,11 +2,11 @@ name: Build-Rust
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "backend" ]
     paths: 
       - "backend/**"
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "backend" ]
     paths: 
       - "backend/**"
   workflow_dispatch:
