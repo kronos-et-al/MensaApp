@@ -3,6 +3,8 @@ name: Build-Android
 on:
   push:
     branches: [ "main" ]
+    paths: 
+      - "app/**"
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
@@ -20,6 +22,7 @@ jobs:
     - uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.7.7'
+    - run: cd app
     - run: flutter pub get
     - run: flutter test
     - run: flutter build apk
