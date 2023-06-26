@@ -33,6 +33,3 @@ jobs:
     - run:  |
         cd app
         flutter build apk
-    - run:  |
-        cd app
-        flutter build appbundle
