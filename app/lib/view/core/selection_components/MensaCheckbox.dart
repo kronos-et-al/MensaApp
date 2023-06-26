@@ -13,11 +13,11 @@ class MensaCheckbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Padding(padding: EdgeInsets.all(8), child: Row(
       children: [
         Container(
-          width: 24,
-          height: 24,
+          width: 18,
+          height: 18,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(4.0),
@@ -26,7 +26,7 @@ class MensaCheckbox extends StatelessWidget {
               width: 1,
             ),
           ),
-          child: Transform.scale(scale: 1.3, child: Checkbox(
+          child: Checkbox(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4.0),
             ),
@@ -41,15 +41,15 @@ class MensaCheckbox extends StatelessWidget {
             value: _value,
             onChanged: _onChanged,
           ),
-        )),
+        ),
         const SizedBox(width: 8),
         GestureDetector(
           onTap: () {
             _onChanged!(!_value);
           },
-          child: Text(_label),
+          child: Text(_label, style: Theme.of(context).textTheme.labelLarge),
         ),
       ],
-    );
+    ));
   }
 }
