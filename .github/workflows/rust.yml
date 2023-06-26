@@ -20,9 +20,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - run: cd backend
     - uses: actions/checkout@v3
     - name: Build
-      run: cargo build --verbose
+      run: |
+        cd backend
+        cargo build --verbose
     - name: Run tests
-      run: cargo test --verbose
+      run: |
+        cd backend
+        cargo test --verbose
