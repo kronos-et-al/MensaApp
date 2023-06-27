@@ -13,16 +13,35 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+        brightness: Brightness.light,
+        colorScheme: const ColorScheme(
+            brightness: Brightness.light,
+            primary: Color(0xFF7AAC2B),
+            onPrimary: Color(0xFFFFFFFF),
+            secondary: Color(0xFF7AAC2B),
+            onSecondary: Color(0xFFFFFFFF),
+            error: Color(0xFFD32F2F),
+            onError: Color(0xFFFFFFFF),
+            background: Color(0xFFFFFFFF),
+            onBackground: Color(0xFF000000),
+            surface: Color(0xFFF6F6F6),
+            onSurface: Color(0xFF000000)),
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        colorScheme: const ColorScheme(
+            brightness: Brightness.dark,
+            primary: Color(0xFF7AAC2B),
+            onPrimary: Color(0xFFFFFFFF),
+            secondary: Color(0xFF7AAC2B),
+            onSecondary: Color(0xFFFFFFFF),
+            error: Color(0xFFD32F2F),
+            onError: Color(0xFFFFFFFF),
+            background: Color(0xFF1E1E1E),
+            onBackground: Color(0xFFFFFFFF),
+            surface: Color(0xFF333333),
+            surfaceTint: Color(0xFF202020),
+            onSurface: Color(0xFFFFFFFF)),
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -70,11 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
