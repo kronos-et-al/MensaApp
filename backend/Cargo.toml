@@ -10,15 +10,7 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-async-trait = "0.1.68"
-async-trait-with-sync = "0.1.36"
-chrono = "0.4.26"
-thiserror = "1.0"
-
-[dependencies.uuid]
-version = "1.4.0"
-features = [
-    "v4",                # Lets you generate random UUIDs
-    "fast-rng",          # Use a faster (but still sufficiently random) RNG
-    "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
-]
+async-trait = "^0.1"
+chrono = "^0.4"
+thiserror = "^1.0"
+uuid = "^1.4"
