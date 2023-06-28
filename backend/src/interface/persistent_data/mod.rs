@@ -2,7 +2,7 @@
 use crate::interface::persistent_data::model::{
     ApiKey, Canteen, DataError, Image, ImageInfo, Line, Meal, Side,
 };
-use crate::util::{Additive, Allergen, MealType, ReportReason};
+use crate::util::{Additive, Allergen, MealType, ReportReason, Date};
 use async_trait::async_trait;
 use chrono::{DateTime, Local};
 use uuid::Uuid;
@@ -29,7 +29,7 @@ pub trait MealplanManagementDataAccess {
     async fn update_meal(
         uuid: Uuid,
         line_id: Uuid,
-        date: DateTime<Local>,
+        date: Date,
         name: String,
         price_student: u32,
         price_employee: u32,
@@ -40,7 +40,7 @@ pub trait MealplanManagementDataAccess {
     async fn update_side(
         uuid: Uuid,
         line_id: Uuid,
-        date: DateTime<Local>,
+        date: Date,
         name: String,
         price_student: u32,
         price_employee: u32,
@@ -60,7 +60,7 @@ pub trait MealplanManagementDataAccess {
         price_employee: u32,
         price_guest: u32,
         price_pupil: u32,
-        next_served: DateTime<Local>,
+        next_served: Date,
         allergens: Vec<Allergen>,
         additives: Vec<Additive>,
     ) -> Result<Meal, DataError>;
@@ -72,7 +72,7 @@ pub trait MealplanManagementDataAccess {
         price_employee: u32,
         price_guest: u32,
         price_pupil: u32,
-        next_served: DateTime<Local>,
+        next_served: Date,
         allergens: Vec<Allergen>,
         additives: Vec<Additive>,
     ) -> Result<Side, DataError>;
@@ -84,7 +84,7 @@ pub trait ImageReviewDataAccess {
     /// Returns the first n images sorted by rank which are related to an meal served at the given day.
     async fn get_n_images_by_rank_date(
         n: u32,
-        date: DateTime<Local>,
+        date: Date,
     ) -> Result<Vec<Image>, DataError>;
     /// Returns the first n images sorted by rank which are related to an meal served in the next week or which were not validated last week.
     async fn get_n_images_next_week_by_rank_not_checked_last_week(
@@ -147,17 +147,17 @@ pub trait RequestDataAccess {
     async fn get_meal(
         id: Uuid,
         line_id: Uuid,
-        date: DateTime<Local>,
+        date: Date,
         client_id: Uuid,
     ) -> Result<Option<Meal>, DataError>;
     /// Returns all meals related to all the params.
     async fn get_meals(
         line_id: Uuid,
-        date: DateTime<Local>,
+        date: Date,
         client_id: Uuid,
     ) -> Result<Vec<Meal>, DataError>;
     /// Returns all sides of a line at the given day from the database.
-    async fn get_sides(line_id: Uuid, date: DateTime<Local>) -> Result<Vec<Side>, DataError>;
+    async fn get_sides(line_id: Uuid, date: Date) -> Result<Vec<Side>, DataError>;
     /// Returns all images, which are related to the given user or meal. Images reported by the user will not be returned.
     async fn get_visible_images(
         meal_id: Uuid,

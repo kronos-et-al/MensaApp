@@ -1,11 +1,9 @@
 //! These structs are used for database operations
-use crate::util;
-use chrono::{DateTime, Local};
+use crate::util::{self, Date};
+use crate::util::{Additive, Allergen};
 use std::string::String;
 use util::MealType;
 use uuid::Uuid;
-use crate::util::{Additive, Allergen};
-
 
 /// Enumerations for possible data request faults
 pub enum DataError {
@@ -30,7 +28,7 @@ pub struct Canteen {
     /// Name of the canteen
     name: String,
     /// All related lines.
-    lines: Vec<Line>
+    lines: Vec<Line>,
 }
 /// Struct for database-operations. Related to the database entity 'line'.
 pub struct Line {
@@ -41,7 +39,7 @@ pub struct Line {
     /// All related meals.
     meals: Vec<Meal>,
     /// All related meals.
-    sides: Vec<Side>
+    sides: Vec<Side>,
 }
 /// Struct for database-operations. Related to the database entity 'meal'.
 pub struct Meal {
@@ -57,9 +55,9 @@ pub struct Meal {
     price_guest: u32,
     price_pupil: u32,
     /// The DateTime the meal was last served.
-    last_served: DateTime<Local>,
+    last_served: Date,
     /// The DateTime when the meal will be served next.
-    next_served: DateTime<Local>,
+    next_served: Date,
 
     /// Relative frequency of the meal in the mealplan.
     relative_frequency: f32,
@@ -70,7 +68,7 @@ pub struct Meal {
     /// All containing allergens.
     allergens: Vec<Allergen>,
     /// All containing additives.
-    additives: Vec<Additive>
+    additives: Vec<Additive>,
 }
 /// This structure is used for database operations. This side structure is based on the database entities 'food', 'foodAllergen' and 'foodAdditive'.
 pub struct Side {
@@ -88,7 +86,7 @@ pub struct Side {
     /// All containing allergens.
     allergens: Vec<Allergen>,
     /// All containing additives.
-    additives: Vec<Additive>
+    additives: Vec<Additive>,
 }
 /// This structure is used for database operations. This image structure is based on the database entity 'image'.
 pub struct Image {
@@ -109,7 +107,7 @@ pub struct ImageInfo {
     /// True if an administrator valiDateTimed the image.
     approved: bool,
     /// Upload-DateTime of the image.
-    upload_date: DateTime<Local>,
+    upload_date: Date,
     /// Amount of open report request related to that image.
     report_count: u32,
     /// Direct link to the image on the image-hoster website.
