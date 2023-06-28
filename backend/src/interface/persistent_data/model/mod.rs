@@ -2,16 +2,22 @@
 use crate::util::{self, Date};
 use crate::util::{Additive, Allergen, Price};
 use chrono::{DateTime, Local};
+use std::error::Error;
+
 use std::string::String;
+use thiserror::Error;
 use util::MealType;
 use uuid::Uuid;
 
 /// Enumerations for possible data request faults
+#[derive(Debug, Error)]
 pub enum DataError {
     /// Requested data does not exist
+    #[error("the requested item could not be found in the database")]
     NoSuchItem,
     /// Error occurred during data request or an internal connection fault
-    InternalError,
+    #[error("internal error ocurred")]
+    InternalError(#[from] Box<dyn Error>),
 }
 
 /// Struct to storage related data. Contains all api-key related information.
