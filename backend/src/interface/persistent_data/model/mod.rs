@@ -1,17 +1,16 @@
 //! These structs are used for database operations
-use std::string::String;
-use uuid::Uuid;
-use chrono::{DateTime, Local};
 use crate::util;
+use chrono::{DateTime, Local};
+use std::string::String;
 use util::MealType;
-
+use uuid::Uuid;
 
 /// Enumerations for possible data request faults
 pub enum DataError {
     /// Requested data does not exist
     NoSuchItem,
     /// Error occurred during data request or an internal connection fault
-    InternalError
+    InternalError,
 }
 
 /// Struct to storage related data. Contains all api-key related information.
@@ -19,7 +18,7 @@ pub struct ApiKey {
     /// The api-key
     key: String,
     /// An short description for the api-key.
-    description: String
+    description: String,
 }
 
 /// Struct for database-operations. Related to the database entity 'canteen'.
@@ -27,14 +26,14 @@ pub struct Canteen {
     /// Identification of the canteen
     id: Uuid,
     /// Name of the canteen
-    name: String
+    name: String,
 }
 /// Struct for database-operations. Related to the database entity 'line'.
 pub struct Line {
     /// Identification of the line
     id: Uuid,
     /// Name of the line
-    name: String
+    name: String,
 }
 /// Struct for database-operations. Related to the database entity 'meal'.
 pub struct Meal {
@@ -59,7 +58,7 @@ pub struct Meal {
     /// Amount of ratings for the meal
     rating_count: u32,
     /// The average rating of the meal
-    average_rating: f32
+    average_rating: f32,
 }
 /// This structure is used for database operations. This side structure is based on the database entities 'food', 'foodAllergen' and 'foodAdditive'.
 pub struct Side {
@@ -88,7 +87,7 @@ pub struct Image {
     /// Amount of upvotes for the image.
     upvotes: u32,
     /// Amount of downvotes for the image.
-    downvotes: u32
+    downvotes: u32,
 }
 pub struct ImageInfo {
     /// True if an administrator valiDateTimed the image.
@@ -104,5 +103,5 @@ pub struct ImageInfo {
     /// Amount of downvotes for the image.
     negative_rating_count: u32,
     /// Rank of the image. Used for sorting und prioritizing an image.
-    image_rank: f32
+    image_rank: f32,
 }
