@@ -9,6 +9,7 @@ pub struct ParseCanteen {
     /// All related lines.
     pub lines: Vec<ParseLine>,
 }
+
 /// Line-Struct containing all information of an line and their meals. Contains raw data.
 pub struct ParseLine {
     /// Name of the line.
@@ -16,6 +17,7 @@ pub struct ParseLine {
     /// All related dishes.
     pub dishes: Vec<Dish>,
 }
+
 /// Dish-Struct containing all information of a meal or side.
 pub struct Dish {
     /// Name of the dish.

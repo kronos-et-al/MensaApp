@@ -31,6 +31,7 @@ pub struct Canteen {
     /// All related lines.
     pub lines: Vec<Line>,
 }
+
 /// Struct for database-operations. Related to the database entity 'line'.
 pub struct Line {
     /// Identification of the line
@@ -42,6 +43,7 @@ pub struct Line {
     /// All related meals.
     pub sides: Vec<Side>,
 }
+
 /// Struct for database-operations. Related to the database entity 'meal'.
 pub struct Meal {
     /// Identification of the meal.
@@ -67,6 +69,7 @@ pub struct Meal {
     /// All containing additives.
     pub additives: Vec<Additive>,
 }
+
 /// This structure is used for database operations. This side structure is based on the database entities 'food', 'foodAllergen' and 'foodAdditive'.
 pub struct Side {
     /// Identification of the side.
@@ -82,6 +85,7 @@ pub struct Side {
     /// All containing additives.
     pub additives: Vec<Additive>,
 }
+
 /// This structure is used for database operations. This image structure is based on the database entity 'image'.
 pub struct Image {
     /// Database-identification of the image.
@@ -97,6 +101,7 @@ pub struct Image {
     /// Amount of downvotes for the image.
     pub downvotes: u32,
 }
+
 pub struct ImageInfo {
     /// True if an administrator valiDateTimed the image.
     pub approved: bool,
