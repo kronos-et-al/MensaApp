@@ -132,3 +132,15 @@ pub enum ReportReason {
 
 /// Date type used in multiple paces.
 pub type Date = NaiveDate;
+
+/// This struct contains all price classes
+pub struct Price {
+    /// Price of the dish for students.
+    pub price_student: u32,
+    /// Price of the dish for employees.
+    pub price_employee: u32,
+    /// Price of the dish for guests.
+    pub price_guest: u32,
+    /// Price of the dish for pupils.
+    pub price_pupil: u32,
+}
