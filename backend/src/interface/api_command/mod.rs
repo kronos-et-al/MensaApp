@@ -49,8 +49,10 @@ pub struct AuthInfo {
 /// Enum describing the possible ways, a command can fail.
 #[derive(Debug, Error)]
 pub enum CommandError {
+    /// Error marking an invalid authentication.
     #[error("invalid authentication information provided")]
     BadAuth,
+    /// Error marking something went wrong internally.
     #[error("internal error ocurred")]
     InternalError(#[from] Box<dyn Error>),
 }
