@@ -1,5 +1,5 @@
 //! The interfaces specified here allow access to data stored in a persistent datastore like a database.
-use crate::interface::persistent_data::model::{Canteen, DataError, Line, Meal, Side};
+use crate::interface::persistent_data::model::{Canteen, DataError, Image, Line, Meal, Side};
 use async_trait::async_trait;
 use chrono::{DateTime, Local};
 use uuid::Uuid;
@@ -36,4 +36,18 @@ pub trait MealplanManagementDataAccess {
     async fn insert_meal(name: String, c_type: MealType, price_student: u32, price_employee: u32, price_guest: u32, price_pupil: u32, next_served: DateTime<Local>, allergens: Vec<Allergen>, additives: Vec<Additive>) -> Result<Meal, DataError>;
     /// Adds a new side entity to the database. Returns the new entity.
     async fn insert_side(name: String, c_type: MealType, price_student: u32, price_employee: u32, price_guest: u32, price_pupil: u32, next_served: DateTime<Local>, allergens: Vec<Allergen>, additives: Vec<Additive>) -> Result<Side, DataError>;
+}
+
+#[async_trait] /// An interface for image related data. The ImageReview component uses this interface for database access.
+pub trait ImageReviewDataAccess {
+    /// Returns the first n images sorted by rank which are related to an meal served at the given day.
+    async fn get_n_images_by_rank_date(n: u32, date: DateTime<Local>) -> Result<Vec<Image>, DataError>;
+    /// Returns the first n images sorted by rank which are related to an meal served in the next week or which were not validated last week.
+    async fn get_n_images_next_week_by_rank_not_checked_last_week(n: u32) -> Result<Vec<Image>, DataError>;
+    /// Returns the first n images sorted by the date of the last check (desc) which were not validated in the last week.
+    async fn get_n_images_by_last_checked_not_checked_last_week(n: u32) -> Result<Vec<Image>, DataError>;
+    /// Removes an image with all relations from the database.
+    async fn delete_image(id: Uuid) -> Result<bool, DataError>;
+    /// Marks all images identified by the given uuids as checked.
+    async fn mark_as_checked(ids: Vec<Uuid>) -> Result<(), DataError>;
 }
