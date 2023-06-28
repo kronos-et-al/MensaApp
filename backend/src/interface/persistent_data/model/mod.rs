@@ -1,7 +1,6 @@
 //! These structs are used for database operations
 use crate::util::{self, Date};
 use crate::util::{Additive, Allergen, Price};
-use chrono::{DateTime, Local};
 use std::error::Error;
 
 use std::string::String;
