@@ -13,6 +13,7 @@ license = "MIT"
 async-trait = "0.1.68"
 async-trait-with-sync = "0.1.36"
 chrono = "0.4.26"
+thiserror = "1.0"
 
 [dependencies.uuid]
 version = "1.4.0"
