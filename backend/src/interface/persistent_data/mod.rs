@@ -75,3 +75,27 @@ pub trait CommandDataAccess {
     /// Loads all api_keys from the database.
     async fn get_api_keys() -> Result<Vec<ApiKey>, DataError>;
 }
+
+#[async_trait] /// An interface for graphql query data. The GraphQL component uses this interface for database access.
+pub trait RequestDataAccess {
+    /// Returns the canteen from the database.
+    async fn get_canteen(id: Uuid) -> Result<Option<Canteen>, DataError>;
+    /// Returns all canteens from the database.
+    async fn get_canteens() -> Result<Vec<Canteen>, DataError>;
+    /// Returns all lines of a canteen from the database.
+    async fn get_lines(canteen_id: Uuid) -> Result<Vec<Line>, DataError>;
+    /// Returns the meal related to all the params.
+    async fn get_meal(id: Uuid, line_id: Uuid, date: DateTime<Local>, client_id: Uuid) -> Result<Option<Meal>, DataError>;
+    /// Returns all meals related to all the params.
+    async fn get_meals(line_id: Uuid, date: DateTime<Local>, client_id: Uuid) -> Result<Vec<Meal>, DataError>;
+    /// Returns all sides of a line at the given day from the database.
+    async fn get_sides(line_id: Uuid, date: DateTime<Local>) -> Result<Vec<Side>, DataError>;
+    /// Returns all images, which are related to the given user or meal. Images reported by the user will not be returned.
+    async fn get_visible_images(meal_id: Uuid, client_id: Option<Uuid>) -> Result<Vec<Image>, DataError>;
+    /// Returns the rating done by the given user for the given meal.
+    async fn get_personal_rating(meal_id: Uuid, client_id: Uuid) -> Result<Option<u32>, DataError>;
+    /// Checks if the given image got an upvote by the given user
+    async fn get_personal_upvote(image_id: Uuid, client_id: Uuid) -> Result<bool, DataError>;
+    /// Checks if the given image got an downvote by the given user
+    async fn get_personal_downvote(image_id: Uuid, client_id: Uuid) -> Result<bool, DataError>;
+}
