@@ -1,6 +1,6 @@
 //! This package contains structures that are used in many components.
 //!
-//! For a complete list and explenations you can see [here](https://www.sw-ka.de/media/?file=4458listeallergesetzlichausweisungspflichtigenzusatzstoffeundallergenefuerwebsite160218.pdf&download).
+//! For a complete list and explanations you can see [here](https://www.sw-ka.de/media/?file=4458listeallergesetzlichausweisungspflichtigenzusatzstoffeundallergenefuerwebsite160218.pdf&download).
 
 /// This enum lists every possible allergen a meal can have.
 pub enum Allergen {
