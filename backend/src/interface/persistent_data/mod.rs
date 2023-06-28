@@ -1,9 +1,9 @@
 //! The interfaces specified here allow access to data stored in a persistent datastore like a database.
-use crate::interface::persistent_data::model::{Canteen, DataError, Image, Line, Meal, Side};
+use crate::interface::persistent_data::model::{ApiKey, Canteen, DataError, Image, ImageInfo, Line, Meal, Side};
 use async_trait::async_trait;
 use chrono::{DateTime, Local};
 use uuid::Uuid;
-use crate::util::{Additive, Allergen, MealType};
+use crate::util::{Additive, Allergen, MealType, ReportReason};
 
 mod model;
 
@@ -50,4 +50,28 @@ pub trait ImageReviewDataAccess {
     async fn delete_image(id: Uuid) -> Result<bool, DataError>;
     /// Marks all images identified by the given uuids as checked.
     async fn mark_as_checked(ids: Vec<Uuid>) -> Result<(), DataError>;
+}
+
+#[async_trait] /// An interface for graphql mutation data manipulation. The Command component uses this interface for database access.
+pub trait CommandDataAccess {
+    /// Returns the ImageInfo struct of image.
+    async fn get_image_info(image_id: Uuid) -> Result<ImageInfo, DataError>;
+    /// Marks an image as hidden. Hidden images cant be seen by users.
+    async fn hide_image(image_id: Uuid) -> Result<(), DataError>;
+    /// Saves an image report
+    async fn add_report(image_id: Uuid, client_id: Uuid, reason: ReportReason) -> Result<(), DataError>;
+    /// Adds an upvote to the given image. An user can only down- or upvote an image.
+    async fn add_upvote(image_id: Uuid, user_id: Uuid) -> Result<(), DataError>;
+    /// Adds a downvote to the given image. An user can only down- or upvote an image.
+    async fn add_downvote(image_id: Uuid, user_id: Uuid) -> Result<(), DataError>;
+    /// Removes an upvote from the given image.
+    async fn remove_upvote(image_id: Uuid, user_id: Uuid) -> Result<(), DataError>;
+    /// Removes a downvote from the given image.
+    async fn remove_downvote(image_id: Uuid, user_id: Uuid) -> Result<(), DataError>;
+    /// Adds an image link to the database. The image will be related to the given meal.
+    async fn link_image(meal_id: Uuid, user_id: Uuid, image_hoster_id: String, url: String) -> Result<(), DataError>;
+    /// Adds a rating to the database. The rating will be related to the given meal and the given user.
+    async fn add_rating(meal_id: Uuid, user_id: Uuid, rating: u32) -> Result<(), DataError>;
+    /// Loads all api_keys from the database.
+    async fn get_api_keys() -> Result<Vec<ApiKey>, DataError>;
 }
