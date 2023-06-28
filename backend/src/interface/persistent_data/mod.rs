@@ -2,7 +2,8 @@
 use crate::interface::persistent_data::model::{
     ApiKey, Canteen, DataError, Image, ImageInfo, Line, Meal, Side,
 };
-use crate::util::{Additive, Allergen, MealType, ReportReason, Date};
+
+use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason};
 use async_trait::async_trait;
 use chrono::{DateTime, Local};
 use uuid::Uuid;
@@ -31,10 +32,7 @@ pub trait MealplanManagementDataAccess {
         line_id: Uuid,
         date: Date,
         name: String,
-        price_student: u32,
-        price_employee: u32,
-        price_guest: u32,
-        price_pupil: u32,
+        price: Price,
     ) -> Result<Meal, DataError>;
     /// Updates an existing side entity in the database. Returns the entity.
     async fn update_side(
@@ -42,10 +40,7 @@ pub trait MealplanManagementDataAccess {
         line_id: Uuid,
         date: Date,
         name: String,
-        price_student: u32,
-        price_employee: u32,
-        price_guest: u32,
-        price_pupil: u32,
+        price: Price,
     ) -> Result<Side, DataError>;
 
     /// Adds a new canteen entity to the database. Returns the new entity.
@@ -56,10 +51,7 @@ pub trait MealplanManagementDataAccess {
     async fn insert_meal(
         name: String,
         c_type: MealType,
-        price_student: u32,
-        price_employee: u32,
-        price_guest: u32,
-        price_pupil: u32,
+        price: Price,
         next_served: Date,
         allergens: Vec<Allergen>,
         additives: Vec<Additive>,
@@ -68,10 +60,7 @@ pub trait MealplanManagementDataAccess {
     async fn insert_side(
         name: String,
         c_type: MealType,
-        price_student: u32,
-        price_employee: u32,
-        price_guest: u32,
-        price_pupil: u32,
+        price: Price,
         next_served: Date,
         allergens: Vec<Allergen>,
         additives: Vec<Additive>,
@@ -82,10 +71,7 @@ pub trait MealplanManagementDataAccess {
 /// An interface for image related data. The ImageReview component uses this interface for database access.
 pub trait ImageReviewDataAccess {
     /// Returns the first n images sorted by rank which are related to an meal served at the given day.
-    async fn get_n_images_by_rank_date(
-        n: u32,
-        date: Date,
-    ) -> Result<Vec<Image>, DataError>;
+    async fn get_n_images_by_rank_date(n: u32, date: Date) -> Result<Vec<Image>, DataError>;
     /// Returns the first n images sorted by rank which are related to an meal served in the next week or which were not validated last week.
     async fn get_n_images_next_week_by_rank_not_checked_last_week(
         n: u32,
@@ -151,11 +137,7 @@ pub trait RequestDataAccess {
         client_id: Uuid,
     ) -> Result<Option<Meal>, DataError>;
     /// Returns all meals related to all the params.
-    async fn get_meals(
-        line_id: Uuid,
-        date: Date,
-        client_id: Uuid,
-    ) -> Result<Vec<Meal>, DataError>;
+    async fn get_meals(line_id: Uuid, date: Date, client_id: Uuid) -> Result<Vec<Meal>, DataError>;
     /// Returns all sides of a line at the given day from the database.
     async fn get_sides(line_id: Uuid, date: Date) -> Result<Vec<Side>, DataError>;
     /// Returns all images, which are related to the given user or meal. Images reported by the user will not be returned.
