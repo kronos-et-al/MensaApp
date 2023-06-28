@@ -4,6 +4,7 @@ use uuid::Uuid;
 use chrono::{DateTime, Local};
 use crate::util;
 use util::MealType;
+use crate::util::{Additive, Allergen};
 
 
 /// Enumerations for possible data request faults
@@ -27,14 +28,20 @@ pub struct Canteen {
     /// Identification of the canteen
     id: Uuid,
     /// Name of the canteen
-    name: String
+    name: String,
+    /// All related lines.
+    lines: Vec<Line>
 }
 /// Struct for database-operations. Related to the database entity 'line'.
 pub struct Line {
     /// Identification of the line
     id: Uuid,
     /// Name of the line
-    name: String
+    name: String,
+    /// All related meals.
+    meals: Vec<Meal>,
+    /// All related meals.
+    sides: Vec<Side>
 }
 /// Struct for database-operations. Related to the database entity 'meal'.
 pub struct Meal {
@@ -59,7 +66,11 @@ pub struct Meal {
     /// Amount of ratings for the meal
     rating_count: u32,
     /// The average rating of the meal
-    average_rating: f32
+    average_rating: f32,
+    /// All containing allergens.
+    allergens: Vec<Allergen>,
+    /// All containing additives.
+    additives: Vec<Additive>
 }
 /// This structure is used for database operations. This side structure is based on the database entities 'food', 'foodAllergen' and 'foodAdditive'.
 pub struct Side {
@@ -74,6 +85,10 @@ pub struct Side {
     price_employee: u32,
     price_guest: u32,
     price_pupil: u32,
+    /// All containing allergens.
+    allergens: Vec<Allergen>,
+    /// All containing additives.
+    additives: Vec<Additive>
 }
 /// This structure is used for database operations. This image structure is based on the database entity 'image'.
 pub struct Image {
