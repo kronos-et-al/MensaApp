@@ -66,6 +66,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/icons/
     - assets/locales/en/
     - assets/locales/de/
   # To add assets to your application, add an assets section, like this:
