@@ -3,7 +3,7 @@ import 'Frequency.dart';
 import '../meal/Allergen.dart';
 import '../meal/FoodType.dart';
 
-
+/// This class contains all filter preferences.
 class FilterPreferences {
   List<FoodType> _categories;
   List<Allergen> _allergens;
@@ -15,43 +15,69 @@ class FilterPreferences {
   bool _ascending;
 
   /// initializes all not committed parameters with standard-values that allows all meals to be displayed
-  /// TODO: initialize standard-values
-  FilterPreferences([
-      this._categories,
-      this._allergens = , /// todo: add all allergen
-      this._price = 1000, // in cent
-      this._rating = 0,
-      this._frequency,
-      this._onlyFavorite = false,
-      this._sortedBy = Sorting.line,
-      this._ascending = true]);
+  FilterPreferences({
+    List<FoodType>? categories,
+    List<Allergen>? allergens,
+    int? price,
+    int? rating,
+    List<Frequency>? frequency,
+    bool? onlyFavorite,
+    Sorting? sortedBy,
+    bool? ascending
+  })
+      : _categories = categories ?? _getAllFoodTypes(),
+        _allergens = allergens ?? _getAllAllergen(),
+        _price = price ?? 10,
+        _rating = rating ?? 0,
+        _frequency = frequency ?? _getAllFrequencies(),
+        _onlyFavorite = onlyFavorite ?? false,
+        _sortedBy = sortedBy ?? Sorting.line,
+        _ascending = ascending ?? true;
 
   /// returns the food categories that are displayed
   List<FoodType> get categories => _categories;
 
-  /// TODO: do we want it like that
-  /// -> do we want just set vegan, set vegetarian, set meat, ...
-  set categories(List<FoodType> value) {
-    _categories = value;
+  /// This method sets the categories so all meals are shown.
+  setCategoriesAll() {
+    _categories = _getAllFoodTypes();
   }
 
+  /// This method adds a special type of meat or the category unknown to the categories that are shown.
+  addMealCategory(FoodType foodType) {
+    if ([FoodType.beef, FoodType.fish, FoodType.pork].contains(foodType)) {
+      _categories.add(foodType);
+    }
+  }
 
+  /// This method removes a special type of meat or the category unknown from the categories that are shown.
+  removeMealCategory(FoodType foodType) {
+    if ([FoodType.beef, FoodType.fish, FoodType.pork].contains(foodType)) {
+      _categories.remove(foodType);
+    }
+  }
 
+  /// This method sets the categories so only vegetarian categories are shown.
   setCategoriesVegetarian() {
-    _categories = [FoodType.vegan, FoodType.vegetarian];
+    _categories = [FoodType.vegan, FoodType.vegetarian, FoodType.unknown];
   }
 
+  /// This method sets the categories so only vegan categories are shown.
   setCategoriesVegan() {
-    _categories = [FoodType.vegan];
+    _categories = [FoodType.vegan, FoodType.unknown];
+  }
+
+  /// This method adds the unknown category to the categories that are shown.
+  addCategoryUnknown() {
+    _categories.add(FoodType.unknown);
+  }
+
+  /// This method removes the unknown category from the categories that are shown.
+  removeCategoryUnknown() {
+    _categories.remove(FoodType.unknown);
   }
 
   /// returns the allergens that should be inside meals shown on the meal plan
   List<Allergen> get allergens => _allergens;
-
-  /// TODO: do we just want "add allergen" and "removeAllergen"
-  set allergens(List<Allergen> value) {
-    _allergens = value;
-  }
 
   /// add a allergen to the list of allergens that should be inside meals shown on the meal plan
   addAllergen(Allergen allergen) {
@@ -90,11 +116,6 @@ class FilterPreferences {
   /// returns the classes of Frequency that should be displayed
   List<Frequency> get frequency => _frequency;
 
-  /// TODO in more than one methods?
-  set frequency(List<Frequency> value) {
-    _frequency = value;
-  }
-
   /// only new meals are to be shown
   setNewFrequency() {
     _frequency = [Frequency.newMeal];
@@ -107,7 +128,7 @@ class FilterPreferences {
 
   /// all frequencies are to be shown
   setAllFrequencies() {
-    // TODO
+    _frequency = _getAllFrequencies();
   }
 
   /// returns the minimal rating of a meal to be shown
@@ -124,5 +145,32 @@ class FilterPreferences {
   /// sets the maximal price of a meal to be shown
   set price(int value) {
     _price = value;
+  }
+
+  /// returns all frequencies
+  static List<Frequency> _getAllFrequencies() {
+    List<Frequency> list = [];
+    for (Frequency frequency in Frequency.values) {
+      list.add(frequency);
+    }
+    return list;
+  }
+
+  /// returns all allergens
+  static List<Allergen> _getAllAllergen() {
+    List<Allergen> list = [];
+    for (Allergen allergen in Allergen.values) {
+      list.add(allergen);
+    }
+    return list;
+  }
+
+  /// returns all food types
+  static List<FoodType> _getAllFoodTypes() {
+    List<FoodType> list = [];
+    for (FoodType foodType in FoodType.values) {
+      list.add(foodType);
+    }
+    return list;
   }
 }
