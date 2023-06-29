@@ -1,16 +1,28 @@
 //! The interfaces specified here allow access to data stored in a persistent datastore like a database.
 use crate::interface::persistent_data::model::{
-    ApiKey, Canteen, DataError, Image, ImageInfo, Line, Meal, Side,
+    ApiKey, Canteen, Image, ImageInfo, Line, Meal, Side,
 };
-
 use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason};
 use async_trait::async_trait;
-use chrono::{DateTime, Local};
+use std::error::Error;
+use thiserror::Error;
 use uuid::Uuid;
 
 mod model;
 
 pub type Result<T> = std::result::Result<T, DataError>;
+
+
+/// Enumerations for possible data request faults
+#[derive(Debug, Error)]
+pub enum DataError {
+    /// Requested data does not exist
+    #[error("the requested item could not be found in the database")]
+    NoSuchItem,
+    /// Error occurred during data request or an internal connection fault
+    #[error("internal error ocurred")]
+    InternalError(#[from] Box<dyn Error>),
+}
 
 #[async_trait]
 /// An interface for checking relations and inserting data structures. The MealplanManagement component uses this interface for database access.
