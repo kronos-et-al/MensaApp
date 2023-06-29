@@ -2,8 +2,10 @@
 
 mod model;
 
-use crate::interface::image_hoster::model::{ImageHosterError, ImageMetaData};
+use crate::interface::image_hoster::model::{ImageMetaData};
 use async_trait::async_trait;
+use std::error::Error;
+use thiserror::Error;
 
 pub type Result<T> = std::result::Result<T, ImageHosterError>;
 
@@ -16,4 +18,27 @@ pub trait ImageHoster {
     async fn check_existence(photo_id: String) -> Result<bool>;
     /// Checks whether the licence is acceptable for our purposes.
     async fn check_licence(photo_id: String) -> Result<bool>;
+}
+
+/// Enum describing the possible ways, a image hoster request can fail.
+#[derive(Debug, Error)]
+pub enum ImageHosterError {
+    /// Photo not found error
+    #[error("the photo id passed was not a valid photo id")]
+    PhotoNotFound,
+    /// Permission denied error
+    #[error("the calling user does not have permission to view the photo")]
+    PermissionDenied,
+    /// Invalid API Key error
+    #[error("the api key passed was not valid or has expired")]
+    InvalidApiKey,
+    /// Service currently unavailable error
+    #[error("the requested service is temporarily unavailable")]
+    ServiceUnavailable,
+    /// Format "xxx" not found error
+    #[error("the requested response format was not found")]
+    FormatNotFound(#[from] Box<dyn Error>),
+    /// The connection failed to establish error
+    #[error("no connection could be established")]
+    NotConnected
 }
