@@ -13,4 +13,7 @@ The documentation can be accessed with `cargo doc --open`.
 
 
 ## First Setup
-To compile the backend, you need cargo, you can install it here: https://www.rust-lang.org/tools/install
+To compile the backend, you need cargo, you can install it here: https://www.rust-lang.org/tools/install.
+
+For writing rust code, VSCode with the `rust-analyzer` extension is recommended.
+It is also recommended to set the `rust-analyzer.check.command` setting to `clippy`
