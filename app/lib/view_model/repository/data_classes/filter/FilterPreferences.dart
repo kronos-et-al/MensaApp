@@ -1,6 +1,11 @@
+import 'Sorting.dart';
+import 'Frequency.dart';
+import '../meal/Allergen.dart';
+import '../meal/FoodType.dart';
+
 
 class FilterPreferences {
-  List<FoodTypes> _categories;
+  List<FoodType> _categories;
   List<Allergen> _allergens;
   int _price;
   int _rating;
@@ -22,11 +27,11 @@ class FilterPreferences {
       this._ascending = true]);
 
   /// returns the food categories that are displayed
-  List<FoodTypes> get categories => _categories;
+  List<FoodType> get categories => _categories;
 
   /// TODO: do we want it like that
   /// -> do we want just set vegan, set vegetarian, set meat, ...
-  set categories(List<FoodTypes> value) {
+  set categories(List<FoodType> value) {
     _categories = value;
   }
 
@@ -41,10 +46,10 @@ class FilterPreferences {
   }
 
   /// returns the allergens that should be inside meals shown on the meal plan
-  List<Allergens> get allergens => _allergens;
+  List<Allergen> get allergens => _allergens;
 
   /// TODO: do we just want "add allergen" and "removeAllergen"
-  set allergens(List<Allergens> value) {
+  set allergens(List<Allergen> value) {
     _allergens = value;
   }
 
@@ -92,12 +97,12 @@ class FilterPreferences {
 
   /// only new meals are to be shown
   setNewFrequency() {
-    _frequency = Frequency.newMeal;
+    _frequency = [Frequency.newMeal];
   }
 
   /// only rare meals are to be shown
   setRareFrequency() {
-    _frequency = Frequency.rare;
+    _frequency = [Frequency.rare];
   }
 
   /// all frequencies are to be shown

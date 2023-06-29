@@ -1,4 +1,11 @@
 
+import '../data_classes/filter/FilterPreferences.dart';
+import '../data_classes/mealplan/Canteen.dart';
+import '../data_classes/settings/ColorScheme.dart';
+import '../data_classes/settings/MealPlanFormat.dart';
+import '../data_classes/settings/PriceCategory.dart';
+
+/// This is an interface to the local storage.
 abstract class ILocalStorage {
   /// The device identifier is returned.
   Future<String> getClientIdentifier();
@@ -10,7 +17,7 @@ abstract class ILocalStorage {
   Future<FilterPreferences> getFilterPreferences();
 
   /// The committed FilterPreferences is set.
-  Future<void> setFilterPreferences(FilterPreference filter);
+  Future<void> setFilterPreferences(FilterPreferences filter);
 
   /// The saved Canteen is returned.
   Future<Canteen> getCanteen();
