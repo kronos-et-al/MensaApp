@@ -20,7 +20,7 @@ class MensaToggle extends StatelessWidget {
   /// @returns The widget.
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.all(8), child: Row(
+    return Padding(padding: const EdgeInsets.all(8), child: Row(
       children: [
         Switch(value: _value, onChanged: _onChanged),
         const SizedBox(width: 8),
