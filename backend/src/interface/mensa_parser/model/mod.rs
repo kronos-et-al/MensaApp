@@ -29,5 +29,5 @@ pub struct Dish {
     /// All containing additives.
     pub additives: Vec<Additive>,
     /// Meal-Type of the dish.
-    pub c_type: MealType,
+    pub meal_type: MealType,
 }

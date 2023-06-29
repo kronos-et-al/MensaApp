@@ -64,7 +64,7 @@ pub trait MealplanManagementDataAccess {
     /// Adds a new meal entity to the database. Returns the new entity.
     async fn insert_meal(
         name: String,
-        c_type: MealType,
+        meal_type: MealType,
         price: Price,
         next_served: Date,
         allergens: Vec<Allergen>,
@@ -73,7 +73,7 @@ pub trait MealplanManagementDataAccess {
     /// Adds a new side entity to the database. Returns the new entity.
     async fn insert_side(
         name: String,
-        c_type: MealType,
+        meal_type: MealType,
         price: Price,
         next_served: Date,
         allergens: Vec<Allergen>,
