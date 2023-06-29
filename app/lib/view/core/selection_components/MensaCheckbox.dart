@@ -1,55 +1,71 @@
 import 'package:flutter/material.dart';
 
+/// A checkbox that is used in the Mensa app.
 class MensaCheckbox extends StatelessWidget {
   final void Function(bool?)? _onChanged;
   final bool _value;
   final String _label;
 
+  /// Creates a new MensaCheckbox.
+  /// @param key The key to identify this widget.
+  /// @param onChanged The function that is called when the checkbox is changed.
+  /// @param value The value of the checkbox.
+  /// @param label The label that is displayed next to the checkbox.
+  /// @returns A new MensaCheckbox.
   const MensaCheckbox(
       {super.key, required onChanged, required value, required label})
       : _onChanged = onChanged,
         _value = value,
         _label = label;
 
+  /// Builds the widget.
+  /// @param context The context in which the widget is built.
+  /// @returns The widget.
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.all(8), child: Row(
-      children: [
-        Container(
-          width: 18,
-          height: 18,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(4.0),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.surface,
-              width: 1,
+    return Padding(
+        padding: const EdgeInsets.all(8),
+        child: Row(
+          children: [
+            // Container is used to give the checkbox a filled background
+            Container(
+              width: 18,
+              height: 18,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(4.0),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.surface,
+                  width: 1,
+                ),
+              ),
+              child: Checkbox(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4.0),
+                ),
+                // Set the border color of the checkbox to the primary color when it is selected and to the surface color when it is not selected, this makes the border invisible
+                fillColor: MaterialStateProperty.resolveWith((states) {
+                  if (states.contains(MaterialState.selected)) {
+                    return Theme.of(context).colorScheme.primary;
+                  } else {
+                    return Theme.of(context).colorScheme.surface;
+                  }
+                }),
+                checkColor: Theme.of(context).colorScheme.onPrimary,
+                value: _value,
+                onChanged: _onChanged,
+              ),
             ),
-          ),
-          child: Checkbox(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4.0),
+            const SizedBox(width: 8),
+            // GestureDetector is used to make the label clickable
+            GestureDetector(
+              onTap: () {
+                _onChanged!(!_value);
+              },
+              child:
+                  Text(_label, style: Theme.of(context).textTheme.labelLarge),
             ),
-            fillColor: MaterialStateProperty.resolveWith((states) {
-              if (states.contains(MaterialState.selected)) {
-                return Theme.of(context).colorScheme.primary;
-              } else {
-                return Theme.of(context).colorScheme.surface;
-              }
-            }),
-            checkColor: Theme.of(context).colorScheme.onPrimary,
-            value: _value,
-            onChanged: _onChanged,
-          ),
-        ),
-        const SizedBox(width: 8),
-        GestureDetector(
-          onTap: () {
-            _onChanged!(!_value);
-          },
-          child: Text(_label, style: Theme.of(context).textTheme.labelLarge),
-        ),
-      ],
-    ));
+          ],
+        ));
   }
 }
