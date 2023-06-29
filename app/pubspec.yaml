@@ -43,6 +43,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+  flutter_svg: ^0.22.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -66,6 +68,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/icons/
     - assets/locales/en/
     - assets/locales/de/
   # To add assets to your application, add an assets section, like this:
