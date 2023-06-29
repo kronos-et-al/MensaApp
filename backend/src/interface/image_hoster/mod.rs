@@ -22,6 +22,7 @@ pub trait ImageHoster {
 
 /// Enum describing the possible ways, a image hoster request can fail.
 #[derive(Debug, Error)]
+#[allow(clippy::module_name_repetitions)]
 pub enum ImageHosterError {
     /// Photo not found error
     #[error("the photo id passed was not a valid photo id")]
