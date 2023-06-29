@@ -1,4 +1,4 @@
-//! These structs are used for parse operations
+//! These structs are used for parse operations.
 
 use crate::util::{Additive, Allergen, MealType, Price};
 

@@ -1,4 +1,4 @@
-//! These structs are used for database operations
+//! These structs are used for database operations.
 use crate::util::{self, Date};
 use crate::util::{Additive, Allergen, Price};
 use std::error::Error;

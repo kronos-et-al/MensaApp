@@ -4,6 +4,7 @@ use async_trait::async_trait;
 
 /// This interface allows starting the image review process to check for deleted images at the image hoster.
 #[async_trait]
+#[allow(clippy::module_name_repetitions)]
 pub trait ImageReviewScheduling {
     /// Start the image review process.
     async fn start_image_review();

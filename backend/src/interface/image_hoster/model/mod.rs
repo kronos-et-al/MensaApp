@@ -1,4 +1,4 @@
-//! These structs are used for image hoster data
+//! These structs are used for image hoster data.
 use std::error::Error;
 use thiserror::Error;
 
