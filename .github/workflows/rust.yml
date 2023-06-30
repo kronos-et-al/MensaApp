@@ -15,7 +15,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  build_rust:
 
     runs-on: ubuntu-latest
     defaults:
