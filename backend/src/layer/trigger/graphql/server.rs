@@ -1,6 +1,11 @@
 //! This package contains the server that is responsible for providing the graphql API.
 
-use async_graphql::{http::GraphiQLSource, EmptySubscription, Schema};
+use std::fmt;
+
+use async_graphql::{
+    http::{playground_source, GraphQLPlaygroundConfig, GraphiQLSource},
+    EmptySubscription, Schema,
+};
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
     response::{self, IntoResponse},
@@ -11,40 +16,57 @@ use axum::{
 use crate::interface::{api_command::Command, persistent_data::RequestDataAccess};
 
 use super::{mutation::MutationRoot, query::QueryRoot};
+type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 
 /// Class witch controls the webserver for GraphQL requests.
-pub struct GraphQLServer {}
+pub struct GraphQLServer {
+    schema: GraphQLSchema,
+}
 
 impl GraphQLServer {
     /// Creates a new Object with given access to datastore and logic for commands.
-    pub fn new(data_access: impl RequestDataAccess, command: impl Command) -> Self {
-        Self {}
+    pub fn new(
+        data_access: impl RequestDataAccess + Sync + Send + 'static,
+        command: impl Command + Sync + Send + 'static,
+    ) -> Self {
+        let schema: GraphQLSchema = Schema::build(QueryRoot, MutationRoot, EmptySubscription)
+            .data(data_access)
+            .data(command)
+            .finish();
+
+        Self { schema }
     }
 
     /// Starts the GraphQL-Server. It will be running in the background until [`Self::shutdown()`] is called.
     pub async fn start(&self) {
-        let schema = Schema::build(QueryRoot, MutationRoot, EmptySubscription).finish();
+        let listen = "0.0.0.0:8080";
 
         let app = Router::new()
             .route("/", get(graphiql).post(graphql_handler))
-            .layer(Extension(schema));
+            .layer(Extension(self.schema.clone()));
 
-        Server::bind(&"0.0.0.0:8000".parse().unwrap())
-            .serve(app.into_make_service())
-            .await
-            .unwrap();
+        Server::bind(
+            &listen
+                .parse()
+                .expect("could not parse listening ip and port"),
+        )
+        .serve(app.into_make_service())
+        .await
+        .unwrap_or_else(|_| panic!("could not listen on {listen}"));
     }
 
     /// Stops the GraphQL server.
     pub fn shutdown(&self) {}
 }
 
-type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
-
+#[allow(clippy::unused_async)]
 async fn graphiql() -> impl IntoResponse {
-    response::Html(GraphiQLSource::build().endpoint("/").finish())
+    response::Html(playground_source(GraphQLPlaygroundConfig::new("/")))
 }
 
-async fn graphql_handler(schema: Extension<GraphQLSchema>, request: GraphQLRequest) -> GraphQLResponse {
+async fn graphql_handler(
+    schema: Extension<GraphQLSchema>,
+    request: GraphQLRequest,
+) -> GraphQLResponse {
     schema.execute(request.into_inner()).await.into()
 }
