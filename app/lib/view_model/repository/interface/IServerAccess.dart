@@ -6,6 +6,7 @@ import '../data_classes/mealplan/Mealplan.dart';
 import '../data_classes/settings/ReportCategory.dart';
 import '../error_handling/Result.dart';
 
+/// This class is the interface for the access to the server.
 abstract class IServerAccess {
   /// This method requests all mealplans of all canteens for the next seven days from the server.
   /// @return The result of the update or an error
