@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'AllergenIcon.dart';
 
+/// This widget is used to display the icon for Barley
 class AllergenBarleyIcon extends AllergenIcon {
   const AllergenBarleyIcon(
       {super.key, super.width, super.height, super.color});

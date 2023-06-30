@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'AllergenIcon.dart';
 
+/// This widget is used to display the icon for Peanuts
 class AllergenPeanutsIcon extends AllergenIcon {
   const AllergenPeanutsIcon(
       {super.key, super.width, super.height, super.color});
