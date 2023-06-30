@@ -1,3 +1,4 @@
+/// The category of a report of an image.
 enum ReportCategory {
   /// The image is  offensive.
   offensive,
