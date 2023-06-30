@@ -7,6 +7,7 @@ pub struct MutationRoot;
 
 #[Object]
 impl MutationRoot {
+    /// testty
     async fn test(&self) -> bool {
         true
     }

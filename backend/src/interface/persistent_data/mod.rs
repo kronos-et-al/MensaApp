@@ -8,7 +8,9 @@ use async_trait::async_trait;
 use chrono::{DateTime, Local};
 use uuid::Uuid;
 
-mod model;
+pub mod model;
+
+
 
 pub type Result<T> = std::result::Result<T, DataError>;
 
@@ -73,7 +75,7 @@ pub trait MealplanManagementDataAccess {
 /// An interface for image related data. The ImageReview component uses this interface for database access.
 pub trait ImageReviewDataAccess {
     /// Returns the first n images sorted by rank which are related to an meal served at the given day.
-    async fn get_n_images_by_rank_date(n: u32, date: DateTime<Local>) -> Result<Vec<Image>>;
+    async fn get_n_images_by_rank_date(n: u32, date: Date) -> Result<Vec<Image>>;
     /// Returns the first n images sorted by rank which are related to an meal served in the next week or which were not validated last week.
     async fn get_n_images_next_week_by_rank_not_checked_last_week(n: u32) -> Result<Vec<Image>>;
     /// Returns the first n images sorted by the date of the last check (desc) which were not validated in the last week.
@@ -127,9 +129,9 @@ pub trait RequestDataAccess {
     async fn get_meal(id: Uuid, line_id: Uuid, date: Date, client_id: Uuid)
         -> Result<Option<Meal>>;
     /// Returns all meals related to all the params.
-    async fn get_meals(line_id: Uuid, date: DateTime<Local>, client_id: Uuid) -> Result<Vec<Meal>>;
+    async fn get_meals(line_id: Uuid, date: Date, client_id: Uuid) -> Result<Vec<Meal>>;
     /// Returns all sides of a line at the given day from the database.
-    async fn get_sides(line_id: Uuid, date: DateTime<Local>) -> Result<Vec<Side>>;
+    async fn get_sides(line_id: Uuid, date: Date) -> Result<Vec<Side>>;
     /// Returns all images, which are related to the given user or meal. Images reported by the user will not be returned.
     async fn get_visible_images(meal_id: Uuid, client_id: Option<Uuid>) -> Result<Vec<Image>>;
     /// Returns the rating done by the given user for the given meal.
