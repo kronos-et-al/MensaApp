@@ -1,9 +1,8 @@
 //! This interface allows the reading of menus from an external source.
+pub mod model;
 
 use crate::{interface::mensa_parser::model::ParseCanteen, util::Date};
 use async_trait::async_trait;
-
-mod model;
 
 #[async_trait]
 /// Parser interface. Provides functions which return canteen structs. Canteen structs contain raw data obtained by parsing mealplans.

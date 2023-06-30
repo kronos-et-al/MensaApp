@@ -1,4 +1,6 @@
 //! The interfaces specified here allow access to data stored in a persistent datastore like a database.
+pub mod model;
+
 use crate::interface::persistent_data::model::{
     ApiKey, Canteen, Image, ImageInfo, Line, Meal, Side,
 };
@@ -8,10 +10,7 @@ use std::error::Error;
 use thiserror::Error;
 use uuid::Uuid;
 
-mod model;
-
 pub type Result<T> = std::result::Result<T, DataError>;
-
 
 /// Enumerations for possible data request faults
 #[derive(Debug, Error)]

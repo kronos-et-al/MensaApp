@@ -1,6 +1,5 @@
 //! This interface allows communication with the image hoster.
-
-mod model;
+pub mod model;
 
 use crate::interface::image_hoster::model::{ImageMetaData};
 use async_trait::async_trait;
