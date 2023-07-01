@@ -17,7 +17,9 @@ class MealVegetarianIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset('assets/icons/vegetarian.svg',
-        width: _width, height: _height);
+    return Padding(
+        padding: const EdgeInsets.all(2),
+        child: SvgPicture.asset('assets/icons/vegetarian.svg',
+            width: _width - 4, height: _height - 4));
   }
 }

@@ -18,10 +18,12 @@ class MealPorkAwIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+        width: _width,
+        height: _height,
         decoration: BoxDecoration(
-            border: Border.all(color: Theme.of(context).colorScheme.secondary, width: 2),
+            border: Border.all(
+                color: Theme.of(context).colorScheme.secondary, width: 2),
             borderRadius: BorderRadius.all(Radius.circular(_width))),
-        child: SvgPicture.asset('assets/icons/pork.svg',
-            width: _width, height: _height));
+        child: SvgPicture.asset('assets/icons/pork.svg'));
   }
 }
