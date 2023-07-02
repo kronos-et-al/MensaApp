@@ -1,6 +1,6 @@
 use mensa_app_backend::layer::trigger::graphql::*;
-use tracing::{Level, info};
-use tracing_subscriber::{FmtSubscriber, EnvFilter};
+use tracing::{info, Level};
+use tracing_subscriber::{EnvFilter, FmtSubscriber};
 
 #[tokio::main]
 async fn main() {
@@ -9,8 +9,7 @@ async fn main() {
         .with_max_level(Level::TRACE)
         // .with_env_filter(EnvFilter::default())
         .finish();
-    tracing::subscriber::set_global_default(subscriber)
-        .expect("setting default subscriber failed");
+    tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
 
     // run server
     let mut server = server::GraphQLServer::new(mock::RequestDatabaseMock, mock::CommandMock);

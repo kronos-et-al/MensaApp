@@ -13,7 +13,12 @@ pub type Result<T> = std::result::Result<T, CommandError>;
 #[async_trait]
 pub trait Command {
     /// Command to report an image. It als gets checked whether the image shall get hidden.
-    async fn report_image(&self, image_id: Uuid, reason: ReportReason, auth_info: AuthInfo) -> Result<()>;
+    async fn report_image(
+        &self,
+        image_id: Uuid,
+        reason: ReportReason,
+        auth_info: AuthInfo,
+    ) -> Result<()>;
 
     /// Command to vote up an image. All down-votes of the same user get removed.
     async fn add_image_upvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()>;
