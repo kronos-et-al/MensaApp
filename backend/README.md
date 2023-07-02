@@ -8,6 +8,9 @@ Backend application for providing and synchronizing meal plan data of the cantee
 - Run `cargo clippy` to check for errors and recommendations.
 - Run `cargo run` to build and run the backend.
 
+### Graphql mock server
+To run a mock version of the graphql server, run `cargo run --bin graphql_mock`.
+
 ### Documentation
 The documentation can be accessed with `cargo doc --open`.
 
