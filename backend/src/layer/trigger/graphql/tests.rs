@@ -1,10 +1,8 @@
 #![cfg(test)]
 
-use async_trait::async_trait;
 use tokio::time::Duration;
-use uuid::Uuid;
 
-use super::mock::*;
+use super::mock::{CommandMock, RequestDatabaseMock};
 
 use super::server::GraphQLServer;
 

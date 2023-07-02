@@ -15,9 +15,11 @@ chrono = "0.4.26"
 thiserror = "1.0.40"
 uuid = "1.4.0"
 axum = {version = "0.6.18", features = ["http2", "macros"]}
-async-graphql = "5.0.10"
+async-graphql = {version = "5.0.10", features = ["chrono", "uuid", "tracing"]}
 async-graphql-axum = "5.0.10"
 tokio = {version = "1.29.0", features = ["full"]}
+tracing = "0.1"
+tracing-subscriber = {version = "0.2.0", features = ["env-filter"]}
 
 
 [[bin]]
