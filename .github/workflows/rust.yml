@@ -2,11 +2,11 @@ name: Build-Rust
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "backend" ]
     paths: 
       - "backend/**"
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "backend" ]
     paths: 
       - "backend/**"
   workflow_dispatch:
@@ -15,7 +15,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  build_rust:
 
     runs-on: ubuntu-latest
     defaults:
@@ -24,6 +24,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Check formating
+      run: cargo fmt --check
+    - name: Check linter warnings
+      run: cargo clippy -- -D warnings
     - name: Build
       run: cargo build --verbose
     - name: Run tests
