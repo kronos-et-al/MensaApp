@@ -11,17 +11,18 @@ pub struct MutationRoot;
 impl MutationRoot {
     /// This query adds an image to the specified main dish.
     ///
-    /// The link used is the Flickr link of the image is used as a link,
-    /// which can be used to retrieve and save the data and saved in the backend of Flickr.
-    /// If the dish does not exist, or the link does not lead to Flickr
-    /// or the license of the image is not "Creative Commons"
+    /// `image_url` is a link to a Flickr image used to get information about it.
+    /// 
+    /// If the meal does not exist, or the URL does not lead to Flickr
+    /// or the image is not licenced under a [CC0](https://creativecommons.org/publicdomain/zero/1.0/) licence 
     /// or another error occurred while adding the image an error message will be returned.
-    /// If the image was added is successful, a true value is returned.
+    /// 
+    /// If the image was added is successful, `true` is returned.
     async fn add_image(
         &self,
         ctx: &Context<'_>,
-        #[graphql(desc = "Id of object")] meal_id: Uuid,
-        #[graphql(desc = "Id of object")] image_url: String,
+        #[graphql(desc = "Id of the meal to link an image to.")] meal_id: Uuid,
+        #[graphql(desc = "Flickr url to the image.")] image_url: String,
     ) -> Result<bool> {
         let command = ctx.get_command();
         let auth_info = ctx.get_auth_info();

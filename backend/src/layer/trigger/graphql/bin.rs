@@ -7,6 +7,7 @@ async fn main() {
     // setup logging
     let subscriber = FmtSubscriber::builder()
         .with_max_level(Level::TRACE)
+        .with_writer(std::io::stderr)
         // .with_env_filter(EnvFilter::default())
         .finish();
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
