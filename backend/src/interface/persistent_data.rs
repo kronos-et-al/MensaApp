@@ -4,11 +4,10 @@ pub mod model;
 use crate::interface::persistent_data::model::{
     ApiKey, Canteen, Image, ImageInfo, Line, Meal, Side,
 };
-use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason};
+use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason, Uuid};
 use async_trait::async_trait;
 use std::error::Error;
 use thiserror::Error;
-use uuid::Uuid;
 
 pub type Result<T> = std::result::Result<T, DataError>;
 

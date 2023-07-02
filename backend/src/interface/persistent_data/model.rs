@@ -2,10 +2,7 @@
 use crate::util::{self, Date};
 use crate::util::{Additive, Allergen, Price};
 
-use std::string::String;
-
-use util::MealType;
-use uuid::Uuid;
+use util::{MealType, Uuid};
 
 /// Struct to storage related data. Contains all api-key related information.
 pub struct ApiKey {

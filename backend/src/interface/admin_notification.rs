@@ -1,9 +1,8 @@
 //! This interface allows administrators to be notified of reporting requests.
 
 use async_trait::async_trait;
-use uuid::Uuid;
 
-use crate::util::ReportReason;
+use crate::util::{ReportReason, Uuid};
 
 /// Interface for notification of administrators.
 #[async_trait]

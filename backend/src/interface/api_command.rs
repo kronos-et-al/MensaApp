@@ -4,9 +4,8 @@ use std::error::Error;
 
 use async_trait::async_trait;
 use thiserror::Error;
-use uuid::Uuid;
 
-use crate::util::ReportReason;
+use crate::util::{ReportReason, Uuid};
 
 pub type Result<T> = std::result::Result<T, CommandError>;
 
