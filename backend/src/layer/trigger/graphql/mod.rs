@@ -3,4 +3,5 @@
 pub mod mutation;
 pub mod query;
 pub mod server;
+pub mod mock;
 mod tests;

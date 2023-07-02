@@ -67,7 +67,6 @@ impl GraphQLServer {
 
         let shutdown = async move {
             shutdown_notify.notify_waiters();
-            println!("notified");
             join_handle.await.expect("web server should not have panicked").expect("error while waiting for webserver to finish");
         };
 
