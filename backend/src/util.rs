@@ -2,7 +2,11 @@
 //!
 //! For a complete list and explanations you can see [here](https://www.sw-ka.de/media/?file=4458listeallergesetzlichausweisungspflichtigenzusatzstoffeundallergenefuerwebsite160218.pdf&download).
 
-use chrono::NaiveDate;
+/// Date type used in multiple places.
+pub type Date = chrono::NaiveDate;
+
+// Uuid type used in multiple places.
+pub type Uuid = uuid::Uuid;
 
 /// This enum lists every possible allergen a meal can have.
 pub enum Allergen {
@@ -129,9 +133,6 @@ pub enum ReportReason {
     /// This picture should be removed for some other reason.
     Other,
 }
-
-/// Date type used in multiple paces.
-pub type Date = NaiveDate;
 
 /// This struct contains all price classes. All prices are listed in euro.
 pub struct Price {

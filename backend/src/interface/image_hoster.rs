@@ -1,7 +1,7 @@
 //! This interface allows communication with the image hoster.
 pub mod model;
 
-use crate::interface::image_hoster::model::{ImageMetaData};
+use crate::interface::image_hoster::model::ImageMetaData;
 use async_trait::async_trait;
 use std::error::Error;
 use thiserror::Error;
@@ -40,5 +40,5 @@ pub enum ImageHosterError {
     FormatNotFound(#[from] Box<dyn Error>),
     /// The connection failed to establish error
     #[error("no connection could be established")]
-    NotConnected
+    NotConnected,
 }
