@@ -1,7 +1,6 @@
 use async_graphql::{Context, Object, Result};
-use tracing::trace;
 
-use crate::{interface::api_command::Command, layer::logic::api_command::auth, util::Uuid};
+use crate::util::Uuid;
 
 use super::util::ApiUtil;
 

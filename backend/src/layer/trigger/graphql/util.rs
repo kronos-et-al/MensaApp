@@ -2,7 +2,7 @@ use async_graphql::Context;
 
 use crate::{
     interface::{
-        api_command::{AuthInfo, Command, CommandError},
+        api_command::{AuthInfo, Command},
         persistent_data::RequestDataAccess,
     },
     util::Uuid,

@@ -1,6 +1,6 @@
 use mensa_app_backend::layer::trigger::graphql::*;
 use tracing::{info, Level};
-use tracing_subscriber::{EnvFilter, FmtSubscriber};
+use tracing_subscriber::FmtSubscriber;
 
 #[tokio::main]
 async fn main() {
