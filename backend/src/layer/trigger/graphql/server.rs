@@ -1,10 +1,10 @@
 //! This package contains the server that is responsible for providing the graphql API.
 
-use std::{borrow::BorrowMut, future::Future, pin::Pin, sync::Arc, net::Shutdown};
+use std::{future::Future, pin::Pin, sync::Arc};
 
 use async_graphql::{
     http::{playground_source, GraphQLPlaygroundConfig},
-    EmptySubscription, Schema,
+    EmptySubscription, Schema, extensions::Tracing,
 };
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
@@ -14,15 +14,18 @@ use axum::{
 };
 use tokio::sync::Notify;
 
-use crate::interface::{api_command::Command, persistent_data::RequestDataAccess};
+use crate::{
+    interface::{api_command::Command, persistent_data::RequestDataAccess},
+    layer::data,
+};
 
-use super::{mutation::MutationRoot, query::QueryRoot};
+use super::{mutation::MutationRoot, query::QueryRoot, util::{DataBox, CommandBox}};
 type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 
 /// Class witch controls the webserver for GraphQL requests.
 pub struct GraphQLServer {
     schema: GraphQLSchema,
-    shutdown: Option<Pin<Box<dyn Future<Output = ()>>>>,
+    shutdown: Option<Pin<Box<dyn Future<Output = ()> + Send>>>,
 }
 
 impl GraphQLServer {
@@ -31,9 +34,13 @@ impl GraphQLServer {
         data_access: impl RequestDataAccess + Sync + Send + 'static,
         command: impl Command + Sync + Send + 'static,
     ) -> Self {
+        let data_access_box: DataBox = Box::new(data_access);
+        let command_box: CommandBox = Box::new(command);
+
         let schema: GraphQLSchema = Schema::build(QueryRoot, MutationRoot, EmptySubscription)
-            .data(data_access)
-            .data(command)
+            .data(data_access_box)
+            .data(command_box)
+            .extension(Tracing)
             .finish();
 
         Self {
@@ -44,7 +51,7 @@ impl GraphQLServer {
 
     /// Starts the GraphQL-Server. It will be running in the background until [`Self::shutdown()`] is called.
     pub fn start(&mut self) {
-        let listen = "0.0.0.0:8080"; // TODO Ipv6?
+        let listen = "0.0.0.0:8090"; // TODO Ipv6?
 
         let app = Router::new()
             .route("/", get(graphql_playground).post(graphql_handler))
@@ -67,7 +74,10 @@ impl GraphQLServer {
 
         let shutdown = async move {
             shutdown_notify.notify_waiters();
-            join_handle.await.expect("web server should not have panicked").expect("error while waiting for webserver to finish");
+            join_handle
+                .await
+                .expect("web server should not have panicked")
+                .expect("error while waiting for webserver to finish");
         };
 
         self.shutdown = Some(Box::pin(shutdown));
