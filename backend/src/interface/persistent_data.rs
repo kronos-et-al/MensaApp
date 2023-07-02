@@ -18,7 +18,7 @@ pub enum DataError {
     #[error("the requested item could not be found in the database")]
     NoSuchItem,
     /// Error occurred during data request or an internal connection fault
-    #[error("internal error ocurred")]
+    #[error("internal error ocurred: {0}")]
     InternalError(#[from] Box<dyn Error>),
 }
 

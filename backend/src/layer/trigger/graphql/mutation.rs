@@ -26,10 +26,7 @@ impl MutationRoot {
         let command = ctx.get_command();
         let auth_info = ctx.get_auth_info();
 
-        command
-            .add_image(meal_id, image_url, auth_info)
-            .await
-            .map_err(|e| e.to_string())?;
+        command.add_image(meal_id, image_url, auth_info).await?;
         Ok(true)
     }
 }

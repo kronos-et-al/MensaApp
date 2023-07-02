@@ -57,6 +57,6 @@ pub enum CommandError {
     #[error("invalid authentication information provided")]
     BadAuth,
     /// Error marking something went wrong internally.
-    #[error("internal error ocurred")]
-    InternalError(#[from] Box<dyn Error>),
+    #[error("internal error ocurred: {0}")]
+    InternalError(#[from] Box<dyn Error + Send + Sync>),
 }

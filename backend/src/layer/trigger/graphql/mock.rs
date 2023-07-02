@@ -1,10 +1,11 @@
 //! This crate contains mocks of [`RequestDataAccess`] and [`Command`] for testing.
+
 use async_trait::async_trait;
 use uuid::Uuid;
 
 use crate::{
     interface::{
-        api_command::{AuthInfo, Command, Result as CommandResult},
+        api_command::{AuthInfo, Command, CommandError, Result as CommandResult},
         persistent_data::{
             model::{Canteen, Image, Line, Meal, Side},
             RequestDataAccess, Result as DataResult,
