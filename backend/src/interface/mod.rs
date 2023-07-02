@@ -1,5 +1,4 @@
-//! This packages provides interfaces for standardized communication between the layers specified in [`crate::layer`].
-
+/// Module bundle for interface models
 pub mod admin_notification;
 pub mod api_command;
 pub mod image_hoster;

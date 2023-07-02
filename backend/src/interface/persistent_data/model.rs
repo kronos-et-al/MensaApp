@@ -1,23 +1,8 @@
 //! These structs are used for database operations.
 use crate::util::{self, Date};
 use crate::util::{Additive, Allergen, Price};
-use std::error::Error;
 
-use std::string::String;
-use thiserror::Error;
-use util::MealType;
-use uuid::Uuid;
-
-/// Enumerations for possible data request faults
-#[derive(Debug, Error)]
-pub enum DataError {
-    /// Requested data does not exist
-    #[error("the requested item could not be found in the database")]
-    NoSuchItem,
-    /// Error occurred during data request or an internal connection fault
-    #[error("internal error ocurred")]
-    InternalError(#[from] Box<dyn Error>),
-}
+use util::{MealType, Uuid};
 
 /// Struct to storage related data. Contains all api-key related information.
 pub struct ApiKey {
@@ -59,9 +44,9 @@ pub struct Meal {
     pub meal_type: MealType,
     /// Price of the meal for students, employees, guests and pupils.
     pub price: Price,
-    /// The DateTime the meal was last served.
+    /// The date the meal was last served.
     pub last_served: Date,
-    /// The DateTime when the meal will be served next.
+    /// The date when the meal will be served next.
     pub next_served: Date,
     /// Relative frequency of the meal in the mealplan.
     pub relative_frequency: f32,
@@ -95,7 +80,7 @@ pub struct Side {
 pub struct Image {
     /// Database-identification of the image.
     pub id: Uuid,
-    /// Image-identification of the image-hoster.
+    /// Image-identification of the image hoster.
     pub image_hoster_id: String,
     /// Direct link to the image on the image-hoster website.
     pub url: String,
@@ -108,13 +93,13 @@ pub struct Image {
 }
 
 pub struct ImageInfo {
-    /// True if an administrator valiDateTimed the image.
+    /// True if an administrator validated the image.
     pub approved: bool,
-    /// Upload-DateTime of the image.
+    /// Upload date of the image.
     pub upload_date: Date,
     /// Amount of open report request related to that image.
     pub report_count: u32,
-    /// Direct link to the image on the image-hoster website.
+    /// Direct link to the image on the image hoster website.
     pub image_url: String,
     /// Amount of upvotes for the image.
     pub positive_rating_count: u32,
