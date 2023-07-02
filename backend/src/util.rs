@@ -2,6 +2,8 @@
 //!
 //! For a complete list and explanations you can see [here](https://www.sw-ka.de/media/?file=4458listeallergesetzlichausweisungspflichtigenzusatzstoffeundallergenefuerwebsite160218.pdf&download).
 
+use async_graphql::Enum;
+
 /// Date type used in multiple places.
 pub type Date = chrono::NaiveDate;
 
@@ -9,6 +11,7 @@ pub type Date = chrono::NaiveDate;
 pub type Uuid = uuid::Uuid;
 
 /// This enum lists every possible allergen a meal can have.
+#[derive(Copy, Clone, Eq, PartialEq, Enum)]
 pub enum Allergen {
     /// This meal contains cashews.
     Ca,
@@ -62,9 +65,14 @@ pub enum Allergen {
     We,
     /// This meal contains molluscs.
     Wt,
+    /// This meal contains animal rennet.
+    La,
+    /// This meal contains gelatin.
+    Gl,
 }
 
 /// This enum lists every possible additive a meal can have.
+#[derive(Copy, Clone, Eq, PartialEq, Enum)]
 pub enum Additive {
     /// This meal contains colorants.
     Colorant,
@@ -99,6 +107,7 @@ pub enum Additive {
 }
 
 /// This enum lists all the types a meal can be of.
+#[derive(Copy, Clone, Eq, PartialEq, Enum)]
 pub enum MealType {
     /// This meal is vegan.
     Vegan,
@@ -119,6 +128,7 @@ pub enum MealType {
 }
 
 /// This enum lists all the predetermined reasons a image can be reported for.
+#[derive(Copy, Clone, Eq, PartialEq, Enum)]
 pub enum ReportReason {
     /// This picture shows offensive content.
     Offensive,
