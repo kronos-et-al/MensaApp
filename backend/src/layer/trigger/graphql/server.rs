@@ -3,8 +3,9 @@
 use std::{future::Future, pin::Pin, sync::Arc};
 
 use async_graphql::{
+    extensions::Tracing,
     http::{playground_source, GraphQLPlaygroundConfig},
-    EmptySubscription, Schema, extensions::Tracing,
+    EmptySubscription, Schema,
 };
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
@@ -19,7 +20,11 @@ use crate::{
     layer::data,
 };
 
-use super::{mutation::MutationRoot, query::QueryRoot, util::{DataBox, CommandBox}};
+use super::{
+    mutation::MutationRoot,
+    query::QueryRoot,
+    util::{CommandBox, DataBox},
+};
 type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 
 /// Class witch controls the webserver for GraphQL requests.
