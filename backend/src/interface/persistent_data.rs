@@ -128,24 +128,24 @@ pub trait CommandDataAccess {
 /// An interface for graphql query data. The GraphQL component uses this interface for database access.
 pub trait RequestDataAccess {
     /// Returns the canteen from the database.
-    async fn get_canteen(id: Uuid) -> Result<Option<Canteen>>;
+    async fn get_canteen(&self, id: Uuid) -> Result<Option<Canteen>>;
     /// Returns all canteens from the database.
-    async fn get_canteens() -> Result<Vec<Canteen>>;
+    async fn get_canteens(&self, ) -> Result<Vec<Canteen>>;
     /// Returns all lines of a canteen from the database.
-    async fn get_lines(canteen_id: Uuid) -> Result<Vec<Line>>;
+    async fn get_lines(&self, canteen_id: Uuid) -> Result<Vec<Line>>;
     /// Returns the meal related to all the params.
-    async fn get_meal(id: Uuid, line_id: Uuid, date: Date, client_id: Uuid)
+    async fn get_meal(&self, id: Uuid, line_id: Uuid, date: Date, client_id: Uuid)
         -> Result<Option<Meal>>;
     /// Returns all meals related to all the params.
-    async fn get_meals(line_id: Uuid, date: Date, client_id: Uuid) -> Result<Vec<Meal>>;
+    async fn get_meals(&self, line_id: Uuid, date: Date, client_id: Uuid) -> Result<Vec<Meal>>;
     /// Returns all sides of a line at the given day from the database.
-    async fn get_sides(line_id: Uuid, date: Date) -> Result<Vec<Side>>;
+    async fn get_sides(&self, line_id: Uuid, date: Date) -> Result<Vec<Side>>;
     /// Returns all images, which are related to the given user or meal. Images reported by the user will not be returned.
-    async fn get_visible_images(meal_id: Uuid, client_id: Option<Uuid>) -> Result<Vec<Image>>;
+    async fn get_visible_images(&self, meal_id: Uuid, client_id: Option<Uuid>) -> Result<Vec<Image>>;
     /// Returns the rating done by the given user for the given meal.
-    async fn get_personal_rating(meal_id: Uuid, client_id: Uuid) -> Result<Option<u32>>;
+    async fn get_personal_rating(&self, meal_id: Uuid, client_id: Uuid) -> Result<Option<u32>>;
     /// Checks if the given image got an upvote by the given user
-    async fn get_personal_upvote(image_id: Uuid, client_id: Uuid) -> Result<bool>;
+    async fn get_personal_upvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool>;
     /// Checks if the given image got an downvote by the given user
-    async fn get_personal_downvote(image_id: Uuid, client_id: Uuid) -> Result<bool>;
+    async fn get_personal_downvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool>;
 }
