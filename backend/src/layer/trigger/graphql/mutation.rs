@@ -1,6 +1,6 @@
 use async_graphql::{Context, Object, Result};
 
-use crate::util::{Uuid, ReportReason};
+use crate::util::{ReportReason, Uuid};
 
 use super::util::ApiUtil;
 
@@ -31,27 +31,101 @@ impl MutationRoot {
         Ok(true)
     }
 
-    async fn set_rating(&self, ctx: &Context<'_>, meal_id: Uuid, rating: u32) -> Result<bool> {
-        todo!()
+    /// This query either adds a rating to the specified main dish (if no such rating existed), or modifies an existing one. 
+    /// The user has to be authenticated.
+    /// If the main dish does not exist, or any other error occurs in the process, an error message is returned. 
+    /// If the rating was successfully added or changed, 'true' is returned.
+    async fn set_rating(
+        &self, 
+        ctx: &Context<'_>, 
+        #[graphql(desc = "Id of the meal to rate to.")] meal_id: Uuid, 
+        #[graphql(desc = "The new rating of the main dish")] rating: u32
+    ) -> Result<bool> {
+        let command = ctx.get_command();
+        let auth_info = ctx.get_auth_info();
+
+        command.set_meal_rating(meal_id, rating, auth_info).await?;
+        Ok(true)
     }
 
-    async fn add_upvote(&self, ctx: &Context<'_>, image_id: Uuid) -> Result<bool> {
-        todo!()
+    /// This query adds an upvote to the specified image.
+    /// The user has to be authenticated.
+    /// If the image does not exist, or any other error occurs in the process, an error message is returned. 
+    /// If the upvote was successfully added, 'true' is returned.
+    async fn add_upvote(
+        &self, 
+        ctx: &Context<'_>, 
+        #[graphql(desc = "Id of the image to add the upvote to.")] image_id: Uuid
+    ) -> Result<bool> {
+        let command = ctx.get_command();
+        let auth_info = ctx.get_auth_info();
+
+        command.add_image_upvote(image_id, auth_info).await?;
+        Ok(true)
     }
 
-    async fn remove_upvote(&self, ctx: &Context<'_>, image_id: Uuid) -> Result<bool> {
-        todo!()
+    /// This query removes the upvote from the specified image.
+    /// The user has to be authenticated.
+    /// If the image does not exist, or any other error occurs in the process, an error message is returned. 
+    /// If the upvote was successfully removed, 'true' is returned.
+    async fn remove_upvote(
+        &self, 
+        ctx: &Context<'_>, 
+        #[graphql(desc = "Id of the image to remove the upvote from.")] image_id: Uuid
+    ) -> Result<bool> {
+        let command = ctx.get_command();
+        let auth_info = ctx.get_auth_info();
+
+        command.remove_image_upvote(image_id, auth_info).await?;
+        Ok(true)
     }
 
-    async fn add_downvote(&self, ctx: &Context<'_>, image_id: Uuid) -> Result<bool> {
-        todo!()
+    /// This query adds a downvote to the specified image.
+    /// The user has to be authenticated.
+    /// If the image does not exist, or any other error occurs in the process, an error message is returned. 
+    /// If the downvote was successfully added, 'true' is returned.
+    async fn add_downvote(
+        &self, 
+        ctx: &Context<'_>, 
+        #[graphql(desc = "Id of the image to add the downvote to.")] image_id: Uuid
+    ) -> Result<bool> {
+        let command = ctx.get_command();
+        let auth_info = ctx.get_auth_info();
+
+        command.add_image_downvote(image_id, auth_info).await?;
+        Ok(true)
     }
 
-    async fn remove_downvote(&self, ctx: &Context<'_>, image_id: Uuid) -> Result<bool> {
-        todo!()
+    /// This query removes the downvote from the specified image.
+    /// The user has to be authenticated.
+    /// If the image does not exist, or any other error occurs in the process, an error message is returned. 
+    /// If the downvote was successfully removed, 'true' is returned.
+    async fn remove_downvote(
+        &self, 
+        ctx: &Context<'_>, 
+        #[graphql(desc = "Id of the image to remove the downvote from.")] image_id: Uuid
+    ) -> Result<bool> {
+        let command = ctx.get_command();
+        let auth_info = ctx.get_auth_info();
+
+        command.remove_image_downvote(image_id, auth_info).await?;
+        Ok(true)
     }
 
-    async fn report_image(&self, ctx: &Context<'_>, image_id: Uuid, reason: ReportReason) -> Result<bool> {
-        todo!()
+    /// This query adds a report to the specified image.
+    /// The user has to be authenticated.
+    /// If the image does not exist, or any other error occurs in the process, an error message is returned. 
+    /// If the report was successfully added, 'true' is returned.
+    async fn report_image(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(desc = "Id of the image to report.")] image_id: Uuid,
+        #[graphql(desc = "The reason for reporting the image.")] reason: ReportReason,
+    ) -> Result<bool> {
+        let command = ctx.get_command();
+        let auth_info = ctx.get_auth_info();
+
+        command.report_image(image_id, reason, auth_info).await?;
+        Ok(true)
     }
 }
