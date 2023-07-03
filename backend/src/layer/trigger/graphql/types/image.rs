@@ -1,6 +1,6 @@
 use async_graphql::{ComplexObject, SimpleObject, Result, Context};
 
-use crate::util::Uuid;
+use crate::{util::Uuid, interface::persistent_data::model};
 
 
 #[derive(SimpleObject)]
@@ -20,5 +20,17 @@ impl Image {
     }
     async fn personal_downvote(&self, ctx: &Context<'_>) -> Result<bool> {
         todo!()
+    }
+}
+
+impl From<model::Image> for Image {
+    fn from(value: model::Image) -> Self {
+        Self {
+            id: value.id,
+            downvotes: value.downvotes,
+            upvotes: value.upvotes,
+            url: value.url,
+            rank: value.rank
+        }
     }
 }

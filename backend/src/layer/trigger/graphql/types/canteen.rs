@@ -1,6 +1,6 @@
 use async_graphql::{ComplexObject, SimpleObject, Result, Context};
 
-use crate::util::Uuid;
+use crate::{util::Uuid, interface::persistent_data::model, layer::trigger::graphql::util::ApiUtil};
 
 use super::line::Line;
 
@@ -16,5 +16,15 @@ pub struct Canteen {
 impl Canteen {
     async fn lines(&self, ctx: &Context<'_>) -> Result<Vec<Line>> {
         todo!()
+    }
+}
+
+
+impl From<model::Canteen> for Canteen {
+    fn from(value: model::Canteen) -> Self {
+        Self {
+            id: value.id,
+            name: value.name,
+        }
     }
 }

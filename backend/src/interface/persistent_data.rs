@@ -19,7 +19,7 @@ pub enum DataError {
     NoSuchItem,
     /// Error occurred during data request or an internal connection fault
     #[error("internal error ocurred: {0}")]
-    InternalError(#[from] Box<dyn Error>),
+    InternalError(#[from] Box<dyn Error + Send + Sync>),
 }
 
 #[async_trait]
