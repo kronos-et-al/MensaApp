@@ -34,9 +34,4 @@ impl QueryRoot {
     ) -> Result<Option<Canteen>> {
         todo!()
     }
-
-    // TODO
-    async fn test(&self) -> String {
-        "hello world!".into()
-    }
 }
