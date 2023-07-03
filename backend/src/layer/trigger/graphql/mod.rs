@@ -7,4 +7,4 @@ pub mod server;
 mod types;
 pub mod util;
 
-mod tests;
+mod test;

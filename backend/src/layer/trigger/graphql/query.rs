@@ -56,9 +56,4 @@ impl QueryRoot {
             .map(Into::into);
         Ok(meal)
     }
-
-    // TODO
-    async fn test(&self) -> String {
-        "hello world!".into()
-    }
 }
