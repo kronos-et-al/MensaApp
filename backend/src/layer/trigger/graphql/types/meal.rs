@@ -1,6 +1,6 @@
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 
-use crate::util::{Additive, Allergen, Date, Uuid};
+use crate::{util::{Additive, Allergen, Date, Uuid}, interface::persistent_data::model};
 
 use super::{image::Image, side::Side};
 
@@ -60,4 +60,16 @@ struct MealStatistics {
     last_served: Option<Date>,
     next_served: Option<Date>,
     relative_frequency: f32,
+}
+
+impl From<model::Meal> for Meal {
+    fn from(value: model::Meal) -> Self {
+        Self {
+            id: value.id,
+            name: value.name,
+            ratings: todo!(),
+            price: todo!(),
+            meal_statistics: todo!(),
+        }
+    }
 }
