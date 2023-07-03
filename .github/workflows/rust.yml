@@ -29,7 +29,9 @@ jobs:
     - name: Check linter warnings
       run: cargo clippy -- -D warnings
     - name: Check prepared sql query information
-      run: cargo sqlx prepare --check
+      run: |
+        cargo install sqlx-cli
+        cargo sqlx prepare --check
     - name: Build
       run: cargo build --verbose
     - name: Run tests
