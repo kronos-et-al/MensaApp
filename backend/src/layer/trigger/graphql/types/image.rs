@@ -1,4 +1,4 @@
-use async_graphql::{ComplexObject, SimpleObject, Result, Context};
+use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 
 use crate::{util::Uuid, interface::persistent_data::model};
 

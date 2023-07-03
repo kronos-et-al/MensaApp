@@ -1,6 +1,6 @@
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 
-use crate::util::{Date, Uuid, Allergen, Additive};
+use crate::util::{Additive, Allergen, Date, Uuid};
 
 use super::{image::Image, side::Side};
 
