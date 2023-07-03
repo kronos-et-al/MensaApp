@@ -10,6 +10,7 @@ pub struct MutationRoot;
 #[Object]
 impl MutationRoot {
     /// This query adds an image to the specified main dish.
+    /// The user has to be authenticated.
     ///
     /// `image_url` is a link to a Flickr image used to get information about it.
     ///
@@ -39,7 +40,7 @@ impl MutationRoot {
         &self, 
         ctx: &Context<'_>, 
         #[graphql(desc = "Id of the meal to rate to.")] meal_id: Uuid, 
-        #[graphql(desc = "The new rating of the main dish")] rating: u32
+        #[graphql(desc = "The new rating of the main dish.")] rating: u32
     ) -> Result<bool> {
         let command = ctx.get_command();
         let auth_info = ctx.get_auth_info();
