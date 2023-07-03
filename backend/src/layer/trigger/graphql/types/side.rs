@@ -1,7 +1,6 @@
-use async_graphql::{ComplexObject, SimpleObject, Result, Context};
+use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 
-use crate::util::{Uuid, Allergen, Additive};
-
+use crate::util::{Additive, Allergen, Uuid};
 
 #[derive(SimpleObject)]
 #[graphql(complex)]

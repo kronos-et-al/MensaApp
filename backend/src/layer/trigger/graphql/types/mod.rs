@@ -1,5 +1,5 @@
 pub mod canteen;
+pub mod image;
 pub mod line;
 pub mod meal;
-pub mod image;
 pub mod side;
