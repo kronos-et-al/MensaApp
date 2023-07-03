@@ -1,4 +1,4 @@
 -- Add up migration script here
-CREATE TABLE user (
+CREATE TABLE users (
   user_id uuid PRIMARY KEY
 );
