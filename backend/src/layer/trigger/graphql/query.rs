@@ -1,10 +1,14 @@
-use async_graphql::{Context, Object, Result};
-use tracing::{instrument};
 use crate::layer::trigger::graphql::util::trace_query_request;
+use async_graphql::{Context, Object, Result};
+use tracing::instrument;
 
-use crate::{util::{Date, Uuid}};
+use crate::util::{Date, Uuid};
 
-use super::{types::canteen::Canteen, util::{ApiUtil, trace_request}, types::{meal::Meal, auth_info}};
+use super::{
+    types::canteen::Canteen,
+    types::{auth_info, meal::Meal},
+    util::{trace_request, ApiUtil},
+};
 
 /// Class implementing `GraphQL`s root queries.
 #[derive(Debug)]
@@ -14,10 +18,7 @@ pub struct QueryRoot;
 impl QueryRoot {
     /// This query returns a list of all available canteens.
     #[instrument(skip(self, ctx))]
-    async fn get_canteens(
-        &self, 
-        ctx: &Context<'_>
-    ) -> Result<Vec<Canteen>> {
+    async fn get_canteens(&self, ctx: &Context<'_>) -> Result<Vec<Canteen>> {
         trace_query_request();
         let data = ctx.get_data_access();
         let canteens = data
@@ -33,16 +34,13 @@ impl QueryRoot {
     /// If there is no canteen with the specified ID, a null value is returned.
     #[instrument(skip(self, ctx))]
     async fn get_canteen(
-        &self, 
-        ctx: &Context<'_>, 
-        #[graphql(desc = "Id of the canteen to get.")] canteen_id: Uuid
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(desc = "Id of the canteen to get.")] canteen_id: Uuid,
     ) -> Result<Option<Canteen>> {
         trace_query_request();
         let data = ctx.get_data_access();
-        let canteen = data
-            .get_canteen(canteen_id)
-            .await?
-            .map(Into::into);
+        let canteen = data.get_canteen(canteen_id).await?.map(Into::into);
         Ok(canteen)
     }
 
@@ -53,7 +51,8 @@ impl QueryRoot {
         &self,
         ctx: &Context<'_>,
         #[graphql(desc = "Id of the meal to get.")] meal_id: Uuid,
-        #[graphql(desc = "Id of the line at which the meal to get is to be offered.")] line_id: Uuid,
+        #[graphql(desc = "Id of the line at which the meal to get is to be offered.")]
+        line_id: Uuid,
         #[graphql(desc = "Date of the day on which the meal to get is to be offered.")] date: Date,
     ) -> Result<Option<Meal>> {
         trace_query_request();
@@ -72,13 +71,11 @@ impl QueryRoot {
         "1.0".into()
     }
 
-    /// This query returns the in the `Authorization` request header provided authentication information. 
+    /// This query returns the in the `Authorization` request header provided authentication information.
     /// It is intended for debugging purposes to check whether these information got passed correctly.
     #[instrument(skip(ctx))]
     async fn get_my_auth(&self, ctx: &Context<'_>) -> Option<auth_info::AuthInfo> {
         trace_request();
         ctx.get_auth_info().map(Into::into)
     }
-
-
 }

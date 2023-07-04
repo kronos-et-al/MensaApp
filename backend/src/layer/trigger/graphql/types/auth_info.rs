@@ -1,11 +1,9 @@
 use async_graphql::SimpleObject;
 
-use crate::{util::Uuid, interface::api_command};
-
-
+use crate::{interface::api_command, util::Uuid};
 
 #[derive(SimpleObject)]
-/// Information about the provided authentication information. 
+/// Information about the provided authentication information.
 pub struct AuthInfo {
     /// My own user identifier.
     client_id: Uuid,

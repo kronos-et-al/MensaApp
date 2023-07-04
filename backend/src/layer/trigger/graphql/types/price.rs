@@ -1,5 +1,4 @@
-use async_graphql::{SimpleObject};
-
+use async_graphql::SimpleObject;
 
 #[derive(SimpleObject, Debug)]
 pub struct Price {

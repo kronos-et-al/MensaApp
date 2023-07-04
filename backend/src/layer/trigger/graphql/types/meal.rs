@@ -1,12 +1,12 @@
-use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-use tracing::{instrument};
-use crate::layer::trigger::graphql::util::{ApiUtil, trace_query_request};
+use crate::layer::trigger::graphql::util::{trace_query_request, ApiUtil};
 use crate::{
     interface::persistent_data::model,
     util::{Additive, Allergen, Date, Uuid},
 };
+use async_graphql::{ComplexObject, Context, Result, SimpleObject};
+use tracing::instrument;
 
-use super::{image::Image, side::Side, price::Price};
+use super::{image::Image, price::Price, side::Side};
 
 #[derive(SimpleObject, Debug)]
 #[graphql(complex)]
@@ -130,7 +130,7 @@ struct MealStatistics {
 }
 
 impl From<model::Meal> for Meal {
-    /// A function for converting Meals from `persistent_data/model/meal` to types/meal 
+    /// A function for converting Meals from `persistent_data/model/meal` to types/meal
     fn from(value: model::Meal) -> Self {
         Self {
             id: value.id,

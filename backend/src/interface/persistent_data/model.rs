@@ -1,6 +1,6 @@
 //! These structs are used for database operations.
+use crate::util::Price;
 use crate::util::{self, Date};
-use crate::util::{Price};
 
 use util::{MealType, Uuid};
 

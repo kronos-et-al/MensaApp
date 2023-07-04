@@ -9,7 +9,6 @@ use crate::layer::trigger::graphql::util::{CommandBox, DataBox};
 
 use super::mock::{CommandMock, RequestDatabaseMock};
 
-
 async fn test_gql_request(request: &'static str) {
     let schema = Schema::build(QueryRoot, MutationRoot, EmptySubscription)
         .data(Box::new(RequestDatabaseMock) as DataBox)
@@ -21,7 +20,6 @@ async fn test_gql_request(request: &'static str) {
 
 #[tokio::test]
 async fn test_add_image() {
-
     let request = r#"
         mutation {
             addImage(mealId:"1d75d380-cf07-4edb-9046-a2d981bc219d", imageUrl:"")

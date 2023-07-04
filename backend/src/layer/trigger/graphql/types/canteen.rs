@@ -1,9 +1,9 @@
-use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-use tracing::{instrument};
+use crate::layer::trigger::graphql::util::trace_query_request;
 use crate::{
     interface::persistent_data::model, layer::trigger::graphql::util::ApiUtil, util::Uuid,
 };
-use crate::layer::trigger::graphql::util::trace_query_request;
+use async_graphql::{ComplexObject, Context, Result, SimpleObject};
+use tracing::instrument;
 
 use super::line::Line;
 
@@ -34,7 +34,7 @@ impl Canteen {
 }
 
 impl From<model::Canteen> for Canteen {
-    /// A function for converting Canteens from `persistent_data/model/canteen` to types/canteen 
+    /// A function for converting Canteens from `persistent_data/model/canteen` to types/canteen
     fn from(value: model::Canteen) -> Self {
         Self {
             id: value.id,
