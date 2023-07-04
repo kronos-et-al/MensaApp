@@ -1,6 +1,6 @@
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 
-use crate::{util::{Date, Uuid}, interface::persistent_data::model, layer::trigger::graphql::util::ApiUtil};
+use crate::{util::{Date, Uuid}, interface::persistent_data::model, layer::{trigger::graphql::util::ApiUtil}};
 
 use super::{canteen::Canteen, meal::Meal};
 
@@ -9,12 +9,18 @@ use super::{canteen::Canteen, meal::Meal};
 pub struct Line {
     id: Uuid,
     name: String,
+    #[graphql(skip)] 
+    canteen_id: Uuid,
 }
 
 #[ComplexObject]
 impl Line {
     async fn canteen(&self, ctx: &Context<'_>) -> Result<Canteen> {
-        todo!()
+        let data_access = ctx.get_data_access();
+        data_access
+            .get_canteen(self.canteen_id)
+            .await?
+            .map(Into::into).ok_or(todo!())
     }
 
     async fn meals(&self, ctx: &Context<'_>, date: Date) -> Result<Vec<Meal>> {
@@ -35,6 +41,7 @@ impl From<model::Line> for Line {
         Self {
             id: value.id,
             name: value.name,
+            canteen_id: value.canteen_id,
         }
     }
 }
