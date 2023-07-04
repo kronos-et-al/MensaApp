@@ -48,9 +48,9 @@ impl QueryRoot {
         #[graphql(desc = "Id of the line at which the meal to get is to be offered.")] line_id: Uuid,
         #[graphql(desc = "Date of the day on which the meal to get is to be offered.")] date: Date,
     ) -> Result<Option<Meal>> {
-        let data = ctx.get_data_access();
+        let data_access = ctx.get_data_access();
         let client_id = ctx.get_auth_info().client_id;
-        let meal = data
+        let meal = data_access
             .get_meal(meal_id, line_id, date, client_id)
             .await?
             .map(Into::into);

@@ -15,7 +15,13 @@ pub struct Canteen {
 #[ComplexObject]
 impl Canteen {
     async fn lines(&self, ctx: &Context<'_>) -> Result<Vec<Line>> {
-        todo!()
+        let data = ctx.get_data_access();
+        let lines = data.get_lines(self.id)
+        .await?
+        .into_iter()
+        .map(Into::into)
+        .collect();
+        Ok(lines)
     }
 }
 
