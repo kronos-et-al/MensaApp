@@ -24,14 +24,25 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Check formating
+    - uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    - name: Check formatting
       run: cargo fmt --check
     - name: Check linter warnings
       run: cargo clippy -- -D warnings
     - name: Check prepared sql query information
       run: |
         cargo install sqlx-cli
-        cargo sqlx prepare --check
+        docker run -itd -e POSTGRES_USER=postgres_user -e POSTGRES_PASSWORD=secret_password -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=mensa_app -p 5432:5432 -v data:/var/lib/postgresql/data --name postgresql postgres
+        cargo sqlx mig run
+        cargo sqlx prepare --check -D postgres://postgres_user@localhost/mensa_app
     - name: Build
       run: cargo build --verbose
     - name: Run tests
