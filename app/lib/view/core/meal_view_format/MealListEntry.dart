@@ -1,0 +1,99 @@
+import 'package:app/view/core/icons/MealIcon.dart';
+import 'package:app/view/core/information_display/MealPreviewImage.dart';
+import 'package:app/view/core/input_components/MensaRatingInput.dart';
+import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
+import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+/// Displays a Meal as a List Entry.
+class MealListEntry extends StatelessWidget {
+  final Meal _meal;
+  final NumberFormat _priceFormat =
+      NumberFormat.currency(locale: 'de_DE', symbol: '€');
+
+  /// Creates a MealListEntry.
+  /// @param meal The Meal to display.
+  /// @param key The key to use for this widget.
+  /// @return A MealListEntry.
+  MealListEntry({super.key, required Meal meal}) : _meal = meal;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        child: GestureDetector(
+            onTap: () => {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    content: Text(
+                      'MealListEntry: ${_meal.name}',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface),
+                    ),
+                  ))
+                },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Theme.of(context).colorScheme.surface,
+              ),
+              child: IntrinsicHeight(
+                  child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                    MealPreviewImage(
+                        meal: _meal,
+                        height: 86,
+                        width: 86,
+                        displayFavorite: true,
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(8),
+                            bottomLeft: Radius.circular(8))),
+                    Expanded(
+                        child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 16),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(children: [
+                                  Expanded(
+                                      child: Text(
+                                    _meal.name,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        height: 1.5),
+                                  ))
+                                ]),
+                                const Spacer(),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                                Row(children: [
+                                  MealIcon(
+                                      foodType: _meal.foodType,
+                                      width: 24,
+                                      height: 24),
+                                  const SizedBox(width: 4),
+                                  MensaRatingInput(
+                                    size: 20,
+                                    onChanged: (v) => {},
+                                    value: _meal.averageRating ?? 0,
+                                    disabled: true,
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
+                                  ),
+                                  const Spacer(),
+                                  Text(_priceFormat.format(_meal.price
+                                          .getPrice(PriceCategory.student) /
+                                      100)),
+                                ]),
+                              ],
+                            )))
+                  ])),
+            )));
+  }
+}

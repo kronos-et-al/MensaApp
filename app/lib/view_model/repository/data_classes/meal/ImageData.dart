@@ -1,5 +1,5 @@
 /// This class represents an image of a meal.
-class Image {
+class ImageData {
 
   final String _id;
   final String _url;
@@ -7,6 +7,8 @@ class Image {
   final int? _individualRating;
   final int _positiveRating;
   final int _negativeRating;
+
+
 
   /// This constructor creates an image with the committed values.
   /// @param id The id of the image
@@ -16,7 +18,7 @@ class Image {
   /// @param positiveRating The number of positive ratings of the image
   /// @param negativeRating The number of negative ratings of the image
   /// @return An image with the committed values
-  Image({
+  ImageData({
     required String id,
     required String url,
     required double imageRank,

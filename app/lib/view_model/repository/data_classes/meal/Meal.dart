@@ -2,7 +2,7 @@ import '../filter/Frequency.dart';
 import 'Additive.dart';
 import 'Allergen.dart';
 import 'FoodType.dart';
-import 'Image.dart';
+import 'ImageData.dart';
 import 'Price.dart';
 import 'Side.dart';
 
@@ -19,12 +19,11 @@ class Meal {
 
   final int? _individualRating;
   final int? _numberOfRatings;
-  final int? _averageRating;
-
+  final double? _averageRating;
   final DateTime? _lastServed;
   final DateTime? _nextServed;
   final Frequency? _relativeFrequency;
-  final List<Image>? _images;
+  final List<ImageData>? _images;
   bool? _isFavorite;
 
   /// This constructor creates a meal with the committed values.
@@ -54,11 +53,11 @@ class Meal {
     List<Side>? sides,
     int? individualRating,
     int? numberOfRatings,
-    int? averageRating,
+    double? averageRating,
     DateTime? lastServed,
     DateTime? nextServed,
     Frequency? relativeFrequency,
-    List<Image>? images,
+    List<ImageData>? images,
     bool? isFavorite,
   })
       : _id = id,
@@ -132,7 +131,7 @@ class Meal {
 
   int? get numberOfRatings => _numberOfRatings;
 
-  int? get averageRating => _averageRating;
+  double? get averageRating => _averageRating;
 
   DateTime? get lastServed => _lastServed;
 
@@ -140,7 +139,7 @@ class Meal {
 
   Frequency? get relativeFrequency => _relativeFrequency;
 
-  List<Image>? get images => _images;
+  List<ImageData>? get images => _images;
 
-  bool? get isFavorite => _isFavorite;
+  bool get isFavorite => _isFavorite ?? false;
 }
