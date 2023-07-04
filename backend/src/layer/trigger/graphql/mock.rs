@@ -13,6 +13,7 @@ use crate::{
     },
     util::{Date, ReportReason},
 };
+use crate::util::{MealType, Price};
 
 pub struct RequestDatabaseMock;
 
@@ -37,7 +38,25 @@ impl RequestDataAccess for RequestDatabaseMock {
         _date: Date,
         _client_id: Uuid,
     ) -> DataResult<Option<Meal>> {
-        todo!()
+        let meal = Meal {
+            id: Default::default(),
+            name: "".to_string(),
+            meal_type: MealType::Vegan,
+            price: Price {
+                price_student: 0,
+                price_employee: 0,
+                price_guest: 0,
+                price_pupil: 0,
+            },
+            last_served: Default::default(),
+            next_served: Default::default(),
+            relative_frequency: 0.0,
+            rating_count: 0,
+            average_rating: 0.0,
+            allergens: vec![],
+            additives: vec![],
+        };
+        Ok(Option::from(meal))
     }
 
     async fn get_meals(
@@ -58,7 +77,17 @@ impl RequestDataAccess for RequestDatabaseMock {
         _meal_id: Uuid,
         _client_id: Option<Uuid>,
     ) -> DataResult<Vec<Image>> {
-        todo!()
+        let mut vec = Vec::new();
+        let d1 = Image {
+            id: Default::default(),
+            image_hoster_id: "".to_string(),
+            url: "".to_string(),
+            rank: 0.0,
+            upvotes: 0,
+            downvotes: 0,
+        };
+        vec.push(d1);
+        Ok(vec)
     }
 
     async fn get_personal_rating(
@@ -66,15 +95,15 @@ impl RequestDataAccess for RequestDatabaseMock {
         _meal_id: Uuid,
         _client_id: Uuid,
     ) -> DataResult<Option<u32>> {
-        todo!()
+        Ok(Option::from(42 as u32))
     }
 
     async fn get_personal_upvote(&self, _image_id: Uuid, _client_id: Uuid) -> DataResult<bool> {
-        todo!()
+        Ok(true)
     }
 
     async fn get_personal_downvote(&self, _image_id: Uuid, _client_id: Uuid) -> DataResult<bool> {
-        todo!()
+        Ok(true)
     }
 }
 

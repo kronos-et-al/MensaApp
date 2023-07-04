@@ -64,12 +64,24 @@ struct MealStatistics {
 
 impl From<model::Meal> for Meal {
     fn from(value: model::Meal) -> Self {
-        Self {
-            id: value.id,
-            name: value.name,
-            ratings: todo!(),
-            price: todo!(),
-            meal_statistics: todo!(),
-        }
+       Self {
+           id: value.id,
+           name: value.name,
+           ratings: Ratings {
+               average_rating: value.average_rating,
+               ratings_count: value.rating_count,
+           },
+           price: Price {
+               student: value.price.price_student,
+               employee: value.price.price_employee,
+               guest: value.price.price_guest,
+               pupil: value.price.price_pupil,
+           },
+           meal_statistics: MealStatistics {
+               last_served: Option::from(value.last_served),
+               next_served: Option::from(value.next_served),
+               relative_frequency: value.relative_frequency,
+           },
+       }
     }
 }
