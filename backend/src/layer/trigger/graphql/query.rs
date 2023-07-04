@@ -1,10 +1,12 @@
 use async_graphql::{Context, Object, Result};
+use tracing::{trace, instrument};
 
 use crate::util::{Date, Uuid};
 
-use super::{types::canteen::Canteen, util::ApiUtil, types::meal::Meal};
+use super::{types::canteen::Canteen, util::{ApiUtil, trace_request}, types::meal::Meal};
 
-/// Class implementing `GraphQLs` root queries.
+/// Class implementing `GraphQL`s root queries.
+#[derive(Debug)]
 pub struct QueryRoot;
 
 #[Object]
@@ -58,7 +60,9 @@ impl QueryRoot {
     }
 
     /// This query returns the version of this API schema. It can also be used for health checks.
+    #[instrument(skip(_ctx))]
     async fn api_version(&self, _ctx: &Context<'_>) -> String {
+        trace_request();
         "1.0".into()
     }
 }
