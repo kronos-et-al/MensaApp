@@ -1,4 +1,4 @@
-class Image {
+class ImageData {
 
   final String _id;
   final String _url;
@@ -7,7 +7,7 @@ class Image {
   final int _positiveRating;
   final int _negativeRating;
 
-  Image({
+  ImageData({
     required String id,
     required String url,
     required double imageRank,

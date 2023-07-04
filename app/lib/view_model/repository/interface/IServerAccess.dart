@@ -1,6 +1,6 @@
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 
-import '../data_classes/meal/Image.dart';
+import '../data_classes/meal/ImageData.dart';
 import '../data_classes/meal/Meal.dart';
 import '../data_classes/mealplan/Mealplan.dart';
 import '../data_classes/settings/ReportCategory.dart';
@@ -38,26 +38,26 @@ abstract class IServerAccess {
   /// This method adds an upvote to an image.
   /// @param image The image that should be upvoted.
   /// @return The result of the update. It returns false, if the upvote could not be added.
-  Future<bool> upvoteImage(Image image);
+  Future<bool> upvoteImage(ImageData image);
 
   /// This method adds an downvote to an image.
   /// @param image The image that should be downvoted.
   /// @return The result of the update. It returns false, if the downvote could not be added.
-  Future<bool> downvoteImage(Image image);
+  Future<bool> downvoteImage(ImageData image);
 
   /// This method removes an upvote to an image.
   /// @param image The image whose upvote should be deleted.
   /// @return The result of the update. It returns false, if the upvote could not be removed.
-  Future<bool> deleteUpvote(Image image);
+  Future<bool> deleteUpvote(ImageData image);
 
   /// This method removes an downvote to an image.
   /// @param image The image whose downvote should be deleted.
   /// @return The result of the update. It returns false, if the downvote could not be removed.
-  Future<bool> deleteDownvote(Image image);
+  Future<bool> deleteDownvote(ImageData image);
 
   /// This method reports an image and sends the committed report reason to the server.
   /// @param image The image that should be reported.
   /// @param reportReason The reason why the image should be reported.
   /// @return The result of the update. It returns false, if the report failed.
-  Future<bool> reportImage(Image image, ReportCategory reportReason);
+  Future<bool> reportImage(ImageData image, ReportCategory reportReason);
 }
