@@ -16,6 +16,7 @@ use async_graphql::{
 };
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
+    http::HeaderMap,
     response::{self, IntoResponse},
     routing::get,
     Extension, Router, Server,
@@ -27,7 +28,7 @@ use crate::interface::{api_command::Command, persistent_data::RequestDataAccess}
 use super::{
     mutation::MutationRoot,
     query::QueryRoot,
-    util::{CommandBox, DataBox},
+    util::{AuthHeader, CommandBox, DataBox},
 };
 
 type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
@@ -149,10 +150,18 @@ async fn graphql_playground() -> impl IntoResponse {
 }
 
 async fn graphql_handler(
+    headers: HeaderMap,
     schema: Extension<GraphQLSchema>,
     request: GraphQLRequest,
 ) -> GraphQLResponse {
-    schema.execute(request.into_inner()).await.into()
+    let request = request.into_inner().data(
+        headers
+            .get("Authorization")
+            .and_then(|h| h.to_str().ok())
+            .unwrap_or("")
+            .to_string() as AuthHeader,
+    );
+    schema.execute(request).await.into()
 }
 
 #[cfg(test)]

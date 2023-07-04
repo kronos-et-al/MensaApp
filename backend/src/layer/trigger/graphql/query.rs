@@ -2,9 +2,9 @@ use async_graphql::{Context, Object, Result};
 use tracing::{instrument};
 use crate::layer::trigger::graphql::util::trace_query_request;
 
-use crate::util::{Date, Uuid};
+use crate::{util::{Date, Uuid}};
 
-use super::{types::canteen::Canteen, util::ApiUtil, types::meal::Meal};
+use super::{types::canteen::Canteen, util::{ApiUtil, trace_request}, types::{meal::Meal, auth_info}};
 
 /// Class implementing `GraphQL`s root queries.
 #[derive(Debug)]
@@ -58,9 +58,8 @@ impl QueryRoot {
     ) -> Result<Option<Meal>> {
         trace_query_request();
         let data_access = ctx.get_data_access();
-        let client_id = ctx.get_auth_info().client_id;
         let meal = data_access
-            .get_meal(meal_id, line_id, date, client_id)
+            .get_meal(meal_id, line_id, date)
             .await?
             .map(Into::into);
         Ok(meal)
@@ -72,4 +71,14 @@ impl QueryRoot {
         trace_query_request();
         "1.0".into()
     }
+
+    /// This query returns the in the `Authorization` request header provided authentication information. 
+    /// It is intended for debugging purposes to check whether these information got passed correctly.
+    #[instrument(skip(ctx))]
+    async fn get_my_auth(&self, ctx: &Context<'_>) -> Option<auth_info::AuthInfo> {
+        trace_request();
+        ctx.get_auth_info().map(Into::into)
+    }
+
+
 }

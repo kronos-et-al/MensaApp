@@ -52,7 +52,6 @@ impl RequestDataAccess for RequestDatabaseMock {
         _id: Uuid,
         _line_id: Uuid,
         _date: Date,
-        _client_id: Uuid,
     ) -> DataResult<Option<Meal>> {
         let meal = Meal {
             id: Uuid::default(),
@@ -79,7 +78,6 @@ impl RequestDataAccess for RequestDatabaseMock {
         &self,
         _line_id: Uuid,
         _date: Date,
-        _client_id: Uuid,
     ) -> DataResult<Vec<Meal>> {
         let meal = Meal {
             id: Uuid::default(),

@@ -64,9 +64,9 @@ impl Meal {
     async fn images(&self, ctx: &Context<'_>) -> Result<Vec<Image>> {
         trace_query_request();
         let data_access = ctx.get_data_access();
-        let client_id = ctx.get_auth_info().client_id;
+        let client_id = ctx.get_auth_info().map(|i| i.client_id);
         let images = data_access
-            .get_visible_images(self.id, Some(client_id)) // TODO: should be changed, when authinfo is implemented
+            .get_visible_images(self.id, client_id)
             .await?
             .into_iter()
             .map(Into::into)
@@ -108,7 +108,10 @@ impl Ratings {
     async fn personal_rating(&self, ctx: &Context<'_>) -> Result<Option<u32>> {
         trace_query_request();
         let data_access = ctx.get_data_access();
-        let client_id = ctx.get_auth_info().client_id;
+        let client_id = match ctx.get_auth_info() {
+            Some(info) => info.client_id,
+            None => return Ok(None),
+        };
         let rating = data_access
             .get_personal_rating(self.meal_id, client_id)
             .await?;
