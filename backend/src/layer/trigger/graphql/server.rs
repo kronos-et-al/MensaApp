@@ -105,3 +105,62 @@ async fn graphql_handler(
 ) -> GraphQLResponse {
     schema.execute(request.into_inner()).await.into()
 }
+
+#[cfg(test)]
+mod tests {
+    #![allow(clippy::unwrap_used)]
+
+    use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
+    use serial_test::serial;
+
+    use crate::layer::trigger::graphql::{
+        mock::{CommandMock, RequestDatabaseMock},
+        server::GraphQLServer,
+    };
+
+    #[tokio::test]
+    #[serial]
+    async fn test_graphql() {
+        let mut server = GraphQLServer::new(RequestDatabaseMock, CommandMock);
+        server.start();
+
+        let client = reqwest::Client::new();
+        let _resp = client
+            .post("http://localhost:8090")
+            .send()
+            .await
+            .unwrap()
+            .text()
+            .await
+            .unwrap();
+
+        // TODO this only checks whether a connection to the server could be made. A real check should be added later.
+        server.shutdown().await;
+    }
+
+    #[tokio::test]
+    #[serial]
+    async fn test_playground() {
+        let mut server = GraphQLServer::new(RequestDatabaseMock, CommandMock);
+        server.start();
+
+        let result = reqwest::get("http://localhost:8090")
+            .await
+            .unwrap()
+            .text()
+            .await
+            .unwrap();
+        let playground = playground_source(GraphQLPlaygroundConfig::new("/"));
+        assert_eq!(playground, result);
+
+        server.shutdown().await;
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn test_not_running() {
+        let mut server = GraphQLServer::new(RequestDatabaseMock, CommandMock);
+
+        server.shutdown().await;
+    }
+}
