@@ -1,4 +1,4 @@
-use mensa_app_backend::layer::trigger::graphql::*;
+use mensa_app_backend::layer::trigger::graphql::{*, server::GraphQLServerInfo};
 use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
 
@@ -13,7 +13,11 @@ async fn main() {
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
 
     // run server
-    let mut server = server::GraphQLServer::new(mock::RequestDatabaseMock, mock::CommandMock);
+    let info = GraphQLServerInfo {
+        port: 8090
+    };
+
+    let mut server = server::GraphQLServer::new(info, mock::RequestDatabaseMock, mock::CommandMock);
     server.start();
     tokio::signal::ctrl_c()
         .await
