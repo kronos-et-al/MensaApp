@@ -1,6 +1,7 @@
 //! This crate contains mocks of [`RequestDataAccess`] and [`Command`] for testing.
 
 use async_trait::async_trait;
+use chrono::NaiveDate;
 use uuid::Uuid;
 
 use crate::{
@@ -23,7 +24,7 @@ pub struct RequestDatabaseMock;
 impl RequestDataAccess for RequestDatabaseMock {
     async fn get_canteen(&self, _id: Uuid) -> DataResult<Option<Canteen>> {
         let canteen = Canteen {
-            id: Default::default(),
+            id: Uuid::default(),
             name: "dummy".to_string(),
         };
         Ok(Option::from(canteen))
@@ -31,23 +32,19 @@ impl RequestDataAccess for RequestDatabaseMock {
 
     async fn get_canteens(&self) -> DataResult<Vec<Canteen>> {
         let canteen = Canteen {
-            id: Default::default(),
+            id: Uuid::default(),
             name: "dummy".to_string(),
         };
-        let mut vec = Vec::new();
-        vec.push(canteen);
-        Ok(vec)
+        Ok(vec![canteen])
     }
 
     async fn get_lines(&self, _canteen_id: Uuid) -> DataResult<Vec<Line>> {
         let line = Line {
-            id: Default::default(),
+            id: Uuid::default(),
             name: "dummy".to_string(),
-            canteen_id: Default::default(),
+            canteen_id: Uuid::default(),
         };
-        let mut vec = Vec::new();
-        vec.push(line);
-        Ok(vec)
+        Ok(vec![line])
     }
 
     async fn get_meal(
@@ -58,7 +55,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         _client_id: Uuid,
     ) -> DataResult<Option<Meal>> {
         let meal = Meal {
-            id: Default::default(),
+            id: Uuid::default(),
             name: "dummy".to_string(),
             meal_type: MealType::Vegan,
             price: Price {
@@ -67,13 +64,13 @@ impl RequestDataAccess for RequestDatabaseMock {
                 price_guest: 0,
                 price_pupil: 0,
             },
-            last_served: Default::default(),
-            next_served: Default::default(),
+            last_served: NaiveDate::default(),
+            next_served: NaiveDate::default(),
             relative_frequency: 0.0,
             rating_count: 0,
             average_rating: 0.0,
-            date: Date::from_ymd_opt(2023, 7, 4).unwrap(),
-            line_id: Default::default(),
+            date: Date::from_ymd_opt(2023, 7, 4).expect("HELP!"),
+            line_id: Uuid::default(),
         };
         Ok(Option::from(meal))
     }
@@ -85,7 +82,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         _client_id: Uuid,
     ) -> DataResult<Vec<Meal>> {
         let meal = Meal {
-            id: Default::default(),
+            id: Uuid::default(),
             name: "dummy".to_string(),
             meal_type: MealType::Vegan,
             price: Price {
@@ -94,22 +91,20 @@ impl RequestDataAccess for RequestDatabaseMock {
                 price_guest: 0,
                 price_pupil: 0,
             },
-            last_served: Default::default(),
-            next_served: Default::default(),
+            last_served: NaiveDate::default(),
+            next_served: NaiveDate::default(),
             relative_frequency: 0.0,
             rating_count: 0,
             average_rating: 0.0,
-            date: Date::from_ymd_opt(2023, 7, 4).unwrap(),
-            line_id: Default::default(),
+            date: Date::from_ymd_opt(2023, 7, 4).expect("HELP!"),
+            line_id: Uuid::default(),
         };
-        let mut vec = Vec::new();
-        vec.push(meal);
-        Ok(vec)
+        Ok(vec![meal])
     }
 
     async fn get_sides(&self, _line_id: Uuid, _date: Date) -> DataResult<Vec<Side>> {
         let side = Side {
-            id: Default::default(),
+            id: Uuid::default(),
             name: "dummy".to_string(),
             meal_type: MealType::Vegan,
             price: Price {
@@ -119,9 +114,7 @@ impl RequestDataAccess for RequestDatabaseMock {
                 price_pupil: 0,
             },
         };
-        let mut vec = Vec::new();
-        vec.push(side);
-        Ok(vec)
+        Ok(vec![side])
     }
 
     async fn get_visible_images(
@@ -129,17 +122,15 @@ impl RequestDataAccess for RequestDatabaseMock {
         _meal_id: Uuid,
         _client_id: Option<Uuid>,
     ) -> DataResult<Vec<Image>> {
-        let mut vec = Vec::new();
         let d1 = Image {
-            id: Default::default(),
+            id: Uuid::default(),
             image_hoster_id: "dummyImageId".to_string(),
-            url: "".to_string(),
+            url: String::new(),
             rank: 0.0,
             upvotes: 0,
             downvotes: 0,
         };
-        vec.push(d1);
-        Ok(vec)
+        Ok(vec![d1])
     }
 
     async fn get_personal_rating(
@@ -147,7 +138,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         _meal_id: Uuid,
         _client_id: Uuid,
     ) -> DataResult<Option<u32>> {
-        Ok(Option::from(42 as u32))
+        Ok(Option::from(42))
     }
 
     async fn get_personal_upvote(&self, _image_id: Uuid, _client_id: Uuid) -> DataResult<bool> {
@@ -158,11 +149,11 @@ impl RequestDataAccess for RequestDatabaseMock {
         Ok(true)
     }
 
-    async fn get_additives(&self, food_id: crate::util::Uuid) -> DataResult<Vec<Additive>> {
+    async fn get_additives(&self, _food_id: crate::util::Uuid) -> DataResult<Vec<Additive>> {
         Ok(vec![Additive::Alcohol, Additive::Sulphur, Additive::Sweetener])
     }
 
-    async fn get_allergens(&self, food_id: crate::util::Uuid) -> DataResult<Vec<Allergen>> {
+    async fn get_allergens(&self, _food_id: crate::util::Uuid) -> DataResult<Vec<Allergen>> {
         Ok(vec![Allergen::Pi, Allergen::Hf, Allergen::Gl])
     }
 }
