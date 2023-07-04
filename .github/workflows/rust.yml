@@ -43,6 +43,7 @@ jobs:
       run: cargo test --verbose
     - name: Check prepared sql query information
       run: |
+        echo using database at: $DATABASE_URL
         cargo install sqlx-cli
         docker run -itd -e POSTGRES_USER=postgres_user -e POSTGRES_PASSWORD=secret_password -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=mensa_app -p 5432:5432 -v data:/var/lib/postgresql/data --name postgresql postgres
         cargo sqlx mig run
