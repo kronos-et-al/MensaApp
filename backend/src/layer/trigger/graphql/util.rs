@@ -34,9 +34,3 @@ impl<'a> ApiUtil for Context<'a> {
         }
     }
 }
-
-// impl From<CommandError> for async_graphql::Error {
-//     fn from(value: CommandError) -> Self {
-//         todo!()
-//     }
-// }
