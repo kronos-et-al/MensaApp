@@ -1,6 +1,10 @@
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 
-use crate::{util::{Date, Uuid}, interface::persistent_data::{model, DataError::NoSuchItem}, layer::{trigger::graphql::util::ApiUtil}};
+use crate::{
+    interface::persistent_data::{model, DataError::NoSuchItem},
+    layer::trigger::graphql::util::ApiUtil,
+    util::{Date, Uuid},
+};
 
 use super::{canteen::Canteen, meal::Meal};
 
@@ -9,7 +13,7 @@ use super::{canteen::Canteen, meal::Meal};
 pub struct Line {
     id: Uuid,
     name: String,
-    #[graphql(skip)] 
+    #[graphql(skip)]
     canteen_id: Uuid,
 }
 
