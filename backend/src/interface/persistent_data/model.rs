@@ -1,6 +1,6 @@
 //! These structs are used for database operations.
 use crate::util::{self, Date};
-use crate::util::{Additive, Allergen, Price};
+use crate::util::{Price};
 
 use util::{MealType, Uuid};
 
@@ -18,8 +18,6 @@ pub struct Canteen {
     pub id: Uuid,
     /// Name of the canteen
     pub name: String,
-    /// All related lines.
-    pub lines: Vec<Line>,
 }
 
 /// Struct for database-operations. Related to the database entity 'line'.
@@ -28,10 +26,8 @@ pub struct Line {
     pub id: Uuid,
     /// Name of the line
     pub name: String,
-    /// All related meals.
-    pub meals: Vec<Meal>,
-    /// All related meals.
-    pub sides: Vec<Side>,
+
+    pub canteen_id: Uuid,
 }
 
 /// Struct for database-operations. Related to the database entity 'meal'.
@@ -54,10 +50,10 @@ pub struct Meal {
     pub rating_count: u32,
     /// The average rating of the meal
     pub average_rating: f32,
-    /// All containing allergens.
-    pub allergens: Vec<Allergen>,
-    /// All containing additives.
-    pub additives: Vec<Additive>,
+
+    pub date: Date,
+
+    pub line_id: Uuid,
 }
 
 /// This structure is used for database operations. This side structure is based on the database entities 'food', 'foodAllergen' and 'foodAdditive'.
@@ -70,10 +66,6 @@ pub struct Side {
     pub meal_type: MealType,
     /// Price of the side for students, employees, guests and pupils.
     pub price: Price,
-    /// All containing allergens.
-    pub allergens: Vec<Allergen>,
-    /// All containing additives.
-    pub additives: Vec<Additive>,
 }
 
 /// This structure is used for database operations. This image structure is based on the database entity 'image'.
