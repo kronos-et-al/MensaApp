@@ -1,6 +1,13 @@
 //! This package contains the server that is responsible for providing the graphql API.
 
-use std::{future::Future, pin::Pin, sync::Arc};
+use std::{
+    fmt::Display,
+    future::Future,
+    mem,
+    net::{Ipv6Addr, SocketAddrV6},
+    pin::Pin,
+    sync::Arc,
+};
 
 use async_graphql::{
     extensions::Tracing,
@@ -22,17 +29,41 @@ use super::{
     query::QueryRoot,
     util::{CommandBox, DataBox},
 };
+
 type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
+
+pub struct GraphQLServerInfo {
+    pub port: u16,
+}
+
+enum State {
+    Created,
+    Running(Pin<Box<dyn Future<Output = ()> + Send>>),
+    Finished,
+}
+
+impl Display for State {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let msg = match self {
+            Self::Created => "created",
+            Self::Running(_) => "running",
+            Self::Finished => "finished",
+        };
+        write!(f, "{msg}")
+    }
+}
 
 /// Class witch controls the webserver for GraphQL requests.
 pub struct GraphQLServer {
+    server_info: GraphQLServerInfo,
     schema: GraphQLSchema,
-    shutdown: Option<Pin<Box<dyn Future<Output = ()> + Send>>>,
+    state: State,
 }
 
 impl GraphQLServer {
     /// Creates a new Object with given access to datastore and logic for commands.
     pub fn new(
+        server_info: GraphQLServerInfo,
         data_access: impl RequestDataAccess + Sync + Send + 'static,
         command: impl Command + Sync + Send + 'static,
     ) -> Self {
@@ -46,28 +77,35 @@ impl GraphQLServer {
             .finish();
 
         Self {
+            server_info,
             schema,
-            shutdown: None,
+            state: State::Created,
         }
     }
 
     /// Starts the GraphQL-Server. It will be running in the background until [`Self::shutdown()`] is called.
+    ///
+    /// # Panics
+    /// This function anics if the server is in the wrong state, meaning it is already running or shut down.
     pub fn start(&mut self) {
-        
-        assert!(self.shutdown.is_none(), "tried to start server twice");
-        
-        let listen = "0.0.0.0:8090"; // TODO Ipv6?
+        assert!(
+            matches!(self.state, State::Created),
+            "tried to start graphql server while in state {}",
+            self.state
+        );
 
         let app = Router::new()
             .route("/", get(graphql_playground).post(graphql_handler))
             .layer(Extension(self.schema.clone()));
 
-        let server = Server::bind(
-            &listen
-                .parse()
-                .expect("could not parse listening ip and port"), // TODO proper error handling
-        )
-        .serve(app.into_make_service());
+        let socket = std::net::SocketAddr::V6(SocketAddrV6::new(
+            Ipv6Addr::UNSPECIFIED,
+            self.server_info.port,
+            0,
+            0,
+        ));
+
+        let server = Server::bind(&socket).serve(app.into_make_service());
 
         let shutdown_notify = Arc::new(Notify::new());
         let shutdown_notify_sender = shutdown_notify.clone();
@@ -85,15 +123,23 @@ impl GraphQLServer {
                 .expect("error while waiting for webserver to finish");
         };
 
-        self.shutdown = Some(Box::pin(shutdown));
+        self.state = State::Running(Box::pin(shutdown));
     }
 
     /// Stops the GraphQL server.
+    ///
+    /// # Panics
+    /// - Panics if no server is in the wrong state, meaning it is not started or already shut down.
+    /// - Panics if web server has panicked during execution or could not be finished.
     pub async fn shutdown(&mut self) {
-        self.shutdown
-            .take()
-            .expect("trying to shutdown server but not running")
-            .await;
+        let shutdown = match mem::replace(&mut self.state, State::Finished) {
+            State::Finished | State::Created => {
+                panic!("tried to shutdown server but in state {}", self.state)
+            }
+            State::Running(s) => s,
+        };
+
+        shutdown.await;
     }
 }
 
@@ -113,7 +159,7 @@ async fn graphql_handler(
 mod tests {
     #![allow(clippy::unwrap_used)]
 
-    use async_graphql::{http::{playground_source, GraphQLPlaygroundConfig}, Json};
+    use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
     use serial_test::serial;
 
     use crate::layer::trigger::graphql::{
@@ -121,9 +167,13 @@ mod tests {
         server::GraphQLServer,
     };
 
+    use super::GraphQLServerInfo;
+
+    const TEST_PORT: u16 = 12345;
 
     fn get_test_server() -> GraphQLServer {
-        GraphQLServer::new(RequestDatabaseMock, CommandMock)
+        let info = GraphQLServerInfo { port: TEST_PORT };
+        GraphQLServer::new(info, RequestDatabaseMock, CommandMock)
     }
 
     #[tokio::test]
@@ -141,7 +191,7 @@ mod tests {
 
         let client = reqwest::Client::new();
         let resp = client
-            .post("http://localhost:8090")
+            .post(format!("http://localhost:{TEST_PORT}"))
             .body(test_request)
             .send()
             .await
@@ -150,8 +200,10 @@ mod tests {
             .await
             .unwrap();
 
-        assert_eq!("{\"data\":{\"apiVersion\":\"1.0\"}}", resp, "wrong data returned on graphql version health check.");
-
+        assert_eq!(
+            "{\"data\":{\"apiVersion\":\"1.0\"}}", resp,
+            "wrong data returned on graphql version health check."
+        );
 
         server.shutdown().await;
     }
@@ -163,7 +215,7 @@ mod tests {
         let mut server = get_test_server();
         server.start();
 
-        let result = reqwest::get("http://localhost:8090")
+        let result = reqwest::get(format!("http://localhost:{TEST_PORT}"))
             .await
             .unwrap()
             .text()
@@ -184,10 +236,9 @@ mod tests {
         server.shutdown().await;
     }
 
-
     /// Test what happens when server is started twice.
     #[tokio::test]
-    #[should_panic = "tried to start server twice"]
+    #[should_panic = "tried to start graphql server while in state running"]
     #[serial]
     async fn test_double_start() {
         let mut server = get_test_server();
