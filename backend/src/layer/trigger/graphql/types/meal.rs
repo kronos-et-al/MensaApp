@@ -1,7 +1,10 @@
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 
-use crate::{util::{Additive, Allergen, Date, Uuid}, interface::persistent_data::model};
 use crate::layer::trigger::graphql::util::ApiUtil;
+use crate::{
+    interface::persistent_data::model,
+    util::{Additive, Allergen, Date, Uuid},
+};
 
 use super::{image::Image, side::Side};
 
@@ -16,7 +19,7 @@ pub struct Meal {
     #[graphql(skip)]
     date: Date,
     #[graphql(skip)]
-    line_id: Uuid
+    line_id: Uuid,
 }
 
 #[ComplexObject]
@@ -47,7 +50,7 @@ impl Meal {
         let data_access = ctx.get_data_access();
         let client_id = ctx.get_auth_info().client_id;
         let images = data_access
-            .get_visible_images(self.id, Some(client_id)) // TODO: should be changed, when authinfo is implemented 
+            .get_visible_images(self.id, Some(client_id)) // TODO: should be changed, when authinfo is implemented
             .await?
             .into_iter()
             .map(Into::into)
@@ -81,7 +84,7 @@ struct Ratings {
     average_rating: f32,
     ratings_count: u32,
     #[graphql(skip)]
-    meal_id: Uuid
+    meal_id: Uuid,
 }
 
 #[ComplexObject]
@@ -105,27 +108,27 @@ struct MealStatistics {
 
 impl From<model::Meal> for Meal {
     fn from(value: model::Meal) -> Self {
-       Self {
-           id: value.id,
-           name: value.name,
-           ratings: Ratings {
-               average_rating: value.average_rating,
-               ratings_count: value.rating_count,
-               meal_id: value.id,
-           },
-           price: Price {
-               student: value.price.price_student,
-               employee: value.price.price_employee,
-               guest: value.price.price_guest,
-               pupil: value.price.price_pupil,
-           },
-           meal_statistics: MealStatistics {
-               last_served: Option::from(value.last_served),
-               next_served: Option::from(value.next_served),
-               relative_frequency: value.relative_frequency,
-           },
-           date: value.date,
-           line_id: value.line_id,
-       }
+        Self {
+            id: value.id,
+            name: value.name,
+            ratings: Ratings {
+                average_rating: value.average_rating,
+                ratings_count: value.rating_count,
+                meal_id: value.id,
+            },
+            price: Price {
+                student: value.price.price_student,
+                employee: value.price.price_employee,
+                guest: value.price.price_guest,
+                pupil: value.price.price_pupil,
+            },
+            meal_statistics: MealStatistics {
+                last_served: Option::from(value.last_served),
+                next_served: Option::from(value.next_served),
+                relative_frequency: value.relative_frequency,
+            },
+            date: value.date,
+            line_id: value.line_id,
+        }
     }
 }
