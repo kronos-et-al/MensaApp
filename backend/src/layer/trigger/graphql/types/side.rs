@@ -1,11 +1,11 @@
-use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-use tracing::{instrument};
+use crate::layer::trigger::graphql::util::trace_query_request;
 use crate::{
     interface::persistent_data::model,
     layer::trigger::graphql::util::ApiUtil,
     util::{Additive, Allergen, Uuid},
 };
-use crate::layer::trigger::graphql::util::trace_query_request;
+use async_graphql::{ComplexObject, Context, Result, SimpleObject};
+use tracing::instrument;
 
 use super::price::Price;
 
@@ -52,7 +52,7 @@ impl Side {
 }
 
 impl From<model::Side> for Side {
-    /// A function for converting Sides from `persistent_data/model/side` to types/side 
+    /// A function for converting Sides from `persistent_data/model/side` to types/side
     fn from(value: model::Side) -> Self {
         Self {
             id: value.id,

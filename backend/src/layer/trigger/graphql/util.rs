@@ -33,7 +33,8 @@ impl<'a> ApiUtil for Context<'a> {
     }
 
     fn get_auth_info(&self) -> AuthInfo {
-        self.data_opt::<AuthHeader>().map(Deref::deref)
+        self.data_opt::<AuthHeader>()
+            .map(Deref::deref)
             .and_then(read_auth_from_header)
     }
 }

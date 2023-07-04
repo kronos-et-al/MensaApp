@@ -1,9 +1,9 @@
-use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-use tracing::{instrument};
+use crate::layer::trigger::graphql::util::trace_query_request;
 use crate::{
     interface::persistent_data::model, layer::trigger::graphql::util::ApiUtil, util::Uuid,
 };
-use crate::layer::trigger::graphql::util::trace_query_request;
+use async_graphql::{ComplexObject, Context, Result, SimpleObject};
+use tracing::instrument;
 
 #[derive(SimpleObject, Debug)]
 #[graphql(complex)]
@@ -49,7 +49,7 @@ impl Image {
 }
 
 impl From<model::Image> for Image {
-    /// A function for converting Images from `persistent_data/model/image` to types/image 
+    /// A function for converting Images from `persistent_data/model/image` to types/image
     fn from(value: model::Image) -> Self {
         Self {
             id: value.id,

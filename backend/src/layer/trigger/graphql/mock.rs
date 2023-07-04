@@ -4,6 +4,7 @@ use async_trait::async_trait;
 use chrono::NaiveDate;
 use uuid::Uuid;
 
+use crate::util::{Additive, Allergen, MealType, Price};
 use crate::{
     interface::{
         api_command::{AuthInfo, Command, Result as CommandResult},
@@ -14,11 +15,8 @@ use crate::{
     },
     util::{Date, ReportReason},
 };
-use crate::util::{Additive, Allergen, MealType, Price};
 
 pub struct RequestDatabaseMock;
-
-
 
 #[async_trait]
 impl RequestDataAccess for RequestDatabaseMock {
@@ -47,12 +45,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         Ok(vec![line])
     }
 
-    async fn get_meal(
-        &self,
-        _id: Uuid,
-        _line_id: Uuid,
-        _date: Date,
-    ) -> DataResult<Option<Meal>> {
+    async fn get_meal(&self, _id: Uuid, _line_id: Uuid, _date: Date) -> DataResult<Option<Meal>> {
         let meal = Meal {
             id: Uuid::default(),
             name: "dummy".to_string(),
@@ -74,11 +67,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         Ok(Option::from(meal))
     }
 
-    async fn get_meals(
-        &self,
-        _line_id: Uuid,
-        _date: Date,
-    ) -> DataResult<Vec<Meal>> {
+    async fn get_meals(&self, _line_id: Uuid, _date: Date) -> DataResult<Vec<Meal>> {
         let meal = Meal {
             id: Uuid::default(),
             name: "dummy".to_string(),
@@ -148,7 +137,11 @@ impl RequestDataAccess for RequestDatabaseMock {
     }
 
     async fn get_additives(&self, _food_id: crate::util::Uuid) -> DataResult<Vec<Additive>> {
-        Ok(vec![Additive::Alcohol, Additive::Sulphur, Additive::Sweetener])
+        Ok(vec![
+            Additive::Alcohol,
+            Additive::Sulphur,
+            Additive::Sweetener,
+        ])
     }
 
     async fn get_allergens(&self, _food_id: crate::util::Uuid) -> DataResult<Vec<Allergen>> {
