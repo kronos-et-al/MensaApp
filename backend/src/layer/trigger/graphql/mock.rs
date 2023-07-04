@@ -13,9 +13,10 @@ use crate::{
     },
     util::{Date, ReportReason},
 };
-use crate::util::{MealType, Price};
+use crate::util::{Additive, Allergen, MealType, Price};
 
 pub struct RequestDatabaseMock;
+
 
 
 #[async_trait]
@@ -160,6 +161,14 @@ impl RequestDataAccess for RequestDatabaseMock {
 
     async fn get_personal_downvote(&self, _image_id: Uuid, _client_id: Uuid) -> DataResult<bool> {
         Ok(true)
+    }
+
+    async fn get_additives(&self, food_id: crate::util::Uuid) -> DataResult<Vec<Additive>> {
+        Ok(vec![Additive::Alcohol, Additive::Sulphur, Additive::Sweetener])
+    }
+
+    async fn get_allergens(&self, food_id: crate::util::Uuid) -> DataResult<Vec<Allergen>> {
+        Ok(vec![Allergen::Pi, Allergen::Hf, Allergen::Gl])
     }
 }
 
