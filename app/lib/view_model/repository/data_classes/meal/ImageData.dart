@@ -1,4 +1,3 @@
-/// This class represents an image of a meal.
 class ImageData {
 
   final String _id;
