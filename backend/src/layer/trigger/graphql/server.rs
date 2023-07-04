@@ -54,7 +54,7 @@ impl GraphQLServer {
     /// Starts the GraphQL-Server. It will be running in the background until [`Self::shutdown()`] is called.
     pub fn start(&mut self) {
         
-        assert!(self.shutdown.is_some(), "tried to start server twice");
+        assert!(self.shutdown.is_none(), "tried to start server twice");
         
         let listen = "0.0.0.0:8090"; // TODO Ipv6?
 
