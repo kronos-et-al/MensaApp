@@ -1,6 +1,7 @@
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 
 use crate::{util::{Additive, Allergen, Date, Uuid}, interface::persistent_data::model};
+use crate::layer::trigger::graphql::util::ApiUtil;
 
 use super::{image::Image, side::Side};
 
@@ -25,6 +26,8 @@ impl Meal {
     }
 
     async fn images(&self, ctx: &Context<'_>) -> Result<Vec<Image>> {
+        //let vec = ctx.get_data_access().get_visible_images(self.id, Option::from(ctx.get_auth_info().client_id)).await;
+        //vec.map(Into::into)
         todo!()
     }
 
