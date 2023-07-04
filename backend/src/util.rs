@@ -128,7 +128,7 @@ pub enum MealType {
 }
 
 /// This enum lists all the predetermined reasons a image can be reported for.
-#[derive(Copy, Clone, Eq, PartialEq, Enum)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
 pub enum ReportReason {
     /// This picture shows offensive content.
     Offensive,
