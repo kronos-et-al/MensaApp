@@ -1,5 +1,5 @@
 import 'package:app/view/core/meal_view_format/MealListLine.dart';
-import 'package:app/view_model/repository/data_classes/mealplan/Mealplan.dart';
+import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 import 'package:flutter/material.dart';
 
 /// Displays a List of MealPlans in a List View grouped by their line.

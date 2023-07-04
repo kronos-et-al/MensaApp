@@ -1,5 +1,5 @@
 import 'package:app/view_model/repository/data_classes/filter/FilterPreferences.dart';
-import 'package:app/view_model/repository/data_classes/mealplan/Mealplan.dart';
+import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../repository/data_classes/meal/Meal.dart';

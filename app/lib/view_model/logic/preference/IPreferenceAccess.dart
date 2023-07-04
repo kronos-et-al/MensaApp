@@ -1,7 +1,7 @@
 
 import '../../repository/data_classes/filter/FilterPreferences.dart';
 import '../../repository/data_classes/mealplan/Canteen.dart';
-import '../../repository/data_classes/settings/ColorScheme.dart';
+import '../../repository/data_classes/settings/MensaColorScheme.dart';
 import '../../repository/data_classes/settings/MealPlanFormat.dart';
 import '../../repository/data_classes/settings/PriceCategory.dart';
 

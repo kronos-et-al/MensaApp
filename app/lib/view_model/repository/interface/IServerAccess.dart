@@ -2,7 +2,7 @@ import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 
 import '../data_classes/meal/ImageData.dart';
 import '../data_classes/meal/Meal.dart';
-import '../data_classes/mealplan/Mealplan.dart';
+import '../data_classes/mealplan/MealPlan.dart';
 import '../data_classes/settings/ReportCategory.dart';
 import '../error_handling/Result.dart';
 

@@ -1,5 +1,5 @@
 import 'package:app/view/core/meal_view_format/MealGridEntry.dart';
-import 'package:app/view_model/repository/data_classes/mealplan/Mealplan.dart';
+import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 import 'package:flutter/material.dart';
 
 /// Displays the section for the MealList with all meals of a line.

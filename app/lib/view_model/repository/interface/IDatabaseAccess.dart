@@ -1,6 +1,6 @@
 import '../data_classes/meal/Meal.dart';
 import '../data_classes/mealplan/Canteen.dart';
-import '../data_classes/mealplan/Mealplan.dart';
+import '../data_classes/mealplan/MealPlan.dart';
 import '../error_handling/Result.dart';
 
 /// This is an interface to the database of the client.
