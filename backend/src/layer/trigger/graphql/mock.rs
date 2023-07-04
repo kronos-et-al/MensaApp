@@ -17,18 +17,39 @@ use crate::util::{MealType, Price};
 
 pub struct RequestDatabaseMock;
 
+
 #[async_trait]
 impl RequestDataAccess for RequestDatabaseMock {
     async fn get_canteen(&self, _id: Uuid) -> DataResult<Option<Canteen>> {
-        todo!()
+        let canteen = Canteen {
+            id: Default::default(),
+            name: "dummy".to_string(),
+            lines: vec![],
+        };
+        Ok(Option::from(canteen))
     }
 
     async fn get_canteens(&self) -> DataResult<Vec<Canteen>> {
-        todo!()
+        let canteen = Canteen {
+            id: Default::default(),
+            name: "dummy".to_string(),
+            lines: vec![],
+        };
+        let mut vec = Vec::new();
+        vec.push(canteen);
+        Ok(vec)
     }
 
     async fn get_lines(&self, _canteen_id: Uuid) -> DataResult<Vec<Line>> {
-        todo!()
+        let line = Line {
+            id: Default::default(),
+            name: "dummy".to_string(),
+            meals: vec![],
+            sides: vec![],
+        };
+        let mut vec = Vec::new();
+        vec.push(line);
+        Ok(vec)
     }
 
     async fn get_meal(
@@ -40,7 +61,7 @@ impl RequestDataAccess for RequestDatabaseMock {
     ) -> DataResult<Option<Meal>> {
         let meal = Meal {
             id: Default::default(),
-            name: "".to_string(),
+            name: "dummy".to_string(),
             meal_type: MealType::Vegan,
             price: Price {
                 price_student: 0,
@@ -65,11 +86,46 @@ impl RequestDataAccess for RequestDatabaseMock {
         _date: Date,
         _client_id: Uuid,
     ) -> DataResult<Vec<Meal>> {
-        todo!()
+        let meal = Meal {
+            id: Default::default(),
+            name: "dummy".to_string(),
+            meal_type: MealType::Vegan,
+            price: Price {
+                price_student: 0,
+                price_employee: 0,
+                price_guest: 0,
+                price_pupil: 0,
+            },
+            last_served: Default::default(),
+            next_served: Default::default(),
+            relative_frequency: 0.0,
+            rating_count: 0,
+            average_rating: 0.0,
+            allergens: vec![],
+            additives: vec![],
+        };
+        let mut vec = Vec::new();
+        vec.push(meal);
+        Ok(vec)
     }
 
     async fn get_sides(&self, _line_id: Uuid, _date: Date) -> DataResult<Vec<Side>> {
-        todo!()
+        let side = Side {
+            id: Default::default(),
+            name: "dummy".to_string(),
+            meal_type: MealType::Vegan,
+            price: Price {
+                price_student: 0,
+                price_employee: 0,
+                price_guest: 0,
+                price_pupil: 0,
+            },
+            allergens: vec![],
+            additives: vec![],
+        };
+        let mut vec = Vec::new();
+        vec.push(side);
+        Ok(vec)
     }
 
     async fn get_visible_images(
@@ -80,7 +136,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         let mut vec = Vec::new();
         let d1 = Image {
             id: Default::default(),
-            image_hoster_id: "".to_string(),
+            image_hoster_id: "dummyImageId".to_string(),
             url: "".to_string(),
             rank: 0.0,
             upvotes: 0,
@@ -118,17 +174,17 @@ impl Command for CommandMock {
         _reason: ReportReason,
         _auth_info: AuthInfo,
     ) -> CommandResult<()> {
-        todo!();
+        Ok(())
     }
 
     /// Command to vote up an image. All down-votes of the same user get removed.
     async fn add_image_upvote(&self, _image_id: Uuid, _auth_info: AuthInfo) -> CommandResult<()> {
-        todo!();
+        Ok(())
     }
 
     /// Command to vote down an image. All up-votes of the same user get removed.
     async fn add_image_downvote(&self, _image_id: Uuid, _auth_info: AuthInfo) -> CommandResult<()> {
-        todo!();
+        Ok(())
     }
 
     /// Command to remove an up-vote for an image.
@@ -137,7 +193,7 @@ impl Command for CommandMock {
         _image_id: Uuid,
         _auth_info: AuthInfo,
     ) -> CommandResult<()> {
-        todo!();
+        Ok(())
     }
 
     /// Command to remove an down-vote for an image.
@@ -146,7 +202,7 @@ impl Command for CommandMock {
         _image_id: Uuid,
         _auth_info: AuthInfo,
     ) -> CommandResult<()> {
-        todo!();
+        Ok(())
     }
 
     /// Command to link an image to a meal.
@@ -156,7 +212,8 @@ impl Command for CommandMock {
         _image_url: String,
         _auth_info: AuthInfo,
     ) -> CommandResult<()> {
-        Err(crate::interface::api_command::CommandError::BadAuth)
+        //Err(crate::interface::api_command::CommandError::BadAuth)
+        Ok(())
     }
 
     /// command to add a rating to a meal.
@@ -166,6 +223,6 @@ impl Command for CommandMock {
         _rating: u32,
         _auth_info: AuthInfo,
     ) -> CommandResult<()> {
-        todo!();
+        Ok(())
     }
 }
