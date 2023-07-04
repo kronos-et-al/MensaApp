@@ -1,6 +1,6 @@
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 
-use crate::{util::{Date, Uuid}, interface::persistent_data::model, layer::{trigger::graphql::util::ApiUtil}};
+use crate::{util::{Date, Uuid}, interface::persistent_data::{model, DataError::NoSuchItem}, layer::{trigger::graphql::util::ApiUtil}};
 
 use super::{canteen::Canteen, meal::Meal};
 
@@ -20,7 +20,8 @@ impl Line {
         data_access
             .get_canteen(self.canteen_id)
             .await?
-            .map(Into::into).ok_or(todo!())
+            .map(Into::into)
+            .ok_or(NoSuchItem.into())
     }
 
     async fn meals(&self, ctx: &Context<'_>, date: Date) -> Result<Vec<Meal>> {
