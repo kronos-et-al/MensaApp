@@ -6,7 +6,7 @@ use crate::{
     util::{Additive, Allergen, Date, Uuid},
 };
 
-use super::{image::Image, side::Side};
+use super::{image::Image, side::Side, price::Price};
 
 #[derive(SimpleObject)]
 #[graphql(complex)]
@@ -79,18 +79,6 @@ impl Meal {
             .collect();
         Ok(sides)
     }
-}
-
-#[derive(SimpleObject)]
-struct Price {
-    /// The price of the meal for students
-    student: u32,
-    /// The price of the meal for employees
-    employee: u32,
-    /// The price of the meal for guests
-    guest: u32,
-    /// The price of the meal for pupils
-    pupil: u32,
 }
 
 #[derive(SimpleObject)]

@@ -6,6 +6,8 @@ use crate::{
     util::{Additive, Allergen, Uuid},
 };
 
+use super::price::Price;
+
 #[derive(SimpleObject)]
 #[graphql(complex)]
 pub struct Side {
@@ -13,6 +15,8 @@ pub struct Side {
     id: Uuid,
     /// The name of the side
     name: String,
+    /// The price of the side
+    price: Price,
 }
 
 #[ComplexObject]
@@ -48,6 +52,12 @@ impl From<model::Side> for Side {
         Self {
             id: value.id,
             name: value.name,
+            price: Price {
+                student: value.price.price_student,
+                employee: value.price.price_employee,
+                guest: value.price.price_guest,
+                pupil: value.price.price_pupil,
+            },
         }
     }
 }
