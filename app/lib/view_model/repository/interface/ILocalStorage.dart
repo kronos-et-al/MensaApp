@@ -1,6 +1,5 @@
 
 import '../data_classes/filter/FilterPreferences.dart';
-import '../data_classes/mealplan/Canteen.dart';
 import '../data_classes/settings/ColorScheme.dart';
 import '../data_classes/settings/MealPlanFormat.dart';
 import '../data_classes/settings/PriceCategory.dart';
@@ -25,14 +24,14 @@ abstract class ILocalStorage {
   /// @return The result of the update.
   Future<void> setFilterPreferences(FilterPreferences filter);
 
-  /// The saved Canteen is returned.
-  /// @return The saved Canteen.
-  Future<Canteen> getCanteen();
+  /// The saved canteen id is returned.
+  /// @return The saved canteen id.
+  Future<String> getCanteen();
 
-  /// The committed Canteen is set.
-  /// @param canteen The new Canteen.
+  /// The committed id of the canteen is set.
+  /// @param canteen The id of the new canteen.
   /// @return The result of the update.
-  Future<void> setCanteen(Canteen canteen);
+  Future<void> setCanteen(String canteen);
 
   /// The saved ColorScheme is returned.
   /// @return The saved ColorScheme.

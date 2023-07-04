@@ -2,7 +2,6 @@
 import 'package:app/view_model/repository/data_classes/filter/FilterPreferences.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
-import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:app/view_model/repository/data_classes/settings/ColorScheme.dart';
 import 'package:app/view_model/repository/data_classes/settings/MealPlanFormat.dart';
 import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
@@ -16,13 +15,7 @@ import '../../view_model/repository/data_classes/meal/FoodType.dart';
 class SharedPreferenceAccess implements ILocalStorage {
 
   SharedPreferenceAccess();
-
-  @override
-  Future<Canteen> getCanteen() async {
-    // TODO: implement getColorScheme
-    throw UnimplementedError();
-  }
-
+  
   @override
   Future<String> getClientIdentifier() async {
     final pref = await SharedPreferences.getInstance();
@@ -101,12 +94,6 @@ class SharedPreferenceAccess implements ILocalStorage {
   }
 
   @override
-  Future<void> setCanteen(Canteen canteen) {
-    // TODO: implement setCanteen
-    throw UnimplementedError();
-  }
-
-  @override
   Future<void> setClientIdentifier(String identifier) async {
     final pref = await SharedPreferences.getInstance();
     await pref.setString('clientIdentifier', identifier);
@@ -141,5 +128,18 @@ class SharedPreferenceAccess implements ILocalStorage {
   Future<void> setPriceCategory(PriceCategory category) async {
     final pref = await SharedPreferences.getInstance();
     await pref.setString('priceCategory', category.toString());
+  }
+
+  @override
+  Future<String> getCanteen() async {
+    final pref = await SharedPreferences.getInstance();
+    final canteen = pref.getString('canteen') ?? "";
+    return Future.value(canteen);
+  }
+
+  @override
+  Future<void> setCanteen(String canteen) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('canteen', canteen);
   }
 }
