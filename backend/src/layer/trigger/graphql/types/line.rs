@@ -11,14 +11,18 @@ use super::{canteen::Canteen, meal::Meal};
 #[derive(SimpleObject)]
 #[graphql(complex)]
 pub struct Line {
+    /// The id of the line
     id: Uuid,
+    /// The name of the line
     name: String,
     #[graphql(skip)]
+    /// The id of the canteen to which the line belongs. Currently only used for getting the canteen
     canteen_id: Uuid,
 }
 
 #[ComplexObject]
 impl Line {
+    /// A function for getting the canteen this line belongs to
     async fn canteen(&self, ctx: &Context<'_>) -> Result<Canteen> {
         let data_access = ctx.get_data_access();
         data_access
@@ -28,6 +32,7 @@ impl Line {
             .ok_or(NoSuchItem.into())
     }
 
+    /// A function for getting the meals offered at this line on a given day. Requires a date
     async fn meals(&self, ctx: &Context<'_>, date: Date) -> Result<Vec<Meal>> {
         let data_access = ctx.get_data_access();
         let client_id = ctx.get_auth_info().client_id;
@@ -42,6 +47,7 @@ impl Line {
 }
 
 impl From<model::Line> for Line {
+    /// A function for converting Lines from `persistent_data/model/line` to types/line 
     fn from(value: model::Line) -> Self {
         Self {
             id: value.id,
