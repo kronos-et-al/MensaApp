@@ -22,11 +22,25 @@ pub struct Meal {
 #[ComplexObject]
 impl Meal {
     async fn allergens(&self, ctx: &Context<'_>) -> Result<Vec<Allergen>> {
-        todo!()
+        let data_access = ctx.get_data_access();
+        let allergens = data_access
+            .get_allergens(self.id)
+            .await?
+            .into_iter()
+            .map(Into::into)
+            .collect();
+        Ok(allergens)
     }
 
     async fn additives(&self, ctx: &Context<'_>) -> Result<Vec<Additive>> {
-        todo!()
+        let data_access = ctx.get_data_access();
+        let additives = data_access
+            .get_additives(self.id)
+            .await?
+            .into_iter()
+            .map(Into::into)
+            .collect();
+        Ok(additives)
     }
 
     async fn images(&self, ctx: &Context<'_>) -> Result<Vec<Image>> {
