@@ -25,7 +25,6 @@ impl RequestDataAccess for RequestDatabaseMock {
         let canteen = Canteen {
             id: Default::default(),
             name: "dummy".to_string(),
-            lines: vec![],
         };
         Ok(Option::from(canteen))
     }
@@ -34,7 +33,6 @@ impl RequestDataAccess for RequestDatabaseMock {
         let canteen = Canteen {
             id: Default::default(),
             name: "dummy".to_string(),
-            lines: vec![],
         };
         let mut vec = Vec::new();
         vec.push(canteen);
@@ -45,8 +43,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         let line = Line {
             id: Default::default(),
             name: "dummy".to_string(),
-            meals: vec![],
-            sides: vec![],
+            canteen_id: Default::default(),
         };
         let mut vec = Vec::new();
         vec.push(line);
@@ -75,8 +72,8 @@ impl RequestDataAccess for RequestDatabaseMock {
             relative_frequency: 0.0,
             rating_count: 0,
             average_rating: 0.0,
-            allergens: vec![],
-            additives: vec![],
+            date: Date::from_ymd_opt(2023, 7, 4).unwrap(),
+            line_id: Default::default(),
         };
         Ok(Option::from(meal))
     }
@@ -102,8 +99,8 @@ impl RequestDataAccess for RequestDatabaseMock {
             relative_frequency: 0.0,
             rating_count: 0,
             average_rating: 0.0,
-            allergens: vec![],
-            additives: vec![],
+            date: Date::from_ymd_opt(2023, 7, 4).unwrap(),
+            line_id: Default::default(),
         };
         let mut vec = Vec::new();
         vec.push(meal);
@@ -121,8 +118,6 @@ impl RequestDataAccess for RequestDatabaseMock {
                 price_guest: 0,
                 price_pupil: 0,
             },
-            allergens: vec![],
-            additives: vec![],
         };
         let mut vec = Vec::new();
         vec.push(side);

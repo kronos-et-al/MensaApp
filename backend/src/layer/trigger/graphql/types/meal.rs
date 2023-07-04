@@ -13,6 +13,10 @@ pub struct Meal {
     ratings: Ratings,
     price: Price,
     meal_statistics: MealStatistics,
+    #[graphql(skip)]
+    date: Date,
+    #[graphql(skip)]
+    line_id: Uuid
 }
 
 #[ComplexObject]
@@ -26,13 +30,26 @@ impl Meal {
     }
 
     async fn images(&self, ctx: &Context<'_>) -> Result<Vec<Image>> {
-        //let vec = ctx.get_data_access().get_visible_images(self.id, Option::from(ctx.get_auth_info().client_id)).await;
-        //vec.map(Into::into)
-        todo!()
+        let data_access = ctx.get_data_access();
+        let client_id = ctx.get_auth_info().client_id;
+        let images = data_access
+            .get_visible_images(self.id, Some(client_id)) // TODO: should be changed, when authinfo is implemented 
+            .await?
+            .into_iter()
+            .map(Into::into)
+            .collect();
+        Ok(images)
     }
 
     async fn sides(&self, ctx: &Context<'_>) -> Result<Vec<Side>> {
-        todo!()
+        let data_access = ctx.get_data_access();
+        let sides = data_access
+            .get_sides(self.line_id, self.date)
+            .await?
+            .into_iter()
+            .map(Into::into)
+            .collect();
+        Ok(sides)
     }
 }
 
@@ -49,12 +66,19 @@ struct Price {
 struct Ratings {
     average_rating: f32,
     ratings_count: u32,
+    #[graphql(skip)]
+    meal_id: Uuid
 }
 
 #[ComplexObject]
 impl Ratings {
     async fn personal_rating(&self, ctx: &Context<'_>) -> Result<Option<u32>> {
-        todo!()
+        let data_access = ctx.get_data_access();
+        let client_id = ctx.get_auth_info().client_id;
+        let rating = data_access
+            .get_personal_rating(self.meal_id, client_id)
+            .await?;
+        Ok(rating)
     }
 }
 
@@ -73,6 +97,7 @@ impl From<model::Meal> for Meal {
            ratings: Ratings {
                average_rating: value.average_rating,
                ratings_count: value.rating_count,
+               meal_id: value.id,
            },
            price: Price {
                student: value.price.price_student,
@@ -85,6 +110,8 @@ impl From<model::Meal> for Meal {
                next_served: Option::from(value.next_served),
                relative_frequency: value.relative_frequency,
            },
+           date: value.date,
+           line_id: value.line_id,
        }
     }
 }
