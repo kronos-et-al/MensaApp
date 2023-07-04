@@ -1,4 +1,5 @@
 use async_graphql::Context;
+use tracing::trace;
 
 use crate::{
     interface::{
@@ -33,4 +34,9 @@ impl<'a> ApiUtil for Context<'a> {
             hash: "()".into(),
         }
     }
+}
+
+
+pub fn trace_request() {
+    trace!("incoming request");
 }
