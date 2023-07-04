@@ -1,6 +1,6 @@
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 
-use crate::{util::Uuid, interface::persistent_data::model};
+use crate::{util::Uuid, interface::persistent_data::model, layer::trigger::graphql::util::ApiUtil};
 
 
 #[derive(SimpleObject)]
@@ -16,10 +16,20 @@ pub struct Image {
 #[ComplexObject]
 impl Image {
     async fn personal_upvote(&self, ctx: &Context<'_>) -> Result<bool> {
-        todo!()
+        let data = ctx.get_data_access();
+        let client_id = ctx.get_auth_info().client_id;
+        let upvote = data
+            .get_personal_upvote(self.id, client_id)
+            .await?;
+        Ok(upvote)
     }
     async fn personal_downvote(&self, ctx: &Context<'_>) -> Result<bool> {
-        todo!()
+        let data = ctx.get_data_access();
+        let client_id = ctx.get_auth_info().client_id;
+        let downvote = data
+            .get_personal_downvote(self.id, client_id)
+            .await?;
+        Ok(downvote)
     }
 }
 

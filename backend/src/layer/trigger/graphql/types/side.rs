@@ -1,6 +1,6 @@
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 
-use crate::util::{Additive, Allergen, Uuid};
+use crate::{util::{Additive, Allergen, Uuid}, interface::persistent_data::model};
 
 #[derive(SimpleObject)]
 #[graphql(complex)]
@@ -17,5 +17,14 @@ impl Side {
 
     async fn additives(&self, ctx: &Context<'_>) -> Result<Vec<Additive>> {
         todo!()
+    }
+}
+
+impl From<model::Side> for Side {
+    fn from(value: model::Side) -> Self {
+        Self {
+            id: value.id,
+            name: value.name,
+        }
     }
 }
