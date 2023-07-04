@@ -1,14 +1,15 @@
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-
+use tracing::{instrument};
 use crate::{
     interface::persistent_data::{model, DataError::NoSuchItem},
     layer::trigger::graphql::util::ApiUtil,
     util::{Date, Uuid},
 };
+use crate::layer::trigger::graphql::util::trace_query_request;
 
 use super::{canteen::Canteen, meal::Meal};
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Debug)]
 #[graphql(complex)]
 pub struct Line {
     /// The id of the line
@@ -23,7 +24,9 @@ pub struct Line {
 #[ComplexObject]
 impl Line {
     /// A function for getting the canteen this line belongs to
+    #[instrument(skip(ctx))]
     async fn canteen(&self, ctx: &Context<'_>) -> Result<Canteen> {
+        trace_query_request();
         let data_access = ctx.get_data_access();
         data_access
             .get_canteen(self.canteen_id)
@@ -33,7 +36,9 @@ impl Line {
     }
 
     /// A function for getting the meals offered at this line on a given day. Requires a date
+    #[instrument(skip(ctx))]
     async fn meals(&self, ctx: &Context<'_>, date: Date) -> Result<Vec<Meal>> {
+        trace_query_request();
         let data_access = ctx.get_data_access();
         let client_id = ctx.get_auth_info().client_id;
         let meals = data_access

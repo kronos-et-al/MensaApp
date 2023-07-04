@@ -1,6 +1,6 @@
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-
-use crate::layer::trigger::graphql::util::ApiUtil;
+use tracing::{instrument};
+use crate::layer::trigger::graphql::util::{ApiUtil, trace_query_request};
 use crate::{
     interface::persistent_data::model,
     util::{Additive, Allergen, Date, Uuid},
@@ -8,7 +8,7 @@ use crate::{
 
 use super::{image::Image, side::Side, price::Price};
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Debug)]
 #[graphql(complex)]
 pub struct Meal {
     /// The identifier of the main course.
@@ -32,7 +32,9 @@ pub struct Meal {
 #[ComplexObject]
 impl Meal {
     /// A function for getting the allergens of this meal
+    #[instrument(skip(ctx))]
     async fn allergens(&self, ctx: &Context<'_>) -> Result<Vec<Allergen>> {
+        trace_query_request();
         let data_access = ctx.get_data_access();
         let allergens = data_access
             .get_allergens(self.id)
@@ -44,7 +46,9 @@ impl Meal {
     }
 
     /// A function for getting the additives of this meal
+    #[instrument(skip(ctx))]
     async fn additives(&self, ctx: &Context<'_>) -> Result<Vec<Additive>> {
+        trace_query_request();
         let data_access = ctx.get_data_access();
         let additives = data_access
             .get_additives(self.id)
@@ -56,7 +60,9 @@ impl Meal {
     }
 
     /// A function for getting the images belonging to this meal
+    #[instrument(skip(ctx))]
     async fn images(&self, ctx: &Context<'_>) -> Result<Vec<Image>> {
+        trace_query_request();
         let data_access = ctx.get_data_access();
         let client_id = ctx.get_auth_info().client_id;
         let images = data_access
@@ -69,7 +75,9 @@ impl Meal {
     }
 
     /// A function for getting the sides belonging to this meal.
+    #[instrument(skip(ctx))]
     async fn sides(&self, ctx: &Context<'_>) -> Result<Vec<Side>> {
+        trace_query_request();
         let data_access = ctx.get_data_access();
         let sides = data_access
             .get_sides(self.line_id, self.date)
@@ -81,7 +89,7 @@ impl Meal {
     }
 }
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Debug)]
 #[graphql(complex)]
 struct Ratings {
     /// The average rating of this meal
@@ -96,7 +104,9 @@ struct Ratings {
 #[ComplexObject]
 impl Ratings {
     /// A function for getting this user's rating for the meal
+    #[instrument(skip(ctx))]
     async fn personal_rating(&self, ctx: &Context<'_>) -> Result<Option<u32>> {
+        trace_query_request();
         let data_access = ctx.get_data_access();
         let client_id = ctx.get_auth_info().client_id;
         let rating = data_access
@@ -106,7 +116,7 @@ impl Ratings {
     }
 }
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Debug)]
 struct MealStatistics {
     /// The date of the last time the meal was served
     last_served: Option<Date>,

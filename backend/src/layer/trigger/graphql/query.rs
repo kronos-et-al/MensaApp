@@ -1,9 +1,10 @@
 use async_graphql::{Context, Object, Result};
-use tracing::{trace, instrument};
+use tracing::{instrument};
+use crate::layer::trigger::graphql::util::trace_query_request;
 
 use crate::util::{Date, Uuid};
 
-use super::{types::canteen::Canteen, util::{ApiUtil, trace_request}, types::meal::Meal};
+use super::{types::canteen::Canteen, util::ApiUtil, types::meal::Meal};
 
 /// Class implementing `GraphQL`s root queries.
 #[derive(Debug)]
@@ -12,10 +13,12 @@ pub struct QueryRoot;
 #[Object]
 impl QueryRoot {
     /// This query returns a list of all available canteens.
+    #[instrument(skip(self, ctx))]
     async fn get_canteens(
         &self, 
         ctx: &Context<'_>
     ) -> Result<Vec<Canteen>> {
+        trace_query_request();
         let data = ctx.get_data_access();
         let canteens = data
             .get_canteens()
@@ -28,11 +31,13 @@ impl QueryRoot {
 
     /// This query returns the canteen identified by the specified ID.
     /// If there is no canteen with the specified ID, a null value is returned.
+    #[instrument(skip(self, ctx))]
     async fn get_canteen(
         &self, 
         ctx: &Context<'_>, 
         #[graphql(desc = "Id of the canteen to get.")] canteen_id: Uuid
     ) -> Result<Option<Canteen>> {
+        trace_query_request();
         let data = ctx.get_data_access();
         let canteen = data
             .get_canteen(canteen_id)
@@ -42,7 +47,8 @@ impl QueryRoot {
     }
 
     /// This query returns the main dish (including its price and sides) identified by the specified ID, the line and the date.
-    /// If the main dish does not exist, or is not served at the specified line on the specified day, a null value is returned. 
+    /// If the main dish does not exist, or is not served at the specified line on the specified day, a null value is returned.
+    #[instrument(skip(self, ctx))]
     async fn get_meal(
         &self,
         ctx: &Context<'_>,
@@ -50,6 +56,7 @@ impl QueryRoot {
         #[graphql(desc = "Id of the line at which the meal to get is to be offered.")] line_id: Uuid,
         #[graphql(desc = "Date of the day on which the meal to get is to be offered.")] date: Date,
     ) -> Result<Option<Meal>> {
+        trace_query_request();
         let data_access = ctx.get_data_access();
         let client_id = ctx.get_auth_info().client_id;
         let meal = data_access
@@ -60,9 +67,9 @@ impl QueryRoot {
     }
 
     /// This query returns the version of this API schema. It can also be used for health checks.
-    #[instrument(skip(_ctx))]
+    #[instrument(skip(self, _ctx))]
     async fn api_version(&self, _ctx: &Context<'_>) -> String {
-        trace_request();
+        trace_query_request();
         "1.0".into()
     }
 }
