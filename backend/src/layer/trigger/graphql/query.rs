@@ -56,4 +56,9 @@ impl QueryRoot {
             .map(Into::into);
         Ok(meal)
     }
+
+    /// This query returns the version of this API schema. It can also be used for health checks.
+    async fn api_version(&self, _ctx: &Context<'_>) -> String {
+        "1.0".into()
+    }
 }

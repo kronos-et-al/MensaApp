@@ -53,6 +53,9 @@ impl GraphQLServer {
 
     /// Starts the GraphQL-Server. It will be running in the background until [`Self::shutdown()`] is called.
     pub fn start(&mut self) {
+        
+        assert!(self.shutdown.is_some(), "tried to start server twice");
+        
         let listen = "0.0.0.0:8090"; // TODO Ipv6?
 
         let app = Router::new()
@@ -110,7 +113,7 @@ async fn graphql_handler(
 mod tests {
     #![allow(clippy::unwrap_used)]
 
-    use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
+    use async_graphql::{http::{playground_source, GraphQLPlaygroundConfig}, Json};
     use serial_test::serial;
 
     use crate::layer::trigger::graphql::{
@@ -118,15 +121,28 @@ mod tests {
         server::GraphQLServer,
     };
 
+
+    fn get_test_server() -> GraphQLServer {
+        GraphQLServer::new(RequestDatabaseMock, CommandMock)
+    }
+
     #[tokio::test]
     #[serial]
+    /// Test whether api version is available as health check.
     async fn test_graphql() {
-        let mut server = GraphQLServer::new(RequestDatabaseMock, CommandMock);
+        let mut server = get_test_server();
         server.start();
 
+        let test_request = r#"
+        {
+            "query": "{apiVersion}"
+        }
+        "#;
+
         let client = reqwest::Client::new();
-        let _resp = client
+        let resp = client
             .post("http://localhost:8090")
+            .body(test_request)
             .send()
             .await
             .unwrap()
@@ -134,14 +150,17 @@ mod tests {
             .await
             .unwrap();
 
-        // TODO this only checks whether a connection to the server could be made. A real check should be added later.
+        assert_eq!("{\"data\":{\"apiVersion\":\"1.0\"}}", resp, "wrong data returned on graphql version health check.");
+
+
         server.shutdown().await;
     }
 
     #[tokio::test]
     #[serial]
+    /// Test whether the graphql playground is served.
     async fn test_playground() {
-        let mut server = GraphQLServer::new(RequestDatabaseMock, CommandMock);
+        let mut server = get_test_server();
         server.start();
 
         let result = reqwest::get("http://localhost:8090")
@@ -158,9 +177,21 @@ mod tests {
 
     #[tokio::test]
     #[should_panic]
+    /// test what happens when server is shutdown but not running.
     async fn test_not_running() {
-        let mut server = GraphQLServer::new(RequestDatabaseMock, CommandMock);
+        let mut server = get_test_server();
 
         server.shutdown().await;
+    }
+
+
+    /// Test what happens when server is started twice.
+    #[tokio::test]
+    #[should_panic = "tried to start server twice"]
+    #[serial]
+    async fn test_double_start() {
+        let mut server = get_test_server();
+        server.start();
+        server.start();
     }
 }
