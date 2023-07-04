@@ -207,7 +207,6 @@ impl Command for CommandMock {
         _image_url: String,
         _auth_info: AuthInfo,
     ) -> CommandResult<()> {
-        //Err(crate::interface::api_command::CommandError::BadAuth)
         Ok(())
     }
 
