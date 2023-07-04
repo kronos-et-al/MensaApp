@@ -1,7 +1,7 @@
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 use tracing::{instrument};
 use crate::{
-    interface::persistent_data::{model, DataError::NoSuchItem},
+    interface::persistent_data::model,
     layer::trigger::graphql::util::ApiUtil,
     util::{Date, Uuid},
 };
@@ -32,7 +32,7 @@ impl Line {
             .get_canteen(self.canteen_id)
             .await?
             .map(Into::into)
-            .ok_or(NoSuchItem.into())
+            .ok_or_else(|| "internal error: each line must belong to a canteen".into())
     }
 
     /// A function for getting the meals offered at this line on a given day. Requires a date
@@ -40,9 +40,8 @@ impl Line {
     async fn meals(&self, ctx: &Context<'_>, date: Date) -> Result<Vec<Meal>> {
         trace_query_request();
         let data_access = ctx.get_data_access();
-        let client_id = ctx.get_auth_info().client_id;
         let meals = data_access
-            .get_meals(self.id, date, client_id)
+            .get_meals(self.id, date)
             .await?
             .into_iter()
             .map(Into::into)
@@ -52,7 +51,7 @@ impl Line {
 }
 
 impl From<model::Line> for Line {
-    /// A function for converting Lines from `persistent_data/model/line` to types/line 
+    /// A function for converting Lines from `persistent_data/model/line` to types/line
     fn from(value: model::Line) -> Self {
         Self {
             id: value.id,

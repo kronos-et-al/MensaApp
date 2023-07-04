@@ -27,7 +27,10 @@ impl Image {
     async fn personal_upvote(&self, ctx: &Context<'_>) -> Result<bool> {
         trace_query_request();
         let data = ctx.get_data_access();
-        let client_id = ctx.get_auth_info().client_id;
+        let client_id = match ctx.get_auth_info() {
+            Some(info) => info.client_id,
+            None => return Ok(false),
+        };
         let upvote = data.get_personal_upvote(self.id, client_id).await?;
         Ok(upvote)
     }
@@ -36,7 +39,10 @@ impl Image {
     async fn personal_downvote(&self, ctx: &Context<'_>) -> Result<bool> {
         trace_query_request();
         let data = ctx.get_data_access();
-        let client_id = ctx.get_auth_info().client_id;
+        let client_id = match ctx.get_auth_info() {
+            Some(info) => info.client_id,
+            None => return Ok(false),
+        };
         let downvote = data.get_personal_downvote(self.id, client_id).await?;
         Ok(downvote)
     }

@@ -144,10 +144,9 @@ pub trait RequestDataAccess {
         id: Uuid,
         line_id: Uuid,
         date: Date,
-        client_id: Uuid,
     ) -> Result<Option<Meal>>;
     /// Returns all meals related to all the params.
-    async fn get_meals(&self, line_id: Uuid, date: Date, client_id: Uuid) -> Result<Vec<Meal>>;
+    async fn get_meals(&self, line_id: Uuid, date: Date) -> Result<Vec<Meal>>;
     /// Returns all sides of a line at the given day from the database.
     async fn get_sides(&self, line_id: Uuid, date: Date) -> Result<Vec<Side>>;
     /// Returns all images, which are related to the given user or meal. Images reported by the user will not be returned.

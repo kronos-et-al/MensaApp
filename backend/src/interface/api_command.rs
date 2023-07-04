@@ -39,8 +39,12 @@ pub trait Command {
     async fn set_meal_rating(&self, meal_id: Uuid, rating: u32, auth_info: AuthInfo) -> Result<()>;
 }
 
+/// Structure that may contain all information necessary for authenticating a client, if provided.
+pub type AuthInfo = Option<InnerAuthInfo>;
+
 /// Structure containing all information necessary for authenticating a client.
-pub struct AuthInfo {
+#[derive(Debug)]
+pub struct InnerAuthInfo {
     /// Id of client, chosen at random.
     pub client_id: Uuid,
     /// First 10 letters of api key.
