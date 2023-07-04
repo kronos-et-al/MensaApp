@@ -42,7 +42,7 @@ jobs:
         cargo install sqlx-cli
         docker run -itd -e POSTGRES_USER=postgres_user -e POSTGRES_PASSWORD=secret_password -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=mensa_app -p 5432:5432 -v data:/var/lib/postgresql/data --name postgresql postgres
         cargo sqlx mig run
-        cargo sqlx prepare --check -D postgres://postgres_user@localhost/mensa_app
+        cargo sqlx prepare --check --database-url postgres://postgres_user@localhost/mensa_app
     - name: Build
       run: cargo build --verbose
     - name: Run tests
