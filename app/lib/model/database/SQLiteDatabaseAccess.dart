@@ -14,7 +14,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   final String _canteen = '''
     CREATE TABLE Canteen (
       canteenID TEXT PRIMARY KEY,
-      name TEXT
+      name TEXT NOT NULL
     )
   ''';
 
@@ -22,9 +22,9 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   final String _line = '''
     CREATE TABLE Line(
       lineID TEXT PRIMARY KEY,
-      canteenID TEXT,
-      name TEXT,
-      position INTEGER,
+      canteenID TEXT NOT NULL,
+      name TEXT NOT NULL,
+      position INTEGER NOT NULL,
       FOREIGN KEY(canteenID) REFERENCES Canteen(canteenID)
     )
   ''';
@@ -32,11 +32,12 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   /// The string to create a table for a mealplan.
   final String _mealplan = '''
     CREATE TABLE MealPlan(
-      mealplanID TEXT PRIMARY KEY,
-      lineID TEXT,
-      date TEXT PRIMARY KEY,
-      isClosed BOOLEAN,
-      FOREIGN KEY(lineID) REFERENCES Line(lineID)
+      mealplanID TEXT,
+      lineID TEXT NOT NULL,
+      date TEXT,
+      isClosed BOOLEAN NOT NULL,
+      FOREIGN KEY(lineID) REFERENCES Line(lineID),
+      PRIMARY KEY(mealplanID, date)
     )
   ''';
 
@@ -44,17 +45,17 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   final String _meal = '''
     CREATE TABLE Meal(
       mealID TEXT PRIMARY KEY,
-      mealplanID TEXT,
-      name TEXT,
-      foodtype TEXT CHECK(foodtype IN (${FoodType.values.map((type) => "'$type'").join(', ')})),
-      priceStudent INTEGER,
-      priceEmployee INTEGER,
-      pricePupil INTEGER,
-      priceGuest INTEGER,
+      mealplanID TEXT NOT NULL,
+      name TEXT NOT NULL,
+      foodtype TEXT NOT NULL CHECK(foodtype IN (${FoodType.values.map((type) => "'$type'").join(', ')})),
+      priceStudent INTEGER NOT NULL CHECK(priceStudent >= 0),
+      priceEmployee INTEGER NOT NULL CHECK(priceEmployee >= 0),
+      pricePupil INTEGER NOT NULL CHECK(pricePupil >= 0),
+      priceGuest INTEGER NOT NULL CHECK(priceGuest >= 0),
       individualRating INTEGER,
-      numberOfRatings INTEGER,
+      numberOfRatings INTEGER NOT NULL,
       averageRating DECIMAL(1,1),
-      lastServed TEXT,
+      lastServed TEXT NOT NULL,
       nextServed TEXT,
       relativeFrequency TEXT CHECK IN (${Frequency.values.map((frequency) => "'$frequency'").join(', ')}),
       FOREIGN KEY(mealplanID) REFERENCES MealPlan(mealplanID)
@@ -65,13 +66,13 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   final String _side = '''
     CREATE TABLE Side(
       sideID TEXT PRIMARY KEY,
-      mealID TEXT,
-      name TEXT,
-      foodtype TEXT CHECK(foodtype IN (${FoodType.values.map((type) => "'$type'").join(', ')})),
-      priceStudent INTEGER,
-      priceEmployee INTEGER,
-      pricePupil INTEGER,
-      priceGuest INTEGER,
+      mealID TEXT NOT NULL,
+      name TEXT NOT NULL,
+      foodtype TEXT NOT NULL CHECK(foodtype IN (${FoodType.values.map((type) => "'$type'").join(', ')})),
+      priceStudent INTEGER NOT NULL CHECK(priceStudent >= 0),
+      priceEmployee INTEGER NOT NULL CHECK(priceEmployee >= 0),
+      pricePupil INTEGER NOT NULL CHECK(pricePupil >= 0),
+      priceGuest INTEGER NOT NULL CHECK(priceGuest >= 0),
       FOREIGN KEY(mealID) REFERENCES Meal(mealID)
     )
   ''';
@@ -80,8 +81,8 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   final String _image = '''
     CREATE TABLE Image(
       imageID TEXT PRIMARY KEY,
-      mealID TEXT,
-      url TEXT,
+      mealID TEXT NOT NULL,
+      url TEXT NOT NULL,
       FOREIGN KEY(mealID) REFERENCES Meal(mealID)
     )
   ''';
@@ -92,6 +93,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
       mealID TEXT,
       additiveID TEXT CHECK IN (${Additive.values.map((additive) => "'$additive'").join(', ')}),
       FOREIGN KEY(mealID) REFERENCES Meal(mealID),
+      PRIMARY KEY(mealID, additiveID)
     )
   ''';
 
@@ -101,6 +103,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
       mealID TEXT,
       allergenID TEXT CHECK IN (${Allergen.values.map((allergen) => "'$allergen'").join(', ')}),
       FOREIGN KEY(mealID) REFERENCES Meal(mealID),
+      PRIMARY KEY(mealID, allergenID)
     )
   ''';
 
@@ -110,6 +113,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
       sideID TEXT,
       additiveID TEXT CHECK IN (${Additive.values.map((additive) => "'$additive'").join(', ')}),
       FOREIGN KEY(sideID) REFERENCES Side(sideID),
+      PRIMARY KEY(sideID, additiveID)
     )
   ''';
 
@@ -119,6 +123,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
       sideID TEXT,
       allergenID TEXT CHECK IN (${Allergen.values.map((allergen) => "'$allergen'").join(', ')}),
       FOREIGN KEY(sideID) REFERENCES Side(sideID),
+      PRIMARY KEY(sideID, allergenID)
     )
   ''';
 
@@ -126,13 +131,13 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   final String _favorite = '''
     CREATE TABLE Favorite(
       favoriteID TEXT PRIMARY KEY,
-      lineID TEXT,
-      lastDate TEXT,
+      lineID TEXT NOT NULL,
+      lastDate TEXT NOT NULL,
       foodtype TEXT CHECK(foodtype IN (${FoodType.values.map((type) => "'$type'").join(', ')})),
-      priceStudent INTEGER,
-      priceEmployee INTEGER,
-      pricePupil INTEGER,
-      priceGuest INTEGER,
+      priceStudent INTEGER CHECK(priceStudent > 0),
+      priceEmployee INTEGER CHECK(priceEmployee > 0),
+      pricePupil INTEGER CHECK(pricePupil > 0),
+      priceGuest INTEGER CHECK(priceGuest > 0),
       FOREIGN KEY(lineID) REFERENCES Line(lineID)
     )
   ''';
