@@ -36,7 +36,10 @@ impl<'a> ApiUtil for Context<'a> {
     }
 }
 
+pub fn trace_mutation_request() {
+    trace!("incoming mutation request");
+}
 
-pub fn trace_request() {
-    trace!("incoming request");
+pub fn trace_query_request() {
+    trace!("incoming query request");
 }
