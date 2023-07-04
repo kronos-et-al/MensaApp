@@ -26,7 +26,7 @@ pub struct Line {
     pub id: Uuid,
     /// Name of the line
     pub name: String,
-
+    /// The id of the canteen to which the line belongs
     pub canteen_id: Uuid,
 }
 
@@ -50,9 +50,9 @@ pub struct Meal {
     pub rating_count: u32,
     /// The average rating of the meal
     pub average_rating: f32,
-
+    /// The date on which the meal is served
     pub date: Date,
-
+    /// The id of the line at which the meal is served
     pub line_id: Uuid,
 }
 
