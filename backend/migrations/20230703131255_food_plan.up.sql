@@ -5,7 +5,7 @@ CREATE DOMAIN price AS integer CHECK (VALUE >= 0);
 CREATE TABLE food_plan (
   line_id uuid NOT NULL,
   food_id uuid NOT NULL,
-  date date NOT NULL,
+  serve_date date NOT NULL,
   priceStudent price NOT NULL,
   priceEmployee price NOT NULL,
   pricePupil price NOT NULL,
