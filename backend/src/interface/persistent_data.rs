@@ -165,5 +165,5 @@ pub trait RequestDataAccess {
     /// Returns all additives related to the given food_id (food_id can be a meal_id or side_id).
     async fn get_additives(&self, food_id: Uuid) -> Result<Vec<Additive>>;
     /// Returns all allergens related to the given food_id (food_id can be a meal_id or side_id).
-    async fn get_allergens(&self, food_id: Uuid) -> Result<Vec<Additive>>;
+    async fn get_allergens(&self, food_id: Uuid) -> Result<Vec<Allergen>>;
 }
