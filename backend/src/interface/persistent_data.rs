@@ -162,8 +162,8 @@ pub trait RequestDataAccess {
     async fn get_personal_upvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool>;
     /// Checks if the given image got an downvote by the given user
     async fn get_personal_downvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool>;
-    /// Returns all additives related to the given food_id (food_id can be a meal_id or side_id)
+    /// Returns all additives related to the given food_id (food_id can be a meal_id or side_id).
     async fn get_additives(&self, food_id: Uuid) -> Result<Vec<Additive>>;
-    /// Returns all allergens related to the given food_id (food_id can be a meal_id or side_id)
+    /// Returns all allergens related to the given food_id (food_id can be a meal_id or side_id).
     async fn get_allergens(&self, food_id: Uuid) -> Result<Vec<Additive>>;
 }
