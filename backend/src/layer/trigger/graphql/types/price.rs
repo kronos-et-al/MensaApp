@@ -1,7 +1,7 @@
 use async_graphql::{SimpleObject};
 
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Debug)]
 pub struct Price {
     /// The price of the meal for students
     pub student: u32,

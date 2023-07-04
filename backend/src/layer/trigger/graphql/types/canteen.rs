@@ -1,12 +1,13 @@
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-
+use tracing::{instrument};
 use crate::{
     interface::persistent_data::model, layer::trigger::graphql::util::ApiUtil, util::Uuid,
 };
+use crate::layer::trigger::graphql::util::trace_query_request;
 
 use super::line::Line;
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Debug)]
 #[graphql(complex)]
 pub struct Canteen {
     /// The id of the canteen.
@@ -18,7 +19,9 @@ pub struct Canteen {
 #[ComplexObject]
 impl Canteen {
     /// A function for getting the lines of the canteen
+    #[instrument(skip(ctx))]
     async fn lines(&self, ctx: &Context<'_>) -> Result<Vec<Line>> {
+        trace_query_request();
         let data = ctx.get_data_access();
         let lines = data
             .get_lines(self.id)

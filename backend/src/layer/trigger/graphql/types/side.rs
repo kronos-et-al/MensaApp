@@ -1,14 +1,15 @@
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-
+use tracing::{instrument};
 use crate::{
     interface::persistent_data::model,
     layer::trigger::graphql::util::ApiUtil,
     util::{Additive, Allergen, Uuid},
 };
+use crate::layer::trigger::graphql::util::trace_query_request;
 
 use super::price::Price;
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Debug)]
 #[graphql(complex)]
 pub struct Side {
     /// The id of the side
@@ -22,7 +23,9 @@ pub struct Side {
 #[ComplexObject]
 impl Side {
     /// A function for getting the allergens of this side
+    #[instrument(skip(ctx))]
     async fn allergens(&self, ctx: &Context<'_>) -> Result<Vec<Allergen>> {
+        trace_query_request();
         let data_access = ctx.get_data_access();
         let allergens = data_access
             .get_allergens(self.id)
@@ -34,7 +37,9 @@ impl Side {
     }
 
     /// A function for getting the additives of this side
+    #[instrument(skip(ctx))]
     async fn additives(&self, ctx: &Context<'_>) -> Result<Vec<Additive>> {
+        trace_query_request();
         let data_access = ctx.get_data_access();
         let additives = data_access
             .get_additives(self.id)
