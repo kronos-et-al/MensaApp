@@ -3,7 +3,7 @@ use std::ops::Deref;
 use async_graphql::Context;
 
 use base64::{engine::general_purpose, Engine};
-use tracing::trace;
+use tracing::{trace, debug};
 
 use crate::{
     interface::{
@@ -50,6 +50,7 @@ const AUTH_TYPE: &str = "Mensa";
 const AUTH_SEPARATOR: char = ':';
 
 fn read_auth_from_header(header: &str) -> AuthInfo {
+    debug!(auth_header=header, "requested AuthInfo");
     let (auth_type, codeword) = header.split_once(' ')?;
 
     if auth_type != AUTH_TYPE {
@@ -113,5 +114,13 @@ mod tests {
         assert_eq!(auth_info.client_id, client_id, "wrong client id");
         assert_eq!(auth_info.api_ident, api_indent, "wrong api indent");
         assert_eq!(auth_info.hash, hash, "wrong hash");
+    }
+
+    #[test]
+    fn test_read_static_header() {
+        // this header is valid and can be used for testing
+        let header = "Mensa MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=";
+        let auth_info = read_auth_from_header(header);
+        assert!(auth_info.is_some(), "could not read auth header");
     }
 }

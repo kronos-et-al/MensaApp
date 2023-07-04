@@ -1,4 +1,5 @@
 use crate::layer::trigger::graphql::util::{trace_query_request, ApiUtil};
+use crate::util::MealType;
 use crate::{
     interface::persistent_data::model,
     util::{Additive, Allergen, Date, Uuid},
@@ -6,6 +7,7 @@ use crate::{
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 use tracing::instrument;
 
+use super::line::Line;
 use super::{image::Image, price::Price, side::Side};
 
 #[derive(SimpleObject, Debug)]
@@ -15,12 +17,15 @@ pub struct Meal {
     id: Uuid,
     /// The name of the main course.
     name: String,
+    /// Type of this meal.
+    /// Here the type of meat which is contained in the meal, or whether it is vegetarian or vegan, is specified.
+    meal_type: MealType,
     /// The ratings given by the users to the meal.
     ratings: Ratings,
     /// The prices of the dish each for the four groups of people students, employees, pupils and guests.
     price: Price,
-    /// The statistics for the meal. See MealStatistics TODO: link
-    meal_statistics: MealStatistics,
+    /// Some statistics for the meal.
+    statistics: MealStatistics,
     #[graphql(skip)]
     /// The date on which the meal is served. This is currently only used for getting sides.
     date: Date,
@@ -31,6 +36,7 @@ pub struct Meal {
 
 #[ComplexObject]
 impl Meal {
+    // TODO these should not be called "functions" as they are just attributes in a graphql context.
     /// A function for getting the allergens of this meal
     #[instrument(skip(ctx))]
     async fn allergens(&self, ctx: &Context<'_>) -> Result<Vec<Allergen>> {
@@ -87,6 +93,13 @@ impl Meal {
             .collect();
         Ok(sides)
     }
+
+     /// A function for getting the line this meal is served at.
+     #[instrument(skip(ctx))]
+     async fn line(&self, ctx: &Context<'_>) -> Result<Line> {
+        trace_query_request();
+        todo!() // TODO
+     }
 }
 
 #[derive(SimpleObject, Debug)]
@@ -146,13 +159,14 @@ impl From<model::Meal> for Meal {
                 guest: value.price.price_guest,
                 pupil: value.price.price_pupil,
             },
-            meal_statistics: MealStatistics {
-                last_served: Option::from(value.last_served),
+            statistics: MealStatistics {
+                last_served: Option::from(value.last_served), // todo these here should not be options all the way from the model
                 next_served: Option::from(value.next_served),
                 relative_frequency: value.relative_frequency,
             },
             date: value.date,
             line_id: value.line_id,
+            meal_type: value.meal_type
         }
     }
 }

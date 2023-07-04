@@ -1,4 +1,5 @@
 use crate::layer::trigger::graphql::util::trace_query_request;
+use crate::util::MealType;
 use crate::{
     interface::persistent_data::model,
     layer::trigger::graphql::util::ApiUtil,
@@ -16,6 +17,9 @@ pub struct Side {
     id: Uuid,
     /// The name of the side
     name: String,
+    /// Type of this side. 
+    /// Here the type of meat which is contained in the side, or whether it is vegetarian or vegan, is specified.
+    meal_type: MealType,
     /// The price of the side
     price: Price,
 }
@@ -57,6 +61,7 @@ impl From<model::Side> for Side {
         Self {
             id: value.id,
             name: value.name,
+            meal_type: value.meal_type,
             price: Price {
                 student: value.price.price_student,
                 employee: value.price.price_employee,

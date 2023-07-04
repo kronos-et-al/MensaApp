@@ -107,7 +107,7 @@ pub enum Additive {
 }
 
 /// This enum lists all the types a meal can be of.
-#[derive(Copy, Clone, Eq, PartialEq, Enum)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
 pub enum MealType {
     /// This meal is vegan.
     Vegan,

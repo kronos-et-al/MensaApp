@@ -25,7 +25,7 @@ pub struct Line {
 impl Line {
     /// A function for getting the canteen this line belongs to
     #[instrument(skip(ctx))]
-    async fn canteen(&self, ctx: &Context<'_>) -> Result<Canteen> {
+    async fn canteen(&self, ctx: &Context<'_>) -> Result<Canteen> { // TODO Option when no data available?
         trace_query_request();
         let data_access = ctx.get_data_access();
         data_access
