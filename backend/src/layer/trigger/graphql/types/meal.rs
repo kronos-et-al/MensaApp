@@ -1,11 +1,11 @@
-use crate::layer::trigger::graphql::util::{trace_query_request, ApiUtil};
+use crate::layer::trigger::graphql::util::{ApiUtil, TRACE_QUERY_MESSAGE};
 use crate::util::MealType;
 use crate::{
     interface::persistent_data::model,
     util::{Additive, Allergen, Date, Uuid},
 };
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-use tracing::instrument;
+use tracing::{instrument, trace};
 
 use super::line::Line;
 use super::{image::Image, price::Price, side::Side};
@@ -40,7 +40,7 @@ impl Meal {
     /// A function for getting the allergens of this meal
     #[instrument(skip(ctx))]
     async fn allergens(&self, ctx: &Context<'_>) -> Result<Vec<Allergen>> {
-        trace_query_request();
+        trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         let allergens = data_access
             .get_allergens(self.id)
@@ -54,7 +54,7 @@ impl Meal {
     /// A function for getting the additives of this meal
     #[instrument(skip(ctx))]
     async fn additives(&self, ctx: &Context<'_>) -> Result<Vec<Additive>> {
-        trace_query_request();
+        trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         let additives = data_access
             .get_additives(self.id)
@@ -68,7 +68,7 @@ impl Meal {
     /// A function for getting the images belonging to this meal
     #[instrument(skip(ctx))]
     async fn images(&self, ctx: &Context<'_>) -> Result<Vec<Image>> {
-        trace_query_request();
+        trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         let client_id = ctx.get_auth_info().map(|i| i.client_id);
         let images = data_access
@@ -83,7 +83,7 @@ impl Meal {
     /// A function for getting the sides belonging to this meal.
     #[instrument(skip(ctx))]
     async fn sides(&self, ctx: &Context<'_>) -> Result<Vec<Side>> {
-        trace_query_request();
+        trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         let sides = data_access
             .get_sides(self.line_id, self.date)
@@ -98,7 +98,7 @@ impl Meal {
     #[instrument(skip(ctx))]
     #[graphql(complexity = "10 * child_complexity")]
     async fn line(&self, ctx: &Context<'_>) -> Result<Line> {
-        trace_query_request();
+        trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         data_access
             .get_line(self.line_id)
@@ -125,7 +125,7 @@ impl Ratings {
     /// A function for getting this user's rating for the meal
     #[instrument(skip(ctx))]
     async fn personal_rating(&self, ctx: &Context<'_>) -> Result<Option<u32>> {
-        trace_query_request();
+        trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         let client_id = match ctx.get_auth_info() {
             Some(info) => info.client_id,
