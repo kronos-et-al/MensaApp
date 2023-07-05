@@ -98,7 +98,12 @@ impl Meal {
      #[instrument(skip(ctx))]
      async fn line(&self, ctx: &Context<'_>) -> Result<Line> {
         trace_query_request();
-        todo!() // TODO
+        let data_access = ctx.get_data_access();
+        data_access
+            .get_line(self.line_id)
+            .await?
+            .map(Into::into)
+            .ok_or_else(|| "internal error: each meal must belong to a line".into())
      }
 }
 
