@@ -36,6 +36,15 @@ impl RequestDataAccess for RequestDatabaseMock {
         Ok(vec![canteen])
     }
 
+    async fn get_line(&self, _id: crate::util::Uuid) -> DataResult<Option<Line>> {
+        let line = Line {
+            id: Uuid::default(),
+            name: "dummy".to_string(),
+            canteen_id: Uuid::default(),
+        };
+        Ok(Option::from(line))
+    }
+
     async fn get_lines(&self, _canteen_id: Uuid) -> DataResult<Vec<Line>> {
         let line = Line {
             id: Uuid::default(),
