@@ -1,6 +1,6 @@
 //! These structs are used for database operations.
+use crate::util::Price;
 use crate::util::{self, Date};
-use crate::util::{Additive, Allergen, Price};
 
 use util::{MealType, Uuid};
 
@@ -18,8 +18,6 @@ pub struct Canteen {
     pub id: Uuid,
     /// Name of the canteen
     pub name: String,
-    /// All related lines.
-    pub lines: Vec<Line>,
 }
 
 /// Struct for database-operations. Related to the database entity 'line'.
@@ -28,10 +26,8 @@ pub struct Line {
     pub id: Uuid,
     /// Name of the line
     pub name: String,
-    /// All related meals.
-    pub meals: Vec<Meal>,
-    /// All related meals.
-    pub sides: Vec<Side>,
+    /// The id of the canteen to which the line belongs
+    pub canteen_id: Uuid,
 }
 
 /// Struct for database-operations. Related to the database entity 'meal'.
@@ -45,19 +41,19 @@ pub struct Meal {
     /// Price of the meal for students, employees, guests and pupils.
     pub price: Price,
     /// The date the meal was last served.
-    pub last_served: Date,
+    pub last_served: Option<Date>,
     /// The date when the meal will be served next.
-    pub next_served: Date,
+    pub next_served: Option<Date>,
     /// Relative frequency of the meal in the mealplan.
     pub relative_frequency: f32,
     /// Amount of ratings for the meal
     pub rating_count: u32,
     /// The average rating of the meal
     pub average_rating: f32,
-    /// All containing allergens.
-    pub allergens: Vec<Allergen>,
-    /// All containing additives.
-    pub additives: Vec<Additive>,
+    /// The date on which the meal is served
+    pub date: Date,
+    /// The id of the line at which the meal is served
+    pub line_id: Uuid,
 }
 
 /// This structure is used for database operations. This side structure is based on the database entities 'food', 'foodAllergen' and 'foodAdditive'.
@@ -70,10 +66,6 @@ pub struct Side {
     pub meal_type: MealType,
     /// Price of the side for students, employees, guests and pupils.
     pub price: Price,
-    /// All containing allergens.
-    pub allergens: Vec<Allergen>,
-    /// All containing additives.
-    pub additives: Vec<Additive>,
 }
 
 /// This structure is used for database operations. This image structure is based on the database entity 'image'.
