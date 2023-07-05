@@ -21,11 +21,12 @@ class GraphQlServerAccess implements IServerAccess {
   final GraphQLClient _client = GraphQLClient(
       link: HttpLink(const String.fromEnvironment('API_URL')),
       cache: GraphQLCache());
+  final String _clientId;
 
-  GraphQlServerAccess._();
+  GraphQlServerAccess._(this._clientId);
 
-  factory GraphQlServerAccess() {
-    return GraphQlServerAccess._();
+  factory GraphQlServerAccess(String clientId) {
+    return GraphQlServerAccess._(clientId);
   }
 
   @override
