@@ -2,7 +2,7 @@
 import 'package:app/view_model/repository/data_classes/filter/FilterPreferences.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
-import 'package:app/view_model/repository/data_classes/settings/MensaColorScheme.dart';
+import 'package:app/view_model/repository/data_classes/settings/ColorScheme.dart';
 import 'package:app/view_model/repository/data_classes/settings/MealPlanFormat.dart';
 import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
 import 'package:app/view_model/repository/interface/ILocalStorage.dart';
@@ -24,9 +24,9 @@ class SharedPreferenceAccess implements ILocalStorage {
   }
 
   @override
-  Future<MensaColorScheme> getColorScheme() async {
+  Future<ColorScheme> getColorScheme() async {
     final colorScheme = pref.getString('colorScheme');
-    return Future.value(MensaColorScheme.values.firstWhere((e) => e.toString() == colorScheme));
+    return Future.value(ColorScheme.values.firstWhere((e) => e.toString() == colorScheme));
   }
 
   @override
@@ -94,7 +94,7 @@ class SharedPreferenceAccess implements ILocalStorage {
   }
 
   @override
-  Future<void> setColorScheme(MensaColorScheme scheme) async {
+  Future<void> setColorScheme(ColorScheme scheme) async {
     await pref.setString('colorScheme', scheme.toString());
   }
 

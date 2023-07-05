@@ -6,7 +6,7 @@ import 'package:app/view_model/repository/data_classes/filter/Sorting.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/settings/MealPlanFormat.dart';
-import 'package:app/view_model/repository/data_classes/settings/MensaColorScheme.dart';
+import 'package:app/view_model/repository/data_classes/settings/ColorScheme.dart';
 import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,7 +41,7 @@ Future<void> main() async {
   });
 
   test('Color Scheme Test', () async {
-    MensaColorScheme scheme = MensaColorScheme.light;
+    ColorScheme scheme = ColorScheme.light;
     pref.setColorScheme(scheme);
     expect(await pref.getColorScheme(), scheme);
   });
