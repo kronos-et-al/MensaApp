@@ -5,11 +5,17 @@ import 'package:app/view/core/input_components/MensaRatingInput.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:flutter/material.dart';
 
+/// Displays a Meal as a Gallery Entry.
 class MealGridEntry extends StatelessWidget {
   final Meal _meal;
   final double _width;
 
-  MealGridEntry({super.key, required Meal meal, required double width})
+  /// Creates a MealGridEntry.
+  /// @param meal The Meal to display.
+  /// @param width The width of the entry.
+  /// @param key The key to use for this widget.
+  /// @return A MealGridEntry.
+  const MealGridEntry({super.key, required Meal meal, required double width})
       : _meal = meal,
         _width = width;
 
@@ -35,7 +41,9 @@ class MealGridEntry extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                     color: Theme.of(context).colorScheme.surface,
                     border: Border.all(
-                        color: _meal.isFavorite ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.surface,
+                        color: _meal.isFavorite
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).colorScheme.surface,
                         width: _meal.isFavorite ? 2 : 0),
                   ),
                   child: Column(children: [

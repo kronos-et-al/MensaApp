@@ -4,11 +4,16 @@ import 'package:app/view_model/repository/data_classes/settings/PriceCategory.da
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+/// Displays a Side Dish.
 class MealSideEntry extends StatelessWidget {
   final Side _side;
   final NumberFormat _priceFormat =
-  NumberFormat.currency(locale: 'de_DE', symbol: '€');
+      NumberFormat.currency(locale: 'de_DE', symbol: '€');
 
+  /// Creates a MealSideEntry.
+  /// @param side The Side to display.
+  /// @param key The key to use for this widget.
+  /// @return A MealSideEntry.
   MealSideEntry({Key? key, required Side side})
       : _side = side,
         super(key: key);
@@ -24,12 +29,18 @@ class MealSideEntry extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text('+ ${_side.name}',
-                style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 14, height: 1.5)),
+                style: const TextStyle(
+                    fontWeight: FontWeight.normal, fontSize: 14, height: 1.5)),
           ),
           const SizedBox(width: 8),
           // TODO use correct price
-          Text(_priceFormat
-              .format(_side.price.getPrice(PriceCategory.student) / 100), style: const TextStyle(fontSize: 14, height: 1.5, )),
+          Text(
+              _priceFormat
+                  .format(_side.price.getPrice(PriceCategory.student) / 100),
+              style: const TextStyle(
+                fontSize: 14,
+                height: 1.5,
+              )),
         ],
       ),
     );
