@@ -34,7 +34,6 @@ impl Canteen {
 }
 
 impl From<model::Canteen> for Canteen {
-    /// A function for converting Canteens from `persistent_data/model/canteen` to `types/canteen`.
     fn from(value: model::Canteen) -> Self {
         Self {
             id: value.id,

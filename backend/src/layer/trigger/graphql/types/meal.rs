@@ -145,7 +145,6 @@ struct MealStatistics {
 }
 
 impl From<model::Meal> for Meal {
-    /// A function for converting Meals from `persistent_data/model/meal` to `types/meal`.
     fn from(value: model::Meal) -> Self {
         Self {
             id: value.id,

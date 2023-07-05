@@ -80,7 +80,7 @@ impl GraphQLServer {
     /// Starts the GraphQL-Server. It will be running in the background until [`Self::shutdown()`] is called.
     ///
     /// # Panics
-    /// This function anics if the server is in the wrong state, meaning it is already running or shut down.
+    /// This function panics if the server is in the wrong state, meaning it is already running or shut down.
     pub fn start(&mut self) {
         assert!(
             matches!(self.state, State::Created),

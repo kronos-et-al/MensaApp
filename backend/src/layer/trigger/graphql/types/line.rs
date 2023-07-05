@@ -51,7 +51,6 @@ impl Line {
 }
 
 impl From<model::Line> for Line {
-    /// A function for converting Lines from `persistent_data/model/line` to types/line.
     fn from(value: model::Line) -> Self {
         Self {
             id: value.id,
