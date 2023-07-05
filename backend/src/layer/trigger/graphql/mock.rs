@@ -23,41 +23,59 @@ impl RequestDataAccess for RequestDatabaseMock {
     async fn get_canteen(&self, _id: Uuid) -> DataResult<Option<Canteen>> {
         let canteen = Canteen {
             id: Uuid::default(),
-            name: "dummy".to_string(),
+            name: "dummy_getCanteen".to_string(),
         };
         Ok(Option::from(canteen))
     }
 
     async fn get_canteens(&self) -> DataResult<Vec<Canteen>> {
-        let canteen = Canteen {
+        let canteen1 = Canteen {
             id: Uuid::default(),
-            name: "dummy".to_string(),
+            name: "dummy_canteen_1".to_string(),
         };
-        Ok(vec![canteen])
+        let canteen2 = Canteen {
+            id: Uuid::default(),
+            name: "dummy_canteen_2".to_string(),
+        };
+        let canteen3 = Canteen {
+            id: Uuid::default(),
+            name: "dummy_canteen_3".to_string(),
+        };
+        Ok(vec![canteen1, canteen2, canteen3])
     }
 
     async fn get_line(&self, _id: crate::util::Uuid) -> DataResult<Option<Line>> {
         let line = Line {
             id: Uuid::default(),
-            name: "dummy".to_string(),
+            name: "dummy_getLine".to_string(),
             canteen_id: Uuid::default(),
         };
         Ok(Option::from(line))
     }
 
     async fn get_lines(&self, _canteen_id: Uuid) -> DataResult<Vec<Line>> {
-        let line = Line {
+        let line1 = Line {
             id: Uuid::default(),
-            name: "dummy".to_string(),
+            name: "dummy_line_1".to_string(),
             canteen_id: Uuid::default(),
         };
-        Ok(vec![line])
+        let line2 = Line {
+            id: Uuid::default(),
+            name: "dummy_line_2".to_string(),
+            canteen_id: Uuid::default(),
+        };
+        let line3 = Line {
+            id: Uuid::default(),
+            name: "dummy_line_3".to_string(),
+            canteen_id: Uuid::default(),
+        };
+        Ok(vec![line1, line2, line3])
     }
 
     async fn get_meal(&self, _id: Uuid, _line_id: Uuid, _date: Date) -> DataResult<Option<Meal>> {
         let meal = Meal {
             id: Uuid::default(),
-            name: "dummy".to_string(),
+            name: "dummy_getMeal".to_string(),
             meal_type: MealType::Vegan,
             price: Price {
                 price_student: 0,
@@ -77,40 +95,98 @@ impl RequestDataAccess for RequestDatabaseMock {
     }
 
     async fn get_meals(&self, _line_id: Uuid, _date: Date) -> DataResult<Vec<Meal>> {
-        let meal = Meal {
+        let meal1 = Meal {
             id: Uuid::default(),
-            name: "dummy".to_string(),
+            name: "dummy_meal_1".to_string(),
             meal_type: MealType::Vegan,
             price: Price {
-                price_student: 0,
-                price_employee: 0,
-                price_guest: 0,
-                price_pupil: 0,
+                price_student: 210,
+                price_employee: 2100,
+                price_guest: 21000,
+                price_pupil: 21,
             },
             last_served: NaiveDate::default(),
             next_served: NaiveDate::default(),
-            relative_frequency: 0.0,
-            rating_count: 0,
-            average_rating: 0.0,
+            relative_frequency: 0.8,
+            rating_count: 10,
+            average_rating: 1.2,
             date: Date::from_ymd_opt(2023, 7, 4).expect("HELP!"),
             line_id: Uuid::default(),
         };
-        Ok(vec![meal])
+        let meal2 = Meal {
+            id: Uuid::default(),
+            name: "dummy_meal_2".to_string(),
+            meal_type: MealType::BeefAw,
+            price: Price {
+                price_student: 2,
+                price_employee: 20,
+                price_guest: 200,
+                price_pupil: 2000,
+            },
+            last_served: NaiveDate::default(),
+            next_served: NaiveDate::default(),
+            relative_frequency: 0.2,
+            rating_count: 3,
+            average_rating: 4.1,
+            date: Date::from_ymd_opt(2022, 6, 5).expect("HELP!"),
+            line_id: Uuid::default(),
+        };
+        let meal3 = Meal {
+            id: Uuid::default(),
+            name: "dummy_meal_3".to_string(),
+            meal_type: MealType::Vegetarian,
+            price: Price {
+                price_student: 42000,
+                price_employee: 4200,
+                price_guest: 420,
+                price_pupil: 42,
+            },
+            last_served: NaiveDate::default(),
+            next_served: NaiveDate::default(),
+            relative_frequency: 0.5,
+            rating_count: 7,
+            average_rating: 3.5,
+            date: Date::from_ymd_opt(2022, 12, 12).expect("HELP!"),
+            line_id: Uuid::default(),
+        };
+        Ok(vec![meal1, meal2, meal3])
     }
 
     async fn get_sides(&self, _line_id: Uuid, _date: Date) -> DataResult<Vec<Side>> {
-        let side = Side {
+        let side1 = Side {
             id: Uuid::default(),
-            name: "dummy".to_string(),
+            name: "dummy_side_1".to_string(),
             meal_type: MealType::Vegan,
             price: Price {
-                price_student: 0,
-                price_employee: 0,
-                price_guest: 0,
-                price_pupil: 0,
+                price_student: 320,
+                price_employee: 300,
+                price_guest: 290,
+                price_pupil: 280,
             },
         };
-        Ok(vec![side])
+        let side2 = Side {
+            id: Uuid::default(),
+            name: "dummy_side_2".to_string(),
+            meal_type: MealType::Fish,
+            price: Price {
+                price_student: 500,
+                price_employee: 540,
+                price_guest: 220,
+                price_pupil: 450,
+            },
+        };
+        let side3 = Side {
+            id: Uuid::default(),
+            name: "dummy_side_3".to_string(),
+            meal_type: MealType::Beef,
+            price: Price {
+                price_student: 120,
+                price_employee: 130,
+                price_guest: 140,
+                price_pupil: 200,
+            },
+        };
+        Ok(vec![side1, side2, side3])
     }
 
     async fn get_visible_images(
@@ -120,13 +196,29 @@ impl RequestDataAccess for RequestDatabaseMock {
     ) -> DataResult<Vec<Image>> {
         let d1 = Image {
             id: Uuid::default(),
-            image_hoster_id: "dummyImageId".to_string(),
+            image_hoster_id: "dummy_image1_id".to_string(),
             url: String::new(),
-            rank: 0.0,
-            upvotes: 0,
-            downvotes: 0,
+            rank: 0.1,
+            upvotes: 220,
+            downvotes: 20,
         };
-        Ok(vec![d1])
+        let d2 = Image {
+            id: Uuid::default(),
+            image_hoster_id: "dummy_image2_id".to_string(),
+            url: String::new(),
+            rank: 0.4,
+            upvotes: 11,
+            downvotes: 4,
+        };
+        let d3 = Image {
+            id: Uuid::default(),
+            image_hoster_id: "dummy_image3_id".to_string(),
+            url: String::new(),
+            rank: 0.6,
+            upvotes: 20,
+            downvotes: 45,
+        };
+        Ok(vec![d1, d2, d3])
     }
 
     async fn get_personal_rating(
