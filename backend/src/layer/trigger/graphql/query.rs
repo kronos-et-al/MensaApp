@@ -1,4 +1,4 @@
-use crate::layer::trigger::graphql::util::{TRACE_QUERY_MESSAGE};
+use crate::layer::trigger::graphql::util::TRACE_QUERY_MESSAGE;
 use async_graphql::{Context, Object, Result};
 use tracing::{instrument, trace};
 

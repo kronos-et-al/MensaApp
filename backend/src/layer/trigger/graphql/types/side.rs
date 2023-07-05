@@ -1,4 +1,4 @@
-use crate::layer::trigger::graphql::util::{TRACE_QUERY_MESSAGE};
+use crate::layer::trigger::graphql::util::TRACE_QUERY_MESSAGE;
 use crate::util::MealType;
 use crate::{
     interface::persistent_data::model,

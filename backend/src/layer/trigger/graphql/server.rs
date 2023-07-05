@@ -139,23 +139,20 @@ impl GraphQLServer {
     }
 }
 
-
 // Constructs the graphql schema with all its settings.
 pub fn construct_schema(
     data_access: impl RequestDataAccess + Sync + Send + 'static,
     command: impl Command + Sync + Send + 'static,
 ) -> GraphQLSchema {
-
     let data_access_box: DataBox = Box::new(data_access);
     let command_box: CommandBox = Box::new(command);
 
     Schema::build(QueryRoot, MutationRoot, EmptySubscription)
-            .data(data_access_box)
-            .data(command_box)
-            .extension(Tracing)
-            .limit_complexity(100)
-            .finish()
-
+        .data(data_access_box)
+        .data(command_box)
+        .extension(Tracing)
+        .limit_complexity(100)
+        .finish()
 }
 
 #[allow(clippy::unused_async)]
