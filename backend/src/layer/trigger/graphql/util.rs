@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use async_graphql::{Context, Schema, EmptySubscription, extensions::Tracing};
+use async_graphql::Context;
 
 use base64::{engine::general_purpose, Engine};
 use tracing::{debug, trace};
@@ -13,7 +13,7 @@ use crate::{
     util::Uuid,
 };
 
-use super::{query::QueryRoot, mutation::MutationRoot};
+
 
 pub type DataBox = Box<dyn RequestDataAccess + Sync + Send + 'static>;
 pub type CommandBox = Box<dyn Command + Sync + Send + 'static>;
