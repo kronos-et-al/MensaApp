@@ -22,6 +22,7 @@ use axum::{
     Extension, Router, Server,
 };
 use tokio::sync::Notify;
+use tracing::info;
 
 use crate::interface::{api_command::Command, persistent_data::RequestDataAccess};
 
@@ -117,6 +118,7 @@ impl GraphQLServer {
         };
 
         self.state = State::Running(Box::pin(shutdown));
+        info!("Started graphql server listening on {}.", socket);
     }
 
     /// Stops the GraphQL server.
@@ -133,6 +135,7 @@ impl GraphQLServer {
         };
 
         shutdown.await;
+        info!("Graphql server shutdown complete.");
     }
 }
 
