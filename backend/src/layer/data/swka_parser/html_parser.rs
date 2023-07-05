@@ -7,7 +7,7 @@ impl HTMLParser {
     //See <https://youtrack.friedrich-willhelm-der-schredder.de/articles/PSE-A-114/HTMLParser> for more information
 
     pub fn new() -> HTMLParser {
-        HTMLParser
+        Self
     }
 
     //TODO transform(&self, html: String) -> Option<ParseCanteen>
