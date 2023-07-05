@@ -1,4 +1,4 @@
-use crate::layer::trigger::graphql::util::{TRACE_MUTATION_MESSAGE};
+use crate::layer::trigger::graphql::util::TRACE_MUTATION_MESSAGE;
 use crate::util::{ReportReason, Uuid};
 use async_graphql::{Context, Object, Result};
 use tracing::{instrument, trace};
