@@ -41,9 +41,9 @@ pub struct Meal {
     /// Price of the meal for students, employees, guests and pupils.
     pub price: Price,
     /// The date the meal was last served.
-    pub last_served: Date,
+    pub last_served: Option<Date>,
     /// The date when the meal will be served next.
-    pub next_served: Date,
+    pub next_served: Option<Date>,
     /// Relative frequency of the meal in the mealplan.
     pub relative_frequency: f32,
     /// Amount of ratings for the meal

@@ -27,17 +27,14 @@ pub struct Meal {
     /// Some statistics for the meal.
     statistics: MealStatistics,
     #[graphql(skip)]
-    /// The date on which the meal is served. This is currently only used for getting sides.
     date: Date,
     #[graphql(skip)]
-    /// The id of the line at which the meal is served. This is currently only used for getting sides.
     line_id: Uuid,
 }
 
 #[ComplexObject]
 impl Meal {
-    // TODO these should not be called "functions" as they are just attributes in a graphql context.
-    /// A function for getting the allergens of this meal
+    /// Provides the allergens of this meal.
     #[instrument(skip(ctx))]
     async fn allergens(&self, ctx: &Context<'_>) -> Result<Vec<Allergen>> {
         trace!(TRACE_QUERY_MESSAGE);
@@ -51,7 +48,7 @@ impl Meal {
         Ok(allergens)
     }
 
-    /// A function for getting the additives of this meal
+    /// Provides the additives of this meal
     #[instrument(skip(ctx))]
     async fn additives(&self, ctx: &Context<'_>) -> Result<Vec<Additive>> {
         trace!(TRACE_QUERY_MESSAGE);
@@ -65,7 +62,7 @@ impl Meal {
         Ok(additives)
     }
 
-    /// A function for getting the images belonging to this meal
+    /// Provides the images belonging to this meal
     #[instrument(skip(ctx))]
     async fn images(&self, ctx: &Context<'_>) -> Result<Vec<Image>> {
         trace!(TRACE_QUERY_MESSAGE);
@@ -80,7 +77,7 @@ impl Meal {
         Ok(images)
     }
 
-    /// A function for getting the sides belonging to this meal.
+    /// Provides the sides belonging to this meal.
     #[instrument(skip(ctx))]
     async fn sides(&self, ctx: &Context<'_>) -> Result<Vec<Side>> {
         trace!(TRACE_QUERY_MESSAGE);
@@ -94,7 +91,7 @@ impl Meal {
         Ok(sides)
     }
 
-    /// A function for getting the line this meal is served at.
+    /// Provides the line this meal is served at.
     #[instrument(skip(ctx))]
     #[graphql(complexity = "10 * child_complexity")]
     async fn line(&self, ctx: &Context<'_>) -> Result<Line> {
@@ -111,18 +108,17 @@ impl Meal {
 #[derive(SimpleObject, Debug)]
 #[graphql(complex)]
 struct Ratings {
-    /// The average rating of this meal
+    /// The average rating of this meal.
     average_rating: f32,
-    /// The total number of ratings for this meal
+    /// The total number of ratings for this meal.
     ratings_count: u32,
     #[graphql(skip)]
-    /// The id of the meal to which the ratings belong to. Currently used for getting the personal rating
     meal_id: Uuid,
 }
 
 #[ComplexObject]
 impl Ratings {
-    /// A function for getting this user's rating for the meal
+    /// Provides this user's rating for the meal.
     #[instrument(skip(ctx))]
     async fn personal_rating(&self, ctx: &Context<'_>) -> Result<Option<u32>> {
         trace!(TRACE_QUERY_MESSAGE);
@@ -140,16 +136,16 @@ impl Ratings {
 
 #[derive(SimpleObject, Debug)]
 struct MealStatistics {
-    /// The date of the last time the meal was served
+    /// The date of the last time the meal was served.
     last_served: Option<Date>,
-    /// The date of the next time the meal will be served
+    /// The date of the next time the meal will be served.
     next_served: Option<Date>,
-    /// The relative frequency with which the meal is offered. TODO
+    /// The relative frequency with which the meal is offered.
     relative_frequency: f32,
 }
 
 impl From<model::Meal> for Meal {
-    /// A function for converting Meals from `persistent_data/model/meal` to types/meal
+    /// A function for converting Meals from `persistent_data/model/meal` to `types/meal`.
     fn from(value: model::Meal) -> Self {
         Self {
             id: value.id,
@@ -166,8 +162,8 @@ impl From<model::Meal> for Meal {
                 pupil: value.price.price_pupil,
             },
             statistics: MealStatistics {
-                last_served: Option::from(value.last_served), // todo these here should not be options all the way from the model
-                next_served: Option::from(value.next_served),
+                last_served: value.last_served,
+                next_served: value.next_served,
                 relative_frequency: value.relative_frequency,
             },
             date: value.date,

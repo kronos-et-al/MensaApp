@@ -18,7 +18,7 @@ pub struct Canteen {
 
 #[ComplexObject]
 impl Canteen {
-    /// A function for getting the lines of the canteen
+    /// Provides the lines of the canteen.
     #[instrument(skip(ctx))]
     async fn lines(&self, ctx: &Context<'_>) -> Result<Vec<Line>> {
         trace!(TRACE_QUERY_MESSAGE);
@@ -34,7 +34,7 @@ impl Canteen {
 }
 
 impl From<model::Canteen> for Canteen {
-    /// A function for converting Canteens from `persistent_data/model/canteen` to types/canteen
+    /// A function for converting Canteens from `persistent_data/model/canteen` to `types/canteen`.
     fn from(value: model::Canteen) -> Self {
         Self {
             id: value.id,
