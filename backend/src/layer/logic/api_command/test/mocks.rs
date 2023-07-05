@@ -6,7 +6,7 @@ use crate::{
     interface::{persistent_data::{
         model::{ApiKey, ImageInfo},
         CommandDataAccess, Result as DataResult,
-    }, image_hoster::{ImageHoster, model::ImageMetaData, Result as ImageResult}},
+    }, image_hoster::{ImageHoster, model::ImageMetaData, Result as ImageResult}, admin_notification::{AdminNotification, ImageReportInfo}},
     util::{ReportReason, Uuid, Date},
 };
 
@@ -14,7 +14,7 @@ pub struct CommandDatabaseMock;
 
 #[async_trait]
 impl CommandDataAccess for CommandDatabaseMock {
-    #[doc = " Returns the ImageInfo struct of image."]
+    /// Returns the ImageInfo struct of image.
     async fn get_image_info(_image_id: Uuid) -> DataResult<ImageInfo> {
         let info = ImageInfo {
             approved: true,
@@ -28,37 +28,37 @@ impl CommandDataAccess for CommandDatabaseMock {
         Ok(info)
     }
 
-    #[doc = " Marks an image as hidden. Hidden images cant be seen by users."]
+    /// Marks an image as hidden. Hidden images cant be seen by users.
     async fn hide_image(_image_id: Uuid) -> DataResult<()> {
         Ok(())
     }
 
-    #[doc = " Saves an image report"]
+    /// Saves an image report
     async fn add_report(_image_id: Uuid, _client_id: Uuid, _reason: ReportReason) -> DataResult<()> {
         Ok(())
     }
 
-    #[doc = " Adds an upvote to the given image. An user can only down- or upvote an image."]
+    /// Adds an upvote to the given image. An user can only down- or upvote an image.
     async fn add_upvote(_image_id: Uuid, _user_id: Uuid) -> DataResult<()> {
         Ok(())
     }
 
-    #[doc = " Adds a downvote to the given image. An user can only down- or upvote an image."]
+    /// Adds a downvote to the given image. An user can only down- or upvote an image.
     async fn add_downvote(_image_id: Uuid, _user_id: Uuid) -> DataResult<()> {
         Ok(())
     }
 
-    #[doc = " Removes an upvote from the given image."]
+    /// Removes an upvote from the given image.
     async fn remove_upvote(_image_id: Uuid, _user_id: Uuid) -> DataResult<()> {
         Ok(())
     }
 
-    #[doc = " Removes a downvote from the given image."]
+    /// Removes a downvote from the given image.
     async fn remove_downvote(_image_id: Uuid, _user_id: Uuid) -> DataResult<()> {
         Ok(())
     }
 
-    #[doc = " Adds an image link to the database. The image will be related to the given meal."]
+    /// Adds an image link to the database. The image will be related to the given meal.
     async fn link_image(
         _user_id: Uuid,
         _meal_id: Uuid,
@@ -68,12 +68,12 @@ impl CommandDataAccess for CommandDatabaseMock {
         Ok(())
     }
 
-    #[doc = " Adds a rating to the database. The rating will be related to the given meal and the given user."]
+    /// Adds a rating to the database. The rating will be related to the given meal and the given user.
     async fn add_rating(_meal_id: Uuid, _user_id: Uuid, _rating: u32) -> DataResult<()> {
         Ok(())
     }
 
-    #[doc = " Loads all api_keys from the database."]
+    /// Loads all api_keys from the database.
     async fn get_api_keys() -> DataResult<Vec<ApiKey>> {
         let mut keys = Vec::new();
         for i in 2..10 {
@@ -108,5 +108,15 @@ impl ImageHoster for CommandImageHosterMock {
     /// Checks whether the licence is acceptable for our purposes.
     async fn check_licence(_photo_id: String) -> ImageResult<bool> {
         Ok(true)
+    }
+}
+
+pub struct CommandAdminNotificationMock;
+
+#[async_trait]
+impl AdminNotification for CommandAdminNotificationMock {
+    /// Notifies an administrator about a newly reported image and the response automatically taken.
+    async fn notify_admin_image_report(_info: ImageReportInfo) {
+        
     }
 }
