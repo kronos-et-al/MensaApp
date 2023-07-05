@@ -139,7 +139,7 @@ impl GraphQLServer {
     }
 }
 
-// Constructs the graphql schema with all its settings.
+/// Constructs the graphql schema with all its settings.
 pub fn construct_schema(
     data_access: impl RequestDataAccess + Sync + Send + 'static,
     command: impl Command + Sync + Send + 'static,

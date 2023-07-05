@@ -83,12 +83,13 @@ impl RequestDataAccess for RequestDatabaseMock {
                 price_guest: 0,
                 price_pupil: 0,
             },
-            last_served: NaiveDate::default(),
-            next_served: NaiveDate::default(),
+            last_served: Option::from(NaiveDate::default()),
+            next_served: Option::from(NaiveDate::default()),
             relative_frequency: 0.0,
             rating_count: 0,
             average_rating: 0.0,
-            date: Date::from_ymd_opt(2023, 7, 4).expect("HELP!"),
+            date: Date::from_ymd_opt(2023, 7, 4)
+                .expect("Date not could be created with these parameters."),
             line_id: Uuid::default(),
         };
         Ok(Option::from(meal))
@@ -105,12 +106,13 @@ impl RequestDataAccess for RequestDatabaseMock {
                 price_guest: 21000,
                 price_pupil: 21,
             },
-            last_served: NaiveDate::default(),
-            next_served: NaiveDate::default(),
+            last_served: Option::from(NaiveDate::default()),
+            next_served: Option::from(NaiveDate::default()),
             relative_frequency: 0.8,
             rating_count: 10,
             average_rating: 1.2,
-            date: Date::from_ymd_opt(2023, 7, 4).expect("HELP!"),
+            date: Date::from_ymd_opt(2023, 7, 4)
+                .expect("Date not could be created with these parameters."),
             line_id: Uuid::default(),
         };
         let meal2 = Meal {
@@ -123,12 +125,13 @@ impl RequestDataAccess for RequestDatabaseMock {
                 price_guest: 200,
                 price_pupil: 2000,
             },
-            last_served: NaiveDate::default(),
-            next_served: NaiveDate::default(),
+            last_served: Option::from(NaiveDate::default()),
+            next_served: Option::from(NaiveDate::default()),
             relative_frequency: 0.2,
             rating_count: 3,
             average_rating: 4.1,
-            date: Date::from_ymd_opt(2022, 6, 5).expect("HELP!"),
+            date: Date::from_ymd_opt(2022, 6, 5)
+                .expect("Date not could be created with these parameters."),
             line_id: Uuid::default(),
         };
         let meal3 = Meal {
@@ -141,12 +144,13 @@ impl RequestDataAccess for RequestDatabaseMock {
                 price_guest: 420,
                 price_pupil: 42,
             },
-            last_served: NaiveDate::default(),
-            next_served: NaiveDate::default(),
+            last_served: Option::from(NaiveDate::default()),
+            next_served: Option::from(NaiveDate::default()),
             relative_frequency: 0.5,
             rating_count: 7,
             average_rating: 3.5,
-            date: Date::from_ymd_opt(2022, 12, 12).expect("HELP!"),
+            date: Date::from_ymd_opt(2022, 12, 12)
+                .expect("Date not could be created with these parameters."),
             line_id: Uuid::default(),
         };
         Ok(vec![meal1, meal2, meal3])

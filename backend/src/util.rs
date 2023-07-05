@@ -11,7 +11,7 @@ pub type Date = chrono::NaiveDate;
 pub type Uuid = uuid::Uuid;
 
 /// This enum lists every possible allergen a meal can have.
-#[derive(Copy, Clone, Eq, PartialEq, Enum)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
 pub enum Allergen {
     /// This meal contains cashews.
     Ca,
@@ -72,7 +72,7 @@ pub enum Allergen {
 }
 
 /// This enum lists every possible additive a meal can have.
-#[derive(Copy, Clone, Eq, PartialEq, Enum)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
 pub enum Additive {
     /// This meal contains colorants.
     Colorant,
@@ -145,6 +145,7 @@ pub enum ReportReason {
 }
 
 /// This struct contains all price classes. All prices are listed in euro.
+#[derive(Debug)]
 pub struct Price {
     /// Price of the dish for students.
     pub price_student: u32,

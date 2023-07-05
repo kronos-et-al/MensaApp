@@ -11,7 +11,7 @@ pub struct MutationRoot;
 
 #[Object]
 impl MutationRoot {
-    /// This query adds an image to the specified main dish.
+    /// This mutation adds an image to the specified main dish.
     /// The user has to be authenticated.
     ///
     /// `image_url` is a link to a Flickr image used to get information about it.
@@ -36,7 +36,7 @@ impl MutationRoot {
         Ok(true)
     }
 
-    /// This query either adds a rating to the specified main dish (if no such rating existed), or modifies an existing one.
+    /// This mutation either adds a rating to the specified main dish (if no such rating existed), or modifies an existing one.
     /// The user has to be authenticated.
     /// If the main dish does not exist, or any other error occurs in the process, an error message is returned.
     /// If the rating was successfully added or changed, 'true' is returned.
@@ -55,7 +55,7 @@ impl MutationRoot {
         Ok(true)
     }
 
-    /// This query adds an upvote to the specified image.
+    /// This mutation adds an upvote to the specified image.
     /// The user has to be authenticated.
     /// If the image does not exist, or any other error occurs in the process, an error message is returned.
     /// If the upvote was successfully added, 'true' is returned.
@@ -73,7 +73,7 @@ impl MutationRoot {
         Ok(true)
     }
 
-    /// This query removes the upvote from the specified image.
+    /// This mutation removes the upvote from the specified image.
     /// The user has to be authenticated.
     /// If the image does not exist, or any other error occurs in the process, an error message is returned.
     /// If the upvote was successfully removed, 'true' is returned.
@@ -91,7 +91,7 @@ impl MutationRoot {
         Ok(true)
     }
 
-    /// This query adds a downvote to the specified image.
+    /// This mutation adds a downvote to the specified image.
     /// The user has to be authenticated.
     /// If the image does not exist, or any other error occurs in the process, an error message is returned.
     /// If the downvote was successfully added, 'true' is returned.
@@ -109,7 +109,7 @@ impl MutationRoot {
         Ok(true)
     }
 
-    /// This query removes the downvote from the specified image.
+    /// This mutation removes the downvote from the specified image.
     /// The user has to be authenticated.
     /// If the image does not exist, or any other error occurs in the process, an error message is returned.
     /// If the downvote was successfully removed, 'true' is returned.
@@ -127,7 +127,7 @@ impl MutationRoot {
         Ok(true)
     }
 
-    /// This query adds a report to the specified image.
+    /// This mutation adds a report to the specified image.
     /// The user has to be authenticated.
     /// If the image does not exist, or any other error occurs in the process, an error message is returned.
     /// If the report was successfully added, 'true' is returned.

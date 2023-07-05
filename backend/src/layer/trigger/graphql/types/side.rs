@@ -25,7 +25,7 @@ pub struct Side {
 
 #[ComplexObject]
 impl Side {
-    /// A function for getting the allergens of this side
+    /// Provides the allergens of this side
     #[instrument(skip(ctx))]
     async fn allergens(&self, ctx: &Context<'_>) -> Result<Vec<Allergen>> {
         trace!(TRACE_QUERY_MESSAGE);
@@ -39,7 +39,7 @@ impl Side {
         Ok(allergens)
     }
 
-    /// A function for getting the additives of this side
+    /// Provides the additives of this side
     #[instrument(skip(ctx))]
     async fn additives(&self, ctx: &Context<'_>) -> Result<Vec<Additive>> {
         trace!(TRACE_QUERY_MESSAGE);
@@ -55,7 +55,7 @@ impl Side {
 }
 
 impl From<model::Side> for Side {
-    /// A function for converting Sides from `persistent_data/model/side` to types/side
+    /// A function for converting Sides from `persistent_data/model/side` to `types/side`
     fn from(value: model::Side) -> Self {
         Self {
             id: value.id,
