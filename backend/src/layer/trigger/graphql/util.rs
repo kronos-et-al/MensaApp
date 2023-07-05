@@ -3,7 +3,7 @@ use std::ops::Deref;
 use async_graphql::Context;
 
 use base64::{engine::general_purpose, Engine};
-use tracing::{trace, debug};
+use tracing::{debug, trace};
 
 use crate::{
     interface::{
@@ -50,7 +50,7 @@ const AUTH_TYPE: &str = "Mensa";
 const AUTH_SEPARATOR: char = ':';
 
 fn read_auth_from_header(header: &str) -> AuthInfo {
-    debug!(auth_header=header, "requested AuthInfo");
+    debug!(auth_header = header, "requested AuthInfo");
     let (auth_type, codeword) = header.split_once(' ')?;
 
     if auth_type != AUTH_TYPE {

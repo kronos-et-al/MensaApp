@@ -17,7 +17,6 @@ pub struct Side {
     id: Uuid,
     /// The name of the side
     name: String,
-    /// Type of this side. 
     /// Here the type of meat which is contained in the side, or whether it is vegetarian or vegan, is specified.
     meal_type: MealType,
     /// The price of the side
