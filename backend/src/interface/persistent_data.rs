@@ -143,6 +143,8 @@ pub trait RequestDataAccess {
     async fn get_canteen(&self, id: Uuid) -> Result<Option<Canteen>>;
     /// Returns all canteens from the database.
     async fn get_canteens(&self) -> Result<Vec<Canteen>>;
+    /// Returns the line from the database.
+    async fn get_line(&self, id: Uuid) -> Result<Option<Line>>;
     /// Returns all lines of a canteen from the database.
     async fn get_lines(&self, canteen_id: Uuid) -> Result<Vec<Line>>;
     /// Returns the meal related to all the params.
