@@ -30,4 +30,8 @@ pub struct Dish {
     pub additives: Vec<Additive>,
     /// Meal-Type of the dish.
     pub meal_type: MealType,
+    /// Determines if this dish is a side or a meal.
+    pub is_side: bool,
+    /// Environmental_score given by the swka.
+    pub env_score: u32,
 }

@@ -14,11 +14,11 @@ impl SwKaParseManager {
 
 impl MealplanParser for SwKaParseManager{
     //TODO Impl parse(day: Date) -> Vec<ParseCanteen>
-    fn parse(day: Date) -> Vec<ParseCanteen> {
+    fn parse(&self, day: Date) -> Vec<ParseCanteen> {
         OK()
     }
     //TODO Impl parse_all() -> Vec<(Date, Vec<Canteen>)>
-    fn parse_all() -> Vec<(Date, Vec<Canteen>)> {
+    fn parse_all(&self) -> Vec<(Date, Vec<Canteen>)> {
         OK()
     }
 }
