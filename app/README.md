@@ -1,16 +1,9 @@
-# app
+# MensaApp-Frontend
+Frontend application for viewing and interacting with meal plan data of the canteens of the Studierendenwerk Karlsruhe [^1].
 
-A new Flutter project.
+[^1]: https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/
 
-## Getting Started
+## Building
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### GraphQL
+To generate the dart wrappers from `*.graphql` files run `dart run build_runner build`.
