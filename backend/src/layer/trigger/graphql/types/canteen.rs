@@ -1,9 +1,9 @@
-use crate::layer::trigger::graphql::util::trace_query_request;
+use crate::layer::trigger::graphql::util::{TRACE_QUERY_MESSAGE};
 use crate::{
     interface::persistent_data::model, layer::trigger::graphql::util::ApiUtil, util::Uuid,
 };
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-use tracing::instrument;
+use tracing::{instrument, trace};
 
 use super::line::Line;
 
@@ -21,7 +21,7 @@ impl Canteen {
     /// A function for getting the lines of the canteen
     #[instrument(skip(ctx))]
     async fn lines(&self, ctx: &Context<'_>) -> Result<Vec<Line>> {
-        trace_query_request();
+        trace!(TRACE_QUERY_MESSAGE);
         let data = ctx.get_data_access();
         let lines = data
             .get_lines(self.id)

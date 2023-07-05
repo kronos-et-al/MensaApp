@@ -1,4 +1,4 @@
-use crate::layer::trigger::graphql::util::trace_query_request;
+use crate::layer::trigger::graphql::util::{TRACE_QUERY_MESSAGE};
 use crate::util::MealType;
 use crate::{
     interface::persistent_data::model,
@@ -6,7 +6,7 @@ use crate::{
     util::{Additive, Allergen, Uuid},
 };
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-use tracing::instrument;
+use tracing::{instrument, trace};
 
 use super::price::Price;
 
@@ -28,7 +28,7 @@ impl Side {
     /// A function for getting the allergens of this side
     #[instrument(skip(ctx))]
     async fn allergens(&self, ctx: &Context<'_>) -> Result<Vec<Allergen>> {
-        trace_query_request();
+        trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         let allergens = data_access
             .get_allergens(self.id)
@@ -42,7 +42,7 @@ impl Side {
     /// A function for getting the additives of this side
     #[instrument(skip(ctx))]
     async fn additives(&self, ctx: &Context<'_>) -> Result<Vec<Additive>> {
-        trace_query_request();
+        trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         let additives = data_access
             .get_additives(self.id)

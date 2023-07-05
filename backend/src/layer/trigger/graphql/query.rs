@@ -1,6 +1,6 @@
-use crate::layer::trigger::graphql::util::trace_query_request;
+use crate::layer::trigger::graphql::util::{TRACE_QUERY_MESSAGE};
 use async_graphql::{Context, Object, Result};
-use tracing::instrument;
+use tracing::{instrument, trace};
 
 use crate::util::{Date, Uuid};
 
@@ -19,7 +19,7 @@ impl QueryRoot {
     /// This query returns a list of all available canteens.
     #[instrument(skip(self, ctx))]
     async fn get_canteens(&self, ctx: &Context<'_>) -> Result<Vec<Canteen>> {
-        trace_query_request();
+        trace!(TRACE_QUERY_MESSAGE);
         let data = ctx.get_data_access();
         let canteens = data
             .get_canteens()
@@ -38,7 +38,7 @@ impl QueryRoot {
         ctx: &Context<'_>,
         #[graphql(desc = "Id of the canteen to get.")] canteen_id: Uuid,
     ) -> Result<Option<Canteen>> {
-        trace_query_request();
+        trace!(TRACE_QUERY_MESSAGE);
         let data = ctx.get_data_access();
         let canteen = data.get_canteen(canteen_id).await?.map(Into::into);
         Ok(canteen)
@@ -55,7 +55,7 @@ impl QueryRoot {
         line_id: Uuid,
         #[graphql(desc = "Date of the day on which the meal to get is to be offered.")] date: Date,
     ) -> Result<Option<Meal>> {
-        trace_query_request();
+        trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         let meal = data_access
             .get_meal(meal_id, line_id, date)
@@ -67,7 +67,7 @@ impl QueryRoot {
     /// This query returns the version of this API schema. It can also be used for health checks.
     #[instrument(skip(self, _ctx))]
     async fn api_version(&self, _ctx: &Context<'_>) -> String {
-        trace_query_request();
+        trace!(TRACE_QUERY_MESSAGE);
         "1.0".into()
     }
 
