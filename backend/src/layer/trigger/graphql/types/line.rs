@@ -25,6 +25,7 @@ pub struct Line {
 impl Line {
     /// A function for getting the canteen this line belongs to
     #[instrument(skip(ctx))]
+    #[graphql(complexity = "10 * child_complexity")]
     async fn canteen(&self, ctx: &Context<'_>) -> Result<Canteen> {
         // TODO Option when no data available?
         trace_query_request();
