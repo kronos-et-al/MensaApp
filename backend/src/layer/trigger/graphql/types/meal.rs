@@ -96,6 +96,7 @@ impl Meal {
 
     /// A function for getting the line this meal is served at.
     #[instrument(skip(ctx))]
+    #[graphql(complexity = "10 * child_complexity")]
     async fn line(&self, ctx: &Context<'_>) -> Result<Line> {
         trace_query_request();
         let data_access = ctx.get_data_access();

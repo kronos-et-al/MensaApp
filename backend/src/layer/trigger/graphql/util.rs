@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use async_graphql::Context;
+use async_graphql::{Context, Schema, EmptySubscription, extensions::Tracing};
 
 use base64::{engine::general_purpose, Engine};
 use tracing::{debug, trace};
@@ -12,6 +12,8 @@ use crate::{
     },
     util::Uuid,
 };
+
+use super::{query::QueryRoot, mutation::MutationRoot};
 
 pub type DataBox = Box<dyn RequestDataAccess + Sync + Send + 'static>;
 pub type CommandBox = Box<dyn Command + Sync + Send + 'static>;
@@ -38,6 +40,7 @@ impl<'a> ApiUtil for Context<'a> {
             .and_then(read_auth_from_header)
     }
 }
+
 
 pub fn trace_mutation_request() {
     trace!("incoming mutation request");

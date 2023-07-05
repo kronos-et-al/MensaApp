@@ -5,15 +5,13 @@ use async_graphql::{EmptySubscription, Schema};
 
 use crate::layer::trigger::graphql::mutation::MutationRoot;
 use crate::layer::trigger::graphql::query::QueryRoot;
+use crate::layer::trigger::graphql::server::construct_schema;
 use crate::layer::trigger::graphql::util::{AuthHeader, CommandBox, DataBox};
 
 use super::mock::{CommandMock, RequestDatabaseMock};
 
 async fn test_gql_request(request: &'static str) {
-    let schema = Schema::build(QueryRoot, MutationRoot, EmptySubscription)
-        .data(Box::new(RequestDatabaseMock) as DataBox)
-        .data(Box::new(CommandMock) as CommandBox)
-        .finish();
+    let schema = construct_schema(RequestDatabaseMock, CommandMock);
     let response = schema.execute(request).await;
     assert!(response.is_ok(), "request returned {:?}", response.errors);
 }
@@ -191,6 +189,88 @@ async fn test_get_auth_info_null() {
       
       
       
+    "#;
+    test_gql_request(request).await;
+}
+
+#[tokio::test]
+#[should_panic = "Query is too complex."]
+async fn test_recursive_line_canteen_panic() {
+    let request = r#"
+    {
+      getCanteens {
+        lines {
+          canteen {
+            lines {
+              canteen {id}
+            }
+          }
+        }
+      }
+    }
+    "#;
+    test_gql_request(request).await;
+}
+
+#[tokio::test]
+async fn test_recursive_line_canteen_ok() {
+    let request = r#"
+    {
+      getCanteens {
+        lines {
+          canteen {
+            lines {
+              id
+            }
+          }
+        }
+      }
+    }
+    "#;
+    test_gql_request(request).await;
+}
+
+#[tokio::test]
+#[should_panic = "Query is too complex."]
+async fn test_recursive_meal_line_panic() {
+    let request = r#"
+    {
+      getCanteens {
+        lines {
+          meals(date: "2000-01-01") {
+            line {
+              meals(date: "2000-01-01") {
+                line {
+                  id
+                }
+              }
+            }
+          }
+
+        }
+      }
+    }
+    "#;
+    test_gql_request(request).await;
+}
+
+#[tokio::test]
+async fn test_recursive_meal_line_ok() {
+    let request = r#"
+    {
+      getCanteens {
+        lines {
+          meals(date: "2000-01-01") {
+            line {
+              meals(date: "2000-01-01") {
+                id
+              }
+            }
+          }
+
+        }
+      }
+    }
     "#;
     test_gql_request(request).await;
 }

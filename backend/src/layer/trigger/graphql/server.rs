@@ -68,15 +68,7 @@ impl GraphQLServer {
         data_access: impl RequestDataAccess + Sync + Send + 'static,
         command: impl Command + Sync + Send + 'static,
     ) -> Self {
-        let data_access_box: DataBox = Box::new(data_access);
-        let command_box: CommandBox = Box::new(command);
-
-        let schema: GraphQLSchema = Schema::build(QueryRoot, MutationRoot, EmptySubscription)
-            .data(data_access_box)
-            .data(command_box)
-            .extension(Tracing)
-            .finish();
-
+        let schema: GraphQLSchema = construct_schema(data_access, command);
         Self {
             server_info,
             schema,
@@ -142,6 +134,23 @@ impl GraphQLServer {
 
         shutdown.await;
     }
+}
+
+pub fn construct_schema(
+    data_access: impl RequestDataAccess + Sync + Send + 'static,
+    command: impl Command + Sync + Send + 'static,
+) -> GraphQLSchema {
+
+    let data_access_box: DataBox = Box::new(data_access);
+    let command_box: CommandBox = Box::new(command);
+
+    Schema::build(QueryRoot, MutationRoot, EmptySubscription)
+            .data(data_access_box)
+            .data(command_box)
+            .extension(Tracing)
+            .limit_complexity(100)
+            .finish()
+
 }
 
 #[allow(clippy::unused_async)]
