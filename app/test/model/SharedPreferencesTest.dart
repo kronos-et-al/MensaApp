@@ -11,9 +11,12 @@ import 'package:app/view_model/repository/data_classes/settings/PriceCategory.da
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// This class tests the shared preferences access.
 Future<void> main() async {
+  // set test environment
   final Map<String, Object> values = <String, Object>{'counter': 1};
   SharedPreferences.setMockInitialValues(values);
+
   SharedPreferenceAccess pref = SharedPreferenceAccess(await SharedPreferences.getInstance());
 
   FilterPreferences filter = FilterPreferences(
@@ -28,41 +31,48 @@ Future<void> main() async {
   );
   late FilterPreferences filterResult;
 
+  /// This method tests the access to the client identifier.
   test('Client Identifier Test', () async {
     String id = "test";
     pref.setClientIdentifier(id);
     expect(await pref.getClientIdentifier(), id);
   });
 
+  /// This method test the access to the meal plan format.
   test('Meal Plan Format Test', () async {
     MealPlanFormat format = MealPlanFormat.list;
     pref.setMealPlanFormat(format);
     expect(await pref.getMealPlanFormat(), format);
   });
 
+  /// This method tests the access to the color scheme.
   test('Color Scheme Test', () async {
     ColorScheme scheme = ColorScheme.light;
     pref.setColorScheme(scheme);
     expect(await pref.getColorScheme(), scheme);
   });
 
+  /// This method tests the access to the price category.
   test('Price Category Test', () async {
     PriceCategory category = PriceCategory.employee;
     pref.setPriceCategory(category);
     expect(await pref.getPriceCategory(), category);
   });
 
+  /// This method tests the access to the canteen.
   test('Canteen Test', () async {
     String canteen = "test";
     pref.setCanteen(canteen);
     expect(await pref.getCanteen(), canteen);
   });
 
+  /// This method prepares the access to the filter preferences.
   setUp(() async {
     pref.setFilterPreferences(filter);
     filterResult = await pref.getFilterPreferences();
   });
 
+  /// This group tests the access to the filter preferences
   group('FilterPreferences', () {
     test('price', () {
       expect(filterResult.price, filter.price);
