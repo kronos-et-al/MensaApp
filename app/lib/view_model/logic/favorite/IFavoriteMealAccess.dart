@@ -21,5 +21,5 @@ abstract class IFavoriteMealAccess {
 
   /// This method returns the favorite meals from the database.
   /// @return The favorite meals or an error
-  Future<List<String>> getFavoriteMeals();
+  Future<List<Meal>> getFavoriteMeals();
 }
