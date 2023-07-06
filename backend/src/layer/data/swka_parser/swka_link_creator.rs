@@ -1,6 +1,6 @@
 use crate::util::Date;
 
-struct SwKaLinkCreator;
+pub struct SwKaLinkCreator;
 
 impl SwKaLinkCreator {
 
@@ -9,6 +9,7 @@ impl SwKaLinkCreator {
     pub fn new() -> SwKaLinkCreator {
         Self
     }
+
     //TODO impl get_urls(&self, day: Date) -> Vec<String>
     pub fn get_urls(&self, day: Date) -> Vec<String> {
         todo!()

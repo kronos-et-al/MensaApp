@@ -1,6 +1,6 @@
 
 
-struct SwKaResolver;
+pub struct SwKaResolver;
 
 impl SwKaResolver {
     pub fn new() -> SwKaResolver {

@@ -1,7 +1,7 @@
 use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
 use crate::util::Date;
 
-struct HTMLParser;
+pub struct HTMLParser;
 
 impl HTMLParser {
 
