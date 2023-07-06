@@ -15,7 +15,7 @@ impl SwKaLinkCreator {
         todo!()
     }
     //TODO impl get_all_urls(&self) -> (Date, Vec<String>)
-    pub fn get_all_urls(&self) -> (Date, Vec<String>) {
+    pub fn get_all_urls(&self) -> Vec<String> {
         todo!()
     }
 }
