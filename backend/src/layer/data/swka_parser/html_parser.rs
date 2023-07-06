@@ -1,4 +1,5 @@
 use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
+use crate::util::Date;
 
 struct HTMLParser;
 
@@ -10,11 +11,11 @@ impl HTMLParser {
         Self
     }
 
-    //TODO transform(&self, html: String) -> Option<ParseCanteen>
-    pub fn transform(&self, html: String) -> Option<ParseCanteen> {
+    pub fn transform(&self, html: String) -> Vec<(Date, ParseCanteen)> {
         todo!()
 
         //Preprocessing and exceptions
+        //for each date in HTML {
         //get_lines(html)
         //for each line in lines {
         //get_dishes(line)
@@ -24,7 +25,10 @@ impl HTMLParser {
         //transform_to_line(line_name, dishes)
         //add line to vec_lines
         //}
-        //return transform_to_canteen(canteen_name, lines)
+        //transform_to_canteen(canteen_name, lines)
+        //vec.add(date, canteen)
+        //}
+        //return vec
     }
 
     fn get_lines(&self, html: String) -> Vec<String> {
