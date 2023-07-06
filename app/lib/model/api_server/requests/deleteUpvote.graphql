@@ -1,3 +1,0 @@
-mutation RemoveUpvote($imageId: UUID!) {
-    removeUpvote(imageId: $imageId )
-}
