@@ -1,7 +1,7 @@
 
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() async {
   final GraphQlServerAccess serverAccess = GraphQlServerAccess("1f16dcca-963e-4ceb-a8ca-843a7c9277a5");
