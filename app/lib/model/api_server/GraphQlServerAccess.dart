@@ -104,15 +104,16 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   // ---------------------- queries ----------------------
-  @override
-  Future<Result<Meal>> getMealFromId(String id) async {
-    // TODO: implement getMealFromId
-    throw UnimplementedError();
-  }
 
   @override
   Future<Result<List<Mealplan>>> updateAll() async {
     // TODO: implement updateAll
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Result<Meal>> getMealFromId(String id) async {
+    // TODO: implement getMealFromId
     throw UnimplementedError();
   }
 
@@ -123,6 +124,8 @@ class GraphQlServerAccess implements IServerAccess {
     throw UnimplementedError();
   }
 }
+
+/// ---------------------- utility functions ----------------------
 
 Enum$ReportReason _convertToReportReason(ReportCategory reportReason) {
   switch (reportReason) {

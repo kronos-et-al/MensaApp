@@ -1,0 +1,48 @@
+query GetMealPlanForDay($date0: NaiveDate!) {
+    getCanteens {
+        lines {
+            id
+            name
+            canteen {
+                id
+                name
+            }
+            meals(date: $date0) {
+                ...mealInfo
+            }
+        }
+    }
+}
+
+fragment mealInfo on Meal {
+    id
+    name
+    mealType
+    price {
+        employee
+        guest
+        pupil
+        student
+    }
+    allergens
+    additives
+    statistics {
+        lastServed
+        nextServed
+        relativeFrequency
+    }
+    ratings {
+        averageRating
+        personalRating
+        ratingsCount
+    }
+    images {
+        id
+        url
+        rank
+        personalDownvote
+        personalUpvote
+        downvotes
+        upvotes
+    }
+}
