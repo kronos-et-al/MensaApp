@@ -7,12 +7,12 @@ impl SwKaResolver {
         Self
     }
 
-    //TODO impl get_html(url: String) -> String
-    pub fn get_html(url: String) -> String {
+    //TODO impl get_html
+    pub fn get_html(&self, url: String) -> String {
         todo!()
     }
-
-    pub fn get_htmls(urls: Vec<String>) -> Vec<String> {
+    //TODO impl get_htmls
+    pub fn get_htmls(&self, urls: Vec<String>) -> Vec<String> {
         todo!()
     }
 }
