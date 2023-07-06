@@ -19,68 +19,43 @@ impl SwKaParseManager {
     }
 
     // Sorts all canteens by days and urls in a hashmap.
-    fn parse_and_sort_canteens_by_days(&self, urls: Vec<String>) -> HashMap<Date, Vec<ParseCanteen>> {
-        let mut map = HashMap::new();
+    async fn parse_and_sort_canteens_by_days(&self, urls: Vec<String>) -> HashMap<Date, Vec<ParseCanteen>> {
+        let mut map: HashMap<Date, Vec<ParseCanteen>> = HashMap::new();
 
         let resolver = SwKaResolver;
         let parser = HTMLParser;
 
-        let mut htmls = resolver.get_htmls(urls);
+        let mut htmls = resolver.get_htmls(urls).await;
 
         for html in htmls {
             for (date, canteen) in parser.transform(html) {
-                map = self.push_into_map(map, date, canteen);
+                map.entry(date).or_default().push(canteen);
             }
-        }
-        map
-    }
-
-    // Inserts an element into the HashMap. Checks if Vec<ParseCanteen> exists.
-    fn push_into_map(mut map: HashMap<Date, Vec<ParseCanteen>>, key: Date, val: ParseCanteen) -> HashMap<Date, Vec<ParseCanteen>>{
-        let tmp_val = map.get(&key);
-        if tmp_val.is_some() {
-            tmp_val.unwrap().push(val);
-        } else {
-            map.insert(date, vec![val]);
         }
         map
     }
 }
 
 #[async_trait]
-impl MealplanParser for SwKaParseManager{
+impl MealplanParser for SwKaParseManager {
 
     // TODO needs validation
     async fn parse(&self, day: Date) -> Vec<ParseCanteen> {
         let mut map = HashMap::new();
         let link_creator = SwKaLinkCreator;
 
-        map = self.parse_and_sort_canteens_by_days(link_creator.get_urls(&day));
+        map = self.parse_and_sort_canteens_by_days(link_creator.get_urls(&day)).await;
 
-        let mut canteens = Vec::new();
-        let tmp: Vec<ParseCanteen> = *map.get(&day);
-
-        if tmp.is_some() {
-            canteens = tmp.unwrap().clone();
-        }
-
-        canteens
+        map.remove(&day).unwrap_or(Vec::new())
     }
 
     // TODO needs validation
     async fn parse_all(&self) -> Vec<(Date, Vec<ParseCanteen>)> {
         let mut map = HashMap::new();
-        let mut res = Vec::new();
         let link_creator = SwKaLinkCreator;
 
-        map = self.parse_and_sort_canteens_by_days(link_creator.get_all_urls());
+        map = self.parse_and_sort_canteens_by_days(link_creator.get_all_urls()).await;
 
-        let mut keys: Vec<Date> = map.into_keys().collect();
-
-        for key in keys {
-            res.push((key, *map.get(&key)))
-        }
-
-        res
+        map.into_iter().collect()
     }
 }
