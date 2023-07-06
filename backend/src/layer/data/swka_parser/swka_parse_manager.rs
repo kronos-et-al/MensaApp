@@ -18,7 +18,7 @@ impl SwKaParseManager {
         Self
     }
 
-    // Sorts all canteens by days and urls in a hashmap.
+    /// Sorts all canteens by days and urls in a hashmap.
     async fn parse_and_sort_canteens_by_days(&self, urls: Vec<String>) -> HashMap<Date, Vec<ParseCanteen>> {
         let mut map: HashMap<Date, Vec<ParseCanteen>> = HashMap::new();
 
@@ -27,7 +27,8 @@ impl SwKaParseManager {
 
         let mut htmls = resolver.get_htmls(urls).await;
 
-        for html in htmls {
+        // TODO unwrap()
+        for html in htmls.unwrap() {
             for (date, canteen) in parser.transform(html) {
                 map.entry(date).or_default().push(canteen);
             }
