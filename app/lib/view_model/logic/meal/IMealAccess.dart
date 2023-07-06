@@ -13,7 +13,7 @@ abstract class IMealAccess {
   /// @param date The date of the mealplan
   /// @param canteen The canteen of the mealplan
   /// @return The mealplan of the committed date of the committed canteen or an error
-  Future<Result<List<Mealplan>>> getMealPlan(DateTime date, Canteen canteen);
+  Future<Result<List<MealPlan>>> getMealPlan(DateTime date, Canteen canteen);
 
   /// This method returns the meal with the committed id form the database.
   /// If the requested data is not stored there, the data is requested from the server.

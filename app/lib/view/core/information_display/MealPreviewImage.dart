@@ -10,6 +10,7 @@ class MealPreviewImage extends StatelessWidget {
   final BorderRadius _borderRadius;
   final double? _height;
   final double? _width;
+  final Function? _onUploadButtonPressed;
 
   /// Creates a MealPreviewImage.
   /// @param meal The Meal to display.
@@ -28,13 +29,15 @@ class MealPreviewImage extends StatelessWidget {
       bool enableFavoriteButton = false,
       BorderRadius? borderRadius,
       double? height,
-      double? width})
+      double? width,
+      Function? onUploadButtonPressed})
       : _meal = meal,
         _enableUploadButton = enableUploadButton,
         _enableFavoriteButton = enableFavoriteButton,
         _borderRadius = borderRadius ?? const BorderRadius.all(Radius.zero),
         _height = height,
-        _width = width;
+        _width = width,
+        _onUploadButtonPressed = onUploadButtonPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +48,10 @@ class MealPreviewImage extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: _borderRadius,
             color: Theme.of(context).colorScheme.surface,
-            /*image: const DecorationImage(
+            image: const DecorationImage(
               image: AssetImage('assets/images/meal_placeholder.jpg'),
               fit: BoxFit.cover,
-            ),*/
+            ),
           ),
           child: ClipRRect(
               borderRadius: _borderRadius,
@@ -62,7 +65,9 @@ class MealPreviewImage extends StatelessWidget {
                         color: Theme.of(context).colorScheme.onSurface),
                     if (_enableUploadButton) const SizedBox(height: 16),
                     if (_enableUploadButton)
-                      MensaButton(onPressed: () {}, text: "Bild hochladen")
+                      MensaButton(
+                          onPressed: _onUploadButtonPressed,
+                          text: "Bild hochladen")
                   ],
                 )),
                 if (_enableFavoriteButton && _meal.isFavorite)

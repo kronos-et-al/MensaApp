@@ -10,13 +10,13 @@ import '../error_handling/Result.dart';
 abstract class IServerAccess {
   /// This method requests all mealplans of all canteens for the next seven days from the server.
   /// @return The result of the update or an error
-  Future<Result<List<Mealplan>>> updateAll();
+  Future<Result<List<MealPlan>>> updateAll();
 
   /// This method requests the mealplan for the committed date of the committed canteen from the server.
   /// @param date The date of the mealplan
   /// @param canteen The canteen of the mealplan
   /// @return The mealplan of the committed date of the committed canteen or an error
-  Future<Result<List<Mealplan>>> updateCanteen(Canteen canteen, DateTime date);
+  Future<Result<List<MealPlan>>> updateCanteen(Canteen canteen, DateTime date);
 
   /// This method returns the meal with the committed id.
   /// @param id The id of the meal

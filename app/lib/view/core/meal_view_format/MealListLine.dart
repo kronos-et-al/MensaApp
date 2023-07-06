@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 /// Displays the section for the MealList with all meals of a line.
 class MealListLine extends StatelessWidget {
 
-  final Mealplan _mealPlan;
+  final MealPlan _mealPlan;
 
   /// Creates a MealListLine.
   /// @param mealPlan The MealPlan to display.
   /// @param key The key to use for this widget.
   /// @return A MealListLine.
-  const MealListLine({super.key, required Mealplan mealPlan})
+  const MealListLine({super.key, required MealPlan mealPlan})
       : _mealPlan = mealPlan;
 
   @override
