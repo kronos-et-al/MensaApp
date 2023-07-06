@@ -11,4 +11,8 @@ impl SwKaResolver {
     pub fn get_html(url: String) -> String {
         todo!()
     }
+
+    pub fn get_htmls(urls: Vec<String>) -> Vec<String> {
+        todo!()
+    }
 }
