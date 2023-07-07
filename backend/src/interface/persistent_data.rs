@@ -25,27 +25,27 @@ pub enum DataError {
 #[async_trait]
 /// An interface for checking relations and inserting data structures. The MealplanManagement component uses this interface for database access.
 pub trait MealplanManagementDataAccess {
-    /// Determines all canteens with a similar name.
-    async fn get_similar_canteens(&self, similar_name: String) -> Result<Vec<Canteen>>;
-    /// Determines all lines with a similar name.
-    async fn get_similar_lines(&self, similar_name: String) -> Result<Vec<Line>>;
-    /// Determines all meals with a similar name.
-    async fn get_similar_meals(&self, similar_name: String) -> Result<Vec<Meal>>;
-    /// Determines all sides with a similar name.
-    async fn get_similar_sides(&self, similar_name: String) -> Result<Vec<Side>>;
+    /// Determines the canteen with the most similar name.
+    async fn get_similar_canteen(&self, similar_name: &String) -> Result<Canteen>;
+    /// Determines the line with the most similar name.
+    async fn get_similar_line(&self, similar_name: &String) -> Result<Line>;
+    /// Determines the meal with the most similar name.
+    async fn get_similar_meals(&self, similar_name: &String) -> Result<Meal>;
+    /// Determines the side with the most similar name.
+    async fn get_similar_sides(&self, similar_name: &String) -> Result<Side>;
 
     /// Updates an existing canteen entity in the database. Returns the entity.
-    async fn update_canteen(&self, uuid: Uuid, name: String) -> Result<Canteen>;
+    async fn update_canteen(&self, uuid: Uuid, name: &String) -> Result<Canteen>;
     /// Updates an existing line entity in the database. Returns the entity.
-    async fn update_line(&self, uuid: Uuid, name: String) -> Result<Line>;
+    async fn update_line(&self, uuid: Uuid, name: &String) -> Result<Line>;
     /// Updates an existing meal entity in the database. Returns the entity.
     async fn update_meal(
         &self,
         uuid: Uuid,
         line_id: Uuid,
         date: Date,
-        name: String,
-        price: Price,
+        name: &String,
+        price: &Price,
     ) -> Result<Meal>;
     /// Updates an existing side entity in the database. Returns the entity.
     async fn update_side(
@@ -53,33 +53,33 @@ pub trait MealplanManagementDataAccess {
         uuid: Uuid,
         line_id: Uuid,
         date: Date,
-        name: String,
-        price: Price,
+        name: &String,
+        price: &Price,
     ) -> Result<Side>;
 
     /// Adds a new canteen entity to the database. Returns the new entity.
-    async fn insert_canteen(&self, name: String) -> Result<Canteen>;
+    async fn insert_canteen(&self, name: &String) -> Result<Canteen>;
     /// Adds a new line entity to the database. Returns the new entity.
-    async fn insert_line(&self, name: String) -> Result<Line>;
+    async fn insert_line(&self, name: &String) -> Result<Line>;
     /// Adds a new meal entity to the database. Returns the new entity.
     async fn insert_meal(
         &self,
         name: String,
         meal_type: MealType,
-        price: Price,
+        price: &Price,
         next_served: Date,
-        allergens: Vec<Allergen>,
-        additives: Vec<Additive>,
+        allergens: &Vec<Allergen>,
+        additives: &Vec<Additive>,
     ) -> Result<Meal>;
     /// Adds a new side entity to the database. Returns the new entity.
     async fn insert_side(
         &self,
         name: String,
         meal_type: MealType,
-        price: Price,
+        price: &Price,
         next_served: Date,
-        allergens: Vec<Allergen>,
-        additives: Vec<Additive>,
+        allergens: &Vec<Allergen>,
+        additives: &Vec<Additive>,
     ) -> Result<Side>;
 }
 
