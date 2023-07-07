@@ -1,17 +1,24 @@
 use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
 use crate::util::Date;
+use scraper::{Html, Selector, ElementRef};
+
+const ROOT: &str = "div.main-content";
+const MENSA_NAME: &str = "h1.mensa_fullname";
+
 
 pub struct HTMLParser;
 
 impl HTMLParser {
-
     //See <https://youtrack.friedrich-willhelm-der-schredder.de/articles/PSE-A-114/HTMLParser> for more information
 
-    pub fn new() -> HTMLParser {
+    pub const fn new() -> Self {
         Self
     }
 
     pub fn transform(&self, html: String) -> Vec<(Date, ParseCanteen)> {
+        let document = Html::parse_document(&html);
+        let root_node = Self::get_root_node(&document);
+
         todo!()
 
         //Preprocessing and exceptions
@@ -31,11 +38,17 @@ impl HTMLParser {
         //return vec
     }
 
-    fn get_lines(&self, html: String) -> Vec<String> {
+    fn get_root_node(document: &Html) -> ElementRef {
+        let selector = Selector::parse(ROOT).expect("HELP!");
+        let root_node = document.select(&selector).next().expect("HELP!");
+        root_node
+    }
+
+    fn get_line_node(&self, html: String) -> ElementRef {
         todo!()
     }
 
-    fn get_dishes(&self, html: String) -> Vec<String> {
+    fn get_dish_node(&self, html: String) -> ElementRef {
         todo!()
     }
 
@@ -54,6 +67,16 @@ impl HTMLParser {
     }
 
     // Use maps to determine allergens and additives for dish?
+}
 
+#[cfg(test)]
+mod tests {
+    use crate::layer::data::swka_parser::html_parser::HTMLParser;
 
+    #[tokio::test]
+    async fn test_html() {
+        let file_content = String::from(include_str!("test.html"));
+        let parser = HTMLParser::new();
+        parser.transform(file_content);
+    }
 }
