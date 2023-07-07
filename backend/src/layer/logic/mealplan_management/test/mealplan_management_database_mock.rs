@@ -42,7 +42,6 @@ fn get_sides(name: &str, side_amount: u32) -> Vec<Side> {
     sides
 }
 
-
 fn get_meal() -> Meal {
     Meal {
         id: Uuid::default(),
@@ -127,10 +126,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
 
     /// Updates an existing canteen entity in the database. Returns the entity.
     async fn update_canteen(&self, id: Uuid, name: String) -> Result<Canteen> {
-        let canteen = Canteen {
-            id,
-            name,
-        };
+        let canteen = Canteen { id, name };
         Ok(canteen)
     }
     /// Updates an existing line entity in the database. Returns the entity.
@@ -187,10 +183,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     }
     /// Adds a new line entity to the database. Returns the new entity.
     async fn insert_line(&self, name: String) -> Result<Line> {
-        let line = Line {
-            name,
-            ..get_line()
-        };
+        let line = Line { name, ..get_line() };
         Ok(line)
     }
     /// Adds a new meal entity to the database. Returns the new entity.

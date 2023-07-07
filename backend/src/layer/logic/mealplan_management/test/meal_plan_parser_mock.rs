@@ -7,9 +7,14 @@ use crate::{
         model::{Dish, ParseCanteen, ParseLine},
         MealplanParser,
     },
-    util::{Date, Allergen::{Pe, Er}, Additive::Alcohol, MealType::Vegan, Price},
+    util::{
+        Additive::Alcohol,
+        Allergen::{Er, Pe},
+        Date,
+        MealType::Vegan,
+        Price,
+    },
 };
-
 
 fn get_dish(dish_number: u32) -> Dish {
     Dish {
