@@ -26,13 +26,13 @@ pub enum DataError {
 /// An interface for checking relations and inserting data structures. The MealplanManagement component uses this interface for database access.
 pub trait MealplanManagementDataAccess {
     /// Determines the canteen with the most similar name.
-    async fn get_similar_canteen(&self, similar_name: &String) -> Result<Canteen>;
+    async fn get_similar_canteen(&self, similar_name: &String) -> Result<Option<Canteen>>;
     /// Determines the line with the most similar name.
-    async fn get_similar_line(&self, similar_name: &String) -> Result<Line>;
+    async fn get_similar_line(&self, similar_name: &String) -> Result<Option<Line>>;
     /// Determines the meal with the most similar name.
-    async fn get_similar_meals(&self, similar_name: &String) -> Result<Meal>;
+    async fn get_similar_meals(&self, similar_name: &String) -> Result<Option<Meal>>;
     /// Determines the side with the most similar name.
-    async fn get_similar_sides(&self, similar_name: &String) -> Result<Side>;
+    async fn get_similar_sides(&self, similar_name: &String) -> Result<Option<Side>>;
 
     /// Updates an existing canteen entity in the database. Returns the entity.
     async fn update_canteen(&self, uuid: Uuid, name: &String) -> Result<Canteen>;
