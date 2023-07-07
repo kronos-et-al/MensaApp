@@ -2,26 +2,29 @@ use crate::interface::mensa_parser::model::ParseCanteen;
 use crate::interface::persistent_data::model::Canteen;
 use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
 use crate::util::Date;
-use std::error::Error;
-use std::future::Future;
-use std::io::empty;
 
-struct RelationResolver {
-    db: dyn MealplanManagementDataAccess,
+pub struct RelationResolver<DataAccess>
+where
+    DataAccess: MealplanManagementDataAccess,
+{
+    pub(crate) db: DataAccess,
 }
 
-impl RelationResolver {
-    /// TODO fix size issue
-    pub fn new(database: Box<dyn MealplanManagementDataAccess>) -> Box<RelationResolver> {
-        RelationResolver { db: database };
-        todo!()
+impl<DataAccess> RelationResolver<DataAccess>
+where
+    DataAccess: MealplanManagementDataAccess,
+{
+    pub fn new(database: DataAccess) -> Self {
+        Self {
+            db: database
+        }
     }
 
     pub async fn resolve(&self, canteen: ParseCanteen, date: Date) {
         //Todo return only one similar canteen form database
-        let similar_canteens_result = self.db.get_similar_canteens(canteen.name).await;
+        let similar_canteens_result = Self.db.get_similar_canteens(canteen.name).await;
         let similar_canteen = match similar_canteens_result {
-            Ok(sim_canteen) => Self.insert_canteen(sim_canteen, canteen),
+            Ok(sim_canteen) => Self.db.insert_canteen(sim_canteen, canteen),
             Err(e) => panic!("Database error occurred: {:?}", e),
         };
 
