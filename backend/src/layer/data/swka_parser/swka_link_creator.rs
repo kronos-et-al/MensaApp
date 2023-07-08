@@ -22,7 +22,7 @@ pub struct SwKaLinkCreator;
 impl SwKaLinkCreator {
     //See <https://youtrack.friedrich-willhelm-der-schredder.de/articles/PSE-A-115/SwKaLinkCreator> for more information
 
-    pub fn new() -> SwKaLinkCreator {
+    pub const fn new() -> Self {
         Self
     }
 
