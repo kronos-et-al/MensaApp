@@ -22,19 +22,19 @@ class SharedPreferenceAccess implements ILocalStorage {
   SharedPreferenceAccess(this._pref);
 
   @override
-  Future<String> getClientIdentifier() async {
+  Future<String?> getClientIdentifier() async {
     final clientIdentifier = _pref.getString('clientIdentifier') ?? "";
     return Future.value(clientIdentifier);
   }
 
   @override
-  Future<ColorScheme> getColorScheme() async {
+  Future<ColorScheme?> getColorScheme() async {
     final colorScheme = _pref.getString('colorScheme');
     return Future.value(ColorScheme.values.firstWhere((e) => e.toString() == colorScheme));
   }
 
   @override
-  Future<FilterPreferences> getFilterPreferences() async {
+  Future<FilterPreferences?> getFilterPreferences() async {
     // get data from shared preferences
     final categories = _pref.getStringList('filterCategories');
     final allergens = _pref.getStringList('filterAllergens');
@@ -80,16 +80,15 @@ class SharedPreferenceAccess implements ILocalStorage {
   }
 
   @override
-  Future<MealPlanFormat> getMealPlanFormat() async {
+  Future<MealPlanFormat?> getMealPlanFormat() async {
     final mealPlanFormat = _pref.getString('mealPlanFormat');
     return Future.value(MealPlanFormat.values.firstWhere((e) => e.toString() == mealPlanFormat));
   }
 
   @override
-  Future<PriceCategory> getPriceCategory() async {
+  Future<PriceCategory?> getPriceCategory() async {
     final priceCategory = _pref.getString('priceCategory');
     return Future.value(PriceCategory.values.firstWhere((e) => e.toString() == priceCategory));
-
   }
 
   @override
@@ -125,7 +124,7 @@ class SharedPreferenceAccess implements ILocalStorage {
   }
 
   @override
-  Future<String> getCanteen() async {
+  Future<String?> getCanteen() async {
     final canteen = _pref.getString('canteen') ?? "";
     return Future.value(canteen);
   }
