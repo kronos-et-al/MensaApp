@@ -1,4 +1,4 @@
-query GetMealPlanForDay($date0: NaiveDate!) {
+query GetMealPlanForDay($date: NaiveDate!) {
     getCanteens {
         lines {
             id
@@ -7,7 +7,7 @@ query GetMealPlanForDay($date0: NaiveDate!) {
                 id
                 name
             }
-            meals(date: $date0) {
+            meals(date: $date) {
                 ...mealInfo
             }
         }

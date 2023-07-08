@@ -193,7 +193,7 @@ type Line {
   canteen: Canteen!
 
   # Provides the meals offered at this line on a given day. Requires a date.
-  meals(date: NaiveDate!): [Meal!]!
+  meals(date: NaiveDate!): [Meal!]
 }
 
 type Meal {

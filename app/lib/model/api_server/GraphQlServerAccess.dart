@@ -1,9 +1,13 @@
+import 'package:app/model/api_server/requests/querys.graphql.dart';
 import 'package:app/model/api_server/requests/schema.graphql.dart';
+import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
+import 'package:app/view_model/repository/data_classes/meal/Price.dart';
 
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
+import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 
 import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 
@@ -11,6 +15,7 @@ import 'package:app/view_model/repository/data_classes/settings/ReportCategory.d
 
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:intl/intl.dart';
 
 import '../../view_model/repository/interface/IServerAccess.dart';
 import 'requests/mutations.graphql.dart';
@@ -24,6 +29,8 @@ class GraphQlServerAccess implements IServerAccess {
   final String _clientId;
 
   GraphQlServerAccess._(this._clientId);
+
+
 
   factory GraphQlServerAccess(String clientId) {
     return GraphQlServerAccess._(clientId);
@@ -75,7 +82,7 @@ class GraphQlServerAccess implements IServerAccess {
     // TODO: auth
     final result = await _client.mutate$LinkImage(Options$Mutation$LinkImage(
         variables:
-            Variables$Mutation$LinkImage(imageUrl: url, mealId: meal.id)));
+        Variables$Mutation$LinkImage(imageUrl: url, mealId: meal.id)));
     final parsedData = result.parsedData;
     return parsedData?.addImage ?? false;
   }
@@ -104,11 +111,41 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   // ---------------------- queries ----------------------
-
+  static const DAYS_TO_PARSE = 7;
   @override
   Future<Result<List<Mealplan>>> updateAll() async {
-    // TODO: implement updateAll
-    throw UnimplementedError();
+    final dateFormat = DateFormat("Y-m-d"); // TODO correct?
+    final date = DateTime.now(); // TODO for next 7 days
+
+
+    var completeList = <Mealplan>[];
+
+    for (int offset = 0; offset < 7; offset++) {
+      final offsetDate = date.add(Duration(days: offset));
+      final result = await _client.query$GetMealPlanForDay(
+          Options$Query$GetMealPlanForDay(
+              variables: Variables$Query$GetMealPlanForDay(
+                  date: dateFormat.format(offsetDate))));
+      final parsedData = result.parsedData;
+
+
+      final mealPlan = parsedData?.getCanteens.expand((e) =>
+          e.lines.asMap().map((idx, e) =>
+              MapEntry(idx,
+                Mealplan(date: offsetDate,
+                    line: Line(id: e.id,
+                        name: e.name,
+                        canteen: _convertCanteen(e.canteen),
+                        position: idx),
+                    isClosed: false, // TODO what to do when no data available
+                    meals: _convertMeals(e.meals ?? [])),
+              ),
+          ).values.toList(),
+      ).toList() ?? [];
+
+      completeList.addAll(mealPlan);
+    }
+    return Success(completeList);
   }
 
   @override
@@ -118,14 +155,58 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   @override
-  Future<Result<List<Mealplan>>> updateCanteen(
-      Canteen canteen, DateTime date) async {
+  Future<Result<List<Mealplan>>> updateCanteen(Canteen canteen,
+      DateTime date) async {
     // TODO: implement updateCanteen
     throw UnimplementedError();
   }
 }
 
-/// ---------------------- utility functions ----------------------
+
+List<Meal> _convertMeals(List<Fragment$mealInfo> meals) {
+  return meals.map((e) =>
+      Meal(id: e.id,
+          name: e.name,
+          foodType: _convertMealType(e.mealType),
+          price: _convertPrice(e.price))).toList();
+}
+
+FoodType _convertMealType(Enum$MealType mealType) {
+  switch (mealType) {
+    case Enum$MealType.BEEF:
+      return FoodType.beef;
+    case Enum$MealType.BEEF_AW:
+      return FoodType.beefAw;
+    case Enum$MealType.FISH:
+      return FoodType.fish;
+    case Enum$MealType.PORK:
+      return FoodType.pork;
+    case Enum$MealType.PORK_AW:
+      return FoodType.porkAw;
+    case Enum$MealType.VEGAN:
+      return FoodType.vegan;
+    case Enum$MealType.VEGETARIAN:
+      return FoodType.vegetarian;
+    case Enum$MealType.UNKNOWN:
+      return FoodType.unknown;
+    case Enum$MealType.$unknown:
+      return FoodType.unknown;
+  }
+}
+
+Price _convertPrice(Fragment$mealInfo$price price) {
+  return Price(student: price.student,
+      employee: price.employee,
+      pupil: price.pupil,
+      guest: price.guest);
+}
+
+Canteen _convertCanteen(
+    Query$GetMealPlanForDay$getCanteens$lines$canteen canteen) {
+  return Canteen(id: canteen.id, name: canteen.name);
+}
+
+// ---------------------- utility functions ----------------------
 
 Enum$ReportReason _convertToReportReason(ReportCategory reportReason) {
   switch (reportReason) {

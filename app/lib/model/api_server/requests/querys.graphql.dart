@@ -1392,9 +1392,9 @@ class _CopyWithStubImpl$Fragment$mealInfo$images<TRes>
 }
 
 class Variables$Query$GetMealPlanForDay {
-  factory Variables$Query$GetMealPlanForDay({required String date0}) =>
+  factory Variables$Query$GetMealPlanForDay({required String date}) =>
       Variables$Query$GetMealPlanForDay._({
-        r'date0': date0,
+        r'date': date,
       });
 
   Variables$Query$GetMealPlanForDay._(this._$data);
@@ -1402,18 +1402,18 @@ class Variables$Query$GetMealPlanForDay {
   factory Variables$Query$GetMealPlanForDay.fromJson(
       Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
-    final l$date0 = data['date0'];
-    result$data['date0'] = (l$date0 as String);
+    final l$date = data['date'];
+    result$data['date'] = (l$date as String);
     return Variables$Query$GetMealPlanForDay._(result$data);
   }
 
   Map<String, dynamic> _$data;
 
-  String get date0 => (_$data['date0'] as String);
+  String get date => (_$data['date'] as String);
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
-    final l$date0 = date0;
-    result$data['date0'] = l$date0;
+    final l$date = date;
+    result$data['date'] = l$date;
     return result$data;
   }
 
@@ -1431,9 +1431,9 @@ class Variables$Query$GetMealPlanForDay {
         runtimeType != other.runtimeType) {
       return false;
     }
-    final l$date0 = date0;
-    final lOther$date0 = other.date0;
-    if (l$date0 != lOther$date0) {
+    final l$date = date;
+    final lOther$date = other.date;
+    if (l$date != lOther$date) {
       return false;
     }
     return true;
@@ -1441,8 +1441,8 @@ class Variables$Query$GetMealPlanForDay {
 
   @override
   int get hashCode {
-    final l$date0 = date0;
-    return Object.hashAll([l$date0]);
+    final l$date = date;
+    return Object.hashAll([l$date]);
   }
 }
 
@@ -1455,7 +1455,7 @@ abstract class CopyWith$Variables$Query$GetMealPlanForDay<TRes> {
   factory CopyWith$Variables$Query$GetMealPlanForDay.stub(TRes res) =
       _CopyWithStubImpl$Variables$Query$GetMealPlanForDay;
 
-  TRes call({String? date0});
+  TRes call({String? date});
 }
 
 class _CopyWithImpl$Variables$Query$GetMealPlanForDay<TRes>
@@ -1471,10 +1471,10 @@ class _CopyWithImpl$Variables$Query$GetMealPlanForDay<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? date0 = _undefined}) =>
+  TRes call({Object? date = _undefined}) =>
       _then(Variables$Query$GetMealPlanForDay._({
         ..._instance._$data,
-        if (date0 != _undefined && date0 != null) 'date0': (date0 as String),
+        if (date != _undefined && date != null) 'date': (date as String),
       }));
 }
 
@@ -1484,7 +1484,7 @@ class _CopyWithStubImpl$Variables$Query$GetMealPlanForDay<TRes>
 
   TRes _res;
 
-  call({String? date0}) => _res;
+  call({String? date}) => _res;
 }
 
 class Query$GetMealPlanForDay {
@@ -1646,7 +1646,7 @@ const documentNodeQueryGetMealPlanForDay = DocumentNode(definitions: [
     name: NameNode(value: 'GetMealPlanForDay'),
     variableDefinitions: [
       VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'date0')),
+        variable: VariableNode(name: NameNode(value: 'date')),
         type: NamedTypeNode(
           name: NameNode(value: 'NaiveDate'),
           isNonNull: true,
@@ -1718,7 +1718,7 @@ const documentNodeQueryGetMealPlanForDay = DocumentNode(definitions: [
                 arguments: [
                   ArgumentNode(
                     name: NameNode(value: 'date'),
-                    value: VariableNode(name: NameNode(value: 'date0')),
+                    value: VariableNode(name: NameNode(value: 'date')),
                   )
                 ],
                 directives: [],
@@ -2084,7 +2084,7 @@ class Query$GetMealPlanForDay$getCanteens$lines {
     required this.id,
     required this.name,
     required this.canteen,
-    required this.meals,
+    this.meals,
     this.$__typename = 'Line',
   });
 
@@ -2100,8 +2100,8 @@ class Query$GetMealPlanForDay$getCanteens$lines {
       name: (l$name as String),
       canteen: Query$GetMealPlanForDay$getCanteens$lines$canteen.fromJson(
           (l$canteen as Map<String, dynamic>)),
-      meals: (l$meals as List<dynamic>)
-          .map((e) => Fragment$mealInfo.fromJson((e as Map<String, dynamic>)))
+      meals: (l$meals as List<dynamic>?)
+          ?.map((e) => Fragment$mealInfo.fromJson((e as Map<String, dynamic>)))
           .toList(),
       $__typename: (l$$__typename as String),
     );
@@ -2113,7 +2113,7 @@ class Query$GetMealPlanForDay$getCanteens$lines {
 
   final Query$GetMealPlanForDay$getCanteens$lines$canteen canteen;
 
-  final List<Fragment$mealInfo> meals;
+  final List<Fragment$mealInfo>? meals;
 
   final String $__typename;
 
@@ -2126,7 +2126,7 @@ class Query$GetMealPlanForDay$getCanteens$lines {
     final l$canteen = canteen;
     _resultData['canteen'] = l$canteen.toJson();
     final l$meals = meals;
-    _resultData['meals'] = l$meals.map((e) => e.toJson()).toList();
+    _resultData['meals'] = l$meals?.map((e) => e.toJson()).toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -2143,7 +2143,7 @@ class Query$GetMealPlanForDay$getCanteens$lines {
       l$id,
       l$name,
       l$canteen,
-      Object.hashAll(l$meals.map((v) => v)),
+      l$meals == null ? null : Object.hashAll(l$meals.map((v) => v)),
       l$$__typename,
     ]);
   }
@@ -2174,15 +2174,19 @@ class Query$GetMealPlanForDay$getCanteens$lines {
     }
     final l$meals = meals;
     final lOther$meals = other.meals;
-    if (l$meals.length != lOther$meals.length) {
-      return false;
-    }
-    for (int i = 0; i < l$meals.length; i++) {
-      final l$meals$entry = l$meals[i];
-      final lOther$meals$entry = lOther$meals[i];
-      if (l$meals$entry != lOther$meals$entry) {
+    if (l$meals != null && lOther$meals != null) {
+      if (l$meals.length != lOther$meals.length) {
         return false;
       }
+      for (int i = 0; i < l$meals.length; i++) {
+        final l$meals$entry = l$meals[i];
+        final lOther$meals$entry = lOther$meals[i];
+        if (l$meals$entry != lOther$meals$entry) {
+          return false;
+        }
+      }
+    } else if (l$meals != lOther$meals) {
+      return false;
     }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
@@ -2221,8 +2225,8 @@ abstract class CopyWith$Query$GetMealPlanForDay$getCanteens$lines<TRes> {
   });
   CopyWith$Query$GetMealPlanForDay$getCanteens$lines$canteen<TRes> get canteen;
   TRes meals(
-      Iterable<Fragment$mealInfo> Function(
-              Iterable<CopyWith$Fragment$mealInfo<Fragment$mealInfo>>)
+      Iterable<Fragment$mealInfo>? Function(
+              Iterable<CopyWith$Fragment$mealInfo<Fragment$mealInfo>>?)
           _fn);
 }
 
@@ -2254,9 +2258,9 @@ class _CopyWithImpl$Query$GetMealPlanForDay$getCanteens$lines<TRes>
         canteen: canteen == _undefined || canteen == null
             ? _instance.canteen
             : (canteen as Query$GetMealPlanForDay$getCanteens$lines$canteen),
-        meals: meals == _undefined || meals == null
+        meals: meals == _undefined
             ? _instance.meals
-            : (meals as List<Fragment$mealInfo>),
+            : (meals as List<Fragment$mealInfo>?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -2268,14 +2272,14 @@ class _CopyWithImpl$Query$GetMealPlanForDay$getCanteens$lines<TRes>
   }
 
   TRes meals(
-          Iterable<Fragment$mealInfo> Function(
-                  Iterable<CopyWith$Fragment$mealInfo<Fragment$mealInfo>>)
+          Iterable<Fragment$mealInfo>? Function(
+                  Iterable<CopyWith$Fragment$mealInfo<Fragment$mealInfo>>?)
               _fn) =>
       call(
-          meals: _fn(_instance.meals.map((e) => CopyWith$Fragment$mealInfo(
+          meals: _fn(_instance.meals?.map((e) => CopyWith$Fragment$mealInfo(
                 e,
                 (i) => i,
-              ))).toList());
+              )))?.toList());
 }
 
 class _CopyWithStubImpl$Query$GetMealPlanForDay$getCanteens$lines<TRes>
