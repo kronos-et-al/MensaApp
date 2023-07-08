@@ -12,10 +12,12 @@ const MENSA_NAMES: [&str; 7] = [
     "mensa_holzgarten",
 ];
 const BASE_URL: &str = "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/";
-const URL_SEPERATOR: char = '/';
+const URL_SEPARATOR: char = '/';
 const WEEK_SELECTOR: &str = "?kw=";
 const NUMBER_OF_WEEKS_TO_POLL: u64 = 4;
 const NUMBER_OF_DAYS_PER_WEEK: u64 = 7;
+
+const PARSE_E_MSG: &str = "Error while parsing";
 
 pub struct SwKaLinkCreator;
 
@@ -31,7 +33,7 @@ impl SwKaLinkCreator {
         let mut urls = Vec::new();
         for mensa in MENSA_NAMES {
             urls.push(format!(
-                "{BASE_URL}{mensa}{URL_SEPERATOR}{WEEK_SELECTOR}{calender_week}"
+                "{BASE_URL}{mensa}{URL_SEPARATOR}{WEEK_SELECTOR}{calender_week}"
             ));
         }
         urls
@@ -41,7 +43,7 @@ impl SwKaLinkCreator {
         let today = Self::get_todays_date();
         let mut all_urls = Vec::new();
         for i in 0..NUMBER_OF_WEEKS_TO_POLL {
-            let day = today.checked_add_days(Days::new(i * NUMBER_OF_DAYS_PER_WEEK)).expect("HELP!");
+            let day = today.checked_add_days(Days::new(i * NUMBER_OF_DAYS_PER_WEEK)).expect(PARSE_E_MSG);
             all_urls.append(&mut self.get_urls(&day));
         }
         all_urls

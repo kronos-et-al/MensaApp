@@ -29,9 +29,11 @@ const PRICE_REGEX: &str = r"(?<euros>[0-9]),(?<cents>[0-9]{2})";
 const ALLERGEN_REGEX: &str = r"[A-Z]\w+";
 const ADDITIVE_REGEX: &str = r"[0-9]{1,2}";
 
-const E_MSG: &str = "HELP!";
+const PARSE_E_MSG: &str = "Error while parsing";
 const SELECTOR_PARSE_E_MSG: &str = "Error while parsing Selector string";
 const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
+const ATTR_NOT_FOUND_E_MSG: &str = "Error while trying to get the attribute";
+const NODE_NOT_FOUND_E_MSG: &str = "Error while trying to get the html node";
 
 pub struct HTMLParser;
 
@@ -110,12 +112,12 @@ impl HTMLParser {
 
     fn get_dates(root_node: &ElementRef) -> Vec<Date> {
         let selector = Selector::parse(DAY_DATE_SUPER_CLASS).expect(SELECTOR_PARSE_E_MSG);
-        let date_node = root_node.select(&selector).next().expect(E_MSG);
+        let date_node = root_node.select(&selector).next().expect(NODE_NOT_FOUND_E_MSG);
         let selector = Selector::parse(DAY_DATE_CLASS).expect(SELECTOR_PARSE_E_MSG);
         let mut dates = Vec::new();
         for element in date_node.select(&selector) {
-            let date_string = element.value().attr(DAY_DATE_ATTRIBUTE_NAME).expect(E_MSG);
-            dates.push(Date::parse_from_str(date_string, DATE_FORMAT).expect(E_MSG));
+            let date_string = element.value().attr(DAY_DATE_ATTRIBUTE_NAME).expect(ATTR_NOT_FOUND_E_MSG);
+            dates.push(Date::parse_from_str(date_string, DATE_FORMAT).expect(PARSE_E_MSG));
         }
         dates
     }
@@ -125,7 +127,7 @@ impl HTMLParser {
         let canteen_name = root_node
             .select(&selector)
             .next()
-            .expect(E_MSG)
+            .expect(NODE_NOT_FOUND_E_MSG)
             .inner_html();
         canteen_name
     }
@@ -135,7 +137,7 @@ impl HTMLParser {
         let line_name: String = line_node
             .select(&selector)
             .next()
-            .expect(E_MSG)
+            .expect(NODE_NOT_FOUND_E_MSG)
             .text()
             .map(|x| format!("{x} "))
             .collect();
@@ -147,7 +149,7 @@ impl HTMLParser {
         let dish_name: String = dish_node
             .select(&selector)
             .next()
-            .expect(E_MSG)
+            .expect(NODE_NOT_FOUND_E_MSG)
             .text()
             .collect();
         let words: Vec<_> = dish_name.split_whitespace().collect();
@@ -162,7 +164,7 @@ impl HTMLParser {
             let price_string: String = dish_node
                 .select(&selector)
                 .next()
-                .expect(E_MSG)
+                .expect(NODE_NOT_FOUND_E_MSG)
                 .inner_html();
             if price_string.is_empty() {
                 prices[i - 1] = 0;
@@ -170,10 +172,10 @@ impl HTMLParser {
             }
             
             let regex = Regex::new(PRICE_REGEX).expect(REGEX_PARSE_E_MSG);
-            let capture = regex.captures(&price_string).expect(E_MSG);
+            let capture = regex.captures(&price_string).expect(REGEX_PARSE_E_MSG);
             prices[i - 1] = format!("{}{}", &capture["euros"], &capture["cents"])
                 .parse::<u32>()
-                .expect(E_MSG);
+                .expect(PARSE_E_MSG);
         }
         Price {
             price_student: prices[0],
@@ -189,7 +191,7 @@ impl HTMLParser {
         if allergens_node.is_none() {
             return vec![];
         }
-        let allergens_raw = allergens_node.expect(E_MSG).inner_html();
+        let allergens_raw = allergens_node.expect(NODE_NOT_FOUND_E_MSG).inner_html();
         let regex = Regex::new(ALLERGEN_REGEX).expect(REGEX_PARSE_E_MSG);
             regex.find_iter(&allergens_raw).filter_map(|a| Allergen::parse(a.as_str())).collect()
     }
@@ -200,7 +202,7 @@ impl HTMLParser {
         if additives_node.is_none() {
             return vec![];
         }
-        let additives_raw = additives_node.expect(E_MSG).inner_html();
+        let additives_raw = additives_node.expect(NODE_NOT_FOUND_E_MSG).inner_html();
         let regex = Regex::new(ADDITIVE_REGEX).expect(REGEX_PARSE_E_MSG);
             regex.find_iter(&additives_raw).filter_map(|a| Additive::parse(a.as_str())).collect()
     }
@@ -209,7 +211,7 @@ impl HTMLParser {
         let selector = Selector::parse(DISH_TYPE_NODE_CLASS).expect(SELECTOR_PARSE_E_MSG);
         let dish_type_nodes = dish_node.select(&selector).collect::<Vec<_>>();
         for dish_type_node in dish_type_nodes {
-            let title = dish_type_node.value().attr(DISH_TYPE_ATTRIBUTE_NAME).expect(E_MSG);
+            let title = dish_type_node.value().attr(DISH_TYPE_ATTRIBUTE_NAME).expect(ATTR_NOT_FOUND_E_MSG);
             let dish_type = MealType::parse(title);
             if dish_type != MealType::Unknown {
                 return dish_type;
@@ -225,7 +227,7 @@ impl HTMLParser {
     fn get_dish_env_score(dish_node: &ElementRef) -> u32 {
         let selector = Selector::parse(ENV_SCORE_CLASS).expect(SELECTOR_PARSE_E_MSG);
         let env_score_node = dish_node.select(&selector).next();
-        env_score_node.map_or(0, |x| x.value().attr(ENV_SCORE_ATTRIBUTE_NAME).expect(E_MSG).parse::<u32>().expect(E_MSG)) 
+        env_score_node.map_or(0, |x| x.value().attr(ENV_SCORE_ATTRIBUTE_NAME).expect(ATTR_NOT_FOUND_E_MSG).parse::<u32>().expect(PARSE_E_MSG)) 
     }
 }
 
