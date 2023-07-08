@@ -7,8 +7,10 @@ const ROOT_CLASS: &str = "div.main-content";
 const CANTEEN_NAME_CLASS: &str = "h1.mensa_fullname";
 
 const DAY_CLASS: &str = "div.canteen-day";
-const DAY_DATE_CLASS: &str = "ul.canteen-day-nav";
-const DAY_NUMBER_ATTRIBUTE_NAME: &str = "id";
+const DAY_DATE_SUPER_CLASS: &str = "ul.canteen-day-nav";
+const DAY_DATE_CLASS: &str = "a";
+const DAY_DATE_ATTRIBUTE_NAME: &str = "rel";
+const DATE_FORMAT: &str = "%Y-%m-%d";
 
 const LINE_CLASS: &str = "tr.mensatype_rows";
 const LINE_NAME_CLASS: &str = "td.mensatype";
@@ -29,6 +31,7 @@ const ADDITIVE_REGEX: &str = r"[0-9]{1,2}";
 
 const E_MSG: &str = "HELP!";
 const SELECTOR_PARSE_E_MSG: &str = "Error while parsing Selector string";
+const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
 
 pub struct HTMLParser;
 
@@ -42,10 +45,10 @@ impl HTMLParser {
     pub fn transform(&self, html: String) -> Vec<(Date, ParseCanteen)> {
         let document = Html::parse_document(&html);
         let root_node = Self::get_root_node(&document);
+        let dates = Self::get_dates(&root_node);
 
-        let mut canteens_and_dates = Vec::new();
+        let mut canteens = Vec::new();
         for day_node in Self::get_day_nodes(&root_node) {
-            let date = Self::get_date(&root_node, &day_node).expect(E_MSG);
             let mut lines: Vec<ParseLine> = Vec::new();
             for line_node in Self::get_line_nodes(&day_node) {
                 let mut dishes: Vec<Dish> = Vec::new();
@@ -71,13 +74,13 @@ impl HTMLParser {
                 name: Self::get_canteen_name(&root_node),
                 lines,
             };
-            canteens_and_dates.push((date, canteen));
+            canteens.push(canteen);
         }
-        canteens_and_dates
+        dates.into_iter().zip(canteens.into_iter()).collect()
     }
 
     fn get_root_node(document: &Html) -> ElementRef {
-        let selector = Selector::parse(ROOT_CLASS).expect(E_MSG);
+        let selector = Selector::parse(ROOT_CLASS).expect(SELECTOR_PARSE_E_MSG);
         let root_node = document
             .select(&selector)
             .next()
@@ -105,21 +108,16 @@ impl HTMLParser {
         dish_nodes
     }
 
-    fn get_date(root_node: &ElementRef, day_node: &ElementRef) -> Option<Date> {
-        let day_id = day_node.value().attr(DAY_NUMBER_ATTRIBUTE_NAME).expect(E_MSG);
-        let day_number = &day_id[day_id.len() - 1..];
-        let day_nav_id = format!("{}nav_{day_number}", &day_id[..day_id.len() - 1]);
-
+    fn get_dates(root_node: &ElementRef) -> Vec<Date> {
+        let selector = Selector::parse(DAY_DATE_SUPER_CLASS).expect(SELECTOR_PARSE_E_MSG);
+        let date_node = root_node.select(&selector).next().expect(E_MSG);
         let selector = Selector::parse(DAY_DATE_CLASS).expect(SELECTOR_PARSE_E_MSG);
-        let day_node = root_node.select(&selector).next().expect(E_MSG);
-        let selector = Selector::parse("a").expect(E_MSG);
-        for day in day_node.select(&selector) {
-            if day.value().attr("id").expect("HELP").eq(&day_nav_id) {
-                let date = day.value().attr("rel").expect(E_MSG);
-                return Some(Date::parse_from_str(date, "%Y-%m-%d").expect(E_MSG));
-            }
+        let mut dates = Vec::new();
+        for element in date_node.select(&selector) {
+            let date_string = element.value().attr(DAY_DATE_ATTRIBUTE_NAME).expect(E_MSG);
+            dates.push(Date::parse_from_str(date_string, DATE_FORMAT).expect(E_MSG));
         }
-        None
+        dates
     }
 
     fn get_canteen_name(root_node: &ElementRef) -> String {
@@ -171,7 +169,7 @@ impl HTMLParser {
                 continue;
             }
             
-            let regex = Regex::new(PRICE_REGEX).expect(E_MSG);
+            let regex = Regex::new(PRICE_REGEX).expect(REGEX_PARSE_E_MSG);
             let capture = regex.captures(&price_string).expect(E_MSG);
             prices[i - 1] = format!("{}{}", &capture["euros"], &capture["cents"])
                 .parse::<u32>()
@@ -192,7 +190,7 @@ impl HTMLParser {
             return vec![];
         }
         let allergens_raw = allergens_node.expect(E_MSG).inner_html();
-        let regex = Regex::new(ALLERGEN_REGEX).expect(E_MSG);
+        let regex = Regex::new(ALLERGEN_REGEX).expect(REGEX_PARSE_E_MSG);
             regex.find_iter(&allergens_raw).filter_map(|a| Allergen::parse(a.as_str())).collect()
     }
 
@@ -203,7 +201,7 @@ impl HTMLParser {
             return vec![];
         }
         let additives_raw = additives_node.expect(E_MSG).inner_html();
-        let regex = Regex::new(ADDITIVE_REGEX).expect(E_MSG);
+        let regex = Regex::new(ADDITIVE_REGEX).expect(REGEX_PARSE_E_MSG);
             regex.find_iter(&additives_raw).filter_map(|a| Additive::parse(a.as_str())).collect()
     }
 
