@@ -71,6 +71,42 @@ pub enum Allergen {
     Gl,
 }
 
+impl Allergen {
+    #[must_use] pub fn parse(s: &str) -> Option<Self> {
+        match s {
+            "Ca" => Some(Self::Ca),
+            "Di" => Some(Self::Di),
+            "Ei" => Some(Self::Ei),
+            "Er" => Some(Self::Er),
+            "Fi" => Some(Self::Fi),
+            "Ge" => Some(Self::Ge),
+            "Hf" => Some(Self::Hf),
+            "Ha" => Some(Self::Ha),
+            "Ka" => Some(Self::Ka),
+            "Kr" => Some(Self::Kr),
+            "Lu" => Some(Self::Lu),
+            "Ma" => Some(Self::Ma),
+            "ML" => Some(Self::ML),
+            "Pa" => Some(Self::Pa),
+            "Pe" => Some(Self::Pe),
+            "Pi" => Some(Self::Pi),
+            "Qu" => Some(Self::Qu),
+            "Ro" => Some(Self::Ro),
+            "Sa" => Some(Self::Sa),
+            "Se" => Some(Self::Se),
+            "Sf" => Some(Self::Sf),
+            "Sn" => Some(Self::Sn),
+            "So" => Some(Self::So),
+            "Wa" => Some(Self::Wa),
+            "We" => Some(Self::We),
+            "Wt" => Some(Self::Wt),
+            "LAB" => Some(Self::La),
+            "GL" => Some(Self::Gl),
+            _ => None,
+        }
+    }
+}
+
 /// This enum lists every possible additive a meal can have.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
 pub enum Additive {
@@ -98,12 +134,35 @@ pub enum Additive {
     Phenylalanine,
     /// This meals can contain alcohol.
     Alcohol,
-    /// This meals contains pressed meet.
-    PressedMeet,
+    /// This meals contains pressed meat.
+    PressedMeat,
     /// This meals is glazed with cacao.
     GlazingWithCacao,
     /// This meals contains pressed fish.
     PressedFish,
+}
+
+impl Additive {
+    #[must_use] pub fn parse(s: &str) -> Option<Self> {
+        match s {
+            "1" => Some(Self::Colorant),
+            "2" => Some(Self::PreservingAgents),
+            "3" => Some(Self::AntioxidantAgents),
+            "4" => Some(Self::FlavourEnhancer),
+            "5" => Some(Self::Phosphate),
+            "6" => Some(Self::SurfaceWaxed),
+            "7" => Some(Self::Sulphur),
+            "8" => Some(Self::ArtificiallyBlackenedOlives),
+            "9" => Some(Self::Sweetener),
+            "10" => Some(Self::LaxativeIfOverused),
+            "11" => Some(Self::Phenylalanine),
+            "12" => Some(Self::Alcohol),
+            "14" => Some(Self::PressedMeat),
+            "15" => Some(Self::GlazingWithCacao),
+            "27" => Some(Self::PressedFish),
+            _ => None
+        }
+    }
 }
 
 /// This enum lists all the types a meal can be of.
