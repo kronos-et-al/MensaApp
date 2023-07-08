@@ -15,6 +15,7 @@ const BASE_URL: &str = "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/
 const URL_SEPERATOR: char = '/';
 const WEEK_SELECTOR: &str = "?kw=";
 const NUMBER_OF_WEEKS_TO_POLL: u64 = 4;
+const NUMBER_OF_DAYS_PER_WEEK: u64 = 7;
 
 pub struct SwKaLinkCreator;
 
@@ -40,7 +41,7 @@ impl SwKaLinkCreator {
         let today = Self::get_todays_date();
         let mut all_urls = Vec::new();
         for i in 0..NUMBER_OF_WEEKS_TO_POLL {
-            let day = today.checked_add_days(Days::new(i * 7)).expect("HELP!");
+            let day = today.checked_add_days(Days::new(i * NUMBER_OF_DAYS_PER_WEEK)).expect("HELP!");
             all_urls.append(&mut self.get_urls(&day));
         }
         all_urls
@@ -62,6 +63,8 @@ mod tests {
     #[tokio::test]
     async fn test_url() {
         let link_creator = SwKaLinkCreator::new();
-        link_creator.get_all_urls();
+        for link in link_creator.get_all_urls() {
+            println!("{link}");
+        }
     }
 }
