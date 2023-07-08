@@ -42,17 +42,12 @@ impl HTMLParser {
     pub fn transform(&self, html: String) -> Vec<(Date, ParseCanteen)> {
         let document = Html::parse_document(&html);
         let root_node = Self::get_root_node(&document);
-        let canteen_name = Self::get_canteen_name(&root_node);
-        println!("Mealplan for Mensa: {canteen_name}");
 
         let mut canteens_and_dates = Vec::new();
         for day_node in Self::get_day_nodes(&root_node) {
             let date = Self::get_date(&root_node, &day_node).expect(E_MSG);
-            println!("\nMealplan for day: {date}");
             let mut lines: Vec<ParseLine> = Vec::new();
             for line_node in Self::get_line_nodes(&day_node) {
-                let line_name = Self::get_line_name(&line_node);
-                println!("\nMealplan for line: {line_name}");
                 let mut dishes: Vec<Dish> = Vec::new();
                 for dish_node in Self::get_dish_nodes(&line_node) {
                     let dish = Dish {
@@ -64,25 +59,16 @@ impl HTMLParser {
                         is_side: Self::is_dish_side(&Self::get_dish_price(&dish_node)),
                         env_score: Self::get_dish_env_score(&dish_node),
                     };
-                    println!(
-                        "{}\nPrice student: {},Price guest: {},Price employee: {},Price pupil: {},Env score: {}",
-                        dish.name,
-                        dish.price.price_student,
-                        dish.price.price_guest,
-                        dish.price.price_employee,
-                        dish.price.price_pupil,
-                        dish.env_score,
-                    );
                     dishes.push(dish);
                 }
                 let line = ParseLine {
-                    name: line_name,
+                    name: Self::get_line_name(&line_node),
                     dishes,
                 };
                 lines.push(line);
             }
             let canteen = ParseCanteen {
-                name: String::from(&canteen_name),
+                name: Self::get_canteen_name(&root_node),
                 lines,
             };
             canteens_and_dates.push((date, canteen));
@@ -243,8 +229,6 @@ impl HTMLParser {
         let env_score_node = dish_node.select(&selector).next();
         env_score_node.map_or(0, |x| x.value().attr(ENV_SCORE_ATTRIBUTE_NAME).expect(E_MSG).parse::<u32>().expect(E_MSG)) 
     }
-
-    // Use maps to determine allergens and additives for dish?
 }
 
 #[cfg(test)]
@@ -255,6 +239,9 @@ mod tests {
     async fn test_html() {
         let file_content = String::from(include_str!("test.html"));
         let parser = HTMLParser::new();
-        parser.transform(file_content);
+        let canteen_data = parser.transform(file_content);
+        for canteen_date in canteen_data {
+            println!("{}\n{}", canteen_date.0, canteen_date.1);
+        }
     }
 }
