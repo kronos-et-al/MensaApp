@@ -15,5 +15,3 @@ Cargo.lock
 
 # environment variable file
 .env
-
-test.html

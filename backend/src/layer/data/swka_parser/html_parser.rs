@@ -234,8 +234,27 @@ mod tests {
     use crate::layer::data::swka_parser::html_parser::HTMLParser;
 
     #[tokio::test]
-    async fn test_html() {
-        let file_content = String::from(include_str!("test.html"));
+    async fn test_normal() {
+        test_html(include_str!("./tests/test_normal.html"));
+    }
+
+    #[tokio::test]
+    async fn test_no_meal_data() {
+        test_html(include_str!("./tests/test_no_meal_data.html"));
+    }
+
+    #[tokio::test]
+    async fn test_no_mealplan_shown() {
+        test_html(include_str!("./tests/test_no_mealplan_shown.html"));
+    }
+
+    #[tokio::test]
+    async fn test_mensa_moltke() {
+        test_html(include_str!("./tests/test_mensa_moltke.html"));
+    }
+
+    fn test_html(path: &str) {
+        let file_content = String::from(path);
         let parser = HTMLParser::new();
         let canteen_data = parser.transform(file_content);
         for canteen_date in canteen_data {
