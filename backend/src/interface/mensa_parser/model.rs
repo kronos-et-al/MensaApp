@@ -59,12 +59,20 @@ pub struct Dish {
 
 impl Display for Dish {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut allergens = String::from("Allergens: ");
+        let mut allergens = if self.allergens.is_empty() {
+            String::new()
+        } else {
+            String::from("Allergens: ")
+        };
         for allergen in &self.allergens {
             allergens.push_str(&format!("{allergen}, "));
         }
 
-        let mut additives = String::from("Additives: ");
+        let mut additives = if self.additives.is_empty() {
+            String::new()
+        } else {
+            String::from("Additives: ")
+        };
         for additive in &self.additives {
             additives.push_str(&format!("{additive}, "));
         }
