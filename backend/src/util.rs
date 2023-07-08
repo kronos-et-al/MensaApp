@@ -72,7 +72,8 @@ pub enum Allergen {
 }
 
 impl Allergen {
-    #[must_use] pub fn parse(s: &str) -> Option<Self> {
+    #[must_use]
+    pub fn parse(s: &str) -> Option<Self> {
         match s {
             "Ca" => Some(Self::Ca),
             "Di" => Some(Self::Di),
@@ -143,7 +144,8 @@ pub enum Additive {
 }
 
 impl Additive {
-    #[must_use] pub fn parse(s: &str) -> Option<Self> {
+    #[must_use]
+    pub fn parse(s: &str) -> Option<Self> {
         match s {
             "1" => Some(Self::Colorant),
             "2" => Some(Self::PreservingAgents),
@@ -160,7 +162,7 @@ impl Additive {
             "14" => Some(Self::PressedMeat),
             "15" => Some(Self::GlazingWithCacao),
             "27" => Some(Self::PressedFish),
-            _ => None
+            _ => None,
         }
     }
 }
@@ -184,6 +186,22 @@ pub enum MealType {
     Fish,
     /// It is unknown whether this meal contains any meat or not.
     Unknown,
+}
+
+impl MealType {
+    #[must_use]
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "veganes Gericht" => Self::Vegan,
+            "vegetarisches Gericht" => Self::Vegetarian,
+            "enthält Rindfleisch" => Self::Beef,
+            "enthält regionales Rindfleisch aus artgerechter Tierhaltung" => Self::BeefAw,
+            "enthält Schweinefleisch" => Self::Pork,
+            "enthält regionales Schweinefleisch aus artgerechter Tierhaltung" => Self::PorkAw,
+            "MSC aus zertifizierter Fischerei" => Self::Fish,
+            _ => Self::Unknown,
+        }
+    }
 }
 
 /// This enum lists all the predetermined reasons a image can be reported for.
