@@ -1,11 +1,8 @@
 use std::collections::HashMap;
-use std::hash::Hasher;
 use crate::interface::mensa_parser::MealplanParser;
 use crate::interface::mensa_parser::model::ParseCanteen;
-use crate::interface::persistent_data::model::Canteen;
 use crate::util::Date;
 use async_trait::async_trait;
-use chrono::Datelike;
 use crate::layer::data::swka_parser::html_parser::HTMLParser;
 use crate::layer::data::swka_parser::swka_link_creator::SwKaLinkCreator;
 use crate::layer::data::swka_parser::swka_resolver::SwKaResolver;
@@ -23,13 +20,12 @@ impl SwKaParseManager {
         let mut map: HashMap<Date, Vec<ParseCanteen>> = HashMap::new();
 
         let resolver = SwKaResolver;
-        let parser = HTMLParser;
 
-        let mut htmls = resolver.get_htmls(urls).await;
+        let htmls = resolver.get_htmls(urls).await;
 
         // TODO unwrap()
         for html in htmls.unwrap() {
-            for (date, canteen) in parser.transform(html) {
+            for (date, canteen) in HTMLParser::transform(&html) {
                 map.entry(date).or_default().push(canteen);
             }
         }
@@ -42,20 +38,15 @@ impl MealplanParser for SwKaParseManager {
 
     // TODO needs validation
     async fn parse(&self, day: Date) -> Vec<ParseCanteen> {
-        let mut map = HashMap::new();
-        let link_creator = SwKaLinkCreator;
 
-        map = self.parse_and_sort_canteens_by_days(link_creator.get_urls(&day)).await;
+        let mut map = self.parse_and_sort_canteens_by_days(SwKaLinkCreator::get_urls(day)).await;
 
-        map.remove(&day).unwrap_or(Vec::new())
+        map.remove(&day).unwrap_or_default()
     }
 
     // TODO needs validation
     async fn parse_all(&self) -> Vec<(Date, Vec<ParseCanteen>)> {
-        let mut map = HashMap::new();
-        let link_creator = SwKaLinkCreator;
-
-        map = self.parse_and_sort_canteens_by_days(link_creator.get_all_urls()).await;
+        let map = self.parse_and_sort_canteens_by_days(SwKaLinkCreator::get_all_urls()).await;
 
         map.into_iter().collect()
     }

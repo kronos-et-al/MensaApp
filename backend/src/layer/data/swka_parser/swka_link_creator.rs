@@ -22,14 +22,8 @@ const PARSE_E_MSG: &str = "Error while parsing";
 pub struct SwKaLinkCreator;
 
 impl SwKaLinkCreator {
-    //See <https://youtrack.friedrich-willhelm-der-schredder.de/articles/PSE-A-115/SwKaLinkCreator> for more information
-
-    pub const fn new() -> Self {
-        Self
-    }
-
-    pub fn get_urls(&self, day: &Date) -> Vec<String> {
-        let calender_week = Self::get_calender_week(*day);
+    pub fn get_urls(day: Date) -> Vec<String> {
+        let calender_week = Self::get_calender_week(day);
         let mut urls = Vec::new();
         for mensa in MENSA_NAMES {
             urls.push(format!(
@@ -39,12 +33,12 @@ impl SwKaLinkCreator {
         urls
     }
 
-    pub fn get_all_urls(&self) -> Vec<String> {
+    pub fn get_all_urls() -> Vec<String> {
         let today = Self::get_todays_date();
         let mut all_urls = Vec::new();
         for i in 0..NUMBER_OF_WEEKS_TO_POLL {
             let day = today.checked_add_days(Days::new(i * NUMBER_OF_DAYS_PER_WEEK)).expect(PARSE_E_MSG);
-            all_urls.append(&mut self.get_urls(&day));
+            all_urls.append(&mut Self::get_urls(day));
         }
         all_urls
     }
@@ -64,8 +58,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_url() {
-        let link_creator = SwKaLinkCreator::new();
-        for link in link_creator.get_all_urls() {
+        for link in SwKaLinkCreator::get_all_urls() {
             println!("{link}");
         }
     }

@@ -38,14 +38,8 @@ const NODE_NOT_FOUND_E_MSG: &str = "Error while trying to get the html node";
 pub struct HTMLParser;
 
 impl HTMLParser {
-    //See <https://youtrack.friedrich-willhelm-der-schredder.de/articles/PSE-A-114/HTMLParser> for more information
-
-    pub const fn new() -> Self {
-        Self
-    }
-
-    pub fn transform(&self, html: String) -> Vec<(Date, ParseCanteen)> {
-        let document = Html::parse_document(&html);
+    pub fn transform(html: &str) -> Vec<(Date, ParseCanteen)> {
+        let document = Html::parse_document(html);
         let root_node = Self::get_root_node(&document);
         let dates = Self::get_dates(&root_node);
 
@@ -256,9 +250,8 @@ mod tests {
     }
 
     fn test_html(path: &str) {
-        let file_content = String::from(path);
-        let parser = HTMLParser::new();
-        let canteen_data = parser.transform(file_content);
+        let file_content = path;
+        let canteen_data = HTMLParser::transform(file_content);
         for canteen_date in canteen_data {
             println!("{}\n{}", canteen_date.0, canteen_date.1);
         }

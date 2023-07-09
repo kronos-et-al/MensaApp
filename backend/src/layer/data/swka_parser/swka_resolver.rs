@@ -10,25 +10,7 @@ impl SwKaResolver {
     /// Calls get_html urls times. Returns multiple html code at once.
     /// TODO error handling and "url" fixes
     pub async fn get_htmls(&self, urls: Vec<String>) -> Result<Vec<String>, Box<dyn Error>> {
-        let mut htmls: Vec<String> = Vec::new();
-
-        for url in urls {
-            let mut tries = 3; //TODO Final or config?
-
-            loop {
-                tries = tries - 1;
-                let html = self.get_html(url).await;
-                if html.is_ok() {
-                    htmls.push(html.unwrap());
-                    break();
-                } else {
-                    if tries == 0 {
-                        Err(html.expect_err("Could not connect to url:" + url))
-                    }
-                }
-            }
-        }
-        Ok(htmls)
+        todo!()
     }
 
     /// priv
