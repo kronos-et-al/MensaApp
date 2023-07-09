@@ -9,16 +9,21 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
 
   late List<Meal> _favorites;
 
+  // waits until _init() is finished initializing
+  late Future _doneInitialization;
+
   FavoriteMealAccess(this._database) {
-    _init();
+    _doneInitialization = _init();
   }
-  
+
   Future<void> _init() async {
     _favorites = await _database.getFavorites();
   }
 
   @override
   Future<void> addFavoriteMeal(Meal meal) async {
+    await _doneInitialization;
+
     if (await isFavoriteMeal(meal)) {
       return;
     }
@@ -30,16 +35,20 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
 
   @override
   Future<List<Meal>> getFavoriteMeals() async {
+    await _doneInitialization;
     return Future.value(_favorites);
   }
 
   @override
   Future<bool> isFavoriteMeal(Meal meal) async {
+    await _doneInitialization;
     return Future.value(_favorites.map((favorite) => favorite.id).contains(meal.id));
   }
 
   @override
   Future<void> removeFavoriteMeal(Meal meal) async {
+    await _doneInitialization;
+
     if (await isFavoriteMeal(meal) == false) {
       return;
     }
