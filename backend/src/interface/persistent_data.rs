@@ -98,30 +98,32 @@ pub trait ImageReviewDataAccess {
 /// An interface for graphql mutation data manipulation. The Command component uses this interface for database access.
 pub trait CommandDataAccess {
     /// Returns the ImageInfo struct of image.
-    async fn get_image_info(image_id: Uuid) -> Result<ImageInfo>;
+    async fn get_image_info(&self, image_id: Uuid) -> Result<ImageInfo>;
     /// Marks an image as hidden. Hidden images cant be seen by users.
-    async fn hide_image(image_id: Uuid) -> Result<()>;
+    async fn hide_image(&self, image_id: Uuid) -> Result<()>;
     /// Saves an image report
-    async fn add_report(image_id: Uuid, client_id: Uuid, reason: ReportReason) -> Result<()>;
+    async fn add_report(&self, image_id: Uuid, client_id: Uuid, reason: ReportReason)
+        -> Result<()>;
     /// Adds an upvote to the given image. An user can only down- or upvote an image.
-    async fn add_upvote(image_id: Uuid, user_id: Uuid) -> Result<()>;
+    async fn add_upvote(&self, image_id: Uuid, user_id: Uuid) -> Result<()>;
     /// Adds a downvote to the given image. An user can only down- or upvote an image.
-    async fn add_downvote(image_id: Uuid, user_id: Uuid) -> Result<()>;
+    async fn add_downvote(&self, image_id: Uuid, user_id: Uuid) -> Result<()>;
     /// Removes an upvote from the given image.
-    async fn remove_upvote(image_id: Uuid, user_id: Uuid) -> Result<()>;
+    async fn remove_upvote(&self, image_id: Uuid, user_id: Uuid) -> Result<()>;
     /// Removes a downvote from the given image.
-    async fn remove_downvote(image_id: Uuid, user_id: Uuid) -> Result<()>;
+    async fn remove_downvote(&self, image_id: Uuid, user_id: Uuid) -> Result<()>;
     /// Adds an image link to the database. The image will be related to the given meal.
     async fn link_image(
+        &self,
         meal_id: Uuid,
         user_id: Uuid,
         image_hoster_id: String,
         url: String,
     ) -> Result<()>;
     /// Adds a rating to the database. The rating will be related to the given meal and the given user.
-    async fn add_rating(meal_id: Uuid, user_id: Uuid, rating: u32) -> Result<()>;
+    async fn add_rating(&self, meal_id: Uuid, user_id: Uuid, rating: u32) -> Result<()>;
     /// Loads all api_keys from the database.
-    async fn get_api_keys() -> Result<Vec<ApiKey>>;
+    async fn get_api_keys(&self) -> Result<Vec<ApiKey>>;
 }
 
 #[async_trait]

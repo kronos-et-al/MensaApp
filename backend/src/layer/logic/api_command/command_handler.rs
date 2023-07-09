@@ -17,9 +17,9 @@ pub struct CommandHandler {
 
 impl CommandHandler {
     pub async fn new(
-        command_data: impl CommandDataAccess,
-        admin_notification: impl AdminNotification,
-        image_hoster: impl ImageHoster,
+        command_data: Box<dyn CommandDataAccess>,
+        admin_notification: Box<dyn AdminNotification>,
+        image_hoster: Box<dyn ImageHoster>,
     ) -> Self {
         let keys: Vec<String> = command_data
             .get_api_keys()
