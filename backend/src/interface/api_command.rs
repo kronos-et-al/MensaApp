@@ -13,7 +13,12 @@ pub type Result<T> = std::result::Result<T, CommandError>;
 #[async_trait]
 pub trait Command {
     /// Command to report an image. It als gets checked whether the image shall get hidden.
-    async fn report_image(&self, image_id: Uuid, reason: ReportReason, auth_info: AuthInfo) -> Result<()>;
+    async fn report_image(
+        &self,
+        image_id: Uuid,
+        reason: ReportReason,
+        auth_info: AuthInfo,
+    ) -> Result<()>;
 
     /// Command to vote up an image. All down-votes of the same user get removed.
     async fn add_image_upvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()>;
@@ -34,8 +39,12 @@ pub trait Command {
     async fn set_meal_rating(&self, meal_id: Uuid, rating: u32, auth_info: AuthInfo) -> Result<()>;
 }
 
+/// Structure that may contain all information necessary for authenticating a client, if provided.
+pub type AuthInfo = Option<InnerAuthInfo>;
+
 /// Structure containing all information necessary for authenticating a client.
-pub struct AuthInfo {
+#[derive(Debug)]
+pub struct InnerAuthInfo {
     /// Id of client, chosen at random.
     pub client_id: Uuid,
     /// First 10 letters of api key.
@@ -52,6 +61,6 @@ pub enum CommandError {
     #[error("invalid authentication information provided")]
     BadAuth,
     /// Error marking something went wrong internally.
-    #[error("internal error ocurred")]
-    InternalError(#[from] Box<dyn Error + std::marker::Sync + std::marker::Send>),
+    #[error("internal error ocurred: {0}")]
+    InternalError(#[from] Box<dyn Error + Send + Sync>),
 }
