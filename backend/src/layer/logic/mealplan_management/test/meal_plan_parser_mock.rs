@@ -74,11 +74,11 @@ pub struct MealPlanParserMock;
 #[async_trait]
 impl MealplanParser for MealPlanParserMock {
     /// Initiate a parse procedure. Returns a canteen struct containing mealplan data of the given date.
-    async fn parse(_day: Date) -> Vec<ParseCanteen> {
+    async fn parse(&self, _day: Date) -> Vec<ParseCanteen> {
         get_canteens(5, 10, 2)
     }
     /// Initiate a parse procedure. Returns a tuple containing mealplan data of the next four weeks. The tuple contains a canteen struct with the related date.
-    async fn parse_all() -> Vec<(Date, Vec<ParseCanteen>)> {
+    async fn parse_all(&self) -> Vec<(Date, Vec<ParseCanteen>)> {
         vec![(Date::default(), get_canteens(5, 10, 2))]
     }
 }
