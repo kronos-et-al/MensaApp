@@ -62,6 +62,7 @@ abstract class IServerAccess {
   /// @return The result of the update. It returns false, if the report failed.
   Future<bool> reportImage(ImageData image, ReportCategory reportReason);
 
-
-
+  /// This method requests the default canteen from the server.
+  /// @return The default canteen or null if no connection could be established.
+  Future<Canteen?> getDefaultCanteen();
 }
