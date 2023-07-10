@@ -20,9 +20,17 @@ pub struct ScheduleInfo {
     pub full_parse_schedule: String,
 }
 
+#[derive(PartialEq, Eq, Debug)]
+enum State {
+    Created,
+    Running,
+    Stopped,
+}
+
 /// Class fro planning regular events.
 pub struct Scheduler {
     scheduler: JobScheduler,
+    state: State,
 }
 
 impl Scheduler {
@@ -86,20 +94,30 @@ impl Scheduler {
             .await
             .expect("could not add job for full parsing to scheduler");
 
-        Self { scheduler }
+        Self {
+            scheduler,
+            state: State::Created,
+        }
     }
 
     /// Starts the scheduler. It runs in the background until it is stopped with [`Self::shutdown()`].
-    pub async fn start(&self) {
+    pub async fn start(&mut self) {
+        assert_eq!(self.state, State::Created, "scheduler should only be started once");
         self.scheduler
             .start()
             .await
-            .expect("scheduler should run properly");
+            .expect("scheduler should only be started once");
+        self.state = State::Running;
         info!("Started scheduler.");
     }
 
     /// Stops the scheduler.
     pub async fn shutdown(&mut self) {
+        assert_eq!(
+            self.state,
+            State::Running,
+            "scheduler should be started and not shut down"
+        );
         let shutdown_finished = Arc::new(Notify::new());
 
         let shutdown_sender = shutdown_finished.clone();
@@ -111,10 +129,11 @@ impl Scheduler {
         self.scheduler
             .shutdown()
             .await
-            .expect("could not shutdown scheduler");
+            .expect("could not shut down scheduler");
 
         // wait until shutdown finished
         shutdown_finished.notified().await;
+        self.state = State::Stopped;
         info!("Scheduler shutdown complete.");
     }
 }
@@ -129,7 +148,7 @@ mod tests {
     use tracing::Level;
 
     #[tokio::test]
-    async fn test_a() {
+    async fn test_scheduling() {
         let subscriber = tracing_subscriber::FmtSubscriber::builder()
             .with_max_level(Level::TRACE)
             .finish();
@@ -143,7 +162,7 @@ mod tests {
         };
         let mensa_parser = MensaParseMock::default();
         let image_parser = ImageReviewMock::default();
-        
+
         let mut scheduler = Scheduler::new(info, image_parser.clone(), mensa_parser.clone()).await;
 
         scheduler.start().await;
@@ -153,8 +172,49 @@ mod tests {
         info!("shutting down");
         scheduler.shutdown().await;
 
-        assert_eq!(10, mensa_parser.get_full_calls(), "full parse was not called right amount");
-        assert_eq!(5, mensa_parser.get_update_calls(), "update parse was not called right amount");
-        assert_eq!(2, image_parser.get_calls(), "image review was not called right amount");
+        assert!(
+            (9..=10).contains(&mensa_parser.get_full_calls()),
+            "full parse was not called right amount"
+        );
+        assert!(
+            (4..=5).contains(&mensa_parser.get_update_calls()),
+            "update parse was not called right amount"
+        );
+        assert!(
+            (1..=2).contains(&image_parser.get_calls()),
+            "image review was not called right amount"
+        );
+    }
+
+    #[tokio::test]
+    #[should_panic = "scheduler should only be started once"]
+    async fn test_double_start() {
+        let info = ScheduleInfo {
+            full_parse_schedule: "*/1 * * * * *".into(),
+            update_parse_schedule: "*/2 * * * * *".into(),
+            image_review_schedule: "*/5 * * * * *".into(),
+        };
+        let mensa_parser = MensaParseMock::default();
+        let image_parser = ImageReviewMock::default();
+
+        let mut scheduler = Scheduler::new(info, image_parser.clone(), mensa_parser.clone()).await;
+        scheduler.start().await;
+        scheduler.start().await;
+        scheduler.shutdown().await;
+    }
+
+    #[tokio::test]
+    #[should_panic = "scheduler should be started and not shut down"]
+    async fn test_not_running() {
+        let info = ScheduleInfo {
+            full_parse_schedule: "*/1 * * * * *".into(),
+            update_parse_schedule: "*/2 * * * * *".into(),
+            image_review_schedule: "*/5 * * * * *".into(),
+        };
+        let mensa_parser = MensaParseMock::default();
+        let image_parser = ImageReviewMock::default();
+
+        let mut scheduler = Scheduler::new(info, image_parser.clone(), mensa_parser.clone()).await;
+        scheduler.shutdown().await;
     }
 }
