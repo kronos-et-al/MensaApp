@@ -53,5 +53,5 @@ pub enum CommandError {
     BadAuth,
     /// Error marking something went wrong internally.
     #[error("internal error ocurred")]
-    InternalError(#[from] Box<dyn Error>),
+    InternalError(#[from] Box<dyn Error + std::marker::Sync + std::marker::Send>),
 }
