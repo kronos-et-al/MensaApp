@@ -1,6 +1,3 @@
-
-import '../../repository/data_classes/filter/FilterPreferences.dart';
-import '../../repository/data_classes/mealplan/Canteen.dart';
 import '../../repository/data_classes/settings/MensaColorScheme.dart';
 import '../../repository/data_classes/settings/MealPlanFormat.dart';
 import '../../repository/data_classes/settings/PriceCategory.dart';
@@ -15,28 +12,6 @@ abstract class IPreferenceAccess {
   /// @param identifier The new client identifier.
   /// @return The result of the update.
   Future<void> setClientIdentifier(String identifier);
-
-  /// The saved FilterPreferences is returned.
-  /// @return The saved FilterPreferences.
-  Future<FilterPreferences> getFilterPreferences();
-
-  /// The committed FilterPreferences is set.
-  /// @param filter The new FilterPreferences.
-  /// @return The result of the update.
-  Future<void> setFilterPreferences(FilterPreferences filter);
-
-  /// The FilterPreferences are reset to the default values.
-  /// @return The result of the update.
-  Future<void> resetFilterPreferences();
-
-  /// The saved Canteen is returned.
-  /// @return The saved Canteen.
-  Future<Canteen> getCanteen();
-
-  /// The committed Canteen is set.
-  /// @param canteen The new Canteen.
-  /// @return The result of the update.
-  Future<void> setCanteen(Canteen canteen);
 
   /// The saved ColorScheme is returned.
   /// @return The saved ColorScheme.
