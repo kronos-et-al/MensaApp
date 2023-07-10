@@ -30,9 +30,9 @@ pub trait MealplanManagementDataAccess {
     /// Determines the line with the most similar name.
     async fn get_similar_line(&self, similar_name: &String) -> Result<Option<Line>>;
     /// Determines the meal with the most similar name.
-    async fn get_similar_meals(&self, similar_name: &String) -> Result<Option<Meal>>;
+    async fn get_similar_meal(&self, similar_name: &String) -> Result<Option<Meal>>;
     /// Determines the side with the most similar name.
-    async fn get_similar_sides(&self, similar_name: &String) -> Result<Option<Side>>;
+    async fn get_similar_side(&self, similar_name: &String) -> Result<Option<Side>>;
 
     /// Updates an existing canteen entity in the database. Returns the entity.
     async fn update_canteen(&self, uuid: Uuid, name: &String) -> Result<Canteen>;
