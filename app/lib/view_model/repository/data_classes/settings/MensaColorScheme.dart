@@ -1,6 +1,6 @@
 
 /// This enums contains all different color schemes.
-enum ColorScheme {
+enum MensaColorScheme {
   /// The light color scheme.
   light,
   /// The dark color scheme.

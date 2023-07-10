@@ -1,6 +1,6 @@
 
 import '../data_classes/filter/FilterPreferences.dart';
-import '../data_classes/settings/ColorScheme.dart';
+import '../data_classes/settings/MensaColorScheme.dart';
 import '../data_classes/settings/MealPlanFormat.dart';
 import '../data_classes/settings/PriceCategory.dart';
 
@@ -35,12 +35,12 @@ abstract class ILocalStorage {
 
   /// The saved ColorScheme is returned.
   /// @return The saved ColorScheme.
-  Future<ColorScheme?> getColorScheme();
+  Future<MensaColorScheme?> getColorScheme();
 
   /// The committed ColorScheme is set.
   /// @param scheme The new ColorScheme.
   /// @return The result of the update.
-  Future<void> setColorScheme(ColorScheme scheme);
+  Future<void> setColorScheme(MensaColorScheme scheme);
 
   /// The saved PriceCategory is returned.
   /// @return The saved PriceCategory.
