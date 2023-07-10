@@ -1,5 +1,5 @@
 //! The general structure of the html file is as follows: (// Are added comments)
-//! ```
+//! ```html
 //! //...
 //! // This is the root node identified by `ROOT_NODE_CLASS`
 //! <div class="main-content iwsetter">      
@@ -385,9 +385,10 @@ mod tests {
 
     fn test_html(path: &str, file_contents: &str) {
         let canteen_data = HTMLParser::transform(file_contents);
+        //write_output_to_file(path,&canteen_data);
         let contents = read_from_file(path);
         assert!(contents.is_ok());
-        let contents = contents.expect("This case should never occur");
+        let contents = contents.expect("This case should never occur").replace("\r\n", "\n");
         assert_eq!(format!("{canteen_data:#?}"), contents);
     }
     #[allow(dead_code)]
