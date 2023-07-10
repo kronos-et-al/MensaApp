@@ -1,3 +1,5 @@
+use mensa_app_backend::run_backend;
+
 fn main() {
-    println!("Hello, world!");
+    run_backend();
 }

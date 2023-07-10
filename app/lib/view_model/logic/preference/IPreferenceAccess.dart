@@ -1,18 +1,18 @@
 
 import '../../repository/data_classes/filter/FilterPreferences.dart';
 import '../../repository/data_classes/mealplan/Canteen.dart';
-import '../../repository/data_classes/settings/ColorScheme.dart';
+import '../../repository/data_classes/settings/MensaColorScheme.dart';
 import '../../repository/data_classes/settings/MealPlanFormat.dart';
 import '../../repository/data_classes/settings/PriceCategory.dart';
 
 /// This is an interface for accessing the preferences.
 abstract class IPreferenceAccess {
-  /// The device identifier is returned.
-  /// @return The device identifier.
+  /// The client identifier is returned.
+  /// @return The client identifier.
   Future<String> getClientIdentifier();
 
-  /// The device identifier is set.
-  /// @param identifier The new device identifier.
+  /// The client identifier is set.
+  /// @param identifier The new client identifier.
   /// @return The result of the update.
   Future<void> setClientIdentifier(String identifier);
 

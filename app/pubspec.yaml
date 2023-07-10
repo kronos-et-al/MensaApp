@@ -46,6 +46,8 @@ dependencies:
   flutter_svg: ^2.0.7
   shared_preferences: ^2.2.0
 
+  provider: ^6.0.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -69,6 +71,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/images/
     - assets/icons/
     - assets/icons/allergens/
     - assets/locales/en/
