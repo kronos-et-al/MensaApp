@@ -110,7 +110,6 @@ impl Allergen {
             Self::Wt => "Molluscs",
             Self::La => "With animal loaf",
             Self::Gl => "With gelatine",
-            _ => "",
         }
     }
 
@@ -210,7 +209,6 @@ impl Additive {
             Self::PressedMeat => "Pressed meat",
             Self::GlazingWithCacao => "Glazing with cacao",
             Self::PressedFish => "Pressed fish",
-            _ => "",
         }
     }
 
@@ -274,7 +272,7 @@ impl MealType {
             Self::Pork => "enthält Schweinefleisch",
             Self::PorkAw => "enthält regionales Schweinefleisch aus artgerechter Tierhaltung",
             Self::Fish => "MSC aus zertifizierter Fischerei",
-            _ => "",
+            Self::Unknown => "",
         }
     }
 
