@@ -24,6 +24,7 @@ pub struct Scheduler {
 }
 
 impl Scheduler {
+    // TODO error handeling
     /// Creates a new scheduler with time plans specified in `info` and actions specified in the `scheduling`s.
     pub async fn new(
         info: ScheduleInfo,
@@ -34,6 +35,7 @@ impl Scheduler {
             .await
             .expect("cannot initialize scheduler");
 
+        // image review
         let image_review = Arc::new(image_scheduling);
 
         let image_review_job =
@@ -49,6 +51,38 @@ impl Scheduler {
             .add(image_review_job)
             .await
             .expect("could not add job for image reviewing to scheduler");
+
+        // mensa parsing
+        let mensa_parse = Arc::new(parse_scheduling);
+
+        let mensa_parse_update = mensa_parse.clone();
+        let update_parse_job =
+            Job::new_cron_job_async(info.update_parse_schedule.as_ref(), move |_, _| {
+                let mensa_parse = mensa_parse_update.clone();
+                Box::pin(async move {
+                    mensa_parse.start_update_parsing().await;
+                })
+            })
+            .expect("could not create schedule for image reviewing");
+
+        scheduler
+            .add(update_parse_job)
+            .await
+            .expect("could not add job for update parsing to scheduler");
+
+        let full_parse_job =
+            Job::new_cron_job_async(info.full_parse_schedule.as_ref(), move |_, _| {
+                let mensa_parse = mensa_parse.clone();
+                Box::pin(async move {
+                    mensa_parse.start_full_parsing().await;
+                })
+            })
+            .expect("could not create schedule for image reviewing");
+
+        scheduler
+            .add(full_parse_job)
+            .await
+            .expect("could not add job for full parsing to scheduler");
 
         Self { scheduler }
     }
