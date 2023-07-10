@@ -1,5 +1,5 @@
 import 'package:app/view_model/logic/preference/IPreferenceAccess.dart';
-import 'package:app/view_model/repository/data_classes/settings/ColorScheme.dart';
+import 'package:app/view_model/repository/data_classes/settings/MensaColorScheme.dart';
 import 'package:app/view_model/repository/data_classes/settings/MealPlanFormat.dart';
 import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
 import 'package:app/view_model/repository/interface/ILocalStorage.dart';
@@ -10,7 +10,7 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
   late ILocalStorage _access;
 
   late String _clientIdentifier;
-  late ColorScheme _colorScheme;
+  late MensaColorScheme _colorScheme;
   late PriceCategory _priceCategory;
   late MealPlanFormat _mealPlanFormat;
 
@@ -23,7 +23,7 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
 
   Future<void> _init() async {
     _clientIdentifier = await _access.getClientIdentifier() ?? "";
-    _colorScheme = await _access.getColorScheme() ?? ColorScheme.system;
+    _colorScheme = await _access.getColorScheme() ?? MensaColorScheme.system;
     _priceCategory = await _access.getPriceCategory() ?? PriceCategory.student;
     _mealPlanFormat = await _access.getMealPlanFormat() ?? MealPlanFormat.grid;
   }
@@ -35,7 +35,7 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
   }
 
   @override
-  Future<ColorScheme> getColorScheme() async {
+  Future<MensaColorScheme> getColorScheme() async {
     await _doneInitialization;
     return Future.value(_colorScheme);
   }
@@ -61,7 +61,7 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
   }
 
   @override
-  Future<void> setColorScheme(ColorScheme scheme) async {
+  Future<void> setColorScheme(MensaColorScheme scheme) async {
     await _doneInitialization;
     _colorScheme = scheme;
     await _access.setColorScheme(scheme);

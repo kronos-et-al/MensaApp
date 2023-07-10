@@ -1,5 +1,5 @@
 import 'package:app/view_model/logic/preference/PreferenceAccess.dart';
-import 'package:app/view_model/repository/data_classes/settings/ColorScheme.dart';
+import 'package:app/view_model/repository/data_classes/settings/MensaColorScheme.dart';
 import 'package:app/view_model/repository/data_classes/settings/MealPlanFormat.dart';
 import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,7 +28,7 @@ void main () {
     });
 
     test("color scheme", () async {
-      expect(await preferences.getColorScheme(), ColorScheme.system);
+      expect(await preferences.getColorScheme(), MensaColorScheme.system);
     });
 
     test("meal plan format", () async {
@@ -51,7 +51,7 @@ void main () {
     });
 
     test("set Color Scheme", () async {
-      const scheme = ColorScheme.light;
+      const scheme = MensaColorScheme.light;
       when(() => localStorage.setColorScheme(scheme)).thenAnswer((_) async {});
 
       await preferences.setColorScheme(scheme);
@@ -80,7 +80,7 @@ void main () {
 
   group("initialization with non standard values", () {
     when(() => localStorage.getClientIdentifier()).thenAnswer((_) => Future.value("42"));
-    when(() => localStorage.getColorScheme()).thenAnswer((_) => Future.value(ColorScheme.light));
+    when(() => localStorage.getColorScheme()).thenAnswer((_) => Future.value(MensaColorScheme.light));
     when(() => localStorage.getPriceCategory()).thenAnswer((_) => Future.value(PriceCategory.employee));
     when(() => localStorage.getMealPlanFormat()).thenAnswer((_) => Future.value(MealPlanFormat.list));
 
@@ -91,7 +91,7 @@ void main () {
     });
 
     test("color scheme", () async {
-      expect(await preferencesPredefined.getColorScheme(), ColorScheme.light);
+      expect(await preferencesPredefined.getColorScheme(), MensaColorScheme.light);
     });
 
     test("meal plan format", () async {
