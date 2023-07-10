@@ -328,33 +328,46 @@ impl HTMLParser {
 
 #[cfg(test)]
 mod tests {
-    use crate::layer::data::swka_parser::html_parser::HTMLParser;
+    use std::{fs::{File, self}, io::{Write}};
+
+    use crate::{layer::data::swka_parser::html_parser::HTMLParser, interface::mensa_parser::model::ParseCanteen, util::Date};
 
     #[tokio::test]
     async fn test_normal() {
-        test_html(include_str!("./tests/test_normal.html"));
+        test_html("./tests/test_normal.html", include_str!("./tests/test_normal.html"));
     }
 
     #[tokio::test]
     async fn test_no_meal_data() {
-        test_html(include_str!("./tests/test_no_meal_data.html"));
+        test_html("./tests/test_no_meal_data.html", include_str!("./tests/test_no_meal_data.html"));
     }
 
     #[tokio::test]
     async fn test_no_mealplan_shown() {
-        test_html(include_str!("./tests/test_no_mealplan_shown.html"));
+        test_html("./tests/test_no_mealplan_shown.html", include_str!("./tests/test_no_mealplan_shown.html"));
     }
 
     #[tokio::test]
     async fn test_mensa_moltke() {
-        test_html(include_str!("./tests/test_mensa_moltke.html"));
+        test_html("./tests/test_mensa_moltke.html", include_str!("./tests/test_mensa_moltke.html"));
     }
 
-    fn test_html(path: &str) {
-        let file_content = path;
-        let canteen_data = HTMLParser::transform(file_content);
-        for canteen_date in canteen_data {
-            println!("{}\n{}", canteen_date.0, canteen_date.1);
-        }
+    fn test_html(path: &str, file_contents: &str) {
+        let canteen_data = HTMLParser::transform(file_contents);
+        let contents = read_from_file(path);
+        assert!(contents.is_ok());
+        let contents = contents.expect("This case should never occur");
+        assert_eq!(format!("{canteen_data:#?}"), contents);
+    }
+    #[allow(dead_code)]
+    fn write_output_to_file(path: &str, canteen_data: &[(Date, ParseCanteen)]) -> std::io::Result<()>{
+        let output_path = path.replace("html", "txt").replace("./", "src/layer/data/swka_parser/");
+        let mut output = File::create(output_path)?;
+        write!(output, "{canteen_data:#?}")
+    }
+
+    fn read_from_file(path: &str) -> std::io::Result<String> {
+        let input_path = path.replace("html", "txt").replace("./", "src/layer/data/swka_parser/");
+        fs::read_to_string(input_path)
     }
 }
