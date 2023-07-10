@@ -19,7 +19,7 @@ impl<DataAccess> RelationResolver<DataAccess>
 where
     DataAccess: MealplanManagementDataAccess,
 {
-    pub fn new(database: DataAccess) -> Self {
+    pub const fn new(database: DataAccess) -> Self {
         Self {
             db: database
         }
@@ -42,15 +42,17 @@ where
              };
 
             for dish in line.dishes {
-                let similar_meal_result = self.db.get_similar_meals(&dish.name).await?;
-                let similar_side_result = self.db.get_similar_sides(&dish.name).await?;
+                let similar_meal_result = self.db.get_similar_meal(&dish.name).await?;
+                let similar_side_result = self.db.get_similar_side(&dish.name).await?;
                 // A similar side and meal could be found. Uncommon case.
                 // Or just a meal could be found.
                 if similar_meal_result.is_some() {
-                    self.db.update_meal(similar_meal_result.unwrap().id, db_line.id, date, &dish.name, &dish.price).await?;
+                    //TODO get a better solution for .expect
+                    self.db.update_meal(similar_meal_result.expect("Cant fail?").id, db_line.id, date, &dish.name, &dish.price).await?;
                     // A similar side could be found
                 } else if similar_side_result.is_some() {
-                    self.db.update_side(similar_side_result.unwrap().id, db_line.id, date, &dish.name, &dish.price).await?;
+                    //TODO get a better solution for .expect
+                    self.db.update_side(similar_side_result.expect("Cant fail?").id, db_line.id, date, &dish.name, &dish.price).await?;
                     // No similar meal could be found. Dish needs to be determined
                 } else {
                     todo!()
@@ -62,9 +64,5 @@ where
         //self.db.update_meal(similar_meal.id, db_line.id, date, &dish.name, &dish.price).await?,
 
         Ok(())
-    }
-
-    fn print_error(&self, e: DataError) {
-        panic!("Database error occurred: {:?}", e);
     }
 }
