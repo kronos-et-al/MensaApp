@@ -10,13 +10,13 @@ pub struct MensaParseMock;
 impl MensaParseScheduling for MensaParseMock {
     /// Initiate the parsing procedure of the canteen-website.
     /// Only parse meals of the current date.
-    async fn start_update_parsing() {
+    async fn start_update_parsing(&self) {
         return;
     }
 
     /// Initiate the parsing procedure of the canteen-website.
     /// Only parse meals for the next four weeks.
-    async fn start_full_parsing() {
+    async fn start_full_parsing(&self) {
         return;
     }
 }
@@ -26,7 +26,7 @@ pub struct ImageReviewMock;
 #[async_trait]
 impl ImageReviewScheduling for ImageReviewMock {
     /// Start the image review process.
-    async fn start_image_review() {
+    async fn start_image_review(&self) {
         return;
     }
 }
