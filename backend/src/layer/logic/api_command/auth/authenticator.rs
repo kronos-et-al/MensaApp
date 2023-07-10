@@ -37,7 +37,7 @@ impl Authenticator {
         &self,
         auth_info: &AuthInfo,
         meal_id: Uuid,
-        url: String,
+        url: &String,
     ) -> Result<(), CommandError> {
         todo!()
     }

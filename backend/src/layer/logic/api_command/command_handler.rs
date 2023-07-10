@@ -80,16 +80,16 @@ where
         let image_command_type = ImageCommandType::ReportImage;
         self.auth
             .authn_image_command(&auth_info, image_id, image_command_type)?;
-        let info = self.command_data.get_image_info(image_id).await.unwrap();
+        let info = self.command_data.get_image_info(image_id).await.expect("HELP!");
         if !info.approved {
             self.command_data
                 .add_report(image_id, auth_info.client_id, reason)
                 .await
-                .unwrap();
+                .expect("HELP!");
             let image_got_hidden = Self::get_date_difference(info.upload_date) < 30
                 && info.report_count > Self::get_report_barrier(info.upload_date);
             if image_got_hidden {
-                self.command_data.hide_image(image_id);
+                self.command_data.hide_image(image_id).await.expect("HELP!");
             }
             let report_info = ImageReportInfo {
                 reason,
@@ -111,31 +111,52 @@ where
 
     /// Command to vote up an image. All down-votes of the same user get removed.
     async fn add_image_upvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
-        todo!()
+        let image_command_type = ImageCommandType::AddUpvote;
+        self.auth.authn_image_command(&auth_info, image_id, image_command_type)?;
+        self.command_data.add_upvote(image_id, auth_info.client_id).await.expect("HELP!");
+        Ok(())
     }
 
     /// Command to vote down an image. All up-votes of the same user get removed.
     async fn add_image_downvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
-        todo!()
+        let image_command_type = ImageCommandType::AddDownvote;
+        self.auth.authn_image_command(&auth_info, image_id, image_command_type)?;
+        self.command_data.add_downvote(image_id, auth_info.client_id).await.expect("HELP!");
+        Ok(())
     }
 
     /// Command to remove an up-vote for an image.
     async fn remove_image_upvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
-        todo!()
+        let image_command_type = ImageCommandType::RemoveUpvote;
+        self.auth.authn_image_command(&auth_info, image_id, image_command_type)?;
+        self.command_data.remove_upvote(image_id, auth_info.client_id).await.expect("HELP!");
+        Ok(())
     }
 
     /// Command to remove an down-vote for an image.
     async fn remove_image_downvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
-        todo!()
+        let image_command_type = ImageCommandType::RemoveDownvote;
+        self.auth.authn_image_command(&auth_info, image_id, image_command_type)?;
+        self.command_data.remove_downvote(image_id, auth_info.client_id).await.expect("HELP!");
+        Ok(())
     }
 
     /// Command to link an image to a meal.
     async fn add_image(&self, meal_id: Uuid, image_url: String, auth_info: AuthInfo) -> Result<()> {
+        self.auth.authn_add_image_command(&auth_info, meal_id, &image_url)?;
+        let image_meta_data = self.image_hoster.validate_url(image_url).await.expect("HELP!");
+        let licence_ok = self.image_hoster.check_licence(image_meta_data.id).await.expect("HELP!");
+        if licence_ok {
+            //self.command_data.link_image(meal_id, auth_info.client_id, image_meta_data.id, image_meta_data.image_url).await;
+            return Ok(());
+        }
         todo!()
     }
 
     /// command to add a rating to a meal.
     async fn set_meal_rating(&self, meal_id: Uuid, rating: u32, auth_info: AuthInfo) -> Result<()> {
-        todo!()
+        self.auth.authn_meal_rating_command(&auth_info, meal_id, rating)?;
+        self.command_data.add_rating(meal_id, auth_info.client_id, rating).await.expect("HELP!");
+        Ok(())
     }
 }
