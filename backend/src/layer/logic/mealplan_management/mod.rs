@@ -3,3 +3,4 @@
 mod meal_plan_manager;
 mod relation_resolver;
 pub mod test;
+mod util;
