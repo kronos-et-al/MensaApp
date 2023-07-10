@@ -1,9 +1,0 @@
-[
-    "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28",
-    "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=28",
-    "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_moltke/?kw=28",
-    "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=28",
-    "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=28",
-    "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=28",
-    "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=28",
-]
