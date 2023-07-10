@@ -3,11 +3,6 @@ use crate::interface::persistent_data::model::{Canteen, Meal, Side};
 use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
 use crate::util::Date;
 
-enum TypeOr<S, T> {
-    Left(S),
-    Right(T),
-}
-
 pub struct RelationResolver<DataAccess>
 where
     DataAccess: MealplanManagementDataAccess,
@@ -59,10 +54,6 @@ where
                 }
             }
         }
-        //self.db.update_side(similar_side.id, db_line.id, date, &dish.name, &dish.price).await?,
-        //
-        //self.db.update_meal(similar_meal.id, db_line.id, date, &dish.name, &dish.price).await?,
-
         Ok(())
     }
 }
