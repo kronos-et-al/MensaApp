@@ -4,14 +4,14 @@ use crate::util::Date;
 
 pub struct RelationResolver<DataAccess>
 where
-    DataAccess: MealplanManagementDataAccess + std::marker::Send + std::marker::Sync,
+    DataAccess: MealplanManagementDataAccess + Send + Sync,
 {
     pub(crate) db: DataAccess,
 }
 
 impl<DataAccess> RelationResolver<DataAccess>
 where
-    DataAccess: MealplanManagementDataAccess + std::marker::Send + std::marker::Sync,
+    DataAccess: MealplanManagementDataAccess + Send + Sync,
 {
     const fn get_edge_case_meal() -> &'static str {"je 100 g"}
 
@@ -33,15 +33,15 @@ where
                 // A similar side and meal could be found. Uncommon case.
                 // Or just a meal could be found.
                 if similar_meal_result.is_some() {
-                    //TODO get a better solution for .expect
+                    //Maybe-TODO get a better solution for .expect
                     self.db.update_meal(similar_meal_result.expect("Cant fail, as meal.is_some?").id, db_line.id, date, &dish.name, &dish.price).await?;
                     // A similar side could be found
                 } else if similar_side_result.is_some() {
-                    //TODO get a better solution for .expect
+                    //Maybe-TODO get a better solution for .expect
                     self.db.update_side(similar_side_result.expect("Cant fail; as side.is_some?").id, db_line.id, date, &dish.name, &dish.price).await?;
                     // No similar meal could be found. Dish needs to be determined
 
-                    //TODO better solution for this case. This should work also
+                    //Maybe-TODO better solution for this case. This should work also
                 } else if dish.price.price_student < 150 && !dish.name.contains(Self::get_edge_case_meal()) {
                     self.db.insert_side(&dish.name, dish.meal_type, &dish.price, date, &dish.allergens, &dish.additives).await?;
                 } else {

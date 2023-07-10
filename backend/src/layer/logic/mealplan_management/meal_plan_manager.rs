@@ -8,8 +8,8 @@ use crate::layer::logic::mealplan_management::util::{error_canteen_resolved, tra
 
 struct MealPlanManager<Parser, DataAccess>
 where
-    Parser: MealplanParser + std::marker::Send + std::marker::Sync,
-    DataAccess: MealplanManagementDataAccess + std::marker::Send + std::marker::Sync,
+    Parser: MealplanParser + Send + Sync,
+    DataAccess: MealplanManagementDataAccess + Send + Sync,
 {
     resolver: RelationResolver<DataAccess>,
     parser: Parser,
@@ -17,10 +17,10 @@ where
 
 impl<Parser, DataAccess> MealPlanManager<Parser, DataAccess>
 where
-    DataAccess: MealplanManagementDataAccess + std::marker::Send + std::marker::Sync,
-    Parser: MealplanParser + std::marker::Send + std::marker::Sync,
+    DataAccess: MealplanManagementDataAccess + Send + Sync,
+    Parser: MealplanParser + Send + Sync,
 {
-    pub const fn new(database: DataAccess, meal_plan_parser: Parser) -> Self {
+    pub const fn _new(database: DataAccess, meal_plan_parser: Parser) -> Self {
         Self {
             resolver: RelationResolver { db: database },
             parser: meal_plan_parser,
@@ -31,8 +31,8 @@ where
 #[async_trait]
 impl<DataAccess, Parser> MensaParseScheduling for MealPlanManager<Parser, DataAccess>
 where
-    DataAccess: MealplanManagementDataAccess + std::marker::Send + std::marker::Sync,
-    Parser: MealplanParser + std::marker::Send + std::marker::Sync,
+    DataAccess: MealplanManagementDataAccess + Send + Sync,
+    Parser: MealplanParser + Send + Sync,
 {
     async fn start_update_parsing(&self) {
         let date = Utc::now().date_naive();
