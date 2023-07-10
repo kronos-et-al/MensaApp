@@ -6,7 +6,7 @@ import 'package:app/view_model/repository/data_classes/filter/Sorting.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/settings/MealPlanFormat.dart';
-import 'package:app/view_model/repository/data_classes/settings/ColorScheme.dart';
+import 'package:app/view_model/repository/data_classes/settings/MensaColorScheme.dart';
 import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,7 +47,7 @@ Future<void> main() async {
 
   /// This method tests the access to the color scheme.
   test('Color Scheme Test', () async {
-    ColorScheme scheme = ColorScheme.light;
+    MensaColorScheme scheme = MensaColorScheme.light;
     pref.setColorScheme(scheme);
     expect(await pref.getColorScheme(), scheme);
   });
@@ -69,7 +69,7 @@ Future<void> main() async {
   /// This method prepares the access to the filter preferences.
   setUp(() async {
     pref.setFilterPreferences(filter);
-    filterResult = await pref.getFilterPreferences();
+    filterResult = await pref.getFilterPreferences() ?? FilterPreferences();
   });
 
   /// This group tests the access to the filter preferences
