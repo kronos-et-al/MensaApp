@@ -1,14 +1,14 @@
 //! The general structure of the html file is as follows: (// Are added comments)
 //! ```
-//! ...
+//! //...
 //! // This is the root node identified by `ROOT_NODE_CLASS`
 //! <div class="main-content iwsetter">      
 //!
-//! ...
+//! //...
 //!     // This is the canteen name node identified by `CANTEEN_NAME_NODE_CLASS` 
 //!     // it contains the name of the canteen
 //!     <h1 class="mensa_fullname">Dining Hall am Adenauerring</h1>
-//! ...
+//! //...
 //!     // This is the super node of the day date node identified by 
 //!     // `DAY_DATE_SUPER_NODE_CLASS` it contains several day nodes. See below:
 //!     <ul class="canteen-day-nav">
@@ -22,11 +22,11 @@
 //!             <span>Mo 10.07.</span>
 //!         </a>
 //!     </ul>
-//! ...
+//! //...
 //!     // This is a day node identified by `DAY_NODE_CLASS` 
 //!     // it contains all of the lines (which contain dishes) for the day
 //!     <div id="canteen_day_1" class="canteen-day">
-//! ...
+//! //...
 //!         // This is a line node identified by `LINE_NODE_CLASS` 
 //!         // it contains all of the line information (name and dishes)
 //!         <tr class="mensatype_rows">
@@ -35,7 +35,7 @@
 //!             <td class="mensatype" style="white-space: normal !important;">
 //!                 <div>Linie 1<br>Gut & Günstig</div>
 //!             </td>
-//! ...
+//! //...
 //!             // This is a dish node identified by `DISH_NODE_CLASS+number between 0 and 8` 
 //!             // it contains the dish information
 //!             <tr class="mt-7">
@@ -74,13 +74,12 @@
 //!                         // This is the environment score node identified by 
 //!                         // `ENV_SCORE_NODE_CLASS` it contains an attribute called 
 //!                         // `ENV_SCORE_ATTRIBUTE_NAME`, which contains the environment score
-//!                         <div id="average-stars-5240287810491942285" 
-//!                         class='enviroment_score 
-//!                         average' data-rating="2" data-numstars="3">
-//!                         </div>
+//!                         <div id="average-stars-1551112451474757280"
+//!                             class="enviroment_score average" data-rating="3"
+//!                             data-numstars="3"></div>
 //!                     </a>
 //!                 <tr>
-//! ...
+//! //...
 //! ```
 
 use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
