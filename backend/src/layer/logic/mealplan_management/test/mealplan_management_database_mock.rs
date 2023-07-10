@@ -23,6 +23,15 @@ const fn get_price() -> Price {
     }
 }
 
+const fn get_price_by_reference(price: &Price) -> Price {
+    Price {
+        price_student: price.price_student,
+        price_employee: price.price_employee,
+        price_guest: price.price_guest,
+        price_pupil: price.price_pupil
+    }
+}
+
 fn get_side() -> Side {
     Side {
         id: Uuid::default(),
@@ -107,33 +116,36 @@ pub struct MealplanManagementDatabaseMock;
 
 #[async_trait]
 impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
+    //TODO update similar function mocks
+
     /// Determines all canteens with a similar name.
-    async fn get_similar_canteens(&self, similar_name: String) -> Result<Vec<Canteen>> {
-        Ok(get_canteens(&similar_name, 10))
+    async fn get_similar_canteen(&self, similar_name: &String) -> Result<Option<Canteen>> {
+        Ok(get_canteens(similar_name, 10).pop())
     }
     /// Determines all lines with a similar name.
-    async fn get_similar_lines(&self, similar_name: String) -> Result<Vec<Line>> {
-        Ok(get_lines(&similar_name, 5))
+    async fn get_similar_line(&self, similar_name: &String) -> Result<Option<Line>> {
+        Ok(get_lines(similar_name, 5).pop())
     }
     /// Determines all meals with a similar name.
-    async fn get_similar_meals(&self, similar_name: String) -> Result<Vec<Meal>> {
-        Ok(get_meals(&similar_name, 2))
+    async fn get_similar_meal(&self, similar_name: &String) -> Result<Option<Meal>> {
+        Ok(get_meals(similar_name, 2).pop())
     }
     /// Determines all sides with a similar name.
-    async fn get_similar_sides(&self, similar_name: String) -> Result<Vec<Side>> {
-        Ok(get_sides(&similar_name, 3))
+    async fn get_similar_side(&self, similar_name: &String) -> Result<Option<Side>> {
+        Ok(get_sides(similar_name, 3).pop())
     }
 
     /// Updates an existing canteen entity in the database. Returns the entity.
-    async fn update_canteen(&self, id: Uuid, name: String) -> Result<Canteen> {
-        let canteen = Canteen { id, name };
+    async fn update_canteen(&self, id: Uuid, name: &String) -> Result<Canteen> {
+        let s_name = name.to_string();
+        let canteen = Canteen { id, name: s_name };
         Ok(canteen)
     }
     /// Updates an existing line entity in the database. Returns the entity.
-    async fn update_line(&self, id: Uuid, name: String) -> Result<Line> {
+    async fn update_line(&self, id: Uuid, name: &String) -> Result<Line> {
         let line = Line {
             id,
-            name,
+            name: name.to_string(),
             ..get_line()
         };
         Ok(line)
@@ -144,13 +156,13 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         id: Uuid,
         _line_id: Uuid,
         _date: Date,
-        name: String,
-        price: Price,
+        name: &String,
+        price: &Price,
     ) -> Result<Meal> {
         let meal = Meal {
             id,
-            name,
-            price,
+            name: name.to_string(),
+            price: get_price_by_reference(price),
             ..get_meal()
         };
         Ok(meal)
@@ -161,45 +173,45 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         id: Uuid,
         _line_id: Uuid,
         _date: Date,
-        name: String,
-        price: Price,
+        name: &String,
+        price: &Price,
     ) -> Result<Side> {
         let side = Side {
             id,
-            name,
-            price,
+            name: name.to_string(),
+            price: get_price_by_reference(price),
             ..get_side()
         };
         Ok(side)
     }
 
     /// Adds a new canteen entity to the database. Returns the new entity.
-    async fn insert_canteen(&self, name: String) -> Result<Canteen> {
+    async fn insert_canteen(&self, name: &String) -> Result<Canteen> {
         let canteen = Canteen {
-            name,
+            name: name.to_string(),
             ..get_canteen()
         };
         Ok(canteen)
     }
     /// Adds a new line entity to the database. Returns the new entity.
-    async fn insert_line(&self, name: String) -> Result<Line> {
-        let line = Line { name, ..get_line() };
+    async fn insert_line(&self, name: &String) -> Result<Line> {
+        let line = Line { name: name.to_string(), ..get_line() };
         Ok(line)
     }
     /// Adds a new meal entity to the database. Returns the new entity.
     async fn insert_meal(
         &self,
-        name: String,
+        name: &String,
         meal_type: MealType,
-        price: Price,
+        price: &Price,
         next_served: Date,
-        _allergens: Vec<Allergen>,
-        _additives: Vec<Additive>,
+        _allergens: &Vec<Allergen>,
+        _additives: &Vec<Additive>,
     ) -> Result<Meal> {
         let meal = Meal {
-            name,
+            name: name.to_string(),
             meal_type,
-            price,
+            price: get_price_by_reference(price),
             next_served: Some(next_served),
             ..get_meal()
         };
@@ -208,17 +220,17 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     /// Adds a new side entity to the database. Returns the new entity.
     async fn insert_side(
         &self,
-        name: String,
+        name: &String,
         meal_type: MealType,
-        price: Price,
+        price: &Price,
         _next_served: Date,
-        _allergens: Vec<Allergen>,
-        _additives: Vec<Additive>,
+        _allergens: &Vec<Allergen>,
+        _additives: &Vec<Additive>,
     ) -> Result<Side> {
         let side = Side {
-            name,
+            name: name.to_string(),
             meal_type,
-            price,
+            price: get_price_by_reference(price),
             ..get_side()
         };
         Ok(side)
