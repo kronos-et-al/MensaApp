@@ -9,7 +9,7 @@ use tokio_cron_scheduler::{Job, JobScheduler};
 use tracing::info;
 
 /// Structure containing [cron](https://cron.help/)-like schedules for running actions regularly.
-/// 
+///
 /// **Important:** Unlike regular cron expressions, seconds also have to be specified, see [here](https://lib.rs/crates/tokio-cron-scheduler).
 pub struct ScheduleInfo {
     /// Cron-like schedule for running the image review process to check for no longer existing images, see [`ImageReviewScheduling`].
@@ -59,14 +59,13 @@ impl Scheduler {
         let mensa_parse = Arc::new(parse_scheduling);
         // mensa update parsing
         let mensa_parse_update = mensa_parse.clone();
-        let update_parse_job =
-            Job::new_async(info.update_parse_schedule.as_ref(), move |_, _| {
-                let mensa_parse = mensa_parse_update.clone();
-                Box::pin(async move {
-                    mensa_parse.start_update_parsing().await;
-                })
+        let update_parse_job = Job::new_async(info.update_parse_schedule.as_ref(), move |_, _| {
+            let mensa_parse = mensa_parse_update.clone();
+            Box::pin(async move {
+                mensa_parse.start_update_parsing().await;
             })
-            .expect("could not create schedule for image reviewing");
+        })
+        .expect("could not create schedule for image reviewing");
 
         scheduler
             .add(update_parse_job)
@@ -74,14 +73,13 @@ impl Scheduler {
             .expect("could not add job for update parsing to scheduler");
 
         // mensa full parsing
-        let full_parse_job =
-            Job::new_async(info.full_parse_schedule.as_ref(), move |_, _| {
-                let mensa_parse = mensa_parse.clone();
-                Box::pin(async move {
-                    mensa_parse.start_full_parsing().await;
-                })
+        let full_parse_job = Job::new_async(info.full_parse_schedule.as_ref(), move |_, _| {
+            let mensa_parse = mensa_parse.clone();
+            Box::pin(async move {
+                mensa_parse.start_full_parsing().await;
             })
-            .expect("could not create schedule for image reviewing");
+        })
+        .expect("could not create schedule for image reviewing");
 
         scheduler
             .add(full_parse_job)
@@ -125,12 +123,12 @@ impl Scheduler {
 mod tests {
     use std::time::Duration;
 
-    use crate::layer::trigger::scheduling::test::mocks::{ImageReviewMock, MensaParseMock};
+    use crate::layer::trigger::scheduling::mocks::{ImageReviewMock, MensaParseMock};
 
     use super::*;
     use tracing::Level;
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    #[tokio::test]
     async fn test_a() {
         let subscriber = tracing_subscriber::FmtSubscriber::builder()
             .with_max_level(Level::TRACE)
@@ -139,15 +137,24 @@ mod tests {
             .expect("Setting default subscriber failed");
 
         let info = ScheduleInfo {
-            full_parse_schedule: "* * * * * *".into(),
-            update_parse_schedule: "* * * * * *".into(),
-            image_review_schedule: "* * * * * *".into(),
+            full_parse_schedule: "*/1 * * * * *".into(),
+            update_parse_schedule: "*/2 * * * * *".into(),
+            image_review_schedule: "*/5 * * * * *".into(),
         };
+        let mensa_parser = MensaParseMock::default();
+        let image_parser = ImageReviewMock::default();
+        
+        let mut scheduler = Scheduler::new(info, image_parser.clone(), mensa_parser.clone()).await;
 
-        let mut scheduler = Scheduler::new(info, ImageReviewMock, MensaParseMock).await;
         scheduler.start().await;
-        tokio::time::sleep(Duration::from_secs(5)).await;
+
+        tokio::time::sleep(Duration::from_secs(10)).await;
+
         info!("shutting down");
         scheduler.shutdown().await;
+
+        assert_eq!(10, mensa_parser.get_full_calls(), "full parse was not called right amount");
+        assert_eq!(5, mensa_parser.get_update_calls(), "update parse was not called right amount");
+        assert_eq!(2, image_parser.get_calls(), "image review was not called right amount");
     }
 }
