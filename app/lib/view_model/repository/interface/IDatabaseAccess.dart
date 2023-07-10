@@ -1,3 +1,5 @@
+import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
+
 import '../data_classes/meal/Meal.dart';
 import '../data_classes/mealplan/Canteen.dart';
 import '../data_classes/mealplan/MealPlan.dart';
@@ -14,12 +16,12 @@ abstract class IDatabaseAccess {
   /// @param date The date of the mealplan
   /// @param canteen The canteen of the mealplan
   /// @return The mealplan of the committed date of the committed canteen or an error
-  Future<Result<List<MealPlan>>> getMealPlan(DateTime date, Canteen canteen);
+  Future<Result<List<MealPlan>, MealPlanException>> getMealPlan(DateTime date, Canteen canteen);
 
   /// This method returns a favorite meal.
   /// @param id The id of the meal
   /// @return The favorite meal with the committed id or an error
-  Future<Result<Meal>> getMealFavorite(String id);
+  Future<Result<Meal, Exception>> getMealFavorite(String id);
 
   /// This method adds a favorite. If the favorite does already exists, it does nothing.
   /// @param meal The meal that should be added as favorite
