@@ -1,20 +1,22 @@
-use std::{net::Shutdown, sync::Arc};
+use std::sync::Arc;
 
 use crate::interface::{
-    image_review::{self, ImageReviewScheduling},
-    mealplan_management::MensaParseScheduling,
+    image_review::ImageReviewScheduling, mealplan_management::MensaParseScheduling,
 };
 
 use tokio::sync::Notify;
-use tokio_cron_scheduler::{Job, JobScheduler, JobToRun};
+use tokio_cron_scheduler::{Job, JobScheduler};
+use tracing::info;
 
-/// Structure containing [cron](https://cron.help/) schedules for running actions regularly.
+/// Structure containing [cron](https://cron.help/)-like schedules for running actions regularly.
+/// 
+/// **Important:** Unlike regular cron expressions, seconds also have to be specified, see [here](https://lib.rs/crates/tokio-cron-scheduler).
 pub struct ScheduleInfo {
-    /// Cron schedule for running the image review process to check for no longer existing images, see [`ImageReviewScheduling`].
+    /// Cron-like schedule for running the image review process to check for no longer existing images, see [`ImageReviewScheduling`].
     pub image_review_schedule: String,
-    /// Cron schedule for running the meal plan update process for the current day's meal plan, see [`MensaParseScheduling`].
+    /// Cron-like schedule for running the meal plan update process for the current day's meal plan, see [`MensaParseScheduling`].
     pub update_parse_schedule: String,
-    /// Cron schedule for running the meal plan update process for all available meal plan data, see [`MensaParseScheduling`].
+    /// Cron-like schedule for running the meal plan update process for all available meal plan data, see [`MensaParseScheduling`].
     pub full_parse_schedule: String,
 }
 
@@ -35,29 +37,30 @@ impl Scheduler {
             .await
             .expect("cannot initialize scheduler");
 
-        // image review
+        // === image review ===
         let image_review = Arc::new(image_scheduling);
+        // TODO add tracing spans
 
         let image_review_job =
-            Job::new_cron_job_async(info.image_review_schedule.as_ref(), move |_, _| {
+            Job::new_async(info.image_review_schedule.as_ref(), move |_, _| {
                 let image_review = image_review.clone();
                 Box::pin(async move {
                     image_review.start_image_review().await;
                 })
             })
-            .expect("could not create schedule for image reviewing");
+            .expect("could not create schedule for image reviewing, you should also specify seconds in your cron expression");
 
         scheduler
             .add(image_review_job)
             .await
             .expect("could not add job for image reviewing to scheduler");
 
-        // mensa parsing
+        // === mensa parsing ===
         let mensa_parse = Arc::new(parse_scheduling);
-
+        // mensa update parsing
         let mensa_parse_update = mensa_parse.clone();
         let update_parse_job =
-            Job::new_cron_job_async(info.update_parse_schedule.as_ref(), move |_, _| {
+            Job::new_async(info.update_parse_schedule.as_ref(), move |_, _| {
                 let mensa_parse = mensa_parse_update.clone();
                 Box::pin(async move {
                     mensa_parse.start_update_parsing().await;
@@ -70,8 +73,9 @@ impl Scheduler {
             .await
             .expect("could not add job for update parsing to scheduler");
 
+        // mensa full parsing
         let full_parse_job =
-            Job::new_cron_job_async(info.full_parse_schedule.as_ref(), move |_, _| {
+            Job::new_async(info.full_parse_schedule.as_ref(), move |_, _| {
                 let mensa_parse = mensa_parse.clone();
                 Box::pin(async move {
                     mensa_parse.start_full_parsing().await;
@@ -93,6 +97,7 @@ impl Scheduler {
             .start()
             .await
             .expect("scheduler should run properly");
+        info!("Started scheduler.");
     }
 
     /// Stops the scheduler.
@@ -102,7 +107,7 @@ impl Scheduler {
         let shutdown_sender = shutdown_finished.clone();
         self.scheduler.set_shutdown_handler(Box::new(move || {
             let shutdown_sender = shutdown_sender.clone();
-            Box::pin(async move { shutdown_sender.notify_waiters() })
+            Box::pin(async move { shutdown_sender.notify_one() })
         }));
 
         self.scheduler
@@ -112,5 +117,37 @@ impl Scheduler {
 
         // wait until shutdown finished
         shutdown_finished.notified().await;
+        info!("Scheduler shutdown complete.");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::time::Duration;
+
+    use crate::layer::trigger::scheduling::test::mocks::{ImageReviewMock, MensaParseMock};
+
+    use super::*;
+    use tracing::Level;
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn test_a() {
+        let subscriber = tracing_subscriber::FmtSubscriber::builder()
+            .with_max_level(Level::TRACE)
+            .finish();
+        tracing::subscriber::set_global_default(subscriber)
+            .expect("Setting default subscriber failed");
+
+        let info = ScheduleInfo {
+            full_parse_schedule: "* * * * * *".into(),
+            update_parse_schedule: "* * * * * *".into(),
+            image_review_schedule: "* * * * * *".into(),
+        };
+
+        let mut scheduler = Scheduler::new(info, ImageReviewMock, MensaParseMock).await;
+        scheduler.start().await;
+        tokio::time::sleep(Duration::from_secs(5)).await;
+        info!("shutting down");
+        scheduler.shutdown().await;
     }
 }
