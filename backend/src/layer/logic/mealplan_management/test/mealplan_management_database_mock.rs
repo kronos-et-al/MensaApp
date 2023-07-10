@@ -119,30 +119,30 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     //TODO update similar function mocks
 
     /// Determines all canteens with a similar name.
-    async fn get_similar_canteen(&self, similar_name: &String) -> Result<Option<Canteen>> {
+    async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Canteen>> {
         Ok(get_canteens(similar_name, 10).pop())
     }
     /// Determines all lines with a similar name.
-    async fn get_similar_line(&self, similar_name: &String) -> Result<Option<Line>> {
+    async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Line>> {
         Ok(get_lines(similar_name, 5).pop())
     }
     /// Determines all meals with a similar name.
-    async fn get_similar_meal(&self, similar_name: &String) -> Result<Option<Meal>> {
+    async fn get_similar_meal(&self, similar_name: &str) -> Result<Option<Meal>> {
         Ok(get_meals(similar_name, 2).pop())
     }
     /// Determines all sides with a similar name.
-    async fn get_similar_side(&self, similar_name: &String) -> Result<Option<Side>> {
+    async fn get_similar_side(&self, similar_name: &str) -> Result<Option<Side>> {
         Ok(get_sides(similar_name, 3).pop())
     }
 
     /// Updates an existing canteen entity in the database. Returns the entity.
-    async fn update_canteen(&self, id: Uuid, name: &String) -> Result<Canteen> {
+    async fn update_canteen(&self, id: Uuid, name: &str) -> Result<Canteen> {
         let s_name = name.to_string();
         let canteen = Canteen { id, name: s_name };
         Ok(canteen)
     }
     /// Updates an existing line entity in the database. Returns the entity.
-    async fn update_line(&self, id: Uuid, name: &String) -> Result<Line> {
+    async fn update_line(&self, id: Uuid, name: &str) -> Result<Line> {
         let line = Line {
             id,
             name: name.to_string(),
@@ -156,7 +156,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         id: Uuid,
         _line_id: Uuid,
         _date: Date,
-        name: &String,
+        name: &str,
         price: &Price,
     ) -> Result<Meal> {
         let meal = Meal {
@@ -173,7 +173,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         id: Uuid,
         _line_id: Uuid,
         _date: Date,
-        name: &String,
+        name: &str,
         price: &Price,
     ) -> Result<Side> {
         let side = Side {
@@ -186,7 +186,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     }
 
     /// Adds a new canteen entity to the database. Returns the new entity.
-    async fn insert_canteen(&self, name: &String) -> Result<Canteen> {
+    async fn insert_canteen(&self, name: &str) -> Result<Canteen> {
         let canteen = Canteen {
             name: name.to_string(),
             ..get_canteen()
@@ -194,19 +194,19 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         Ok(canteen)
     }
     /// Adds a new line entity to the database. Returns the new entity.
-    async fn insert_line(&self, name: &String) -> Result<Line> {
+    async fn insert_line(&self, name: &str) -> Result<Line> {
         let line = Line { name: name.to_string(), ..get_line() };
         Ok(line)
     }
     /// Adds a new meal entity to the database. Returns the new entity.
     async fn insert_meal(
         &self,
-        name: &String,
+        name: &str,
         meal_type: MealType,
         price: &Price,
         next_served: Date,
-        _allergens: &Vec<Allergen>,
-        _additives: &Vec<Additive>,
+        _allergens: &[Allergen],
+        _additives: &[Additive],
     ) -> Result<Meal> {
         let meal = Meal {
             name: name.to_string(),
@@ -220,12 +220,12 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     /// Adds a new side entity to the database. Returns the new entity.
     async fn insert_side(
         &self,
-        name: &String,
+        name: &str,
         meal_type: MealType,
         price: &Price,
         _next_served: Date,
-        _allergens: &Vec<Allergen>,
-        _additives: &Vec<Additive>,
+        _allergens: &[Allergen],
+        _additives: &[Additive],
     ) -> Result<Side> {
         let side = Side {
             name: name.to_string(),

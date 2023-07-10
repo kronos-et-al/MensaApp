@@ -1,29 +1,21 @@
 use crate::interface::mensa_parser::model::ParseCanteen;
-use crate::interface::persistent_data::model::{Canteen, Meal, Side};
 use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
 use crate::util::Date;
 
 pub struct RelationResolver<DataAccess>
 where
-    DataAccess: MealplanManagementDataAccess,
+    DataAccess: MealplanManagementDataAccess + std::marker::Send + std::marker::Sync,
 {
     pub(crate) db: DataAccess,
 }
 
 impl<DataAccess> RelationResolver<DataAccess>
 where
-    DataAccess: MealplanManagementDataAccess,
+    DataAccess: MealplanManagementDataAccess + std::marker::Send + std::marker::Sync,
 {
     const fn get_edge_case_meal() -> &'static str {"je 100 g"}
 
-    pub const fn new(database: DataAccess) -> Self {
-        Self {
-            db: database
-        }
-    }
-
     pub async fn resolve(&self, canteen: ParseCanteen, date: Date) -> Result<(), DataError>{
-
         match self.db.get_similar_canteen(&canteen.name).await? {
             Some(similar_canteen) => self.db.update_canteen(similar_canteen.id, &canteen.name).await?,
             None => self.db.insert_canteen(&canteen.name).await?

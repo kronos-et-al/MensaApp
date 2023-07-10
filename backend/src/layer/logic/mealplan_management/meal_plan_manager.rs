@@ -41,7 +41,7 @@ where
             let name = parse_canteen.name.clone();
             match self.resolver.resolve(parse_canteen, date).await {
                 Ok(_canteen) => trace_canteen_resolved(&name),
-                Err(e) => error_canteen_resolved(&name, e)
+                Err(e) => error_canteen_resolved(&name, &e)
             }
         }
     }
@@ -53,7 +53,7 @@ where
                 let name = parse_canteen.name.clone();
                 match self.resolver.resolve(parse_canteen, date).await {
                     Ok(_canteen) => trace_canteen_resolved(&name),
-                    Err(e) => error_canteen_resolved(&name, e)
+                    Err(e) => error_canteen_resolved(&name, &e)
                 }
             }
         }
