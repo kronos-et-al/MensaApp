@@ -37,6 +37,6 @@ abstract class IDatabaseAccess {
   /// @return all Favorites
   Future<List<Meal>> getFavorites();
 
-  /// This method returns the canteen with the committed id
+  /// This method returns the canteen with the committed id.
   Future<Canteen> getCanteenById(String id);
 }
