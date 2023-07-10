@@ -43,13 +43,9 @@ impl Authenticator {
     }
 
     fn get_api_key(&self, auth_info: &AuthInfo) -> Option<String> {
-        let number_of_chars_to_compare = auth_info.api_ident.len();
-        for key in &self.api_keys {
-            let first_chars = &key[..number_of_chars_to_compare];
-            if auth_info.api_ident.eq(first_chars) {
-                return Some(key.to_string());
-            }
-        }
-        None
+        self.api_keys
+            .iter()
+            .find(|key| key.starts_with(&auth_info.api_ident))
+            .map(Clone::clone)
     }
 }
