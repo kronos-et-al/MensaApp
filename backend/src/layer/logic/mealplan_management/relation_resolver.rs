@@ -1,7 +1,12 @@
 use crate::interface::mensa_parser::model::ParseCanteen;
-use crate::interface::persistent_data::model::Canteen;
+use crate::interface::persistent_data::model::{Canteen, Meal, Side};
 use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
 use crate::util::Date;
+
+enum TypeOr<S, T> {
+    Left(S),
+    Right(T),
+}
 
 pub struct RelationResolver<DataAccess>
 where
@@ -20,34 +25,43 @@ where
         }
     }
 
-    pub async fn resolve(&self, canteen: ParseCanteen, date: Date) {
-        //Todo return only one similar canteen form database
-        let similar_canteens_result = Self.db.get_similar_canteens(canteen.name).await;
-        let similar_canteen = match similar_canteens_result {
-            Ok(sim_canteen) => Self.db.insert_canteen(sim_canteen, canteen),
-            Err(e) => panic!("Database error occurred: {:?}", e),
+    pub async fn resolve(&self, canteen: ParseCanteen, date: Date) -> Result<(), DataError>{
+        let similar_canteens_result = self.db.get_similar_canteen(&canteen.name).await?;
+
+        let db_canteen = match similar_canteens_result {
+            Some(similar_canteen) => self.db.update_canteen(similar_canteen.id, &canteen.name).await?,
+            None => self.db.insert_canteen(&canteen.name).await?
         };
 
         for line in canteen.lines {
-            for dish in line.dishes {}
-        }
-    }
+            let similar_line_result = self.db.get_similar_line(&line.name).await?;
 
-    async fn insert_canteen(
-        &self,
-        similar_canteen: Option<Canteen>,
-        fallback: ParseCanteen,
-    ) -> Result<Canteen, ()> {
-        match similar_canteen {
-            Some(similar) => match Self.db.update_canteen(similar.id, fallback.name) {
-                Ok(updated_canteen) => Ok(updated_canteen),
-                Err(e) => Err(Self.print_error(e)),
-            },
-            None => match Self.db.insert_canteen(fallback.name) {
-                Ok(inserted_canteen) => Ok(inserted_canteen),
-                Err(e) => Err(Self.print_error(e)),
-            },
+            let db_line = match similar_line_result {
+                Some(similar_line) => self.db.update_line(similar_line.id, &line.name).await?,
+                None => self.db.insert_line(&line.name).await?
+             };
+
+            for dish in line.dishes {
+                let similar_meal_result = self.db.get_similar_meals(&dish.name).await?;
+                let similar_side_result = self.db.get_similar_sides(&dish.name).await?;
+                // A similar side and meal could be found. Uncommon case.
+                // Or just a meal could be found.
+                if similar_meal_result.is_some() {
+                    self.db.update_meal(similar_meal_result.unwrap().id, db_line.id, date, &dish.name, &dish.price).await?;
+                    // A similar side could be found
+                } else if similar_side_result.is_some() {
+                    self.db.update_side(similar_side_result.unwrap().id, db_line.id, date, &dish.name, &dish.price).await?;
+                    // No similar meal could be found. Dish needs to be determined
+                } else {
+                    todo!()
+                }
+            }
         }
+        //self.db.update_side(similar_side.id, db_line.id, date, &dish.name, &dish.price).await?,
+        //
+        //self.db.update_meal(similar_meal.id, db_line.id, date, &dish.name, &dish.price).await?,
+
+        Ok(())
     }
 
     fn print_error(&self, e: DataError) {
