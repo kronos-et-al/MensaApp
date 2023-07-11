@@ -1,10 +1,10 @@
 //! A module for creating links to the html files of the website of the Studierendenwerk Karlsruhe (www.sw-ka.de)
 //! The basic structure of a link is as follows:
-//! 
+//!
 //! [`BASE_URL`]+[`MENSA_NAMES`]+[`URL_SEPARATOR`]+[`WEEK_SELECTOR`]+number
-//! 
-//! Like this for example: 
-//! 
+//!
+//! Like this for example:
+//!
 //! <https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28>
 
 use chrono::{Datelike, Days, Local};
@@ -50,7 +50,9 @@ impl SwKaLinkCreator {
     fn get_all_urls_for_next_weeks_from_date(date: Date) -> Vec<String> {
         let mut all_urls = Vec::new();
         for i in 0..NUMBER_OF_WEEKS_TO_POLL {
-            let day = date.checked_add_days(Days::new(i * NUMBER_OF_DAYS_PER_WEEK)).expect(PARSE_E_MSG);
+            let day = date
+                .checked_add_days(Days::new(i * NUMBER_OF_DAYS_PER_WEEK))
+                .expect(PARSE_E_MSG);
             all_urls.append(&mut Self::get_urls(day));
         }
         all_urls
@@ -67,7 +69,7 @@ impl SwKaLinkCreator {
 
 #[cfg(test)]
 mod tests {
-    use std::{fs::{self, File}, io::Write};
+    use std::{fs::File, io::Write};
 
     use crate::{layer::data::swka_parser::swka_link_creator::SwKaLinkCreator, util::Date};
 
@@ -123,7 +125,6 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_all_urls() {
-        
         let date = Date::from_ymd_opt(2023, 7, 10);
         assert!(date.is_some());
         let date = date.expect("This case should never occur");
@@ -132,7 +133,7 @@ mod tests {
     }
 
     #[allow(dead_code)]
-    fn write_output_to_file(path: &str, data: &[String]) -> std::io::Result<()>{
+    fn write_output_to_file(path: &str, data: &[String]) -> std::io::Result<()> {
         let mut output = File::create(path)?;
         write!(output, "{data:#?}")
     }

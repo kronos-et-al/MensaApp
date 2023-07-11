@@ -56,8 +56,6 @@ pub struct Dish {
     pub additives: Vec<Additive>,
     /// Meal-Type of the dish.
     pub meal_type: MealType,
-    /// Determines if this dish is a side or a meal.
-    pub is_side: bool,
     /// Environmental_score given by the swka.
     pub env_score: u32,
 }
@@ -84,13 +82,12 @@ impl Display for Dish {
 
         write!(
             f,
-            "{}\n{}\n{}{}{} Is side: {}, Environment score: {}\n",
+            "{}\n{}\n{}{}{} Environment score: {}\n",
             self.name,
             self.price,
             allergens,
             additives,
             self.meal_type,
-            self.is_side,
             self.env_score
         )
     }
