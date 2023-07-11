@@ -30,14 +30,17 @@ import 'requests/mutations.graphql.dart';
 
 class GraphQlServerAccess implements IServerAccess {
   final String _apiKey = const String.fromEnvironment('API_KEY');
-
-  final GraphQLClient _client = GraphQLClient(
-      link: HttpLink(const String.fromEnvironment('API_URL')),
-      cache: GraphQLCache());
+  String currentAuth = "";
+  late GraphQLClient _client;
   final String _clientId;
   final _dateFormat = DateFormat(dateFormatPattern);
 
-  GraphQlServerAccess._(this._clientId);
+  GraphQlServerAccess._(this._clientId) {
+    _client = GraphQLClient(
+        link: AuthLink(getToken: () => currentAuth)
+            .concat(HttpLink(const String.fromEnvironment('API_URL'))),
+        cache: GraphQLCache());
+  }
 
   factory GraphQlServerAccess(String clientId) {
     return GraphQlServerAccess._(clientId);

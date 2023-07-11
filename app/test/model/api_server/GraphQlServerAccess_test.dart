@@ -10,11 +10,32 @@ import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
 
 void main() async {
   final GraphQlServerAccess serverAccess =
       GraphQlServerAccess("1f16dcca-963e-4ceb-a8ca-843a7c9277a5");
+
+  test('auth', () async { // TODO remove test
+    String token = "";
+    final httpLink = HttpLink(const String.fromEnvironment('API_URL'));
+    final authLink = AuthLink(getToken: () => token);
+
+    final GraphQLClient _client =
+        GraphQLClient(link: authLink.concat(httpLink), cache: GraphQLCache());
+
+    token =
+        "Mensa MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=";
+    var result = await _client.query(QueryOptions(
+      document: gql("""{
+    getMyAuth{clientId,apiIdent,hash}
+    }
+        """),
+    ));
+    expect(result.data?["getMyAuth"]?["clientId"],
+        "1d75d380-cf07-4edb-9046-a2d981bc219d");
+  });
 
   test('environment endpoint defined', () {
     expect(const String.fromEnvironment('API_URL').isNotEmpty, true,
@@ -143,9 +164,10 @@ void main() async {
         expect(exception, true, reason: "exception while request"),
     };
   });
-  
+
   test('get canteen', () async {
-    var result = await serverAccess.getCanteenOrDefault("ad860196-74aa-48c2-a032-e327ec338290");
+    var result = await serverAccess
+        .getCanteenOrDefault("ad860196-74aa-48c2-a032-e327ec338290");
 
     var res = switch (result) {
       Success(value: final canteen) => true, // TODO better testing?
