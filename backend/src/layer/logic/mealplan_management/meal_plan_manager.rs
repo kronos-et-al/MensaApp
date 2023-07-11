@@ -89,4 +89,6 @@ mod test {
         let manager = MealPlanManager::new(MealplanManagementDatabaseMock, MealPlanParserMock);
         manager.start_full_parsing().await;
     }
+
+    //TODO start_resolving test?
 }
