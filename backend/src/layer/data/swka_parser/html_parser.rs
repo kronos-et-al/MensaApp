@@ -195,7 +195,6 @@ impl HTMLParser {
             allergens: Self::get_dish_allergens(dish_node),
             additives: Self::get_dish_additives(dish_node),
             meal_type: Self::get_dish_type(dish_node),
-            is_side: Self::is_dish_side(&Self::get_dish_price(dish_node)),
             env_score: Self::get_dish_env_score(dish_node),
         }
     }
@@ -353,10 +352,6 @@ impl HTMLParser {
             }
         }
         MealType::Unknown
-    }
-
-    const fn is_dish_side(price: &Price) -> bool {
-        price.price_student <= 100 //TODO: More sophisticated method of telling meals and sides apart
     }
 
     fn get_dish_env_score(dish_node: &ElementRef) -> u32 {
