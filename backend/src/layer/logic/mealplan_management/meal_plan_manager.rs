@@ -22,9 +22,9 @@ where
     DataAccess: MealplanManagementDataAccess + Send + Sync,
     Parser: MealplanParser + Send + Sync,
 {
-    pub const fn _new(database: DataAccess, meal_plan_parser: Parser) -> Self {
+    pub fn new(database: DataAccess, meal_plan_parser: Parser) -> Self {
         Self {
-            resolver: RelationResolver { db: database },
+            resolver: RelationResolver::new(database),
             parser: meal_plan_parser,
         }
     }
@@ -73,23 +73,23 @@ mod test {
 
     #[test]
     fn valid_start_update_parsing() {
-
+        todo!()
     }
 
     #[test]
     #[should_panic]
     fn invalid_start_update_parsing() {
-
+        todo!()
     }
 
     #[test]
     fn valid_start_full_parsing() {
-
+        todo!()
     }
 
     #[test]
     #[should_panic]
     fn invalid_start_full_parsing() {
-
+        todo!()
     }
 }

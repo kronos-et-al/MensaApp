@@ -6,13 +6,19 @@ pub struct RelationResolver<DataAccess>
 where
     DataAccess: MealplanManagementDataAccess + Send + Sync,
 {
-    pub(crate) db: DataAccess,
+    db: DataAccess,
 }
+
 
 impl<DataAccess> RelationResolver<DataAccess>
 where
     DataAccess: MealplanManagementDataAccess + Send + Sync,
 {
+    pub fn new(db: DataAccess) -> Self {
+        Self {
+            db
+        }
+    }
     const fn get_edge_case_meal() -> &'static str {"je 100 g"}
 
     /// This method resolves relation problems with canteen data and the corresponding database.<br>
@@ -61,8 +67,11 @@ where
 
 #[cfg(test)]
 mod test {
+    use chrono::Utc;
+    use rand::{self, Rng};
     use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
-    use crate::layer::logic::mealplan_management::meal_plan_manager::MealPlanManager;
+    use crate::layer::logic::mealplan_management::relation_resolver::RelationResolver;
+    use crate::layer::logic::mealplan_management::test::mealplan_management_database_mock::MealplanManagementDatabaseMock;
     use crate::util::{MealType, Price};
 
     fn get_dish() -> Dish {
@@ -110,20 +119,23 @@ mod test {
         canteens
     }
 
-    fn get_meal_plan_manager() -> MealPlanManager<Parser, DataAccess> {
-        MealPlanManager::_new(MealplanManagementDatabaseMock {}, MealPlanParserMock {})
-        todo!()
+    fn get_empty_canteen() -> ParseCanteen {
+        get_canteen(Vec::new())
     }
 
-    #[test]
-    fn resolve_empty_canteen() {
-        // resolve(get_canteens(1, 0, 0).pop(), Utc::now().date_naive());
-        // !assert_eq!()
+    #[tokio::test]
+    async fn resolve_empty_canteen() {
+        let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
+        let res = resolver.resolve(get_empty_canteen(), Utc::now().date_naive());
+        assert!(res.await.is_ok());
     }
 
-    #[test]
-    fn resolve_canteen() {
-        // resolve(get_canteens(1, 0, 0).pop(), Utc::now().date_naive());
-        // !assert_eq!()
+    #[tokio::test]
+    async fn resolve_canteens() {
+        let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
+        let mut rng = rand::thread_rng();
+        for canteen in get_canteens(rng.gen_range(1..=10), rng.gen_range(1..=10), rng.gen_range(1..=10)) {
+            assert!(resolver.resolve(canteen, Utc::now().date_naive()).await.is_ok());
+        }
     }
 }
