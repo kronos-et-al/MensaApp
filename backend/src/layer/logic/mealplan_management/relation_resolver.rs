@@ -27,6 +27,7 @@ where
             None => self.db.insert_canteen(&canteen.name).await?
         };
 
+        // handle line, handle dish
         for line in canteen.lines {
             let db_line = match self.db.get_similar_line(&line.name).await? {
                 Some(similar_line) => self.db.update_line(similar_line.id, &line.name).await?,
@@ -46,6 +47,7 @@ where
                     // No similar meal could be found. Dish needs to be determined
 
                     //Maybe-TODO better solution for this case. This should work also
+                    // 80% vom durchschnitt der gerichte. alles darunter = side
                 } else if dish.price.price_student < 150 && !dish.name.contains(Self::get_edge_case_meal()) {
                     self.db.insert_side(&dish.name, dish.meal_type, &dish.price, date, &dish.allergens, &dish.additives).await?;
                 } else {

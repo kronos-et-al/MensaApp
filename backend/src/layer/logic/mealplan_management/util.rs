@@ -1,10 +1,10 @@
-use tracing::trace;
+use tracing::{debug, info, trace, warn};
 use crate::interface::persistent_data::DataError;
 
 pub fn trace_canteen_resolved(name: &String) {
-    trace!("resolved canteen '{name}' with no errors");
+    debug!("resolved canteen '{name}' with no errors");
 }
 
 pub fn error_canteen_resolved(name: &String, error: &DataError) {
-    panic!("resolved canteen '{name}' with errors: {error}");
+    warn!("resolved canteen '{name}' with errors: {error}");
 }
