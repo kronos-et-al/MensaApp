@@ -16,13 +16,26 @@ query GetMeal($date: NaiveDate!, $mealId: UUID!, $lineId: UUID!) {
     }
 }
 
+query GetCanteen($canteenId: UUID!) {
+    getCanteen(canteenId: $canteenId) {
+        ...canteen
+    }
+    getCanteens {
+        ...canteen
+    }
+}
+
+fragment canteen on Canteen {
+    id
+    name
+}
+
 fragment mealPlan on Canteen {
     lines {
         id
         name
         canteen {
-            id
-            name
+            ...canteen
         }
         meals(date: $date) {
             ...mealInfo

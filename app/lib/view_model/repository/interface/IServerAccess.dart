@@ -62,4 +62,10 @@ abstract class IServerAccess {
   /// @param reportReason The reason why the image should be reported.
   /// @return The result of the update. It returns false, if the report failed.
   Future<bool> reportImage(ImageData image, ReportCategory reportReason);
+
+
+  /// This method returns the canteen specified or the default canteen if non existant or id null.
+  /// @param id id of canteen to get, can be null to get default canteen
+  /// @return canteen with id or default canteen
+  Future<Result<Canteen>> getCanteenOrDefault(String? id);
 }

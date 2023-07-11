@@ -5,6 +5,218 @@ import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
 import 'schema.graphql.dart';
 
+class Fragment$canteen {
+  Fragment$canteen({
+    required this.id,
+    required this.name,
+    this.$__typename = 'Canteen',
+  });
+
+  factory Fragment$canteen.fromJson(Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Fragment$canteen(
+      id: (l$id as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (!(other is Fragment$canteen) || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$canteen on Fragment$canteen {
+  CopyWith$Fragment$canteen<Fragment$canteen> get copyWith =>
+      CopyWith$Fragment$canteen(
+        this,
+        (i) => i,
+      );
+}
+
+abstract class CopyWith$Fragment$canteen<TRes> {
+  factory CopyWith$Fragment$canteen(
+    Fragment$canteen instance,
+    TRes Function(Fragment$canteen) then,
+  ) = _CopyWithImpl$Fragment$canteen;
+
+  factory CopyWith$Fragment$canteen.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$canteen;
+
+  TRes call({
+    String? id,
+    String? name,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Fragment$canteen<TRes>
+    implements CopyWith$Fragment$canteen<TRes> {
+  _CopyWithImpl$Fragment$canteen(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$canteen _instance;
+
+  final TRes Function(Fragment$canteen) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$canteen(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Fragment$canteen<TRes>
+    implements CopyWith$Fragment$canteen<TRes> {
+  _CopyWithStubImpl$Fragment$canteen(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+const fragmentDefinitioncanteen = FragmentDefinitionNode(
+  name: NameNode(value: 'canteen'),
+  typeCondition: TypeConditionNode(
+      on: NamedTypeNode(
+    name: NameNode(value: 'Canteen'),
+    isNonNull: false,
+  )),
+  directives: [],
+  selectionSet: SelectionSetNode(selections: [
+    FieldNode(
+      name: NameNode(value: 'id'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: null,
+    ),
+    FieldNode(
+      name: NameNode(value: 'name'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: null,
+    ),
+    FieldNode(
+      name: NameNode(value: '__typename'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: null,
+    ),
+  ]),
+);
+const documentNodeFragmentcanteen = DocumentNode(definitions: [
+  fragmentDefinitioncanteen,
+]);
+
+extension ClientExtension$Fragment$canteen on graphql.GraphQLClient {
+  void writeFragment$canteen({
+    required Fragment$canteen data,
+    required Map<String, dynamic> idFields,
+    bool broadcast = true,
+  }) =>
+      this.writeFragment(
+        graphql.FragmentRequest(
+          idFields: idFields,
+          fragment: const graphql.Fragment(
+            fragmentName: 'canteen',
+            document: documentNodeFragmentcanteen,
+          ),
+        ),
+        data: data.toJson(),
+        broadcast: broadcast,
+      );
+  Fragment$canteen? readFragment$canteen({
+    required Map<String, dynamic> idFields,
+    bool optimistic = true,
+  }) {
+    final result = this.readFragment(
+      graphql.FragmentRequest(
+        idFields: idFields,
+        fragment: const graphql.Fragment(
+          fragmentName: 'canteen',
+          document: documentNodeFragmentcanteen,
+        ),
+      ),
+      optimistic: optimistic,
+    );
+    return result == null ? null : Fragment$canteen.fromJson(result);
+  }
+}
+
 class Variables$Fragment$mealPlan {
   factory Variables$Fragment$mealPlan({required String date}) =>
       Variables$Fragment$mealPlan._({
@@ -286,19 +498,9 @@ const fragmentDefinitionmealPlan = FragmentDefinitionNode(
           arguments: [],
           directives: [],
           selectionSet: SelectionSetNode(selections: [
-            FieldNode(
-              name: NameNode(value: 'id'),
-              alias: null,
-              arguments: [],
+            FragmentSpreadNode(
+              name: NameNode(value: 'canteen'),
               directives: [],
-              selectionSet: null,
-            ),
-            FieldNode(
-              name: NameNode(value: 'name'),
-              alias: null,
-              arguments: [],
-              directives: [],
-              selectionSet: null,
             ),
             FieldNode(
               name: NameNode(value: '__typename'),
@@ -353,6 +555,7 @@ const fragmentDefinitionmealPlan = FragmentDefinitionNode(
 );
 const documentNodeFragmentmealPlan = DocumentNode(definitions: [
   fragmentDefinitionmealPlan,
+  fragmentDefinitioncanteen,
   fragmentDefinitionmealInfo,
   fragmentDefinitionprice,
 ]);
@@ -414,8 +617,7 @@ class Fragment$mealPlan$lines {
     return Fragment$mealPlan$lines(
       id: (l$id as String),
       name: (l$name as String),
-      canteen: Fragment$mealPlan$lines$canteen.fromJson(
-          (l$canteen as Map<String, dynamic>)),
+      canteen: Fragment$canteen.fromJson((l$canteen as Map<String, dynamic>)),
       meals: (l$meals as List<dynamic>?)
           ?.map((e) => Fragment$mealInfo.fromJson((e as Map<String, dynamic>)))
           .toList(),
@@ -427,7 +629,7 @@ class Fragment$mealPlan$lines {
 
   final String name;
 
-  final Fragment$mealPlan$lines$canteen canteen;
+  final Fragment$canteen canteen;
 
   final List<Fragment$mealInfo>? meals;
 
@@ -533,11 +735,11 @@ abstract class CopyWith$Fragment$mealPlan$lines<TRes> {
   TRes call({
     String? id,
     String? name,
-    Fragment$mealPlan$lines$canteen? canteen,
+    Fragment$canteen? canteen,
     List<Fragment$mealInfo>? meals,
     String? $__typename,
   });
-  CopyWith$Fragment$mealPlan$lines$canteen<TRes> get canteen;
+  CopyWith$Fragment$canteen<TRes> get canteen;
   TRes meals(
       Iterable<Fragment$mealInfo>? Function(
               Iterable<CopyWith$Fragment$mealInfo<Fragment$mealInfo>>?)
@@ -571,7 +773,7 @@ class _CopyWithImpl$Fragment$mealPlan$lines<TRes>
             : (name as String),
         canteen: canteen == _undefined || canteen == null
             ? _instance.canteen
-            : (canteen as Fragment$mealPlan$lines$canteen),
+            : (canteen as Fragment$canteen),
         meals: meals == _undefined
             ? _instance.meals
             : (meals as List<Fragment$mealInfo>?),
@@ -579,10 +781,9 @@ class _CopyWithImpl$Fragment$mealPlan$lines<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
-  CopyWith$Fragment$mealPlan$lines$canteen<TRes> get canteen {
+  CopyWith$Fragment$canteen<TRes> get canteen {
     final local$canteen = _instance.canteen;
-    return CopyWith$Fragment$mealPlan$lines$canteen(
-        local$canteen, (e) => call(canteen: e));
+    return CopyWith$Fragment$canteen(local$canteen, (e) => call(canteen: e));
   }
 
   TRes meals(
@@ -605,157 +806,14 @@ class _CopyWithStubImpl$Fragment$mealPlan$lines<TRes>
   call({
     String? id,
     String? name,
-    Fragment$mealPlan$lines$canteen? canteen,
+    Fragment$canteen? canteen,
     List<Fragment$mealInfo>? meals,
     String? $__typename,
   }) =>
       _res;
-  CopyWith$Fragment$mealPlan$lines$canteen<TRes> get canteen =>
-      CopyWith$Fragment$mealPlan$lines$canteen.stub(_res);
+  CopyWith$Fragment$canteen<TRes> get canteen =>
+      CopyWith$Fragment$canteen.stub(_res);
   meals(_fn) => _res;
-}
-
-class Fragment$mealPlan$lines$canteen {
-  Fragment$mealPlan$lines$canteen({
-    required this.id,
-    required this.name,
-    this.$__typename = 'Canteen',
-  });
-
-  factory Fragment$mealPlan$lines$canteen.fromJson(Map<String, dynamic> json) {
-    final l$id = json['id'];
-    final l$name = json['name'];
-    final l$$__typename = json['__typename'];
-    return Fragment$mealPlan$lines$canteen(
-      id: (l$id as String),
-      name: (l$name as String),
-      $__typename: (l$$__typename as String),
-    );
-  }
-
-  final String id;
-
-  final String name;
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$id = id;
-    _resultData['id'] = l$id;
-    final l$name = name;
-    _resultData['name'] = l$name;
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$id = id;
-    final l$name = name;
-    final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$id,
-      l$name,
-      l$$__typename,
-    ]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (!(other is Fragment$mealPlan$lines$canteen) ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$id = id;
-    final lOther$id = other.id;
-    if (l$id != lOther$id) {
-      return false;
-    }
-    final l$name = name;
-    final lOther$name = other.name;
-    if (l$name != lOther$name) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Fragment$mealPlan$lines$canteen
-    on Fragment$mealPlan$lines$canteen {
-  CopyWith$Fragment$mealPlan$lines$canteen<Fragment$mealPlan$lines$canteen>
-      get copyWith => CopyWith$Fragment$mealPlan$lines$canteen(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Fragment$mealPlan$lines$canteen<TRes> {
-  factory CopyWith$Fragment$mealPlan$lines$canteen(
-    Fragment$mealPlan$lines$canteen instance,
-    TRes Function(Fragment$mealPlan$lines$canteen) then,
-  ) = _CopyWithImpl$Fragment$mealPlan$lines$canteen;
-
-  factory CopyWith$Fragment$mealPlan$lines$canteen.stub(TRes res) =
-      _CopyWithStubImpl$Fragment$mealPlan$lines$canteen;
-
-  TRes call({
-    String? id,
-    String? name,
-    String? $__typename,
-  });
-}
-
-class _CopyWithImpl$Fragment$mealPlan$lines$canteen<TRes>
-    implements CopyWith$Fragment$mealPlan$lines$canteen<TRes> {
-  _CopyWithImpl$Fragment$mealPlan$lines$canteen(
-    this._instance,
-    this._then,
-  );
-
-  final Fragment$mealPlan$lines$canteen _instance;
-
-  final TRes Function(Fragment$mealPlan$lines$canteen) _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? id = _undefined,
-    Object? name = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Fragment$mealPlan$lines$canteen(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        name: name == _undefined || name == null
-            ? _instance.name
-            : (name as String),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
-}
-
-class _CopyWithStubImpl$Fragment$mealPlan$lines$canteen<TRes>
-    implements CopyWith$Fragment$mealPlan$lines$canteen<TRes> {
-  _CopyWithStubImpl$Fragment$mealPlan$lines$canteen(this._res);
-
-  TRes _res;
-
-  call({
-    String? id,
-    String? name,
-    String? $__typename,
-  }) =>
-      _res;
 }
 
 class Fragment$mealInfo {
@@ -2858,6 +2916,7 @@ const documentNodeQueryGetMealPlanForDay = DocumentNode(definitions: [
     ]),
   ),
   fragmentDefinitionmealPlan,
+  fragmentDefinitioncanteen,
   fragmentDefinitionmealInfo,
   fragmentDefinitionprice,
 ]);
@@ -3339,6 +3398,7 @@ const documentNodeQueryGetCanteenDate = DocumentNode(definitions: [
     ]),
   ),
   fragmentDefinitionmealPlan,
+  fragmentDefinitioncanteen,
   fragmentDefinitionmealInfo,
   fragmentDefinitionprice,
 ]);
@@ -3993,6 +4053,502 @@ class Query$GetMeal$Widget extends graphql_flutter.Query<Query$GetMeal> {
     widgets.Key? key,
     required Options$Query$GetMeal options,
     required graphql_flutter.QueryBuilder<Query$GetMeal> builder,
+  }) : super(
+          key: key,
+          options: options,
+          builder: builder,
+        );
+}
+
+class Variables$Query$GetCanteen {
+  factory Variables$Query$GetCanteen({required String canteenId}) =>
+      Variables$Query$GetCanteen._({
+        r'canteenId': canteenId,
+      });
+
+  Variables$Query$GetCanteen._(this._$data);
+
+  factory Variables$Query$GetCanteen.fromJson(Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$canteenId = data['canteenId'];
+    result$data['canteenId'] = (l$canteenId as String);
+    return Variables$Query$GetCanteen._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get canteenId => (_$data['canteenId'] as String);
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$canteenId = canteenId;
+    result$data['canteenId'] = l$canteenId;
+    return result$data;
+  }
+
+  CopyWith$Variables$Query$GetCanteen<Variables$Query$GetCanteen>
+      get copyWith => CopyWith$Variables$Query$GetCanteen(
+            this,
+            (i) => i,
+          );
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (!(other is Variables$Query$GetCanteen) ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$canteenId = canteenId;
+    final lOther$canteenId = other.canteenId;
+    if (l$canteenId != lOther$canteenId) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$canteenId = canteenId;
+    return Object.hashAll([l$canteenId]);
+  }
+}
+
+abstract class CopyWith$Variables$Query$GetCanteen<TRes> {
+  factory CopyWith$Variables$Query$GetCanteen(
+    Variables$Query$GetCanteen instance,
+    TRes Function(Variables$Query$GetCanteen) then,
+  ) = _CopyWithImpl$Variables$Query$GetCanteen;
+
+  factory CopyWith$Variables$Query$GetCanteen.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Query$GetCanteen;
+
+  TRes call({String? canteenId});
+}
+
+class _CopyWithImpl$Variables$Query$GetCanteen<TRes>
+    implements CopyWith$Variables$Query$GetCanteen<TRes> {
+  _CopyWithImpl$Variables$Query$GetCanteen(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Query$GetCanteen _instance;
+
+  final TRes Function(Variables$Query$GetCanteen) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? canteenId = _undefined}) =>
+      _then(Variables$Query$GetCanteen._({
+        ..._instance._$data,
+        if (canteenId != _undefined && canteenId != null)
+          'canteenId': (canteenId as String),
+      }));
+}
+
+class _CopyWithStubImpl$Variables$Query$GetCanteen<TRes>
+    implements CopyWith$Variables$Query$GetCanteen<TRes> {
+  _CopyWithStubImpl$Variables$Query$GetCanteen(this._res);
+
+  TRes _res;
+
+  call({String? canteenId}) => _res;
+}
+
+class Query$GetCanteen {
+  Query$GetCanteen({
+    this.getCanteen,
+    required this.getCanteens,
+    this.$__typename = 'QueryRoot',
+  });
+
+  factory Query$GetCanteen.fromJson(Map<String, dynamic> json) {
+    final l$getCanteen = json['getCanteen'];
+    final l$getCanteens = json['getCanteens'];
+    final l$$__typename = json['__typename'];
+    return Query$GetCanteen(
+      getCanteen: l$getCanteen == null
+          ? null
+          : Fragment$canteen.fromJson((l$getCanteen as Map<String, dynamic>)),
+      getCanteens: (l$getCanteens as List<dynamic>)
+          .map((e) => Fragment$canteen.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Fragment$canteen? getCanteen;
+
+  final List<Fragment$canteen> getCanteens;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$getCanteen = getCanteen;
+    _resultData['getCanteen'] = l$getCanteen?.toJson();
+    final l$getCanteens = getCanteens;
+    _resultData['getCanteens'] = l$getCanteens.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$getCanteen = getCanteen;
+    final l$getCanteens = getCanteens;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$getCanteen,
+      Object.hashAll(l$getCanteens.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (!(other is Query$GetCanteen) || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$getCanteen = getCanteen;
+    final lOther$getCanteen = other.getCanteen;
+    if (l$getCanteen != lOther$getCanteen) {
+      return false;
+    }
+    final l$getCanteens = getCanteens;
+    final lOther$getCanteens = other.getCanteens;
+    if (l$getCanteens.length != lOther$getCanteens.length) {
+      return false;
+    }
+    for (int i = 0; i < l$getCanteens.length; i++) {
+      final l$getCanteens$entry = l$getCanteens[i];
+      final lOther$getCanteens$entry = lOther$getCanteens[i];
+      if (l$getCanteens$entry != lOther$getCanteens$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetCanteen on Query$GetCanteen {
+  CopyWith$Query$GetCanteen<Query$GetCanteen> get copyWith =>
+      CopyWith$Query$GetCanteen(
+        this,
+        (i) => i,
+      );
+}
+
+abstract class CopyWith$Query$GetCanteen<TRes> {
+  factory CopyWith$Query$GetCanteen(
+    Query$GetCanteen instance,
+    TRes Function(Query$GetCanteen) then,
+  ) = _CopyWithImpl$Query$GetCanteen;
+
+  factory CopyWith$Query$GetCanteen.stub(TRes res) =
+      _CopyWithStubImpl$Query$GetCanteen;
+
+  TRes call({
+    Fragment$canteen? getCanteen,
+    List<Fragment$canteen>? getCanteens,
+    String? $__typename,
+  });
+  CopyWith$Fragment$canteen<TRes> get getCanteen;
+  TRes getCanteens(
+      Iterable<Fragment$canteen> Function(
+              Iterable<CopyWith$Fragment$canteen<Fragment$canteen>>)
+          _fn);
+}
+
+class _CopyWithImpl$Query$GetCanteen<TRes>
+    implements CopyWith$Query$GetCanteen<TRes> {
+  _CopyWithImpl$Query$GetCanteen(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetCanteen _instance;
+
+  final TRes Function(Query$GetCanteen) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? getCanteen = _undefined,
+    Object? getCanteens = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetCanteen(
+        getCanteen: getCanteen == _undefined
+            ? _instance.getCanteen
+            : (getCanteen as Fragment$canteen?),
+        getCanteens: getCanteens == _undefined || getCanteens == null
+            ? _instance.getCanteens
+            : (getCanteens as List<Fragment$canteen>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+  CopyWith$Fragment$canteen<TRes> get getCanteen {
+    final local$getCanteen = _instance.getCanteen;
+    return local$getCanteen == null
+        ? CopyWith$Fragment$canteen.stub(_then(_instance))
+        : CopyWith$Fragment$canteen(
+            local$getCanteen, (e) => call(getCanteen: e));
+  }
+
+  TRes getCanteens(
+          Iterable<Fragment$canteen> Function(
+                  Iterable<CopyWith$Fragment$canteen<Fragment$canteen>>)
+              _fn) =>
+      call(
+          getCanteens:
+              _fn(_instance.getCanteens.map((e) => CopyWith$Fragment$canteen(
+                    e,
+                    (i) => i,
+                  ))).toList());
+}
+
+class _CopyWithStubImpl$Query$GetCanteen<TRes>
+    implements CopyWith$Query$GetCanteen<TRes> {
+  _CopyWithStubImpl$Query$GetCanteen(this._res);
+
+  TRes _res;
+
+  call({
+    Fragment$canteen? getCanteen,
+    List<Fragment$canteen>? getCanteens,
+    String? $__typename,
+  }) =>
+      _res;
+  CopyWith$Fragment$canteen<TRes> get getCanteen =>
+      CopyWith$Fragment$canteen.stub(_res);
+  getCanteens(_fn) => _res;
+}
+
+const documentNodeQueryGetCanteen = DocumentNode(definitions: [
+  OperationDefinitionNode(
+    type: OperationType.query,
+    name: NameNode(value: 'GetCanteen'),
+    variableDefinitions: [
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'canteenId')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'UUID'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      )
+    ],
+    directives: [],
+    selectionSet: SelectionSetNode(selections: [
+      FieldNode(
+        name: NameNode(value: 'getCanteen'),
+        alias: null,
+        arguments: [
+          ArgumentNode(
+            name: NameNode(value: 'canteenId'),
+            value: VariableNode(name: NameNode(value: 'canteenId')),
+          )
+        ],
+        directives: [],
+        selectionSet: SelectionSetNode(selections: [
+          FragmentSpreadNode(
+            name: NameNode(value: 'canteen'),
+            directives: [],
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ]),
+      ),
+      FieldNode(
+        name: NameNode(value: 'getCanteens'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: SelectionSetNode(selections: [
+          FragmentSpreadNode(
+            name: NameNode(value: 'canteen'),
+            directives: [],
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ]),
+      ),
+      FieldNode(
+        name: NameNode(value: '__typename'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+    ]),
+  ),
+  fragmentDefinitioncanteen,
+]);
+Query$GetCanteen _parserFn$Query$GetCanteen(Map<String, dynamic> data) =>
+    Query$GetCanteen.fromJson(data);
+typedef OnQueryComplete$Query$GetCanteen = FutureOr<void> Function(
+  Map<String, dynamic>?,
+  Query$GetCanteen?,
+);
+
+class Options$Query$GetCanteen extends graphql.QueryOptions<Query$GetCanteen> {
+  Options$Query$GetCanteen({
+    String? operationName,
+    required Variables$Query$GetCanteen variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$GetCanteen? typedOptimisticResult,
+    Duration? pollInterval,
+    graphql.Context? context,
+    OnQueryComplete$Query$GetCanteen? onComplete,
+    graphql.OnQueryError? onError,
+  })  : onCompleteWithParsed = onComplete,
+        super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          pollInterval: pollInterval,
+          context: context,
+          onComplete: onComplete == null
+              ? null
+              : (data) => onComplete(
+                    data,
+                    data == null ? null : _parserFn$Query$GetCanteen(data),
+                  ),
+          onError: onError,
+          document: documentNodeQueryGetCanteen,
+          parserFn: _parserFn$Query$GetCanteen,
+        );
+
+  final OnQueryComplete$Query$GetCanteen? onCompleteWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onComplete == null
+            ? super.properties
+            : super.properties.where((property) => property != onComplete),
+        onCompleteWithParsed,
+      ];
+}
+
+class WatchOptions$Query$GetCanteen
+    extends graphql.WatchQueryOptions<Query$GetCanteen> {
+  WatchOptions$Query$GetCanteen({
+    String? operationName,
+    required Variables$Query$GetCanteen variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$GetCanteen? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          document: documentNodeQueryGetCanteen,
+          pollInterval: pollInterval,
+          eagerlyFetchResults: eagerlyFetchResults,
+          carryForwardDataOnException: carryForwardDataOnException,
+          fetchResults: fetchResults,
+          parserFn: _parserFn$Query$GetCanteen,
+        );
+}
+
+class FetchMoreOptions$Query$GetCanteen extends graphql.FetchMoreOptions {
+  FetchMoreOptions$Query$GetCanteen({
+    required graphql.UpdateQuery updateQuery,
+    required Variables$Query$GetCanteen variables,
+  }) : super(
+          updateQuery: updateQuery,
+          variables: variables.toJson(),
+          document: documentNodeQueryGetCanteen,
+        );
+}
+
+extension ClientExtension$Query$GetCanteen on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Query$GetCanteen>> query$GetCanteen(
+          Options$Query$GetCanteen options) async =>
+      await this.query(options);
+  graphql.ObservableQuery<Query$GetCanteen> watchQuery$GetCanteen(
+          WatchOptions$Query$GetCanteen options) =>
+      this.watchQuery(options);
+  void writeQuery$GetCanteen({
+    required Query$GetCanteen data,
+    required Variables$Query$GetCanteen variables,
+    bool broadcast = true,
+  }) =>
+      this.writeQuery(
+        graphql.Request(
+          operation: graphql.Operation(document: documentNodeQueryGetCanteen),
+          variables: variables.toJson(),
+        ),
+        data: data.toJson(),
+        broadcast: broadcast,
+      );
+  Query$GetCanteen? readQuery$GetCanteen({
+    required Variables$Query$GetCanteen variables,
+    bool optimistic = true,
+  }) {
+    final result = this.readQuery(
+      graphql.Request(
+        operation: graphql.Operation(document: documentNodeQueryGetCanteen),
+        variables: variables.toJson(),
+      ),
+      optimistic: optimistic,
+    );
+    return result == null ? null : Query$GetCanteen.fromJson(result);
+  }
+}
+
+graphql_flutter.QueryHookResult<Query$GetCanteen> useQuery$GetCanteen(
+        Options$Query$GetCanteen options) =>
+    graphql_flutter.useQuery(options);
+graphql.ObservableQuery<Query$GetCanteen> useWatchQuery$GetCanteen(
+        WatchOptions$Query$GetCanteen options) =>
+    graphql_flutter.useWatchQuery(options);
+
+class Query$GetCanteen$Widget extends graphql_flutter.Query<Query$GetCanteen> {
+  Query$GetCanteen$Widget({
+    widgets.Key? key,
+    required Options$Query$GetCanteen options,
+    required graphql_flutter.QueryBuilder<Query$GetCanteen> builder,
   }) : super(
           key: key,
           options: options,

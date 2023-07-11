@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:app/model/api_server/requests/querys.graphql.dart';
 import 'package:app/model/api_server/requests/schema.graphql.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
@@ -127,7 +129,6 @@ class GraphQlServerAccess implements IServerAccess {
 
     // TODO parallel?
     for (int offset = 0; offset < daysToParse; offset++) {
-
       final date = today.add(Duration(days: offset));
       final result = await _client.query$GetMealPlanForDay(
           Options$Query$GetMealPlanForDay(
@@ -139,7 +140,8 @@ class GraphQlServerAccess implements IServerAccess {
         return Failure(exception);
       }
 
-      final mealPlan = _convertMealPlan(result.parsedData?.getCanteens ?? [], date);
+      final mealPlan =
+          _convertMealPlan(result.parsedData?.getCanteens ?? [], date);
 
       completeList.addAll(mealPlan);
     }
@@ -160,7 +162,7 @@ class GraphQlServerAccess implements IServerAccess {
     }
 
     if (mealData == null) {
-      return Failure(NoMealException(
+      return Failure(NoMealException(// Todo correct exception
           "Could not request meal from api: ${result.exception}"));
     }
 
@@ -180,9 +182,35 @@ class GraphQlServerAccess implements IServerAccess {
       return Failure(exception);
     }
 
-    final mealPlan =
-        _convertMealPlan([result.parsedData?.getCanteen].nonNulls.toList(), date);
+    final mealPlan = _convertMealPlan(
+        [result.parsedData?.getCanteen].nonNulls.toList(), date);
     return Success(mealPlan);
+  }
+
+  static const defaultUuid = "00000000-0000-0000-0000-000000000000";
+
+  @override
+  Future<Result<Canteen>> getCanteenOrDefault(String? id) async {
+    Fragment$canteen? canteen;
+
+    final result = await _client.query$GetCanteen(Options$Query$GetCanteen(
+        variables: Variables$Query$GetCanteen(canteenId: id ?? defaultUuid)));
+
+    final exception = result.exception;
+    if (exception != null) {
+      return Failure(exception);
+    }
+
+    canteen = result.parsedData?.getCanteen;
+
+    canteen ??= result.parsedData?.getCanteens.first;
+
+    if (canteen == null) {
+      return Failure(NoMealException(// Todo correct exception
+          "Could not request default canteen from api: ${result.exception}"));
+    }
+
+    return Success(_convertCanteen(canteen));
   }
 }
 
@@ -221,8 +249,7 @@ Meal _convertMeal(Fragment$mealInfo meal) {
     foodType: _convertMealType(meal.mealType),
     price: _convertPrice(meal.price),
     additives: meal.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
-    allergens:
-        meal.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
+    allergens: meal.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
     averageRating: meal.ratings.averageRating,
     individualRating: meal.ratings.personalRating,
     numberOfRatings: meal.ratings.ratingsCount,
@@ -235,7 +262,8 @@ Meal _convertMeal(Fragment$mealInfo meal) {
 }
 
 Frequency _specifyFrequency(double frequency) {
-  throw UnsupportedError("message");
+  // TODO
+  return Frequency.normal;
 }
 
 DateTime? _convertDate(String? date) {
@@ -358,7 +386,7 @@ Price _convertPrice(Fragment$price price) {
       guest: price.guest);
 }
 
-Canteen _convertCanteen(Fragment$mealPlan$lines$canteen canteen) {
+Canteen _convertCanteen(Fragment$canteen canteen) {
   return Canteen(id: canteen.id, name: canteen.name);
 }
 
