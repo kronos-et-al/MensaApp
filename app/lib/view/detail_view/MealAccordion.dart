@@ -3,6 +3,7 @@ import 'package:app/view/core/information_display/MealSideEntry.dart';
 import 'package:app/view/detail_view/MealAccordionInfo.dart';
 import 'package:flutter/material.dart';
 
+/// This class is used to display a meal in an accordion.
 class MealAccordion extends StatelessWidget {
   final bool _isExpanded;
   final MealMainEntry? _mainEntry;
@@ -10,6 +11,14 @@ class MealAccordion extends StatelessWidget {
   final MealAccordionInfo _info;
   final Function()? _onTap;
 
+  /// Creates a new MealAccordion.
+  /// @param key The key to identify this widget.
+  /// @param isExpanded Whether the accordion is expanded.
+  /// @param mainEntry The main entry to display.
+  /// @param sideEntry The side entry to display.
+  /// @param info The MealAccordionInfo to display in the expanded MealAccordion.
+  /// @param onTap The function that is called when the MealAccordion is tapped.
+  /// @returns A new MealAccordion.
   const MealAccordion(
       {super.key,
       required bool isExpanded,

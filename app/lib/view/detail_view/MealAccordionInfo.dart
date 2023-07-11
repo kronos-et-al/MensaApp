@@ -2,10 +2,16 @@ import 'package:app/view_model/repository/data_classes/meal/Additive.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
 import 'package:flutter/cupertino.dart';
 
+/// This class is used to display the allergens and additives of a meal.
 class MealAccordionInfo extends StatelessWidget {
   final List<Allergen> _allergens;
   final List<Additive> _additives;
 
+  /// Creates a MealAccordionInfo widget.
+  /// @param key The key to identify this widget.
+  /// @param allergens The allergens of the meal.
+  /// @param additives The additives of the meal.
+  /// @returns A new MealAccordionInfo widget.
   const MealAccordionInfo(
       {super.key,
       required List<Allergen> allergens,
