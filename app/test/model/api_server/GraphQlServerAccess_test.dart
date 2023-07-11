@@ -4,18 +4,20 @@ import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/meal/Price.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
+import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
+import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 
 void main() async {
   final GraphQlServerAccess serverAccess =
-  GraphQlServerAccess("1f16dcca-963e-4ceb-a8ca-843a7c9277a5");
+      GraphQlServerAccess("1f16dcca-963e-4ceb-a8ca-843a7c9277a5");
 
   test('environment endpoint defined', () {
     expect(const String.fromEnvironment('API_URL').isNotEmpty, true,
         reason:
-        "define secret file with `--dart-define-from-file=<path to secret.json>`, see README");
+            "define secret file with `--dart-define-from-file=<path to secret.json>`, see README");
   });
 
   test('remove downvote', () async {
@@ -97,14 +99,45 @@ void main() async {
     expect(dateFormat.format(DateTime(2022, 3, 1)), "2022-03-01");
   });
 
-
   test('update all', () async {
     var result = await serverAccess.updateAll();
-    expect(result.toString(), true); // TODO how to get out of result?
+
+    var res = switch (result) {
+      Success(value: final mealplan) => expect(mealplan.toString(), ""),
+      Failure(value: final exception) => 1,
+    };
   });
 
   test('update canteen', () async {
-    var result = await serverAccess.updateCanteen(Canteen(id: "bd3c88f9-5dc8-4773-85dc-53305930e7b6", name: "Canteen"), DateTime(2020, 11, 1));
-    expect(result.toString(), true); // TODO how to get out of result?
+    var result = await serverAccess.updateCanteen(
+        Canteen(id: "bd3c88f9-5dc8-4773-85dc-53305930e7b6", name: "Canteen"),
+        DateTime(2020, 11, 1));
+
+    var res = switch (result) {
+      Success(value: final mealplan) => expect(mealplan.toString(), ""),
+      Failure(value: final exception) => 1,
+    };
+  });
+
+  test('meal from id', () async {
+    var result = await serverAccess.getMealFromId(
+        Meal(
+            id: "bd3c88f9-5dc8-4773-85dc-53305930e7b6",
+            name: "Best Meal",
+            foodType: FoodType.porkAw,
+            price: Price(student: 212, employee: 32, pupil: 123, guest: 342)),
+        Line(
+            id: "bd3c88f9-5dc8-4773-85dc-53305930e7b6",
+            name: "Line name",
+            canteen: Canteen(
+                id: "bd3c88f9-5dc8-4773-85dc-53305930e7b6",
+                name: "Canteen name"),
+            position: 22),
+        DateTime(2020, 11, 2));
+
+    var res = switch (result) {
+      Success(value: final mealplan) => expect(mealplan.toString(), ""),
+      Failure(value: final exception) => 1,
+    };
   });
 }

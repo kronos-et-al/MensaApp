@@ -12,6 +12,7 @@ import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
+import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -144,8 +145,9 @@ class GraphQlServerAccess implements IServerAccess {
     final meal_data = result.parsedData?.getMeal;
 
     if (meal_data == null) {
-      return Failure(Exception(""));
+      return Failure(NoMealException("Could not request meal from api: ${result.exception}"));
     }
+
     return Success(_convertMeal(meal_data));
   }
 
