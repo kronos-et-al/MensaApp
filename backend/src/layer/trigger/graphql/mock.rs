@@ -95,7 +95,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         Ok(Option::from(meal))
     }
 
-    async fn get_meals(&self, _line_id: Uuid, _date: Date) -> DataResult<Vec<Meal>> {
+    async fn get_meals(&self, _line_id: Uuid, _date: Date) -> DataResult<Option<Vec<Meal>>> {
         let meal1 = Meal {
             id: Uuid::default(),
             name: "dummy_meal_1".to_string(),
@@ -153,7 +153,7 @@ impl RequestDataAccess for RequestDatabaseMock {
                 .expect("Date not could be created with these parameters."),
             line_id: Uuid::default(),
         };
-        Ok(vec![meal1, meal2, meal3])
+        Ok(Some(vec![meal1, meal2, meal3]))
     }
 
     async fn get_sides(&self, _line_id: Uuid, _date: Date) -> DataResult<Vec<Side>> {

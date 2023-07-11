@@ -37,15 +37,13 @@ impl Line {
 
     /// Provides the meals offered at this line on a given day. Requires a date.
     #[instrument(skip(ctx))]
-    async fn meals(&self, ctx: &Context<'_>, date: Date) -> Result<Vec<Meal>> {
+    async fn meals(&self, ctx: &Context<'_>, date: Date) -> Result<Option<Vec<Meal>>> {
         trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         let meals = data_access
             .get_meals(self.id, date)
             .await?
-            .into_iter()
-            .map(Into::into)
-            .collect();
+            .map(|meals| meals.into_iter().map(Into::into).collect());
         Ok(meals)
     }
 }
