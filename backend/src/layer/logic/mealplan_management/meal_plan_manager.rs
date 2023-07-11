@@ -34,6 +34,11 @@ where
     DataAccess: MealplanManagementDataAccess + Send + Sync,
     Parser: MealplanParser + Send + Sync,
 {
+    //TODO transactions if relation_resolve fails and we dont want uncompleted meal plans?
+    /// This method starts the parsing procedure for all meal plans **of the current day**.<br>
+    /// After parsing, the raw data objects (`Vec<ParseCanteen>`) will be inserted by the `RelationResolver` with the current day.<br>
+    /// If during resolving an error occurs, the resolver stops and a log will be displayed.<br>
+    /// Each successful resolving process is also logged.
     async fn start_update_parsing(&self) {
         let date = Utc::now().date_naive();
 
@@ -46,6 +51,10 @@ where
         }
     }
 
+    /// Similar to `start_update_parsing` this method starts the parsing procedure for all meal plans **for the next four weeks**.<br>
+    /// After parsing, the raw data objects (`Vec<(Date, Vec<ParseCanteen>>`) will be inserted by the `RelationResolver`.<br>
+    /// If during resolving an error occurs, the resolver stops and a log will be displayed.<br>
+    /// Each successful resolving process is also logged.
     async fn start_full_parsing(&self) {
         let parse_tuples = self.parser.parse_all().await;
         for (date, parse_canteens) in parse_tuples {
