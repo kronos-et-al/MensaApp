@@ -24,7 +24,6 @@ pub struct Line {
 impl Line {
     /// Provides the canteen this line belongs to.
     #[instrument(skip(ctx))]
-    #[graphql(complexity = "10 * child_complexity")]
     async fn canteen(&self, ctx: &Context<'_>) -> Result<Canteen> {
         trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
