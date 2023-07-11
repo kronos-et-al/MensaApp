@@ -59,3 +59,29 @@ where
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+
+    #[test]
+    fn valid_start_update_parsing() {
+
+    }
+
+    #[test]
+    #[should_panic]
+    fn invalid_start_update_parsing() {
+
+    }
+
+    #[test]
+    fn valid_start_full_parsing() {
+
+    }
+
+    #[test]
+    #[should_panic]
+    fn invalid_start_full_parsing() {
+
+    }
+}
