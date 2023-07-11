@@ -28,7 +28,7 @@ const fn get_price_by_reference(price: &Price) -> Price {
         price_student: price.price_student,
         price_employee: price.price_employee,
         price_guest: price.price_guest,
-        price_pupil: price.price_pupil
+        price_pupil: price.price_pupil,
     }
 }
 
@@ -195,7 +195,10 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     }
     /// Adds a new line entity to the database. Returns the new entity.
     async fn insert_line(&self, name: &str) -> Result<Line> {
-        let line = Line { name: name.to_string(), ..get_line() };
+        let line = Line {
+            name: name.to_string(),
+            ..get_line()
+        };
         Ok(line)
     }
     /// Adds a new meal entity to the database. Returns the new entity.

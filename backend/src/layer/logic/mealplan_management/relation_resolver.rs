@@ -9,17 +9,16 @@ where
     db: DataAccess,
 }
 
-
 impl<DataAccess> RelationResolver<DataAccess>
 where
     DataAccess: MealplanManagementDataAccess + Send + Sync,
 {
-    pub fn new(db: DataAccess) -> Self {
-        Self {
-            db
-        }
+    pub const fn new(db: DataAccess) -> Self {
+        Self { db }
     }
-    const fn get_edge_case_meal() -> &'static str {"je 100 g"}
+    const fn get_edge_case_meal() -> &'static str {
+        "je 100 g"
+    }
 
     /// This method resolves relation problems with canteen data and the corresponding database.<br>
     /// After each resolve the object gets injected into the database.<br>
@@ -27,18 +26,22 @@ where
     /// `canteen: ParseCanteen`<br>This struct contains all canteen data e.g. lines and dishes.<br>
     /// `date: Date`<br>This date decides when the meal will be served next.<br>
     /// **Return**<br>Occurring errors get passed to the `MealPlanManger`.
-    pub async fn resolve(&self, canteen: ParseCanteen, date: Date) -> Result<(), DataError>{
+    pub async fn resolve(&self, canteen: ParseCanteen, date: Date) -> Result<(), DataError> {
         match self.db.get_similar_canteen(&canteen.name).await? {
-            Some(similar_canteen) => self.db.update_canteen(similar_canteen.id, &canteen.name).await?,
-            None => self.db.insert_canteen(&canteen.name).await?
+            Some(similar_canteen) => {
+                self.db
+                    .update_canteen(similar_canteen.id, &canteen.name)
+                    .await?
+            }
+            None => self.db.insert_canteen(&canteen.name).await?,
         };
 
         // handle line, handle dish
         for line in canteen.lines {
             let db_line = match self.db.get_similar_line(&line.name).await? {
                 Some(similar_line) => self.db.update_line(similar_line.id, &line.name).await?,
-                None => self.db.insert_line(&line.name).await?
-             };
+                None => self.db.insert_line(&line.name).await?,
+            };
 
             for dish in line.dishes {
                 let similar_meal_result = self.db.get_similar_meal(&dish.name).await?;
@@ -46,18 +49,42 @@ where
                 // A similar side and meal could be found. Uncommon case.
                 // Or just a meal could be found.
                 if let Some(similar_meal) = similar_meal_result {
-                    self.db.update_meal(similar_meal.id, db_line.id, date, &dish.name, &dish.price).await?;
+                    self.db
+                        .update_meal(similar_meal.id, db_line.id, date, &dish.name, &dish.price)
+                        .await?;
                     // A similar side could be found
                 } else if let Some(similar_side) = similar_side_result {
-                    self.db.update_side(similar_side.id, db_line.id, date, &dish.name, &dish.price).await?;
+                    self.db
+                        .update_side(similar_side.id, db_line.id, date, &dish.name, &dish.price)
+                        .await?;
                     // No similar meal could be found. Dish needs to be determined
 
                     //Maybe-TODO better solution for this case. This should work also
                     // 80% vom durchschnitt der gerichte. alles darunter = side
-                } else if dish.price.price_student < 150 && !dish.name.contains(Self::get_edge_case_meal()) {
-                    self.db.insert_side(&dish.name, dish.meal_type, &dish.price, date, &dish.allergens, &dish.additives).await?;
+                } else if dish.price.price_student < 150
+                    && !dish.name.contains(Self::get_edge_case_meal())
+                {
+                    self.db
+                        .insert_side(
+                            &dish.name,
+                            dish.meal_type,
+                            &dish.price,
+                            date,
+                            &dish.allergens,
+                            &dish.additives,
+                        )
+                        .await?;
                 } else {
-                    self.db.insert_meal(&dish.name, dish.meal_type, &dish.price, date, &dish.allergens, &dish.additives).await?;
+                    self.db
+                        .insert_meal(
+                            &dish.name,
+                            dish.meal_type,
+                            &dish.price,
+                            date,
+                            &dish.allergens,
+                            &dish.additives,
+                        )
+                        .await?;
                 }
             }
         }
@@ -67,12 +94,12 @@ where
 
 #[cfg(test)]
 mod test {
-    use chrono::Utc;
-    use rand::{self, Rng};
     use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
     use crate::layer::logic::mealplan_management::relation_resolver::RelationResolver;
     use crate::layer::logic::mealplan_management::test::mealplan_management_database_mock::MealplanManagementDatabaseMock;
     use crate::util::{MealType, Price};
+    use chrono::Utc;
+    use rand::{self, Rng};
 
     fn get_dish() -> Dish {
         Dish {
@@ -103,7 +130,11 @@ mod test {
         }
     }
 
-    fn get_canteens(amount_canteens: u32, amount_lines: u32, amount_dishes: u32) -> Vec<ParseCanteen> {
+    fn get_canteens(
+        amount_canteens: u32,
+        amount_lines: u32,
+        amount_dishes: u32,
+    ) -> Vec<ParseCanteen> {
         let mut canteens = Vec::new();
         for _ in 0..amount_canteens {
             let mut lines = Vec::new();
@@ -134,8 +165,15 @@ mod test {
     async fn resolve_canteens() {
         let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
         let mut rng = rand::thread_rng();
-        for canteen in get_canteens(rng.gen_range(1..=10), rng.gen_range(1..=10), rng.gen_range(1..=10)) {
-            assert!(resolver.resolve(canteen, Utc::now().date_naive()).await.is_ok());
+        for canteen in get_canteens(
+            rng.gen_range(1..=10),
+            rng.gen_range(1..=10),
+            rng.gen_range(1..=10),
+        ) {
+            assert!(resolver
+                .resolve(canteen, Utc::now().date_naive())
+                .await
+                .is_ok());
         }
     }
 }

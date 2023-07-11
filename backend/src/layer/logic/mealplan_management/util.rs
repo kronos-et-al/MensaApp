@@ -1,5 +1,5 @@
-use tracing::{debug, info, trace, warn};
 use crate::interface::persistent_data::DataError;
+use tracing::{debug, warn};
 
 pub fn trace_canteen_resolved(name: &String) {
     debug!("resolved canteen '{name}' with no errors");
