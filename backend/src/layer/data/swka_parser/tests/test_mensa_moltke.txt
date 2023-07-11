@@ -21,7 +21,6 @@
                             ],
                             additives: [],
                             meal_type: Pork,
-                            is_side: false,
                             env_score: 0,
                         },
                         Dish {
@@ -35,7 +34,6 @@
                             allergens: [],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 0,
                         },
                         Dish {
@@ -55,7 +53,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 3,
                         },
                     ],
@@ -74,7 +71,6 @@
                             allergens: [],
                             additives: [],
                             meal_type: Unknown,
-                            is_side: true,
                             env_score: 0,
                         },
                         Dish {
@@ -94,7 +90,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 3,
                         },
                         Dish {
@@ -112,7 +107,6 @@
                             ],
                             additives: [],
                             meal_type: Vegetarian,
-                            is_side: false,
                             env_score: 0,
                         },
                         Dish {
@@ -130,7 +124,6 @@
                             ],
                             additives: [],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 0,
                         },
                         Dish {
@@ -150,7 +143,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 3,
                         },
                     ],
@@ -175,7 +167,6 @@
                             ],
                             additives: [],
                             meal_type: Unknown,
-                            is_side: false,
                             env_score: 1,
                         },
                         Dish {
@@ -194,7 +185,6 @@
                                 Colorant,
                             ],
                             meal_type: Unknown,
-                            is_side: true,
                             env_score: 3,
                         },
                         Dish {
@@ -212,7 +202,6 @@
                             ],
                             additives: [],
                             meal_type: Vegetarian,
-                            is_side: false,
                             env_score: 2,
                         },
                     ],
@@ -237,7 +226,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 0,
                         },
                     ],
@@ -263,7 +251,6 @@
                             ],
                             additives: [],
                             meal_type: Beef,
-                            is_side: false,
                             env_score: 1,
                         },
                         Dish {
@@ -283,7 +270,6 @@
                             ],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 3,
                         },
                         Dish {
@@ -297,7 +283,6 @@
                             allergens: [],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 2,
                         },
                         Dish {
@@ -313,7 +298,6 @@
                             ],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: true,
                             env_score: 0,
                         },
                     ],
@@ -343,7 +327,6 @@
                             ],
                             additives: [],
                             meal_type: Pork,
-                            is_side: false,
                             env_score: 0,
                         },
                         Dish {
@@ -357,7 +340,6 @@
                             allergens: [],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 0,
                         },
                         Dish {
@@ -377,7 +359,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 3,
                         },
                     ],
@@ -396,7 +377,6 @@
                             allergens: [],
                             additives: [],
                             meal_type: Unknown,
-                            is_side: true,
                             env_score: 0,
                         },
                         Dish {
@@ -415,7 +395,6 @@
                                 ArtificiallyBlackenedOlives,
                             ],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 3,
                         },
                         Dish {
@@ -433,7 +412,6 @@
                             ],
                             additives: [],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 0,
                         },
                         Dish {
@@ -453,7 +431,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 3,
                         },
                     ],
@@ -482,7 +459,6 @@
                                 PreservingAgents,
                             ],
                             meal_type: PorkAw,
-                            is_side: false,
                             env_score: 2,
                         },
                         Dish {
@@ -498,7 +474,6 @@
                             ],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: true,
                             env_score: 0,
                         },
                         Dish {
@@ -518,7 +493,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: false,
                             env_score: 3,
                         },
                     ],
@@ -543,7 +517,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 0,
                         },
                     ],
@@ -569,7 +542,6 @@
                             ],
                             additives: [],
                             meal_type: Beef,
-                            is_side: false,
                             env_score: 1,
                         },
                         Dish {
@@ -589,7 +561,6 @@
                             ],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 3,
                         },
                         Dish {
@@ -603,7 +574,6 @@
                             allergens: [],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 2,
                         },
                         Dish {
@@ -619,7 +589,6 @@
                             ],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: true,
                             env_score: 0,
                         },
                     ],
@@ -649,7 +618,6 @@
                             ],
                             additives: [],
                             meal_type: Pork,
-                            is_side: false,
                             env_score: 0,
                         },
                         Dish {
@@ -663,7 +631,6 @@
                             allergens: [],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 0,
                         },
                         Dish {
@@ -683,7 +650,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 3,
                         },
                     ],
@@ -702,7 +668,6 @@
                             allergens: [],
                             additives: [],
                             meal_type: Unknown,
-                            is_side: true,
                             env_score: 0,
                         },
                         Dish {
@@ -718,7 +683,6 @@
                             ],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 3,
                         },
                         Dish {
@@ -736,7 +700,6 @@
                             ],
                             additives: [],
                             meal_type: Vegetarian,
-                            is_side: false,
                             env_score: 0,
                         },
                         Dish {
@@ -754,7 +717,6 @@
                             ],
                             additives: [],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 0,
                         },
                         Dish {
@@ -774,7 +736,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 3,
                         },
                     ],
@@ -800,7 +761,6 @@
                             ],
                             additives: [],
                             meal_type: Unknown,
-                            is_side: true,
                             env_score: 0,
                         },
                         Dish {
@@ -821,7 +781,6 @@
                                 AntioxidantAgents,
                             ],
                             meal_type: PorkAw,
-                            is_side: false,
                             env_score: 2,
                         },
                         Dish {
@@ -840,7 +799,6 @@
                             ],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 3,
                         },
                     ],
@@ -865,7 +823,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 0,
                         },
                     ],
@@ -891,7 +848,6 @@
                             ],
                             additives: [],
                             meal_type: Beef,
-                            is_side: false,
                             env_score: 1,
                         },
                         Dish {
@@ -911,7 +867,6 @@
                             ],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 3,
                         },
                         Dish {
@@ -925,7 +880,6 @@
                             allergens: [],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 2,
                         },
                         Dish {
@@ -941,7 +895,6 @@
                             ],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: true,
                             env_score: 0,
                         },
                     ],
@@ -971,7 +924,6 @@
                             ],
                             additives: [],
                             meal_type: Pork,
-                            is_side: false,
                             env_score: 0,
                         },
                         Dish {
@@ -985,7 +937,6 @@
                             allergens: [],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 0,
                         },
                         Dish {
@@ -1005,7 +956,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 3,
                         },
                     ],
@@ -1024,7 +974,6 @@
                             allergens: [],
                             additives: [],
                             meal_type: Unknown,
-                            is_side: true,
                             env_score: 0,
                         },
                         Dish {
@@ -1044,7 +993,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 3,
                         },
                         Dish {
@@ -1062,7 +1010,6 @@
                             ],
                             additives: [],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 0,
                         },
                         Dish {
@@ -1082,7 +1029,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 3,
                         },
                         Dish {
@@ -1102,7 +1048,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 3,
                         },
                     ],
@@ -1131,7 +1076,6 @@
                                 Colorant,
                             ],
                             meal_type: Unknown,
-                            is_side: true,
                             env_score: 0,
                         },
                         Dish {
@@ -1153,7 +1097,6 @@
                                 AntioxidantAgents,
                             ],
                             meal_type: Pork,
-                            is_side: false,
                             env_score: 0,
                         },
                         Dish {
@@ -1171,7 +1114,6 @@
                             ],
                             additives: [],
                             meal_type: Vegetarian,
-                            is_side: false,
                             env_score: 2,
                         },
                     ],
@@ -1196,7 +1138,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 0,
                         },
                     ],
@@ -1222,7 +1163,6 @@
                             ],
                             additives: [],
                             meal_type: Beef,
-                            is_side: false,
                             env_score: 1,
                         },
                         Dish {
@@ -1242,7 +1182,6 @@
                             ],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 3,
                         },
                         Dish {
@@ -1256,7 +1195,6 @@
                             allergens: [],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 2,
                         },
                         Dish {
@@ -1272,7 +1210,6 @@
                             ],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: true,
                             env_score: 0,
                         },
                     ],
@@ -1302,7 +1239,6 @@
                             ],
                             additives: [],
                             meal_type: Pork,
-                            is_side: false,
                             env_score: 0,
                         },
                         Dish {
@@ -1316,7 +1252,6 @@
                             allergens: [],
                             additives: [],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 0,
                         },
                         Dish {
@@ -1336,7 +1271,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 3,
                         },
                     ],
@@ -1355,7 +1289,6 @@
                             allergens: [],
                             additives: [],
                             meal_type: Unknown,
-                            is_side: true,
                             env_score: 0,
                         },
                         Dish {
@@ -1374,7 +1307,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegan,
-                            is_side: false,
                             env_score: 3,
                         },
                         Dish {
@@ -1392,7 +1324,6 @@
                             ],
                             additives: [],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 0,
                         },
                         Dish {
@@ -1412,7 +1343,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 3,
                         },
                     ],
@@ -1438,7 +1368,6 @@
                             ],
                             additives: [],
                             meal_type: Unknown,
-                            is_side: true,
                             env_score: 0,
                         },
                         Dish {
@@ -1455,7 +1384,6 @@
                             ],
                             additives: [],
                             meal_type: BeefAw,
-                            is_side: false,
                             env_score: 0,
                         },
                         Dish {
@@ -1474,7 +1402,6 @@
                             ],
                             additives: [],
                             meal_type: Vegetarian,
-                            is_side: false,
                             env_score: 0,
                         },
                     ],
@@ -1499,7 +1426,6 @@
                                 Colorant,
                             ],
                             meal_type: Vegetarian,
-                            is_side: true,
                             env_score: 0,
                         },
                     ],

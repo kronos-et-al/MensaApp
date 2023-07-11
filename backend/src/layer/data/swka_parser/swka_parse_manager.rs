@@ -25,7 +25,7 @@ impl SwKaParseManager {
 
         // TODO unwrap()
         for html in htmls.unwrap() {
-            for (date, canteen) in HTMLParser::transform(&html) {
+            for (date, canteen) in HTMLParser::transform(&html).expect("HELP!") {
                 map.entry(date).or_default().push(canteen);
             }
         }
