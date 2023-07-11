@@ -3,17 +3,19 @@ import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/meal/Price.dart';
+import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 
 void main() async {
   final GraphQlServerAccess serverAccess =
-      GraphQlServerAccess("1f16dcca-963e-4ceb-a8ca-843a7c9277a5");
+  GraphQlServerAccess("1f16dcca-963e-4ceb-a8ca-843a7c9277a5");
 
   test('environment endpoint defined', () {
     expect(const String.fromEnvironment('API_URL').isNotEmpty, true,
         reason:
-            "define secret file with `--dart-define-from-file=<path to secret.json>`, see README");
+        "define secret file with `--dart-define-from-file=<path to secret.json>`, see README");
   });
 
   test('remove downvote', () async {
@@ -88,5 +90,21 @@ void main() async {
             foodType: FoodType.fish,
             price: Price(student: 22, employee: 33, pupil: 11, guest: 123)));
     expect(deleted, true);
+  });
+
+  test('date format', () {
+    final dateFormat = DateFormat(GraphQlServerAccess.dateFormatPattern);
+    expect(dateFormat.format(DateTime(2022, 3, 1)), "2022-03-01");
+  });
+
+
+  test('update all', () async {
+    var result = await serverAccess.updateAll();
+    expect(result.toString(), true); // TODO how to get out of result?
+  });
+
+  test('update canteen', () async {
+    var result = await serverAccess.updateCanteen(Canteen(id: "bd3c88f9-5dc8-4773-85dc-53305930e7b6", name: "Canteen"), DateTime(2020, 11, 1));
+    expect(result.toString(), true); // TODO how to get out of result?
   });
 }

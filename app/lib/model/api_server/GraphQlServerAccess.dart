@@ -27,10 +27,9 @@ class GraphQlServerAccess implements IServerAccess {
       link: HttpLink(const String.fromEnvironment('API_URL')),
       cache: GraphQLCache());
   final String _clientId;
+  final _dateFormat = DateFormat(dateFormatPattern);
 
   GraphQlServerAccess._(this._clientId);
-
-
 
   factory GraphQlServerAccess(String clientId) {
     return GraphQlServerAccess._(clientId);
@@ -82,7 +81,7 @@ class GraphQlServerAccess implements IServerAccess {
     // TODO: auth
     final result = await _client.mutate$LinkImage(Options$Mutation$LinkImage(
         variables:
-        Variables$Mutation$LinkImage(imageUrl: url, mealId: meal.id)));
+            Variables$Mutation$LinkImage(imageUrl: url, mealId: meal.id)));
     final parsedData = result.parsedData;
     return parsedData?.addImage ?? false;
   }
@@ -111,64 +110,94 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   // ---------------------- queries ----------------------
-  static const DAYS_TO_PARSE = 7;
+  static const daysToParse = 7;
+  static const dateFormatPattern = "yyyy-MM-dd";
+
   @override
   Future<Result<List<Mealplan>>> updateAll() async {
-    final dateFormat = DateFormat("Y-m-d"); // TODO correct?
-    final date = DateTime.now(); // TODO for next 7 days
-
+    final today = DateTime.now();
 
     var completeList = <Mealplan>[];
 
-    for (int offset = 0; offset < 7; offset++) {
-      final offsetDate = date.add(Duration(days: offset));
+    // TODO parallel?
+    for (int offset = 0; offset < daysToParse; offset++) {
+      final date = today.add(Duration(days: offset));
       final result = await _client.query$GetMealPlanForDay(
           Options$Query$GetMealPlanForDay(
               variables: Variables$Query$GetMealPlanForDay(
-                  date: dateFormat.format(offsetDate))));
+                  date: _dateFormat.format(date))));
       final parsedData = result.parsedData;
 
-
-      final mealPlan = parsedData?.getCanteens.expand((e) =>
-          e.lines.asMap().map((idx, e) =>
-              MapEntry(idx,
-                Mealplan(date: offsetDate,
-                    line: Line(id: e.id,
-                        name: e.name,
-                        canteen: _convertCanteen(e.canteen),
-                        position: idx),
-                    isClosed: false, // TODO what to do when no data available
-                    meals: _convertMeals(e.meals ?? [])),
-              ),
-          ).values.toList(),
-      ).toList() ?? [];
+      final mealPlan = _convertMealPlan(parsedData?.getCanteens ?? [], date);
 
       completeList.addAll(mealPlan);
     }
-    return Success(completeList);
+    return Success(completeList); // TODO when return error?
   }
 
   @override
-  Future<Result<Meal>> getMealFromId(String id) async {
-    // TODO: implement getMealFromId
-    throw UnimplementedError();
+  Future<Result<Meal>> getMealFromId(
+      Meal meal, Line line, DateTime date) async {
+    final result = await _client.query$GetMeal(Options$Query$GetMeal(
+        variables: Variables$Query$GetMeal(
+            date: _dateFormat.format(date), mealId: meal.id, lineId: line.id)));
+    final meal_data = result.parsedData?.getMeal;
+
+    if (meal_data == null) {
+      return Failure(Exception(""));
+    }
+    return Success(_convertMeal(meal_data));
   }
 
   @override
-  Future<Result<List<Mealplan>>> updateCanteen(Canteen canteen,
-      DateTime date) async {
-    // TODO: implement updateCanteen
-    throw UnimplementedError();
+  Future<Result<List<Mealplan>>> updateCanteen(
+      Canteen canteen, DateTime date) async {
+    final result = await _client.query$GetCanteenDate(
+        Options$Query$GetCanteenDate(
+            variables: Variables$Query$GetCanteenDate(
+                canteenId: canteen.id, date: _dateFormat.format(date))));
+    final parsedData = result.parsedData;
+
+    final mealPlan =
+        _convertMealPlan([parsedData?.getCanteen].nonNulls.toList(), date);
+    return Success(mealPlan); // TODO when error?
   }
 }
 
+// --------------- utility helper methods ---------------
 
-List<Meal> _convertMeals(List<Fragment$mealInfo> meals) {
-  return meals.map((e) =>
-      Meal(id: e.id,
-          name: e.name,
-          foodType: _convertMealType(e.mealType),
-          price: _convertPrice(e.price))).toList();
+List<Mealplan> _convertMealPlan(
+    List<Fragment$mealPlan> mealPlan, DateTime date) {
+  return mealPlan
+      .expand(
+        (e) => e.lines
+            .asMap()
+            .map((idx, e) => MapEntry(
+                  idx,
+                  Mealplan(
+                    date: date,
+                    line: Line(
+                        id: e.id,
+                        name: e.name,
+                        canteen: _convertCanteen(e.canteen),
+                        position: idx),
+                    // mensa closed when data available but no meals in list
+                    isClosed: e.meals?.isEmpty ?? false,
+                    meals: e.meals?.map((e) => _convertMeal(e)).toList() ?? [],
+                  ),
+                ))
+            .values
+            .toList(),
+      )
+      .toList();
+}
+
+Meal _convertMeal(Fragment$mealInfo meal) {
+  return Meal(
+      id: meal.id,
+      name: meal.name,
+      foodType: _convertMealType(meal.mealType),
+      price: _convertPrice(meal.price));
 }
 
 FoodType _convertMealType(Enum$MealType mealType) {
@@ -195,14 +224,14 @@ FoodType _convertMealType(Enum$MealType mealType) {
 }
 
 Price _convertPrice(Fragment$mealInfo$price price) {
-  return Price(student: price.student,
+  return Price(
+      student: price.student,
       employee: price.employee,
       pupil: price.pupil,
       guest: price.guest);
 }
 
-Canteen _convertCanteen(
-    Query$GetMealPlanForDay$getCanteens$lines$canteen canteen) {
+Canteen _convertCanteen(Fragment$mealPlan$lines$canteen canteen) {
   return Canteen(id: canteen.id, name: canteen.name);
 }
 
