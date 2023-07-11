@@ -354,6 +354,7 @@ const fragmentDefinitionmealPlan = FragmentDefinitionNode(
 const documentNodeFragmentmealPlan = DocumentNode(definitions: [
   fragmentDefinitionmealPlan,
   fragmentDefinitionmealInfo,
+  fragmentDefinitionprice,
 ]);
 
 extension ClientExtension$Fragment$mealPlan on graphql.GraphQLClient {
@@ -768,6 +769,7 @@ class Fragment$mealInfo {
     required this.statistics,
     required this.ratings,
     required this.images,
+    required this.sides,
     this.$__typename = 'Meal',
   });
 
@@ -781,13 +783,13 @@ class Fragment$mealInfo {
     final l$statistics = json['statistics'];
     final l$ratings = json['ratings'];
     final l$images = json['images'];
+    final l$sides = json['sides'];
     final l$$__typename = json['__typename'];
     return Fragment$mealInfo(
       id: (l$id as String),
       name: (l$name as String),
       mealType: fromJson$Enum$MealType((l$mealType as String)),
-      price:
-          Fragment$mealInfo$price.fromJson((l$price as Map<String, dynamic>)),
+      price: Fragment$price.fromJson((l$price as Map<String, dynamic>)),
       allergens: (l$allergens as List<dynamic>)
           .map((e) => fromJson$Enum$Allergen((e as String)))
           .toList(),
@@ -802,6 +804,10 @@ class Fragment$mealInfo {
           .map((e) =>
               Fragment$mealInfo$images.fromJson((e as Map<String, dynamic>)))
           .toList(),
+      sides: (l$sides as List<dynamic>)
+          .map((e) =>
+              Fragment$mealInfo$sides.fromJson((e as Map<String, dynamic>)))
+          .toList(),
       $__typename: (l$$__typename as String),
     );
   }
@@ -812,7 +818,7 @@ class Fragment$mealInfo {
 
   final Enum$MealType mealType;
 
-  final Fragment$mealInfo$price price;
+  final Fragment$price price;
 
   final List<Enum$Allergen> allergens;
 
@@ -823,6 +829,8 @@ class Fragment$mealInfo {
   final Fragment$mealInfo$ratings ratings;
 
   final List<Fragment$mealInfo$images> images;
+
+  final List<Fragment$mealInfo$sides> sides;
 
   final String $__typename;
 
@@ -848,6 +856,8 @@ class Fragment$mealInfo {
     _resultData['ratings'] = l$ratings.toJson();
     final l$images = images;
     _resultData['images'] = l$images.map((e) => e.toJson()).toList();
+    final l$sides = sides;
+    _resultData['sides'] = l$sides.map((e) => e.toJson()).toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -864,6 +874,7 @@ class Fragment$mealInfo {
     final l$statistics = statistics;
     final l$ratings = ratings;
     final l$images = images;
+    final l$sides = sides;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -875,6 +886,7 @@ class Fragment$mealInfo {
       l$statistics,
       l$ratings,
       Object.hashAll(l$images.map((v) => v)),
+      Object.hashAll(l$sides.map((v) => v)),
       l$$__typename,
     ]);
   }
@@ -953,6 +965,18 @@ class Fragment$mealInfo {
         return false;
       }
     }
+    final l$sides = sides;
+    final lOther$sides = other.sides;
+    if (l$sides.length != lOther$sides.length) {
+      return false;
+    }
+    for (int i = 0; i < l$sides.length; i++) {
+      final l$sides$entry = l$sides[i];
+      final lOther$sides$entry = lOther$sides[i];
+      if (l$sides$entry != lOther$sides$entry) {
+        return false;
+      }
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -983,21 +1007,27 @@ abstract class CopyWith$Fragment$mealInfo<TRes> {
     String? id,
     String? name,
     Enum$MealType? mealType,
-    Fragment$mealInfo$price? price,
+    Fragment$price? price,
     List<Enum$Allergen>? allergens,
     List<Enum$Additive>? additives,
     Fragment$mealInfo$statistics? statistics,
     Fragment$mealInfo$ratings? ratings,
     List<Fragment$mealInfo$images>? images,
+    List<Fragment$mealInfo$sides>? sides,
     String? $__typename,
   });
-  CopyWith$Fragment$mealInfo$price<TRes> get price;
+  CopyWith$Fragment$price<TRes> get price;
   CopyWith$Fragment$mealInfo$statistics<TRes> get statistics;
   CopyWith$Fragment$mealInfo$ratings<TRes> get ratings;
   TRes images(
       Iterable<Fragment$mealInfo$images> Function(
               Iterable<
                   CopyWith$Fragment$mealInfo$images<Fragment$mealInfo$images>>)
+          _fn);
+  TRes sides(
+      Iterable<Fragment$mealInfo$sides> Function(
+              Iterable<
+                  CopyWith$Fragment$mealInfo$sides<Fragment$mealInfo$sides>>)
           _fn);
 }
 
@@ -1024,6 +1054,7 @@ class _CopyWithImpl$Fragment$mealInfo<TRes>
     Object? statistics = _undefined,
     Object? ratings = _undefined,
     Object? images = _undefined,
+    Object? sides = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Fragment$mealInfo(
@@ -1036,7 +1067,7 @@ class _CopyWithImpl$Fragment$mealInfo<TRes>
             : (mealType as Enum$MealType),
         price: price == _undefined || price == null
             ? _instance.price
-            : (price as Fragment$mealInfo$price),
+            : (price as Fragment$price),
         allergens: allergens == _undefined || allergens == null
             ? _instance.allergens
             : (allergens as List<Enum$Allergen>),
@@ -1052,13 +1083,16 @@ class _CopyWithImpl$Fragment$mealInfo<TRes>
         images: images == _undefined || images == null
             ? _instance.images
             : (images as List<Fragment$mealInfo$images>),
+        sides: sides == _undefined || sides == null
+            ? _instance.sides
+            : (sides as List<Fragment$mealInfo$sides>),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
-  CopyWith$Fragment$mealInfo$price<TRes> get price {
+  CopyWith$Fragment$price<TRes> get price {
     final local$price = _instance.price;
-    return CopyWith$Fragment$mealInfo$price(local$price, (e) => call(price: e));
+    return CopyWith$Fragment$price(local$price, (e) => call(price: e));
   }
 
   CopyWith$Fragment$mealInfo$statistics<TRes> get statistics {
@@ -1085,6 +1119,18 @@ class _CopyWithImpl$Fragment$mealInfo<TRes>
                     e,
                     (i) => i,
                   ))).toList());
+  TRes sides(
+          Iterable<Fragment$mealInfo$sides> Function(
+                  Iterable<
+                      CopyWith$Fragment$mealInfo$sides<
+                          Fragment$mealInfo$sides>>)
+              _fn) =>
+      call(
+          sides:
+              _fn(_instance.sides.map((e) => CopyWith$Fragment$mealInfo$sides(
+                    e,
+                    (i) => i,
+                  ))).toList());
 }
 
 class _CopyWithStubImpl$Fragment$mealInfo<TRes>
@@ -1097,22 +1143,23 @@ class _CopyWithStubImpl$Fragment$mealInfo<TRes>
     String? id,
     String? name,
     Enum$MealType? mealType,
-    Fragment$mealInfo$price? price,
+    Fragment$price? price,
     List<Enum$Allergen>? allergens,
     List<Enum$Additive>? additives,
     Fragment$mealInfo$statistics? statistics,
     Fragment$mealInfo$ratings? ratings,
     List<Fragment$mealInfo$images>? images,
+    List<Fragment$mealInfo$sides>? sides,
     String? $__typename,
   }) =>
       _res;
-  CopyWith$Fragment$mealInfo$price<TRes> get price =>
-      CopyWith$Fragment$mealInfo$price.stub(_res);
+  CopyWith$Fragment$price<TRes> get price => CopyWith$Fragment$price.stub(_res);
   CopyWith$Fragment$mealInfo$statistics<TRes> get statistics =>
       CopyWith$Fragment$mealInfo$statistics.stub(_res);
   CopyWith$Fragment$mealInfo$ratings<TRes> get ratings =>
       CopyWith$Fragment$mealInfo$ratings.stub(_res);
   images(_fn) => _res;
+  sides(_fn) => _res;
 }
 
 const fragmentDefinitionmealInfo = FragmentDefinitionNode(
@@ -1151,33 +1198,9 @@ const fragmentDefinitionmealInfo = FragmentDefinitionNode(
       arguments: [],
       directives: [],
       selectionSet: SelectionSetNode(selections: [
-        FieldNode(
-          name: NameNode(value: 'employee'),
-          alias: null,
-          arguments: [],
+        FragmentSpreadNode(
+          name: NameNode(value: 'price'),
           directives: [],
-          selectionSet: null,
-        ),
-        FieldNode(
-          name: NameNode(value: 'guest'),
-          alias: null,
-          arguments: [],
-          directives: [],
-          selectionSet: null,
-        ),
-        FieldNode(
-          name: NameNode(value: 'pupil'),
-          alias: null,
-          arguments: [],
-          directives: [],
-          selectionSet: null,
-        ),
-        FieldNode(
-          name: NameNode(value: 'student'),
-          alias: null,
-          arguments: [],
-          directives: [],
-          selectionSet: null,
         ),
         FieldNode(
           name: NameNode(value: '__typename'),
@@ -1339,6 +1362,75 @@ const fragmentDefinitionmealInfo = FragmentDefinitionNode(
       ]),
     ),
     FieldNode(
+      name: NameNode(value: 'sides'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: SelectionSetNode(selections: [
+        FieldNode(
+          name: NameNode(value: 'id'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'name'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'additives'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'allergens'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'price'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: SelectionSetNode(selections: [
+            FragmentSpreadNode(
+              name: NameNode(value: 'price'),
+              directives: [],
+            ),
+            FieldNode(
+              name: NameNode(value: '__typename'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+          ]),
+        ),
+        FieldNode(
+          name: NameNode(value: 'mealType'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: '__typename'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+      ]),
+    ),
+    FieldNode(
       name: NameNode(value: '__typename'),
       alias: null,
       arguments: [],
@@ -1349,6 +1441,7 @@ const fragmentDefinitionmealInfo = FragmentDefinitionNode(
 );
 const documentNodeFragmentmealInfo = DocumentNode(definitions: [
   fragmentDefinitionmealInfo,
+  fragmentDefinitionprice,
 ]);
 
 extension ClientExtension$Fragment$mealInfo on graphql.GraphQLClient {
@@ -1384,190 +1477,6 @@ extension ClientExtension$Fragment$mealInfo on graphql.GraphQLClient {
     );
     return result == null ? null : Fragment$mealInfo.fromJson(result);
   }
-}
-
-class Fragment$mealInfo$price {
-  Fragment$mealInfo$price({
-    required this.employee,
-    required this.guest,
-    required this.pupil,
-    required this.student,
-    this.$__typename = 'Price',
-  });
-
-  factory Fragment$mealInfo$price.fromJson(Map<String, dynamic> json) {
-    final l$employee = json['employee'];
-    final l$guest = json['guest'];
-    final l$pupil = json['pupil'];
-    final l$student = json['student'];
-    final l$$__typename = json['__typename'];
-    return Fragment$mealInfo$price(
-      employee: (l$employee as int),
-      guest: (l$guest as int),
-      pupil: (l$pupil as int),
-      student: (l$student as int),
-      $__typename: (l$$__typename as String),
-    );
-  }
-
-  final int employee;
-
-  final int guest;
-
-  final int pupil;
-
-  final int student;
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$employee = employee;
-    _resultData['employee'] = l$employee;
-    final l$guest = guest;
-    _resultData['guest'] = l$guest;
-    final l$pupil = pupil;
-    _resultData['pupil'] = l$pupil;
-    final l$student = student;
-    _resultData['student'] = l$student;
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$employee = employee;
-    final l$guest = guest;
-    final l$pupil = pupil;
-    final l$student = student;
-    final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$employee,
-      l$guest,
-      l$pupil,
-      l$student,
-      l$$__typename,
-    ]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (!(other is Fragment$mealInfo$price) ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$employee = employee;
-    final lOther$employee = other.employee;
-    if (l$employee != lOther$employee) {
-      return false;
-    }
-    final l$guest = guest;
-    final lOther$guest = other.guest;
-    if (l$guest != lOther$guest) {
-      return false;
-    }
-    final l$pupil = pupil;
-    final lOther$pupil = other.pupil;
-    if (l$pupil != lOther$pupil) {
-      return false;
-    }
-    final l$student = student;
-    final lOther$student = other.student;
-    if (l$student != lOther$student) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Fragment$mealInfo$price on Fragment$mealInfo$price {
-  CopyWith$Fragment$mealInfo$price<Fragment$mealInfo$price> get copyWith =>
-      CopyWith$Fragment$mealInfo$price(
-        this,
-        (i) => i,
-      );
-}
-
-abstract class CopyWith$Fragment$mealInfo$price<TRes> {
-  factory CopyWith$Fragment$mealInfo$price(
-    Fragment$mealInfo$price instance,
-    TRes Function(Fragment$mealInfo$price) then,
-  ) = _CopyWithImpl$Fragment$mealInfo$price;
-
-  factory CopyWith$Fragment$mealInfo$price.stub(TRes res) =
-      _CopyWithStubImpl$Fragment$mealInfo$price;
-
-  TRes call({
-    int? employee,
-    int? guest,
-    int? pupil,
-    int? student,
-    String? $__typename,
-  });
-}
-
-class _CopyWithImpl$Fragment$mealInfo$price<TRes>
-    implements CopyWith$Fragment$mealInfo$price<TRes> {
-  _CopyWithImpl$Fragment$mealInfo$price(
-    this._instance,
-    this._then,
-  );
-
-  final Fragment$mealInfo$price _instance;
-
-  final TRes Function(Fragment$mealInfo$price) _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? employee = _undefined,
-    Object? guest = _undefined,
-    Object? pupil = _undefined,
-    Object? student = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Fragment$mealInfo$price(
-        employee: employee == _undefined || employee == null
-            ? _instance.employee
-            : (employee as int),
-        guest: guest == _undefined || guest == null
-            ? _instance.guest
-            : (guest as int),
-        pupil: pupil == _undefined || pupil == null
-            ? _instance.pupil
-            : (pupil as int),
-        student: student == _undefined || student == null
-            ? _instance.student
-            : (student as int),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
-}
-
-class _CopyWithStubImpl$Fragment$mealInfo$price<TRes>
-    implements CopyWith$Fragment$mealInfo$price<TRes> {
-  _CopyWithStubImpl$Fragment$mealInfo$price(this._res);
-
-  TRes _res;
-
-  call({
-    int? employee,
-    int? guest,
-    int? pupil,
-    int? student,
-    String? $__typename,
-  }) =>
-      _res;
 }
 
 class Fragment$mealInfo$statistics {
@@ -2143,6 +2052,522 @@ class _CopyWithStubImpl$Fragment$mealInfo$images<TRes>
       _res;
 }
 
+class Fragment$mealInfo$sides {
+  Fragment$mealInfo$sides({
+    required this.id,
+    required this.name,
+    required this.additives,
+    required this.allergens,
+    required this.price,
+    required this.mealType,
+    this.$__typename = 'Side',
+  });
+
+  factory Fragment$mealInfo$sides.fromJson(Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$additives = json['additives'];
+    final l$allergens = json['allergens'];
+    final l$price = json['price'];
+    final l$mealType = json['mealType'];
+    final l$$__typename = json['__typename'];
+    return Fragment$mealInfo$sides(
+      id: (l$id as String),
+      name: (l$name as String),
+      additives: (l$additives as List<dynamic>)
+          .map((e) => fromJson$Enum$Additive((e as String)))
+          .toList(),
+      allergens: (l$allergens as List<dynamic>)
+          .map((e) => fromJson$Enum$Allergen((e as String)))
+          .toList(),
+      price: Fragment$price.fromJson((l$price as Map<String, dynamic>)),
+      mealType: fromJson$Enum$MealType((l$mealType as String)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final List<Enum$Additive> additives;
+
+  final List<Enum$Allergen> allergens;
+
+  final Fragment$price price;
+
+  final Enum$MealType mealType;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$additives = additives;
+    _resultData['additives'] =
+        l$additives.map((e) => toJson$Enum$Additive(e)).toList();
+    final l$allergens = allergens;
+    _resultData['allergens'] =
+        l$allergens.map((e) => toJson$Enum$Allergen(e)).toList();
+    final l$price = price;
+    _resultData['price'] = l$price.toJson();
+    final l$mealType = mealType;
+    _resultData['mealType'] = toJson$Enum$MealType(l$mealType);
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$additives = additives;
+    final l$allergens = allergens;
+    final l$price = price;
+    final l$mealType = mealType;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      Object.hashAll(l$additives.map((v) => v)),
+      Object.hashAll(l$allergens.map((v) => v)),
+      l$price,
+      l$mealType,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (!(other is Fragment$mealInfo$sides) ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$additives = additives;
+    final lOther$additives = other.additives;
+    if (l$additives.length != lOther$additives.length) {
+      return false;
+    }
+    for (int i = 0; i < l$additives.length; i++) {
+      final l$additives$entry = l$additives[i];
+      final lOther$additives$entry = lOther$additives[i];
+      if (l$additives$entry != lOther$additives$entry) {
+        return false;
+      }
+    }
+    final l$allergens = allergens;
+    final lOther$allergens = other.allergens;
+    if (l$allergens.length != lOther$allergens.length) {
+      return false;
+    }
+    for (int i = 0; i < l$allergens.length; i++) {
+      final l$allergens$entry = l$allergens[i];
+      final lOther$allergens$entry = lOther$allergens[i];
+      if (l$allergens$entry != lOther$allergens$entry) {
+        return false;
+      }
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$mealType = mealType;
+    final lOther$mealType = other.mealType;
+    if (l$mealType != lOther$mealType) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$mealInfo$sides on Fragment$mealInfo$sides {
+  CopyWith$Fragment$mealInfo$sides<Fragment$mealInfo$sides> get copyWith =>
+      CopyWith$Fragment$mealInfo$sides(
+        this,
+        (i) => i,
+      );
+}
+
+abstract class CopyWith$Fragment$mealInfo$sides<TRes> {
+  factory CopyWith$Fragment$mealInfo$sides(
+    Fragment$mealInfo$sides instance,
+    TRes Function(Fragment$mealInfo$sides) then,
+  ) = _CopyWithImpl$Fragment$mealInfo$sides;
+
+  factory CopyWith$Fragment$mealInfo$sides.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$mealInfo$sides;
+
+  TRes call({
+    String? id,
+    String? name,
+    List<Enum$Additive>? additives,
+    List<Enum$Allergen>? allergens,
+    Fragment$price? price,
+    Enum$MealType? mealType,
+    String? $__typename,
+  });
+  CopyWith$Fragment$price<TRes> get price;
+}
+
+class _CopyWithImpl$Fragment$mealInfo$sides<TRes>
+    implements CopyWith$Fragment$mealInfo$sides<TRes> {
+  _CopyWithImpl$Fragment$mealInfo$sides(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$mealInfo$sides _instance;
+
+  final TRes Function(Fragment$mealInfo$sides) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? additives = _undefined,
+    Object? allergens = _undefined,
+    Object? price = _undefined,
+    Object? mealType = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$mealInfo$sides(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        additives: additives == _undefined || additives == null
+            ? _instance.additives
+            : (additives as List<Enum$Additive>),
+        allergens: allergens == _undefined || allergens == null
+            ? _instance.allergens
+            : (allergens as List<Enum$Allergen>),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as Fragment$price),
+        mealType: mealType == _undefined || mealType == null
+            ? _instance.mealType
+            : (mealType as Enum$MealType),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+  CopyWith$Fragment$price<TRes> get price {
+    final local$price = _instance.price;
+    return CopyWith$Fragment$price(local$price, (e) => call(price: e));
+  }
+}
+
+class _CopyWithStubImpl$Fragment$mealInfo$sides<TRes>
+    implements CopyWith$Fragment$mealInfo$sides<TRes> {
+  _CopyWithStubImpl$Fragment$mealInfo$sides(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
+    List<Enum$Additive>? additives,
+    List<Enum$Allergen>? allergens,
+    Fragment$price? price,
+    Enum$MealType? mealType,
+    String? $__typename,
+  }) =>
+      _res;
+  CopyWith$Fragment$price<TRes> get price => CopyWith$Fragment$price.stub(_res);
+}
+
+class Fragment$price {
+  Fragment$price({
+    required this.employee,
+    required this.guest,
+    required this.pupil,
+    required this.student,
+    this.$__typename = 'Price',
+  });
+
+  factory Fragment$price.fromJson(Map<String, dynamic> json) {
+    final l$employee = json['employee'];
+    final l$guest = json['guest'];
+    final l$pupil = json['pupil'];
+    final l$student = json['student'];
+    final l$$__typename = json['__typename'];
+    return Fragment$price(
+      employee: (l$employee as int),
+      guest: (l$guest as int),
+      pupil: (l$pupil as int),
+      student: (l$student as int),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final int employee;
+
+  final int guest;
+
+  final int pupil;
+
+  final int student;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$employee = employee;
+    _resultData['employee'] = l$employee;
+    final l$guest = guest;
+    _resultData['guest'] = l$guest;
+    final l$pupil = pupil;
+    _resultData['pupil'] = l$pupil;
+    final l$student = student;
+    _resultData['student'] = l$student;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$employee = employee;
+    final l$guest = guest;
+    final l$pupil = pupil;
+    final l$student = student;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$employee,
+      l$guest,
+      l$pupil,
+      l$student,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (!(other is Fragment$price) || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$employee = employee;
+    final lOther$employee = other.employee;
+    if (l$employee != lOther$employee) {
+      return false;
+    }
+    final l$guest = guest;
+    final lOther$guest = other.guest;
+    if (l$guest != lOther$guest) {
+      return false;
+    }
+    final l$pupil = pupil;
+    final lOther$pupil = other.pupil;
+    if (l$pupil != lOther$pupil) {
+      return false;
+    }
+    final l$student = student;
+    final lOther$student = other.student;
+    if (l$student != lOther$student) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$price on Fragment$price {
+  CopyWith$Fragment$price<Fragment$price> get copyWith =>
+      CopyWith$Fragment$price(
+        this,
+        (i) => i,
+      );
+}
+
+abstract class CopyWith$Fragment$price<TRes> {
+  factory CopyWith$Fragment$price(
+    Fragment$price instance,
+    TRes Function(Fragment$price) then,
+  ) = _CopyWithImpl$Fragment$price;
+
+  factory CopyWith$Fragment$price.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$price;
+
+  TRes call({
+    int? employee,
+    int? guest,
+    int? pupil,
+    int? student,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Fragment$price<TRes>
+    implements CopyWith$Fragment$price<TRes> {
+  _CopyWithImpl$Fragment$price(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$price _instance;
+
+  final TRes Function(Fragment$price) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? employee = _undefined,
+    Object? guest = _undefined,
+    Object? pupil = _undefined,
+    Object? student = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$price(
+        employee: employee == _undefined || employee == null
+            ? _instance.employee
+            : (employee as int),
+        guest: guest == _undefined || guest == null
+            ? _instance.guest
+            : (guest as int),
+        pupil: pupil == _undefined || pupil == null
+            ? _instance.pupil
+            : (pupil as int),
+        student: student == _undefined || student == null
+            ? _instance.student
+            : (student as int),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Fragment$price<TRes>
+    implements CopyWith$Fragment$price<TRes> {
+  _CopyWithStubImpl$Fragment$price(this._res);
+
+  TRes _res;
+
+  call({
+    int? employee,
+    int? guest,
+    int? pupil,
+    int? student,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+const fragmentDefinitionprice = FragmentDefinitionNode(
+  name: NameNode(value: 'price'),
+  typeCondition: TypeConditionNode(
+      on: NamedTypeNode(
+    name: NameNode(value: 'Price'),
+    isNonNull: false,
+  )),
+  directives: [],
+  selectionSet: SelectionSetNode(selections: [
+    FieldNode(
+      name: NameNode(value: 'employee'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: null,
+    ),
+    FieldNode(
+      name: NameNode(value: 'guest'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: null,
+    ),
+    FieldNode(
+      name: NameNode(value: 'pupil'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: null,
+    ),
+    FieldNode(
+      name: NameNode(value: 'student'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: null,
+    ),
+    FieldNode(
+      name: NameNode(value: '__typename'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: null,
+    ),
+  ]),
+);
+const documentNodeFragmentprice = DocumentNode(definitions: [
+  fragmentDefinitionprice,
+]);
+
+extension ClientExtension$Fragment$price on graphql.GraphQLClient {
+  void writeFragment$price({
+    required Fragment$price data,
+    required Map<String, dynamic> idFields,
+    bool broadcast = true,
+  }) =>
+      this.writeFragment(
+        graphql.FragmentRequest(
+          idFields: idFields,
+          fragment: const graphql.Fragment(
+            fragmentName: 'price',
+            document: documentNodeFragmentprice,
+          ),
+        ),
+        data: data.toJson(),
+        broadcast: broadcast,
+      );
+  Fragment$price? readFragment$price({
+    required Map<String, dynamic> idFields,
+    bool optimistic = true,
+  }) {
+    final result = this.readFragment(
+      graphql.FragmentRequest(
+        idFields: idFields,
+        fragment: const graphql.Fragment(
+          fragmentName: 'price',
+          document: documentNodeFragmentprice,
+        ),
+      ),
+      optimistic: optimistic,
+    );
+    return result == null ? null : Fragment$price.fromJson(result);
+  }
+}
+
 class Variables$Query$GetMealPlanForDay {
   factory Variables$Query$GetMealPlanForDay({required String date}) =>
       Variables$Query$GetMealPlanForDay._({
@@ -2434,6 +2859,7 @@ const documentNodeQueryGetMealPlanForDay = DocumentNode(definitions: [
   ),
   fragmentDefinitionmealPlan,
   fragmentDefinitionmealInfo,
+  fragmentDefinitionprice,
 ]);
 Query$GetMealPlanForDay _parserFn$Query$GetMealPlanForDay(
         Map<String, dynamic> data) =>
@@ -2914,6 +3340,7 @@ const documentNodeQueryGetCanteenDate = DocumentNode(definitions: [
   ),
   fragmentDefinitionmealPlan,
   fragmentDefinitionmealInfo,
+  fragmentDefinitionprice,
 ]);
 Query$GetCanteenDate _parserFn$Query$GetCanteenDate(
         Map<String, dynamic> data) =>
@@ -3422,6 +3849,7 @@ const documentNodeQueryGetMeal = DocumentNode(definitions: [
     ]),
   ),
   fragmentDefinitionmealInfo,
+  fragmentDefinitionprice,
 ]);
 Query$GetMeal _parserFn$Query$GetMeal(Map<String, dynamic> data) =>
     Query$GetMeal.fromJson(data);

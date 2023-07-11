@@ -1,10 +1,14 @@
 import 'package:app/model/api_server/requests/querys.graphql.dart';
 import 'package:app/model/api_server/requests/schema.graphql.dart';
+import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
+import 'package:app/view_model/repository/data_classes/meal/Additive.dart';
+import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/meal/Price.dart';
+import 'package:app/view_model/repository/data_classes/meal/Side.dart';
 
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
@@ -15,6 +19,7 @@ import 'package:app/view_model/repository/data_classes/settings/ReportCategory.d
 import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 
 import 'package:app/view_model/repository/error_handling/Result.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -129,6 +134,11 @@ class GraphQlServerAccess implements IServerAccess {
                   date: _dateFormat.format(date))));
       final parsedData = result.parsedData;
 
+      final exception = result.exception;
+      if (exception != null) {
+        return Failure(exception);
+      }
+
       final mealPlan = _convertMealPlan(parsedData?.getCanteens ?? [], date);
 
       completeList.addAll(mealPlan);
@@ -142,13 +152,18 @@ class GraphQlServerAccess implements IServerAccess {
     final result = await _client.query$GetMeal(Options$Query$GetMeal(
         variables: Variables$Query$GetMeal(
             date: _dateFormat.format(date), mealId: meal.id, lineId: line.id)));
-    final meal_data = result.parsedData?.getMeal;
-
-    if (meal_data == null) {
-      return Failure(NoMealException("Could not request meal from api: ${result.exception}"));
+    final mealData = result.parsedData?.getMeal;
+    final exception = result.exception;
+    if (exception != null) {
+      return Failure(exception);
     }
 
-    return Success(_convertMeal(meal_data));
+    if (mealData == null) {
+      return Failure(NoMealException(
+          "Could not request meal from api: ${result.exception}"));
+    }
+
+    return Success(_convertMeal(mealData));
   }
 
   @override
@@ -159,10 +174,14 @@ class GraphQlServerAccess implements IServerAccess {
             variables: Variables$Query$GetCanteenDate(
                 canteenId: canteen.id, date: _dateFormat.format(date))));
     final parsedData = result.parsedData;
+    final exception = result.exception;
+    if (exception != null) {
+      return Failure(exception);
+    }
 
     final mealPlan =
         _convertMealPlan([parsedData?.getCanteen].nonNulls.toList(), date);
-    return Success(mealPlan); // TODO when error?
+    return Success(mealPlan);
   }
 }
 
@@ -196,10 +215,115 @@ List<Mealplan> _convertMealPlan(
 
 Meal _convertMeal(Fragment$mealInfo meal) {
   return Meal(
-      id: meal.id,
-      name: meal.name,
-      foodType: _convertMealType(meal.mealType),
-      price: _convertPrice(meal.price));
+    id: meal.id,
+    name: meal.name,
+    foodType: _convertMealType(meal.mealType),
+    price: _convertPrice(meal.price),
+    additives: meal.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
+    allergens:
+        meal.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
+    averageRating: meal.ratings.averageRating,
+    individualRating: meal.ratings.personalRating,
+    numberOfRatings: meal.ratings.ratingsCount,
+    lastServed: _convertDate(meal.statistics.lastServed),
+    nextServed: _convertDate(meal.statistics.nextServed),
+    relativeFrequency: _specifyFrequency(meal.statistics.relativeFrequency),
+    images: meal.images.map((e) => _convertImage(e)).toList(),
+    sides: meal.sides.map((e) => _convertSide(e)).toList(),
+  );
+}
+
+Frequency _specifyFrequency(double frequency) {
+  throw UnsupportedError("message");
+}
+
+DateTime? _convertDate(String? date) {
+  final format = DateFormat(GraphQlServerAccess.dateFormatPattern);
+  try {
+    return format.parse(date ?? "");
+  } catch (e) {
+    return null;
+  }
+}
+
+Side _convertSide(Fragment$mealInfo$sides e) {
+  return Side(
+      id: e.id,
+      name: e.name,
+      foodType: _convertMealType(e.mealType),
+      price: _convertPrice(e.price),
+      allergens: e.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
+      additives: e.additives.map((e) => _convertAdditive(e)).nonNulls.toList());
+}
+
+ImageData _convertImage(Fragment$mealInfo$images e) {
+  return ImageData(
+      id: e.id,
+      url: e.url,
+      imageRank: e.rank,
+      positiveRating: e.upvotes,
+      negativeRating: e.downvotes,
+      individualRating: e.personalUpvote
+          ? 1
+          : e.personalDownvote
+              ? -1
+              : 0);
+}
+
+Allergen? _convertAllergen(Enum$Allergen e) {
+  return switch (e) {
+    Enum$Allergen.CA => Allergen.ca,
+    Enum$Allergen.DI => Allergen.di,
+    Enum$Allergen.EI => Allergen.ei,
+    Enum$Allergen.ER => Allergen.er,
+    Enum$Allergen.FI => Allergen.fi,
+    Enum$Allergen.GE => Allergen.ge,
+    Enum$Allergen.HF => Allergen.hf,
+    Enum$Allergen.HA => Allergen.ha,
+    Enum$Allergen.KA => Allergen.ka,
+    Enum$Allergen.KR => Allergen.kr,
+    Enum$Allergen.LU => Allergen.lu,
+    Enum$Allergen.MA => Allergen.ma,
+    Enum$Allergen.ML => Allergen.ml,
+    Enum$Allergen.PA => Allergen.pa,
+    Enum$Allergen.PE => Allergen.pe,
+    Enum$Allergen.PI => Allergen.pi,
+    Enum$Allergen.QU => Allergen.qu,
+    Enum$Allergen.RO => Allergen.ro,
+    Enum$Allergen.SA => Allergen.sa,
+    Enum$Allergen.SE => Allergen.se,
+    Enum$Allergen.SF => Allergen.sf,
+    Enum$Allergen.SN => Allergen.sn,
+    Enum$Allergen.SO => Allergen.so,
+    Enum$Allergen.WA => Allergen.wa,
+    Enum$Allergen.WE => Allergen.we,
+    Enum$Allergen.WT => Allergen.wt,
+    Enum$Allergen.LA => Allergen.la,
+    Enum$Allergen.GL => Allergen.gl,
+    Enum$Allergen.$unknown => null,
+  };
+}
+
+Additive? _convertAdditive(Enum$Additive e) {
+  return switch (e) {
+    Enum$Additive.COLORANT => Additive.colorant,
+    Enum$Additive.PRESERVING_AGENTS => Additive.preservingAgents,
+    Enum$Additive.ANTIOXIDANT_AGENTS => Additive.antioxidantAgents,
+    Enum$Additive.FLAVOUR_ENHANCER => Additive.flavourEnhancer,
+    Enum$Additive.PHOSPHATE => Additive.phosphate,
+    Enum$Additive.SURFACE_WAXED => Additive.surfaceWaxed,
+    Enum$Additive.SULPHUR => Additive.sulphur,
+    Enum$Additive.ARTIFICIALLY_BLACKENED_OLIVES =>
+      Additive.artificiallyBlackenedOlives,
+    Enum$Additive.SWEETENER => Additive.sweetener,
+    Enum$Additive.LAXATIVE_IF_OVERUSED => Additive.laxativeIfOverused,
+    Enum$Additive.PHENYLALANINE => Additive.phenylalanine,
+    Enum$Additive.ALCOHOL => Additive.alcohol,
+    Enum$Additive.PRESSED_MEET => Additive.pressedMeat,
+    Enum$Additive.GLAZING_WITH_CACAO => Additive.glazingWithCacao,
+    Enum$Additive.PRESSED_FISH => Additive.pressedFish,
+    Enum$Additive.$unknown => null,
+  };
 }
 
 FoodType _convertMealType(Enum$MealType mealType) {
@@ -225,7 +349,7 @@ FoodType _convertMealType(Enum$MealType mealType) {
   }
 }
 
-Price _convertPrice(Fragment$mealInfo$price price) {
+Price _convertPrice(Fragment$price price) {
   return Price(
       student: price.student,
       employee: price.employee,
@@ -236,8 +360,6 @@ Price _convertPrice(Fragment$mealInfo$price price) {
 Canteen _convertCanteen(Fragment$mealPlan$lines$canteen canteen) {
   return Canteen(id: canteen.id, name: canteen.name);
 }
-
-// ---------------------- utility functions ----------------------
 
 Enum$ReportReason _convertToReportReason(ReportCategory reportReason) {
   switch (reportReason) {

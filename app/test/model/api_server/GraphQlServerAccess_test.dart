@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
@@ -104,7 +106,7 @@ void main() async {
 
     var res = switch (result) {
       Success(value: final mealplan) => expect(mealplan.toString(), ""),
-      Failure(value: final exception) => 1,
+      Failure(value: final exception) => expect(exception.toString(), ""),
     };
   });
 
@@ -115,7 +117,7 @@ void main() async {
 
     var res = switch (result) {
       Success(value: final mealplan) => expect(mealplan.toString(), ""),
-      Failure(value: final exception) => 1,
+      Failure(value: final exception) => expect(exception.toString(), ""),
     };
   });
 
@@ -136,8 +138,8 @@ void main() async {
         DateTime(2020, 11, 2));
 
     var res = switch (result) {
-      Success(value: final mealplan) => expect(mealplan.toString(), ""),
-      Failure(value: final exception) => 1,
+      Success(value: final mealplan) => expect(mealplan.additives, ""),
+      Failure(value: final exception) => expect(exception, true, reason: "exception while request"),
     };
   });
 }

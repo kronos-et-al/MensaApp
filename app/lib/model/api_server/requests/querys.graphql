@@ -35,10 +35,7 @@ fragment mealInfo on Meal {
     name
     mealType
     price {
-        employee
-        guest
-        pupil
-        student
+        ...price
     }
     allergens
     additives
@@ -61,4 +58,21 @@ fragment mealInfo on Meal {
         downvotes
         upvotes
     }
+    sides {
+        id
+        name
+        additives
+        allergens
+        price {
+            ...price
+        }
+        mealType
+    }
+}
+
+fragment price on Price {
+    employee
+    guest
+    pupil
+    student
 }
