@@ -15,6 +15,11 @@ where
 {
     const fn get_edge_case_meal() -> &'static str {"je 100 g"}
 
+    /// This method resolves relation problems with canteen data.<br>
+    /// After each resolve the correspond object gets injected into the database.<br>
+    /// `canteen: ParseCanteen`<br>This struct contains all canteen data e.g. lines and dishes.<br>
+    /// `date: Date`<br>This date decides when the meal will be served next.<br>
+    /// **Return**<br>Occurring errors get passed to the `MealPlanManger`.
     pub async fn resolve(&self, canteen: ParseCanteen, date: Date) -> Result<(), DataError>{
         match self.db.get_similar_canteen(&canteen.name).await? {
             Some(similar_canteen) => self.db.update_canteen(similar_canteen.id, &canteen.name).await?,
@@ -50,5 +55,74 @@ where
             }
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
+    use crate::layer::logic::mealplan_management::meal_plan_manager::MealPlanManager;
+    use crate::util::{MealType, Price};
+
+    fn get_dish() -> Dish {
+        Dish {
+            name: "test_dish".to_string(),
+            price: Price {
+                price_student: 0,
+                price_employee: 0,
+                price_guest: 0,
+                price_pupil: 0,
+            },
+            allergens: vec![],
+            additives: vec![],
+            meal_type: MealType::Vegan,
+        }
+    }
+
+    fn get_line(dishes: Vec<Dish>) -> ParseLine {
+        ParseLine {
+            name: "test_line".to_string(),
+            dishes,
+        }
+    }
+
+    fn get_canteen(lines: Vec<ParseLine>) -> ParseCanteen {
+        ParseCanteen {
+            name: "test_canteen".to_string(),
+            lines,
+        }
+    }
+
+    fn get_canteens(amount_canteens: u32, amount_lines: u32, amount_dishes: u32) -> Vec<ParseCanteen> {
+        let mut canteens = Vec::new();
+        for _ in 0..amount_canteens {
+            let mut lines = Vec::new();
+            for _ in 0..amount_lines {
+                let mut dishes = Vec::new();
+                for _ in 0..amount_dishes {
+                    dishes.push(get_dish());
+                }
+                lines.push(get_line(dishes));
+            }
+            canteens.push(get_canteen(lines));
+        }
+        canteens
+    }
+
+    fn get_meal_plan_manager() -> MealPlanManager<Parser, DataAccess> {
+        MealPlanManager::_new(MealplanManagementDatabaseMock {}, MealPlanParserMock {})
+        todo!()
+    }
+
+    #[test]
+    fn resolve_empty_canteen() {
+        // resolve(get_canteens(1, 0, 0).pop(), Utc::now().date_naive());
+        // !assert_eq!()
+    }
+
+    #[test]
+    fn resolve_canteen() {
+        // resolve(get_canteens(1, 0, 0).pop(), Utc::now().date_naive());
+        // !assert_eq!()
     }
 }

@@ -6,7 +6,7 @@ use async_trait::async_trait;
 use chrono::{Utc};
 use crate::layer::logic::mealplan_management::util::{error_canteen_resolved, trace_canteen_resolved};
 
-struct MealPlanManager<Parser, DataAccess>
+pub struct MealPlanManager<Parser, DataAccess>
 where
     Parser: MealplanParser + Send + Sync,
     DataAccess: MealplanManagementDataAccess + Send + Sync,
