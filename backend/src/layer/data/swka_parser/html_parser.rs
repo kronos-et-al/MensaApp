@@ -5,74 +5,74 @@
 //! <div class="main-content iwsetter">      
 //!
 //! //...
-//!     // This is the canteen name node identified by `CANTEEN_NAME_NODE_CLASS` 
+//!     // This is the canteen name node identified by `CANTEEN_NAME_NODE_CLASS`
 //!     // it contains the name of the canteen
 //!     <h1 class="mensa_fullname">Dining Hall am Adenauerring</h1>
 //! //...
-//!     // This is the super node of the day date node identified by 
+//!     // This is the super node of the day date node identified by
 //!     // `DAY_DATE_SUPER_NODE_CLASS` it contains several day nodes. See below:
 //!     <ul class="canteen-day-nav">
-//!     // This is a day date node identified by `DAY_DATE_NODE_CLASS` 
-//!     // it contains an attribute identified by `DAY_DATE_ATTRIBUTE_NAME`, 
+//!     // This is a day date node identified by `DAY_DATE_NODE_CLASS`
+//!     // it contains an attribute identified by `DAY_DATE_ATTRIBUTE_NAME`,
 //!     // which contains the date
 //!     <li>
-//!         <a id="canteen_day_nav_1" 
-//!             rel="2023-07-10" 
+//!         <a id="canteen_day_nav_1"
+//!             rel="2023-07-10"
 //!             href="javascript:;"onClick="setCanteenDate('2023-07-10');setCanteenDiv(1);">
 //!             <span>Mo 10.07.</span>
 //!         </a>
 //!     </ul>
 //! //...
-//!     // This is a day node identified by `DAY_NODE_CLASS` 
+//!     // This is a day node identified by `DAY_NODE_CLASS`
 //!     // it contains all of the lines (which contain dishes) for the day
 //!     <div id="canteen_day_1" class="canteen-day">
 //! //...
-//!         // This is a line node identified by `LINE_NODE_CLASS` 
+//!         // This is a line node identified by `LINE_NODE_CLASS`
 //!         // it contains all of the line information (name and dishes)
 //!         <tr class="mensatype_rows">
-//!             // This is a line name node identified by `LINE_NAME_NODE_CLASS` 
+//!             // This is a line name node identified by `LINE_NAME_NODE_CLASS`
 //!             // it contains the name of the line                
 //!             <td class="mensatype" style="white-space: normal !important;">
 //!                 <div>Linie 1<br>Gut & Günstig</div>
 //!             </td>
 //! //...
-//!             // This is a dish node identified by `DISH_NODE_CLASS+number between 0 and 8` 
+//!             // This is a dish node identified by `DISH_NODE_CLASS+number between 0 and 8`
 //!             // it contains the dish information
 //!             <tr class="mt-7">
 //!                 <td class="mtd-icon">
-//!                     // This is a dish type node identified by `DISH_TYPE_NODE_CLASS` 
-//!                     // it contains an attribute called `DISH_TYPE_ATTRIBUTE_NAME`, 
-//!                     // which contains the meal type 
+//!                     // This is a dish type node identified by `DISH_TYPE_NODE_CLASS`
+//!                     // it contains an attribute called `DISH_TYPE_ATTRIBUTE_NAME`,
+//!                     // which contains the meal type
 //!                     <div>
-//!                         <img src="/layout/icons/vegetarisches-gericht.svg" 
-//!                         class="mealicon_2" 
+//!                         <img src="/layout/icons/vegetarisches-gericht.svg"
+//!                         class="mealicon_2"
 //!                         title="vegetarisches Gericht"><br>
 //!                     </div>
 //!                 </td>
 //!                 <td class="first menu-title" id="menu-title-5240287810491942285">
-//!                     // This is the dish name node identified by `DISH_NAME_NODE_CLASS` 
+//!                     // This is the dish name node identified by `DISH_NAME_NODE_CLASS`
 //!                     // it contains the name of the dish
 //!                     <span onclick="toggleRating('5240287810491942285');" class="bg">
 //!                         <b>2 Dampfnudeln mit Vanillesoße</b>
 //!                     </span>
-//!                     // This is the dish info node identified by `DISH_INFO_NODE_CLASS` 
-//!                     // it contains the allergens and additives of the dish 
+//!                     // This is the dish info node identified by `DISH_INFO_NODE_CLASS`
+//!                     // it contains the allergens and additives of the dish
 //!                     <sup>[Ei,ML,We]</sup>
 //!                 </td>
 //!                 <td style="text-align: right;vertical-align:bottom;">
-//!                     // These are dish price nodes identified by `DISH_PRICE_NODE_CLASS` 
-//!                     // they contain the prices of the meal. 
+//!                     // These are dish price nodes identified by `DISH_PRICE_NODE_CLASS`
+//!                     // they contain the prices of the meal.
 //!                     // 1 = Student, 2 = Guest, 3 = Employee, 4 = Pupil
 //!                     <span class="bgp price_1">3,20 &euro;</span>
 //!                     <span class="bgp price_2">4,60 &euro;</span>
 //!                     <span class="bgp price_3">4,20 &euro;</span>
 //!                     <span class="bgp price_4">3,55 &euro;</span>
-//!                     <div style="clear: both;"></div> 
-//!                     <a href="javascript:;" 
-//!                     title="&Oslash; Umwelt-Score" 
+//!                     <div style="clear: both;"></div>
+//!                     <a href="javascript:;"
+//!                     title="&Oslash; Umwelt-Score"
 //!                     onclick="toggleRating('5240287810491942285')">
-//!                         // This is the environment score node identified by 
-//!                         // `ENV_SCORE_NODE_CLASS` it contains an attribute called 
+//!                         // This is the environment score node identified by
+//!                         // `ENV_SCORE_NODE_CLASS` it contains an attribute called
 //!                         // `ENV_SCORE_ATTRIBUTE_NAME`, which contains the environment score
 //!                         <div id="average-stars-1551112451474757280"
 //!                             class="enviroment_score average" data-rating="3"
@@ -87,28 +87,43 @@ use crate::util::{Additive, Allergen, Date, MealType, Price};
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
 
+/// For docs see [`self`]
 const ROOT_NODE_CLASS: &str = "div.main-content";
+/// For docs see [`self`]
 const CANTEEN_NAME_NODE_CLASS: &str = "h1.mensa_fullname";
 
+/// For docs see [`self`]
 const DAY_DATE_SUPER_NODE_CLASS: &str = "ul.canteen-day-nav";
+/// For docs see [`self`]
 const DAY_DATE_NODE_CLASS: &str = "a";
+/// For docs see [`self`]
 const DAY_DATE_ATTRIBUTE_NAME: &str = "rel";
-const DATE_FORMAT: &str = "%Y-%m-%d";
+/// For docs see [`self`]
 const DAY_NODE_CLASS: &str = "div.canteen-day";
 
+/// For docs see [`self`]
 const LINE_NODE_CLASS: &str = "tr.mensatype_rows";
+/// For docs see [`self`]
 const LINE_NAME_NODE_CLASS: &str = "td.mensatype";
 
+/// For docs see [`self`]
 const DISH_NODE_CLASS: &str = "tr.mt-";
+/// For docs see [`self`]
 const DISH_TYPE_NODE_CLASS: &str = "img.mealicon_2";
+/// For docs see [`self`]
 const DISH_TYPE_ATTRIBUTE_NAME: &str = "title";
+/// For docs see [`self`]
 const DISH_NAME_NODE_CLASS: &str = "span.bg";
+/// For docs see [`self`]
 const DISH_INFO_NODE_CLASS: &str = "sup";
+/// For docs see [`self`]
 const DISH_PRICE_NODE_CLASS: &str = "span.bgp.price_";
+/// For docs see [`self`]
 const ENV_SCORE_NODE_CLASS: &str = "div.enviroment_score.average";
+/// For docs see [`self`]
 const ENV_SCORE_ATTRIBUTE_NAME: &str = "data-rating";
 
-
+const DATE_FORMAT: &str = "%Y-%m-%d";
 const PRICE_REGEX: &str = r"(?<euros>[0-9]),(?<cents>[0-9]{2})";
 const ALLERGEN_REGEX: &str = r"[A-Z]\w+";
 const ADDITIVE_REGEX: &str = r"[0-9]{1,2}";
@@ -118,7 +133,7 @@ const SELECTOR_PARSE_E_MSG: &str = "Error while parsing Selector string";
 const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
 const ATTR_NOT_FOUND_E_MSG: &str = "Error while trying to get the attribute";
 const NODE_NOT_FOUND_E_MSG: &str = "Error while trying to get the html node";
- 
+
 pub struct HTMLParser;
 
 impl HTMLParser {
@@ -185,7 +200,7 @@ impl HTMLParser {
         }
     }
 
-    /// Gets the root node 
+    /// Gets the root node
     fn get_root_node(document: &Html) -> ElementRef {
         let selector = Selector::parse(ROOT_NODE_CLASS).expect(SELECTOR_PARSE_E_MSG);
         let root_node = document
@@ -270,8 +285,8 @@ impl HTMLParser {
     fn get_dish_price(dish_node: &ElementRef) -> Price {
         let mut prices: [u32; 4] = [0; 4];
         for i in 1..5 {
-            let selector =
-                Selector::parse(&format!("{DISH_PRICE_NODE_CLASS}{i}")).expect(SELECTOR_PARSE_E_MSG);
+            let selector = Selector::parse(&format!("{DISH_PRICE_NODE_CLASS}{i}"))
+                .expect(SELECTOR_PARSE_E_MSG);
             let price_string: String = dish_node
                 .select(&selector)
                 .next()
@@ -359,28 +374,46 @@ impl HTMLParser {
 
 #[cfg(test)]
 mod tests {
-    use std::{fs::{File, self}, io::{Write}};
+    use std::{
+        fs::{self, File},
+        io::Write,
+    };
 
-    use crate::{layer::data::swka_parser::html_parser::HTMLParser, interface::mensa_parser::model::ParseCanteen, util::Date};
+    use crate::{
+        interface::mensa_parser::model::ParseCanteen,
+        layer::data::swka_parser::html_parser::HTMLParser, util::Date,
+    };
 
     #[tokio::test]
     async fn test_normal() {
-        test_html("./tests/test_normal.html", include_str!("./tests/test_normal.html"));
+        test_html(
+            "./tests/test_normal.html",
+            include_str!("./tests/test_normal.html"),
+        );
     }
 
     #[tokio::test]
     async fn test_no_meal_data() {
-        test_html("./tests/test_no_meal_data.html", include_str!("./tests/test_no_meal_data.html"));
+        test_html(
+            "./tests/test_no_meal_data.html",
+            include_str!("./tests/test_no_meal_data.html"),
+        );
     }
 
     #[tokio::test]
     async fn test_no_mealplan_shown() {
-        test_html("./tests/test_no_mealplan_shown.html", include_str!("./tests/test_no_mealplan_shown.html"));
+        test_html(
+            "./tests/test_no_mealplan_shown.html",
+            include_str!("./tests/test_no_mealplan_shown.html"),
+        );
     }
 
     #[tokio::test]
     async fn test_mensa_moltke() {
-        test_html("./tests/test_mensa_moltke.html", include_str!("./tests/test_mensa_moltke.html"));
+        test_html(
+            "./tests/test_mensa_moltke.html",
+            include_str!("./tests/test_mensa_moltke.html"),
+        );
     }
 
     fn test_html(path: &str, file_contents: &str) {
@@ -388,18 +421,27 @@ mod tests {
         //write_output_to_file(path,&canteen_data);
         let contents = read_from_file(path);
         assert!(contents.is_ok());
-        let contents = contents.expect("This case should never occur").replace("\r\n", "\n");
+        let contents = contents
+            .expect("This case should never occur")
+            .replace("\r\n", "\n");
         assert_eq!(format!("{canteen_data:#?}"), contents);
     }
     #[allow(dead_code)]
-    fn write_output_to_file(path: &str, canteen_data: &[(Date, ParseCanteen)]) -> std::io::Result<()>{
-        let output_path = path.replace("html", "txt").replace("./", "src/layer/data/swka_parser/");
+    fn write_output_to_file(
+        path: &str,
+        canteen_data: &[(Date, ParseCanteen)],
+    ) -> std::io::Result<()> {
+        let output_path = path
+            .replace("html", "txt")
+            .replace("./", "src/layer/data/swka_parser/");
         let mut output = File::create(output_path)?;
         write!(output, "{canteen_data:#?}")
     }
 
     fn read_from_file(path: &str) -> std::io::Result<String> {
-        let input_path = path.replace("html", "txt").replace("./", "src/layer/data/swka_parser/");
+        let input_path = path
+            .replace("html", "txt")
+            .replace("./", "src/layer/data/swka_parser/");
         fs::read_to_string(input_path)
     }
 }
