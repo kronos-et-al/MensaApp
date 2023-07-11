@@ -59,8 +59,8 @@ class GraphQlServerAccess implements IServerAccess {
     final result = await _client.mutate$RemoveUpvote(
         Options$Mutation$RemoveUpvote(
             variables: Variables$Mutation$RemoveUpvote(imageId: image.id)));
-    final parsedData = result.parsedData;
-    return parsedData?.removeUpvote ?? false;
+
+    return result.parsedData?.removeUpvote ?? false;
   }
 
   @override
@@ -69,8 +69,8 @@ class GraphQlServerAccess implements IServerAccess {
     final result = await _client.mutate$AddDownvote(
         Options$Mutation$AddDownvote(
             variables: Variables$Mutation$AddDownvote(imageId: image.id)));
-    final parsedData = result.parsedData;
-    return parsedData?.addDownvote ?? false;
+
+    return result.parsedData?.addDownvote ?? false;
   }
 
   @override
@@ -78,8 +78,8 @@ class GraphQlServerAccess implements IServerAccess {
     // TODO auth
     final result = await _client.mutate$AddUpvote(Options$Mutation$AddUpvote(
         variables: Variables$Mutation$AddUpvote(imageId: image.id)));
-    final parsedData = result.parsedData;
-    return parsedData?.addUpvote ?? false;
+
+    return result.parsedData?.addUpvote ?? false;
   }
 
   @override
@@ -88,8 +88,8 @@ class GraphQlServerAccess implements IServerAccess {
     final result = await _client.mutate$LinkImage(Options$Mutation$LinkImage(
         variables:
             Variables$Mutation$LinkImage(imageUrl: url, mealId: meal.id)));
-    final parsedData = result.parsedData;
-    return parsedData?.addImage ?? false;
+
+    return result.parsedData?.addImage ?? false;
   }
 
   @override
@@ -100,8 +100,8 @@ class GraphQlServerAccess implements IServerAccess {
             variables: Variables$Mutation$ReportImage(
                 imageId: image.id,
                 reason: _convertToReportReason(reportReason))));
-    final parsedData = result.parsedData;
-    return parsedData?.reportImage ?? false;
+
+    return result.parsedData?.reportImage ?? false;
   }
 
   @override
@@ -111,8 +111,8 @@ class GraphQlServerAccess implements IServerAccess {
         Options$Mutation$UpdateRating(
             variables: Variables$Mutation$UpdateRating(
                 mealId: meal.id, rating: rating)));
-    final parsedData = result.parsedData;
-    return parsedData?.setRating ?? false;
+
+    return result.parsedData?.setRating ?? false;
   }
 
   // ---------------------- queries ----------------------
@@ -127,19 +127,19 @@ class GraphQlServerAccess implements IServerAccess {
 
     // TODO parallel?
     for (int offset = 0; offset < daysToParse; offset++) {
+
       final date = today.add(Duration(days: offset));
       final result = await _client.query$GetMealPlanForDay(
           Options$Query$GetMealPlanForDay(
               variables: Variables$Query$GetMealPlanForDay(
                   date: _dateFormat.format(date))));
-      final parsedData = result.parsedData;
 
       final exception = result.exception;
       if (exception != null) {
         return Failure(exception);
       }
 
-      final mealPlan = _convertMealPlan(parsedData?.getCanteens ?? [], date);
+      final mealPlan = _convertMealPlan(result.parsedData?.getCanteens ?? [], date);
 
       completeList.addAll(mealPlan);
     }
@@ -152,6 +152,7 @@ class GraphQlServerAccess implements IServerAccess {
     final result = await _client.query$GetMeal(Options$Query$GetMeal(
         variables: Variables$Query$GetMeal(
             date: _dateFormat.format(date), mealId: meal.id, lineId: line.id)));
+
     final mealData = result.parsedData?.getMeal;
     final exception = result.exception;
     if (exception != null) {
@@ -173,14 +174,14 @@ class GraphQlServerAccess implements IServerAccess {
         Options$Query$GetCanteenDate(
             variables: Variables$Query$GetCanteenDate(
                 canteenId: canteen.id, date: _dateFormat.format(date))));
-    final parsedData = result.parsedData;
+
     final exception = result.exception;
     if (exception != null) {
       return Failure(exception);
     }
 
     final mealPlan =
-        _convertMealPlan([parsedData?.getCanteen].nonNulls.toList(), date);
+        _convertMealPlan([result.parsedData?.getCanteen].nonNulls.toList(), date);
     return Success(mealPlan);
   }
 }
