@@ -38,13 +38,11 @@ where
                 let similar_side_result = self.db.get_similar_side(&dish.name).await?;
                 // A similar side and meal could be found. Uncommon case.
                 // Or just a meal could be found.
-                if similar_meal_result.is_some() {
-                    //Maybe-TODO get a better solution for .expect
-                    self.db.update_meal(similar_meal_result.expect("Cant fail, as meal.is_some?").id, db_line.id, date, &dish.name, &dish.price).await?;
+                if let Some(similar_meal) = similar_meal_result {
+                    self.db.update_meal(similar_meal.id, db_line.id, date, &dish.name, &dish.price).await?;
                     // A similar side could be found
-                } else if similar_side_result.is_some() {
-                    //Maybe-TODO get a better solution for .expect
-                    self.db.update_side(similar_side_result.expect("Cant fail; as side.is_some?").id, db_line.id, date, &dish.name, &dish.price).await?;
+                } else if let Some(similar_side) = similar_side_result {
+                    self.db.update_side(similar_side.id, db_line.id, date, &dish.name, &dish.price).await?;
                     // No similar meal could be found. Dish needs to be determined
 
                     //Maybe-TODO better solution for this case. This should work also
