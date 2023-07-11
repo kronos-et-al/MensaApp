@@ -15,8 +15,9 @@ where
 {
     const fn get_edge_case_meal() -> &'static str {"je 100 g"}
 
-    /// This method resolves relation problems with canteen data.<br>
-    /// After each resolve the correspond object gets injected into the database.<br>
+    /// This method resolves relation problems with canteen data and the corresponding database.<br>
+    /// After each resolve the object gets injected into the database.<br>
+    /// If an similar object already exists, the existing object will be updated with the new object data.<br>
     /// `canteen: ParseCanteen`<br>This struct contains all canteen data e.g. lines and dishes.<br>
     /// `date: Date`<br>This date decides when the meal will be served next.<br>
     /// **Return**<br>Occurring errors get passed to the `MealPlanManger`.
