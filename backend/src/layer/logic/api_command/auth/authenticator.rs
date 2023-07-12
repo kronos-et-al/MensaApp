@@ -38,7 +38,7 @@ impl Authenticator {
         if hash == provided_hash {
             Ok(())
         } else {
-            Err(CommandError::BadAuth(auth_info.to_string()))
+            Err(CommandError::BadAuth(format!("hash not matching: {auth_info}")))
         }
     }
 
@@ -61,7 +61,7 @@ impl Authenticator {
         if hash == provided_hash {
             Ok(())
         } else {
-            Err(CommandError::BadAuth(auth_info.to_string()))
+            Err(CommandError::BadAuth(format!("hash not matching: {auth_info}")))
         }
     }
 
@@ -80,7 +80,7 @@ impl Authenticator {
         if hash == provided_hash {
             Ok(())
         } else {
-            Err(CommandError::BadAuth(auth_info.to_string()))
+            Err(CommandError::BadAuth(format!("hash not matching: {auth_info}")))
         }
     }
 
@@ -106,7 +106,7 @@ impl Authenticator {
     fn get_provided_hash(auth_info: &InnerAuthInfo) -> Result<Vec<u8>> {
         STANDARD
             .decode(&auth_info.hash)
-            .map_err(|_| CommandError::BadAuth(auth_info.to_string()))
+            .map_err(|_| CommandError::BadAuth(format!("could not decode hash: {auth_info}")))
     }
 
     fn get_api_key(&self, auth_info: &InnerAuthInfo) -> Result<String> {
