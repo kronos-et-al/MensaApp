@@ -147,6 +147,88 @@ async fn test_complete_request() {
 }
 
 #[tokio::test]
+async fn test_frondend_query() {
+    let request = {
+        r#"
+query GetMealPlanForDay() {
+    getCanteens {
+        ...mealPlan
+    }
+}
+
+
+fragment canteen on Canteen {
+    id
+    name
+}
+
+fragment mealPlan on Canteen {
+    lines {
+        id
+        name
+        canteen {
+            ...canteen
+        }
+        meals(date: "2022-09-10") {
+            ...mealInfo
+        }
+    }
+}
+
+fragment mealInfo on Meal {
+    id
+    name
+    mealType
+    price {
+        ...price
+    }
+    allergens
+    additives
+    statistics {
+        lastServed
+        nextServed
+        frequency
+        new
+    }
+    ratings {
+        averageRating
+        personalRating
+        ratingsCount
+    }
+    images {
+        id
+        url
+        rank
+        personalDownvote
+        personalUpvote
+        downvotes
+        upvotes
+    }
+    sides {
+        id
+        name
+        additives
+        allergens
+        price {
+            ...price
+        }
+        mealType
+    }
+}
+
+fragment price on Price {
+    employee
+    guest
+    pupil
+    student
+}
+"#
+    };
+
+    test_gql_request(request).await;
+}
+
+#[tokio::test]
 async fn test_get_specific_canteen() {
     let request = r#"
     {
@@ -194,24 +276,38 @@ async fn test_get_auth_info_null() {
     test_gql_request(request).await;
 }
 
-// #[tokio::test]
-// #[should_panic = "Query is too complex."]
-// async fn test_recursive_line_canteen_panic() {
-//     let request = r#"
-//     {
-//       getCanteens {
-//         lines {
-//           canteen {
-//             lines {
-//               canteen {id}
-//             }
-//           }
-//         }
-//       }
-//     }
-//     "#;
-//     test_gql_request(request).await;
-// }
+#[tokio::test]
+#[should_panic = "The recursion depth of the query cannot be greater than"]
+async fn test_recursive_panic() {
+    let request = r#"
+    {
+      getCanteens {
+        lines {
+          canteen {
+            lines {
+              canteen {
+                lines {
+                  canteen {
+                    lines {
+                      canteen {
+                        lines {
+                          canteen {
+                            id
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    "#;
+    test_gql_request(request).await;
+}
 
 #[tokio::test]
 async fn test_recursive_line_canteen_ok() {
@@ -230,30 +326,6 @@ async fn test_recursive_line_canteen_ok() {
     "#;
     test_gql_request(request).await;
 }
-
-// #[tokio::test]
-// #[should_panic = "Query is too complex."]
-// async fn test_recursive_meal_line_panic() {
-//     let request = r#"
-//     {
-//       getCanteens {
-//         lines {
-//           meals(date: "2000-01-01") {
-//             line {
-//               meals(date: "2000-01-01") {
-//                 line {
-//                   id
-//                 }
-//               }
-//             }
-//           }
-
-//         }
-//       }
-//     }
-//     "#;
-//     test_gql_request(request).await;
-// }
 
 #[tokio::test]
 async fn test_recursive_meal_line_ok() {
