@@ -20,7 +20,7 @@ abstract class IMealAccess {
   /// If the requested data is not stored there, the data is requested from the server.
   /// @param id The id of the meal
   /// @return The meal with the committed id or an error
-  Future<Result<Meal, Exception>> getMealFromId(String id);
+  Future<Result<Meal, Exception>> getWholeFavorite(String id);
 
   /// This method updates all meal plans of the committed date of the committed canteen.
   /// If the connection to the server fails, an temporal error message is displayed.
