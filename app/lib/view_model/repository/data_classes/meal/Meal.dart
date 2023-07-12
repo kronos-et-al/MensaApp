@@ -24,7 +24,7 @@ class Meal {
   final DateTime? _nextServed;
   final Frequency? _relativeFrequency;
   final List<ImageData>? _images;
-  final int? _numberOfOccurance;
+  final int? _numberOfOccurance; // is not stored in database
   bool? _isFavorite;
 
   /// This constructor creates a meal with the committed values.
