@@ -14,7 +14,8 @@ impl SwKaParseManager {
         Self
     }
 
-    /// Sorts all canteens by days and urls in a hashmap.
+    /// Sorts all canteens by days and urls in a hashmap.<br>
+    /// [ParseCanteens] are grouped for each [Date].
     async fn parse_and_sort_canteens_by_days(
         &self,
         urls: Vec<String>,
@@ -32,6 +33,15 @@ impl SwKaParseManager {
 
 #[async_trait]
 impl MealplanParser for SwKaParseManager {
+    /// This method handles the parsing procedure for the given day.
+    /// To obtain the requested canteens, the manager calls [SwKaLinkCreator] to create urls for the meal plans.
+    /// The [SwKaResolver] loads the html code of the given website behind the urls.
+    /// At least the [HTMLParser] interprets the html code into [ParseCanteen] objects.
+    /// These objects will be returned.<br>
+    /// `day: Date`<br>
+    /// The day this function looks for meal plans.<br>
+    /// **Return**<br>
+    /// All [ParseCanteen]s containing meal plan data for the given day or an error if something in the chain above fails.
     async fn parse(&self, day: Date) -> Result<Vec<ParseCanteen>, ParseError> {
         let mut map = self
             .parse_and_sort_canteens_by_days(SwKaLinkCreator::get_urls(day))
@@ -39,6 +49,13 @@ impl MealplanParser for SwKaParseManager {
 
         Ok(map.remove(&day).unwrap_or_default())
     }
+    /// This method handles the parsing procedure for each day in the next four weeks.
+    /// To obtain the requested canteens, the manager calls [SwKaLinkCreator] to create urls for the meal plans.
+    /// The [SwKaResolver] loads the html code of the given website behind the urls.
+    /// At least the [HTMLParser] interprets the html code into [ParseCanteen] objects.
+    /// These objects will be returned.<br>
+    /// **Return**<br>
+    /// All [ParseCanteen]s grouped by their date or an error if something in the chain above fails.
 
     async fn parse_all(&self) -> Result<Vec<(Date, Vec<ParseCanteen>)>, ParseError> {
         let map = self
