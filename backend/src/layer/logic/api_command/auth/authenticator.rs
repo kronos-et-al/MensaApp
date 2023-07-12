@@ -32,22 +32,10 @@ impl Authenticator {
         image_id: Uuid,
         image_command_type: ImageCommandType,
     ) -> Result<()> {
-        // TODO remove duplication
-        let api_key = self
-            .get_api_key(auth_info)
-            .ok_or(CommandError::BadAuth(auth_info.clone()))?;
-        let res = Sha512::new()
-            .chain_update(image_command_type.to_string())
-            .chain_update(auth_info.client_id)
-            .chain_update(api_key)
-            .chain_update(image_id)
-            .finalize();
+        let hash = self.calculate_hash(auth_info, &image_command_type.to_string(), &[&image_id])?;
+        let provided_hash = Self::get_provided_hash(auth_info)?;
 
-        let provided_hash = STANDARD
-            .decode(&auth_info.hash)
-            .map_err(|_| CommandError::BadAuth(auth_info.clone()))?;
-
-        if res[..] == provided_hash {
+        if hash == provided_hash {
             Ok(())
         } else {
             Err(CommandError::BadAuth(auth_info.clone()))
@@ -63,22 +51,14 @@ impl Authenticator {
         meal_id: Uuid,
         rating: u32,
     ) -> Result<()> {
-        let api_key = self
-            .get_api_key(auth_info)
-            .ok_or(CommandError::BadAuth(auth_info.clone()))?;
-        let res = Sha512::new()
-            .chain_update(MEAL_RATING_COMMAND_NAME)
-            .chain_update(auth_info.client_id)
-            .chain_update(api_key)
-            .chain_update(meal_id)
-            .chain_update(rating.to_le_bytes())
-            .finalize();
+        let hash = self.calculate_hash(
+            auth_info,
+            MEAL_RATING_COMMAND_NAME,
+            &[&meal_id, &rating.to_le_bytes()],
+        )?;
+        let provided_hash = Self::get_provided_hash(auth_info)?;
 
-        let provided_hash = STANDARD
-            .decode(&auth_info.hash)
-            .map_err(|_| CommandError::BadAuth(auth_info.clone()))?;
-
-        if res[..] == provided_hash {
+        if hash == provided_hash {
             Ok(())
         } else {
             Err(CommandError::BadAuth(auth_info.clone()))
@@ -94,26 +74,40 @@ impl Authenticator {
         meal_id: Uuid,
         url: &String,
     ) -> Result<()> {
-        let api_key = self
-            .get_api_key(auth_info)
-            .ok_or(CommandError::BadAuth(auth_info.clone()))?;
-        let res = Sha512::new()
-            .chain_update(ADD_IMAGE_COMMAND_NAME)
-            .chain_update(auth_info.client_id)
-            .chain_update(api_key)
-            .chain_update(meal_id)
-            .chain_update(url)
-            .finalize();
+        let hash = self.calculate_hash(auth_info, ADD_IMAGE_COMMAND_NAME, &[&meal_id, url])?;
+        let provided_hash = Self::get_provided_hash(auth_info)?;
 
-        let provided_hash = STANDARD
-            .decode(&auth_info.hash)
-            .map_err(|_| CommandError::BadAuth(auth_info.clone()))?;
-
-        if res[..] == provided_hash {
+        if hash == provided_hash {
             Ok(())
         } else {
             Err(CommandError::BadAuth(auth_info.clone()))
         }
+    }
+
+    fn calculate_hash(
+        &self,
+        auth_info: &InnerAuthInfo,
+        request_name: &str,
+        params: &[&dyn AsRef<[u8]>],
+    ) -> Result<Vec<u8>> {
+        let api_key = self
+            .get_api_key(auth_info)
+            .ok_or(CommandError::BadAuth(auth_info.clone()))?;
+        let mut hasher = Sha512::new()
+            .chain_update(request_name)
+            .chain_update(auth_info.client_id)
+            .chain_update(api_key);
+        for param in params {
+            hasher.update(param);
+        }
+
+        Ok(Vec::from(&hasher.finalize()[..]))
+    }
+
+    fn get_provided_hash(auth_info: &InnerAuthInfo) -> Result<Vec<u8>> {
+        STANDARD
+            .decode(&auth_info.hash)
+            .map_err(|_| CommandError::BadAuth(auth_info.clone()))
     }
 
     fn get_api_key(&self, auth_info: &InnerAuthInfo) -> Option<String> {
