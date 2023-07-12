@@ -219,6 +219,12 @@ class GraphQlServerAccess implements IServerAccess {
 
 Result<List<MealPlan>, MealPlanException> _convertMealPlan(
     List<Fragment$mealPlan> mealPlans, DateTime date) {
+  if (mealPlans
+      .expand((mealPlan) => mealPlan.lines)
+      .any((line) => line.meals == null)) {
+    return Failure(NoDataException("No data for a line."));
+  }
+
   return Success(mealPlans
       .expand(
         (mealPlan) => mealPlan.lines
@@ -233,10 +239,8 @@ Result<List<MealPlan>, MealPlanException> _convertMealPlan(
                         canteen: _convertCanteen(line.canteen),
                         position: idx),
                     // mensa closed when data available but no meals in list
-                    isClosed: line.meals?.isEmpty ?? false,
-                    // TODO return noDataException if one lines meals are null
-                    meals:
-                        line.meals?.map((e) => _convertMeal(e)).toList() ?? [],
+                    isClosed: line.meals!.isEmpty,
+                    meals: line.meals!.map((e) => _convertMeal(e)).toList(),
                   ),
                 ))
             .values
