@@ -9,13 +9,14 @@ import 'package:intl/intl.dart';
 /// Displays a Meal as a List Entry.
 class MealListEntry extends StatelessWidget {
   final Meal _meal;
+  // TODO use locale
   final NumberFormat _priceFormat =
       NumberFormat.currency(locale: 'de_DE', symbol: '€');
 
   /// Creates a MealListEntry.
   /// @param meal The Meal to display.
   /// @param key The key to use for this widget.
-  /// @return A MealListEntry.
+  /// @return A MealListEntry.flutter
   MealListEntry({super.key, required Meal meal}) : _meal = meal;
 
   @override

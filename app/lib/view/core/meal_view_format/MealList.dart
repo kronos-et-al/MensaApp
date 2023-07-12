@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 
 /// Displays a List of MealPlans in a List View grouped by their line.
 class MealList extends StatelessWidget {
-  final List<Mealplan> _mealPlans;
+  final List<MealPlan> _mealPlans;
 
   /// Creates a MealList.
   /// @param mealPlans The MealPlans to display.
   /// @param key The key to use for this widget.
   /// @return A MealList.
-  const MealList({super.key, required List<Mealplan> mealPlans})
+  const MealList({super.key, required List<MealPlan> mealPlans})
       : _mealPlans = mealPlans;
 
   @override

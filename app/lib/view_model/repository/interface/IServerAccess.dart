@@ -1,4 +1,5 @@
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
+import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 
 import '../data_classes/meal/ImageData.dart';
@@ -11,19 +12,18 @@ import '../error_handling/Result.dart';
 abstract class IServerAccess {
   /// This method requests all mealplans of all canteens for the next seven days from the server.
   /// @return The result of the update or an error
-  Future<Result<List<Mealplan>>> updateAll();
+  Future<Result<List<MealPlan>, MealPlanException>> updateAll();
 
   /// This method requests the mealplan for the committed date of the committed canteen from the server.
   /// @param date The date of the mealplan
   /// @param canteen The canteen of the mealplan
   /// @return The mealplan of the committed date of the committed canteen or an error
-  Future<Result<List<Mealplan>>> updateCanteen(Canteen canteen, DateTime date);
+  Future<Result<List<MealPlan>, MealPlanException>> updateCanteen(Canteen canteen, DateTime date);
 
   /// This method returns the meal with the committed id.
   /// @param id The id of the meal
   /// @return The meal with the committed id or an error
-  // TODO is it clever to always pass the whole object when only the ids are needed?
-  Future<Result<Meal>> getMealFromId(Meal meal, Line line, DateTime date);
+  Future<Result<Meal, Exception>> getMealFromId(Meal meal, Line line, DateTime date);
 
   /// This method updates the rating of the committed meal on the server.
   /// @param rating The new rating of the meal
@@ -63,9 +63,7 @@ abstract class IServerAccess {
   /// @return The result of the update. It returns false, if the report failed.
   Future<bool> reportImage(ImageData image, ReportCategory reportReason);
 
-
-  /// This method returns the canteen specified or the default canteen if non existant or id null.
-  /// @param id id of canteen to get, can be null to get default canteen
-  /// @return canteen with id or default canteen
-  Future<Result<Canteen>> getCanteenOrDefault(String? id);
+  /// This method requests the default canteen from the server.
+  /// @return The default canteen or null if no connection could be established.
+  Future<Canteen?> getDefaultCanteen();
 }

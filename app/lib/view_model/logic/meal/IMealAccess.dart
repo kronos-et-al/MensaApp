@@ -1,5 +1,6 @@
 import 'package:app/view_model/repository/data_classes/filter/FilterPreferences.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
+import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../repository/data_classes/meal/Meal.dart';
@@ -13,13 +14,13 @@ abstract class IMealAccess {
   /// @param date The date of the mealplan
   /// @param canteen The canteen of the mealplan
   /// @return The mealplan of the committed date of the committed canteen or an error
-  Future<Result<List<Mealplan>>> getMealPlan(DateTime date, Canteen canteen);
+  Future<Result<List<MealPlan>, MealPlanException>> getMealPlan(DateTime date, Canteen canteen);
 
   /// This method returns the meal with the committed id form the database.
   /// If the requested data is not stored there, the data is requested from the server.
   /// @param id The id of the meal
   /// @return The meal with the committed id or an error
-  Future<Result<Meal>> getMealFromId(String id);
+  Future<Result<Meal, Exception>> getMealFromId(String id);
 
   /// This method updates all meal plans of the committed date of the committed canteen.
   /// If the connection to the server fails, an temporal error message is displayed.

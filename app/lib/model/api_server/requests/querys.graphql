@@ -16,10 +16,7 @@ query GetMeal($date: NaiveDate!, $mealId: UUID!, $lineId: UUID!) {
     }
 }
 
-query GetCanteen($canteenId: UUID!) {
-    getCanteen(canteenId: $canteenId) {
-        ...canteen
-    }
+query GetDefaultCanteen {
     getCanteens {
         ...canteen
     }

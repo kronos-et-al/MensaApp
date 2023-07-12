@@ -18,6 +18,7 @@ import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
+import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
 import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 
 import 'package:app/view_model/repository/error_handling/Result.dart';
@@ -125,10 +126,10 @@ class GraphQlServerAccess implements IServerAccess {
   static const dateFormatPattern = "yyyy-MM-dd";
 
   @override
-  Future<Result<List<Mealplan>>> updateAll() async {
+  Future<Result<List<MealPlan>, MealPlanException>> updateAll() async {
     final today = DateTime.now();
 
-    var completeList = <Mealplan>[];
+    var completeList = <MealPlan>[];
 
     // TODO parallel?
     for (int offset = 0; offset < daysToParse; offset++) {
@@ -140,7 +141,7 @@ class GraphQlServerAccess implements IServerAccess {
 
       final exception = result.exception;
       if (exception != null) {
-        return Failure(exception);
+        return Failure(NoConnectionException(exception.toString()));
       }
 
       final mealPlan =
@@ -152,7 +153,7 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   @override
-  Future<Result<Meal>> getMealFromId(
+  Future<Result<Meal, Exception>> getMealFromId(
       Meal meal, Line line, DateTime date) async {
     final result = await _client.query$GetMeal(Options$Query$GetMeal(
         variables: Variables$Query$GetMeal(
@@ -173,7 +174,7 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   @override
-  Future<Result<List<Mealplan>>> updateCanteen(
+  Future<Result<List<MealPlan>, MealPlanException>> updateCanteen(
       Canteen canteen, DateTime date) async {
     final result = await _client.query$GetCanteenDate(
         Options$Query$GetCanteenDate(
@@ -182,7 +183,7 @@ class GraphQlServerAccess implements IServerAccess {
 
     final exception = result.exception;
     if (exception != null) {
-      return Failure(exception);
+      return Failure(NoConnectionException(exception.toString()));
     }
 
     final mealPlan = _convertMealPlan(
@@ -193,33 +194,28 @@ class GraphQlServerAccess implements IServerAccess {
   static const defaultUuid = "00000000-0000-0000-0000-000000000000";
 
   @override
-  Future<Result<Canteen>> getCanteenOrDefault(String? id) async {
-    Fragment$canteen? canteen;
+  Future<Canteen?> getDefaultCanteen() async {
 
-    final result = await _client.query$GetCanteen(Options$Query$GetCanteen(
-        variables: Variables$Query$GetCanteen(canteenId: id ?? defaultUuid)));
+    final result = await _client
+        .query$GetDefaultCanteen(Options$Query$GetDefaultCanteen());
 
     final exception = result.exception;
     if (exception != null) {
-      return Failure(exception);
+      return null;
     }
 
-    canteen = result.parsedData?.getCanteen;
-
-    canteen ??= result.parsedData?.getCanteens.first;
+    var canteen = result.parsedData?.getCanteens.first;
 
     if (canteen == null) {
-      return Failure(NoMealException(// Todo correct exception
-          "Could not request default canteen from api: ${result.exception}"));
+      return null;
     }
-
-    return Success(_convertCanteen(canteen));
+    return _convertCanteen(canteen);
   }
 }
 
 // --------------- utility helper methods ---------------
 
-List<Mealplan> _convertMealPlan(
+List<MealPlan> _convertMealPlan(
     List<Fragment$mealPlan> mealPlan, DateTime date) {
   return mealPlan
       .expand(
@@ -227,7 +223,7 @@ List<Mealplan> _convertMealPlan(
             .asMap()
             .map((idx, e) => MapEntry(
                   idx,
-                  Mealplan(
+                  MealPlan(
                     date: date,
                     line: Line(
                         id: e.id,

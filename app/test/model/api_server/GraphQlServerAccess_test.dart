@@ -127,7 +127,7 @@ void main() async {
 
     var res = switch (result) {
       Success(value: final mealplan) => true, // TODO
-      Failure(value: final exception) => expect(exception.toString(), ""),
+      Failure(exception: final exception) => expect(exception.toString(), ""),
     };
   });
 
@@ -138,7 +138,7 @@ void main() async {
 
     var res = switch (result) {
       Success(value: final mealplan) => true, //TODO
-      Failure(value: final exception) => expect(exception.toString(), ""),
+      Failure(exception: final exception) => expect(exception.toString(), ""),
     };
   });
 
@@ -160,29 +160,15 @@ void main() async {
 
     var res = switch (result) {
       Success(value: final mealplan) => true, // TODO better testing?
-      Failure(value: final exception) =>
+      Failure(exception: final exception) =>
         expect(exception, true, reason: "exception while request"),
     };
   });
 
   test('get canteen', () async {
-    var result = await serverAccess
-        .getCanteenOrDefault("ad860196-74aa-48c2-a032-e327ec338290");
+    var canteen = await serverAccess
+        .getDefaultCanteen();
 
-    var res = switch (result) {
-      Success(value: final canteen) => true, // TODO better testing?
-      Failure(value: final exception) =>
-        expect(exception, true, reason: "exception while request"),
-    };
-  });
-
-  test('get default canteen', () async {
-    var result = await serverAccess.getCanteenOrDefault(null);
-
-    var res = switch (result) {
-      Success(value: final canteen) => true, // TODO better testing?
-      Failure(value: final exception) =>
-        expect(exception, true, reason: "exception while request"),
-    };
+    expect(canteen != null, true);
   });
 }

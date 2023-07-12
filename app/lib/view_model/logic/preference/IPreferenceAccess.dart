@@ -7,12 +7,12 @@ import '../../repository/data_classes/settings/PriceCategory.dart';
 
 /// This is an interface for accessing the preferences.
 abstract class IPreferenceAccess {
-  /// The device identifier is returned.
-  /// @return The device identifier.
+  /// The client identifier is returned.
+  /// @return The client identifier.
   Future<String> getClientIdentifier();
 
-  /// The device identifier is set.
-  /// @param identifier The new device identifier.
+  /// The client identifier is set.
+  /// @param identifier The new client identifier.
   /// @return The result of the update.
   Future<void> setClientIdentifier(String identifier);
 
@@ -40,12 +40,12 @@ abstract class IPreferenceAccess {
 
   /// The saved ColorScheme is returned.
   /// @return The saved ColorScheme.
-  Future<ColorScheme> getColorScheme();
+  Future<MensaColorScheme> getColorScheme();
 
   /// The committed ColorScheme is set.
   /// @param scheme The new ColorScheme.
   /// @return The result of the update.
-  Future<void> setColorScheme(ColorScheme scheme);
+  Future<void> setColorScheme(MensaColorScheme scheme);
 
   /// The saved PriceCategory is returned.
   /// @return The saved PriceCategory.
