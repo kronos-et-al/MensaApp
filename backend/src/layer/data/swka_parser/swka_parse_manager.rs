@@ -21,7 +21,7 @@ impl SwKaParseManager {
 
         let resolver = SwKaResolver;
 
-        let htmls = resolver.get_htmls(urls).await;
+        let htmls = resolver.get_html_strings(urls).await;
 
         // TODO unwrap()
         for html in htmls.unwrap() {

@@ -1,13 +1,10 @@
-use std::error::Error;
-use std::fmt::Error;
-
 use futures::future::join_all;
 use crate::layer::data::swka_parser::html_parser::ParseError;
 
 pub struct SwKaResolver;
 
 impl SwKaResolver {
-    pub fn new() -> SwKaResolver {
+    pub const fn new() -> Self {
         Self
     }
 
@@ -28,9 +25,46 @@ impl SwKaResolver {
             Ok(url_data) => url_data,
             Err(e) => return Err(ParseError::NoConnectionEstablished)
         };
-        return match resp.text().await {
+        match resp.text().await {
             Ok(s) => Ok(s),
-            Err(e) => Err(ParseError::DecodeFailed)
+            Err(_e) => Err(ParseError::DecodeFailed)
         }
     }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::layer::data::swka_parser::html_parser::ParseError;
+    use crate::layer::data::swka_parser::swka_resolver::SwKaResolver;
+
+    fn get_invalid_url() -> String { String::from("A ship-shipping ship ships shipping-ships") }
+    fn get_valid_url() -> String { String::from("https://www.google.de") }
+
+    #[tokio::test]
+    async fn get_html_response_fail() {
+        let result = SwKaResolver::new().get_html(&get_invalid_url()).await;
+        assert!(matches!(result, Err(ParseError::NoConnectionEstablished)));
+    }
+
+    #[tokio::test]
+    async fn get_html_response_no_fail() {
+        let result = SwKaResolver::new().get_html(&get_valid_url()).await;
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn get_html_strings_response_fail() {
+        let urls = vec![get_invalid_url(), get_valid_url(), get_valid_url()];
+        let result = SwKaResolver::new().get_html_strings(urls).await;
+        assert!(matches!(result, Err(ParseError::NoConnectionEstablished)));
+    }
+
+    #[tokio::test]
+    async fn get_html_strings_response_no_fail() {
+        let urls = vec![get_valid_url(), get_valid_url()];
+        let result = SwKaResolver::new().get_html_strings(urls).await;
+        assert!(result.is_ok());
+    }
+
+
 }
