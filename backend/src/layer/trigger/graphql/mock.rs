@@ -85,7 +85,8 @@ impl RequestDataAccess for RequestDatabaseMock {
             },
             last_served: Option::from(NaiveDate::default()),
             next_served: Option::from(NaiveDate::default()),
-            relative_frequency: 0.0,
+            frequency: 11,
+            new: false,
             rating_count: 0,
             average_rating: 0.0,
             date: Date::from_ymd_opt(2023, 7, 4)
@@ -108,7 +109,8 @@ impl RequestDataAccess for RequestDatabaseMock {
             },
             last_served: Option::from(NaiveDate::default()),
             next_served: Option::from(NaiveDate::default()),
-            relative_frequency: 0.8,
+            frequency: 0,
+            new: true,
             rating_count: 10,
             average_rating: 1.2,
             date: Date::from_ymd_opt(2023, 7, 4)
@@ -127,7 +129,8 @@ impl RequestDataAccess for RequestDatabaseMock {
             },
             last_served: Option::from(NaiveDate::default()),
             next_served: Option::from(NaiveDate::default()),
-            relative_frequency: 0.2,
+            frequency: 34,
+            new: false,
             rating_count: 3,
             average_rating: 4.1,
             date: Date::from_ymd_opt(2022, 6, 5)
@@ -146,7 +149,8 @@ impl RequestDataAccess for RequestDatabaseMock {
             },
             last_served: Option::from(NaiveDate::default()),
             next_served: Option::from(NaiveDate::default()),
-            relative_frequency: 0.5,
+            frequency: 10,
+            new: false,
             rating_count: 7,
             average_rating: 3.5,
             date: Date::from_ymd_opt(2022, 12, 12)

@@ -139,8 +139,10 @@ struct MealStatistics {
     last_served: Option<Date>,
     /// The date of the next time the meal will be served.
     next_served: Option<Date>,
-    /// The relative frequency with which the meal is offered.
-    relative_frequency: f32,
+    /// Count how often meal was served in last three months.
+    frequency: u32,
+    /// Whether this meal is new and was never served before.
+    new: bool
 }
 
 impl From<model::Meal> for Meal {
@@ -162,7 +164,8 @@ impl From<model::Meal> for Meal {
             statistics: MealStatistics {
                 last_served: value.last_served,
                 next_served: value.next_served,
-                relative_frequency: value.relative_frequency,
+                frequency: value.frequency,
+                new: value.new,
             },
             date: value.date,
             line_id: value.line_id,

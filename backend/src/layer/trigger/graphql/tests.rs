@@ -106,7 +106,8 @@ async fn test_complete_request() {
               statistics {
                 lastServed
                 nextServed
-                relativeFrequency
+                frequency
+                new
               }
               allergens
               additives
