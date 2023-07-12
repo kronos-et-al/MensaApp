@@ -1,5 +1,8 @@
-use crate::interface::mensa_parser::model::ParseCanteen;
+use std::slice::Iter;
+use tracing::warn;
+use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
 use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
+use crate::interface::persistent_data::model::Line;
 use crate::util::Date;
 
 pub struct RelationResolver<DataAccess>
@@ -16,6 +19,8 @@ where
     pub const fn _new(db: DataAccess) -> Self {
         Self { db }
     }
+
+    const PERCENTAGE: f32 = 0.8;
     const fn get_edge_case_meal() -> &'static str {
         "je 100 g"
     }
@@ -36,59 +41,83 @@ where
             None => self.db.insert_canteen(&canteen.name).await?,
         };
 
-        // handle line, handle dish
         for line in canteen.lines {
-            let db_line = match self.db.get_similar_line(&line.name).await? {
-                Some(similar_line) => self.db.update_line(similar_line.id, &line.name).await?,
-                None => self.db.insert_line(&line.name).await?,
-            };
-
-            for dish in line.dishes {
-                let similar_meal_result = self.db.get_similar_meal(&dish.name).await?;
-                let similar_side_result = self.db.get_similar_side(&dish.name).await?;
-                // A similar side and meal could be found. Uncommon case.
-                // Or just a meal could be found.
-                if let Some(similar_meal) = similar_meal_result {
-                    self.db
-                        .update_meal(similar_meal.id, db_line.id, date, &dish.name, &dish.price)
-                        .await?;
-                    // A similar side could be found
-                } else if let Some(similar_side) = similar_side_result {
-                    self.db
-                        .update_side(similar_side.id, db_line.id, date, &dish.name, &dish.price)
-                        .await?;
-                    // No similar meal could be found. Dish needs to be determined
-
-                    //Maybe-TODO better solution for this case. This should work also
-                    // 80% vom durchschnitt der gerichte. alles darunter = side
-                } else if dish.price.price_student < 150
-                    && !dish.name.contains(Self::get_edge_case_meal())
-                {
-                    self.db
-                        .insert_side(
-                            &dish.name,
-                            dish.meal_type,
-                            &dish.price,
-                            date,
-                            &dish.allergens,
-                            &dish.additives,
-                        )
-                        .await?;
-                } else {
-                    self.db
-                        .insert_meal(
-                            &dish.name,
-                            dish.meal_type,
-                            &dish.price,
-                            date,
-                            &dish.allergens,
-                            &dish.additives,
-                        )
-                        .await?;
-                }
+            let name = &line.name.clone();
+            match self.handle_line(line, date).await {
+                Err(_e) => warn!("Skip line '{:?}' as it could not be solved", name),
+                _ => {} // ignored
             }
         }
         Ok(())
+    }
+
+    async fn handle_line(&self, line: ParseLine, date: Date) -> Result<(), DataError> {
+        let db_line = match self.db.get_similar_line(&line.name).await? {
+            Some(similar_line) => self.db.update_line(similar_line.id, &line.name).await?,
+            None => self.db.insert_line(&line.name).await?,
+        };
+
+        let average = self.determine_average_price(line.dishes.iter(), line.dishes.len());
+
+        for dish in line.dishes {
+            let name = &dish.name.clone();
+            match self.handle_dish(&db_line, dish, date, average).await {
+                Err(_e) => warn!("Skip dish '{:?}' as it could not be solved", name),
+                _ => {} // ignored
+            }
+        }
+        Ok(())
+    }
+
+    async fn handle_dish(&self, db_line: &Line, dish: Dish, date: Date, average: u32) -> Result<(), DataError> {
+        let similar_meal_result = self.db.get_similar_meal(&dish.name).await?;
+        let similar_side_result = self.db.get_similar_side(&dish.name).await?;
+        // Case: A similar side and meal could be found. Uncommon case.
+        // Case: Just a meal could be found.
+        if let Some(similar_meal) = similar_meal_result {
+            self.db
+                .update_meal(similar_meal.id, db_line.id, date, &dish.name, &dish.price)
+                .await?;
+        // Case: A similar side could be found
+        } else if let Some(similar_side) = similar_side_result {
+            self.db
+                .update_side(similar_side.id, db_line.id, date, &dish.name, &dish.price)
+                .await?;
+        // Case: No similar meal could be found. Dish needs to be determined
+        } else if dish.price.price_student < (average as f32 * Self::PERCENTAGE) as u32
+            && !dish.name.contains(Self::get_edge_case_meal())
+        {
+            self.db
+                .insert_side(
+                    &dish.name,
+                    dish.meal_type,
+                    &dish.price,
+                    date,
+                    &dish.allergens,
+                    &dish.additives,
+                )
+                .await?;
+        } else {
+            self.db
+                .insert_meal(
+                    &dish.name,
+                    dish.meal_type,
+                    &dish.price,
+                    date,
+                    &dish.allergens,
+                    &dish.additives,
+                )
+                .await?;
+        };
+        Ok(())
+    }
+
+    fn determine_average_price(&self, dishes: Iter<Dish>, len: usize) -> u32 {
+        let mut sum: u32 = 0;
+        for dish in dishes {
+            sum += dish.price.price_student;
+        }
+        sum / len as u32
     }
 }
 
@@ -106,6 +135,21 @@ mod test {
             name: "test_dish".to_string(),
             price: Price {
                 price_student: 0,
+                price_employee: 0,
+                price_guest: 0,
+                price_pupil: 0,
+            },
+            allergens: vec![],
+            additives: vec![],
+            meal_type: MealType::Vegan,
+        }
+    }
+
+    fn get_dish_with_price(price: u32) -> Dish {
+        Dish {
+            name: "test_dish".to_string(),
+            price: Price {
+                price_student: price,
                 price_employee: 0,
                 price_guest: 0,
                 price_pupil: 0,
@@ -156,14 +200,14 @@ mod test {
 
     #[tokio::test]
     async fn resolve_empty_canteen() {
-        let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
+        let resolver = RelationResolver::_new(MealplanManagementDatabaseMock);
         let res = resolver.resolve(get_empty_canteen(), Utc::now().date_naive());
         assert!(res.await.is_ok());
     }
 
     #[tokio::test]
     async fn resolve_canteens() {
-        let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
+        let resolver = RelationResolver::_new(MealplanManagementDatabaseMock);
         let mut rng = rand::thread_rng();
         for canteen in get_canteens(
             rng.gen_range(1..=10),
@@ -175,5 +219,19 @@ mod test {
                 .await
                 .is_ok());
         }
+    }
+
+    #[test]
+    fn test_average_calc() {
+        let resolver = RelationResolver::_new(MealplanManagementDatabaseMock);
+        let prices = vec![300, 455, 205, 660, 220, 880];
+        let mut dishes = Vec::new();
+        for i in 0..6 {
+            dishes.push(get_dish_with_price(prices[i]))
+        }
+        let res = resolver.determine_average_price(dishes.iter(), dishes.len());
+
+        assert!(450 < res);
+        assert!(460 > res);
     }
 }

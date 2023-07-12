@@ -88,17 +88,16 @@ mod test {
     use crate::layer::logic::mealplan_management::test::meal_plan_parser_mock::MealPlanParserMock;
     use crate::layer::logic::mealplan_management::test::mealplan_management_database_mock::MealplanManagementDatabaseMock;
 
+    // Tests seems useless; unless there are testing nothing crashes?
     #[tokio::test]
     async fn valid_start_update_parsing() {
-        let manager = MealPlanManager::new(MealplanManagementDatabaseMock, MealPlanParserMock);
+        let manager = MealPlanManager::_new(MealplanManagementDatabaseMock, MealPlanParserMock);
         manager.start_update_parsing().await;
     }
 
     #[tokio::test]
     async fn valid_start_full_parsing() {
-        let manager = MealPlanManager::new(MealplanManagementDatabaseMock, MealPlanParserMock);
+        let manager = MealPlanManager::_new(MealplanManagementDatabaseMock, MealPlanParserMock);
         manager.start_full_parsing().await;
     }
-
-    //TODO start_resolving test?
 }
