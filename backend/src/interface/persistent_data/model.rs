@@ -44,7 +44,7 @@ pub struct Meal {
     pub last_served: Option<Date>,
     /// The date when the meal will be served next.
     pub next_served: Option<Date>,
-    /// Count how often meal was served in last three months.
+    /// Count how often meal was served in the last three months.
     pub frequency: u32,
     /// Whether this meal is new and was never served before.
     pub new: bool,

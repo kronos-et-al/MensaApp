@@ -139,7 +139,7 @@ struct MealStatistics {
     last_served: Option<Date>,
     /// The date of the next time the meal will be served.
     next_served: Option<Date>,
-    /// Count how often meal was served in last three months.
+    /// Count how often meal was served in the last three months.
     frequency: u32,
     /// Whether this meal is new and was never served before.
     new: bool
