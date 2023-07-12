@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:app/model/api_server/requests/querys.graphql.dart';
 import 'package:app/model/api_server/requests/schema.graphql.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
@@ -20,24 +23,29 @@ import 'package:app/view_model/repository/error_handling/MealPlanException.dart'
 import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 
 import 'package:app/view_model/repository/error_handling/Result.dart';
+import 'package:crypto/crypto.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:convert/convert.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../view_model/repository/interface/IServerAccess.dart';
 import 'requests/mutations.graphql.dart';
 
 class GraphQlServerAccess implements IServerAccess {
   final String _apiKey = const String.fromEnvironment('API_KEY');
-  String currentAuth = "";
-  late GraphQLClient _client;
+  late String _currentAuth;
+  late final GraphQLClient _client;
   final String _clientId;
   final _dateFormat = DateFormat(dateFormatPattern);
 
   GraphQlServerAccess._(this._clientId) {
     _client = GraphQLClient(
-        link: AuthLink(getToken: () => currentAuth)
+        link: AuthLink(getToken: () => _currentAuth)
             .concat(HttpLink(const String.fromEnvironment('API_URL'))),
         cache: GraphQLCache());
+    _authenticate("");
   }
 
   factory GraphQlServerAccess(String clientId) {
@@ -48,7 +56,10 @@ class GraphQlServerAccess implements IServerAccess {
 
   @override
   Future<bool> deleteDownvote(ImageData image) async {
-    // TODO auth
+    var requestName = "removeDownvote";
+    var hash = _generateHashOfParameters(requestName, _serializeUuid(image.id));
+    _authenticate(hash);
+
     final result = await _client.mutate$RemoveDownvote(
         Options$Mutation$RemoveDownvote(
             variables: Variables$Mutation$RemoveDownvote(imageId: image.id)));
@@ -213,6 +224,46 @@ class GraphQlServerAccess implements IServerAccess {
     }
     return _convertCanteen(canteen);
   }
+
+  // --------------- auth ---------------
+
+  void _authenticate(String hash) {
+    var authString = "$_clientId:${_apiKey.substring(0, 10)}:$hash";
+    var bytes = utf8.encode(authString);
+    var base64 = base64Encode(bytes);
+    _currentAuth = "Mensa $base64";
+  }
+
+  String _generateHashOfParameters(String mutationName, List<int> parameterData) {
+    var hash = sha512.convert([
+      ..._serializeString(mutationName),
+      ..._serializeUuid(_clientId),
+      ..._serializeString(_apiKey),
+      ...parameterData
+    ]);
+
+    return base64.encode(hash.bytes);
+  }
+
+  List<int> _serializeString(String string) {
+    return utf8.encode(string);
+  }
+
+  List<int> _serializeInt(int value) {
+    return (ByteData(4)..setUint32(0, value, Endian.little))
+        .buffer
+        .asUint8List()
+        .toList();
+  }
+
+  List<int> _serializeReportReason(Enum$ReportReason reason) {
+    return _serializeString(reason.toString().split('.').last);
+  }
+
+  List<int> _serializeUuid(String uuid) {
+    return Uuid.parse(uuid);
+  }
+
 }
 
 // --------------- utility helper methods ---------------

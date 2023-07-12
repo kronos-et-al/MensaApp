@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
@@ -17,7 +18,8 @@ void main() async {
   final GraphQlServerAccess serverAccess =
       GraphQlServerAccess("1f16dcca-963e-4ceb-a8ca-843a7c9277a5");
 
-  test('auth', () async { // TODO remove test
+  test('auth at server', () async {
+    // TODO remove test
     String token = "";
     final httpLink = HttpLink(const String.fromEnvironment('API_URL'));
     final authLink = AuthLink(getToken: () => token);
@@ -166,9 +168,22 @@ void main() async {
   });
 
   test('get canteen', () async {
-    var canteen = await serverAccess
-        .getDefaultCanteen();
+    var canteen = await serverAccess.getDefaultCanteen();
 
     expect(canteen != null, true);
+  });
+
+  // TODO remove
+  test('transform auth', () async {
+    var clientId = "1d75d380-cf07-4edb-9046-a2d981bc219d";
+    var apiKey = "abc";
+    var hash = "123";
+
+    var authString = "${clientId}:${apiKey.substring(0, 3)}:$hash";
+    var bytes = utf8.encode(authString);
+    var base64 = base64Encode(bytes);
+
+    expect(
+        base64, "MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=");
   });
 }
