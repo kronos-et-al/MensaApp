@@ -1,3 +1,5 @@
+#![warn(missing_docs)]
+
 //! The general structure of the html file is as follows: (// Are added comments)
 //! ```html
 //! //...
@@ -135,10 +137,29 @@ const PARSE_E_MSG: &str = "Error while parsing";
 const SELECTOR_PARSE_E_MSG: &str = "Error while parsing Selector string";
 const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
 
+/// A static class, that transforms html files into datatypes, that can be used for further processing using the [`HTMLParser::transform()`]-function.
 pub struct HTMLParser;
 
 impl HTMLParser {
     /// Transforms an html document into a vector containing tuples of `Date` and `ParseCanteens`
+    ///
+    /// # Arguments
+    ///
+    /// * `html` - The contents of the html file to be parsed
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use crate::mensa_app_backend::layer::data::swka_parser::html_parser::HTMLParser;
+    /// let canteen_data = HTMLParser::transform(include_str!("./tests/test_normal.html"));
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Will return a [`ParseError`], when either one of the following cases occurs (in order of appearance):
+    ///     1. If there is no node in the document, that has a class called [`ROOT_NODE_CLASS`]. This indicates that a wrong html file was passed.
+    ///     2. If the number of dates does not match the number of days for which data exists. This case is more for completeness and should never occur
+    
     pub fn transform(html: &str) -> Result<Vec<(Date, ParseCanteen)>, ParseError> {
         let document = Html::parse_document(html);
         let root_node = Self::get_root_node(&document)?;
