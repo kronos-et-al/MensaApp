@@ -1,13 +1,13 @@
 use sha2::{Digest, Sha512};
 
 use crate::{
-    interface::api_command::{AuthInfo, CommandError},
+    interface::api_command::{CommandError, InnerAuthInfo},
     util::Uuid,
 };
 
 use super::image_command_type::ImageCommandType;
 
-const MEAL_RATING_COMMAND_NAME: &str = "setRating"; // TODO 
+const MEAL_RATING_COMMAND_NAME: &str = "setRating"; // TODO
 
 pub struct Authenticator {
     api_keys: Vec<String>,
@@ -21,17 +21,16 @@ impl Authenticator {
 
     pub fn authn_image_command(
         &self,
-        auth_info: &AuthInfo,
+        auth_info: &InnerAuthInfo,
         image_id: Uuid,
         image_command_type: ImageCommandType,
     ) -> Result<(), CommandError> {
         todo!()
     }
 
-
     pub fn authn_meal_rating_command(
         &self,
-        auth_info: &AuthInfo,
+        auth_info: &InnerAuthInfo,
         meal_id: Uuid,
         rating: u32,
     ) -> Result<(), CommandError> {
@@ -55,14 +54,14 @@ impl Authenticator {
 
     pub fn authn_add_image_command(
         &self,
-        auth_info: &AuthInfo,
+        auth_info: &InnerAuthInfo,
         meal_id: Uuid,
         url: &String,
     ) -> Result<(), CommandError> {
         todo!()
     }
 
-    fn get_api_key(&self, auth_info: &AuthInfo) -> Option<String> {
+    fn get_api_key(&self, auth_info: &InnerAuthInfo) -> Option<String> {
         self.api_keys
             .iter()
             .find(|key| key.starts_with(&auth_info.api_ident))

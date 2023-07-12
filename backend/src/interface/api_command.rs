@@ -1,11 +1,12 @@
 //! This interface allows to execute API commands.
 
-use std::error::Error;
-
 use async_trait::async_trait;
+use std::error::Error;
 use thiserror::Error;
 
 use crate::util::{ReportReason, Uuid};
+
+use super::{image_hoster::ImageHosterError, persistent_data::DataError};
 
 pub type Result<T> = std::result::Result<T, CommandError>;
 
@@ -60,7 +61,28 @@ pub enum CommandError {
     /// Error marking an invalid authentication.
     #[error("invalid authentication information provided")]
     BadAuth,
+    /// Error marking missing authentication.
+    #[error("no authentication information provided")]
+    NoAuth,
     /// Error marking something went wrong internally.
     #[error("internal error ocurred: {0}")]
     InternalError(#[from] Box<dyn Error + Send + Sync>),
+    /// Error marking something went wrong with the data.
+    #[error("Data error occurred")]
+    DataError(DataError),
+    /// Error marking something went wrong with the image hoster.
+    #[error("Image hoster error occurred")]
+    ImageHosterError(ImageHosterError),
+}
+
+impl From<DataError> for CommandError {
+    fn from(error: DataError) -> Self {
+        Self::DataError(error)
+    }
+}
+
+impl From<ImageHosterError> for CommandError {
+    fn from(error: ImageHosterError) -> Self {
+        Self::ImageHosterError(error)
+    }
 }
