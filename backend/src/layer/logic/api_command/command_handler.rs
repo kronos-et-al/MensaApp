@@ -85,7 +85,7 @@ where
         auth_info: AuthInfo,
     ) -> Result<()> {
         if let Some(auth_info) = auth_info {
-            let image_command_type = ImageCommandType::ReportImage;
+            let image_command_type = ImageCommandType::ReportImage(reason);
             self.auth
                 .authn_image_command(&auth_info, image_id, image_command_type)?;
             let info = self.command_data.get_image_info(image_id).await?;

@@ -1,4 +1,7 @@
+
+
 use base64::{engine::general_purpose::STANDARD, Engine};
+
 use sha2::{Digest, Sha512};
 
 use crate::{
@@ -32,7 +35,13 @@ impl Authenticator {
         image_id: Uuid,
         image_command_type: ImageCommandType,
     ) -> Result<()> {
-        let hash = self.calculate_hash(auth_info, &image_command_type.to_string(), &[&image_id])?;
+        let report_reason = if let ImageCommandType::ReportImage(reason) = image_command_type {
+            reason.to_string()
+        } else {
+            String::new()
+        };
+
+        let hash = self.calculate_hash(auth_info, &image_command_type.to_string(), &[&image_id, &report_reason])?;
         let provided_hash = Self::get_provided_hash(auth_info)?;
 
         if hash == provided_hash {
