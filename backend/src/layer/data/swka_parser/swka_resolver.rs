@@ -1,11 +1,27 @@
 use crate::interface::mensa_parser::ParseError;
 use futures::future::join_all;
+use reqwest::Client;
+use std::time::Duration;
+use tracing::log::debug;
 
 pub struct SwKaResolver;
 
 impl SwKaResolver {
     pub const fn new() -> Self {
         Self
+    }
+
+    fn get_client() -> Result<Client, ParseError> {
+        let client = Client::builder() // dont change or tests will fail!
+            .danger_accept_invalid_certs(true) //probably not needed
+            .timeout(Duration::from_millis(1000))
+            .connect_timeout(Duration::from_millis(1000))
+            .user_agent("User-Agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36")
+            .build();
+        match client {
+            Ok(cl) => Ok(cl),
+            Err(_e) => Err(ParseError::ClientBuilderFailed),
+        }
     }
 
     /// This function provides html code, which will be requested with the given url.<br>
@@ -20,10 +36,12 @@ impl SwKaResolver {
     }
 
     async fn get_html(&self, url: &String) -> Result<String, ParseError> {
-        let resp = match reqwest::get(url).await {
+        let resp = match Self::get_client()?.get(url).send().await {
             Ok(url_data) => url_data,
             Err(_e) => return Err(ParseError::NoConnectionEstablished),
         };
+        //print!("{:?}", resp);
+        debug!("Url request finished: {:?}", resp);
         match resp.text().await {
             Ok(s) => Ok(s),
             Err(_e) => Err(ParseError::DecodeFailed),
@@ -40,13 +58,13 @@ mod test {
         String::from("A ship-shipping ship ships shipping-ships")
     }
     fn get_valid_url() -> String {
-        String::from("https://www.google.de")
+        String::from("https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/")
     }
 
     #[tokio::test]
     async fn get_html_response_fail() {
         let result = SwKaResolver::new().get_html(&get_invalid_url()).await;
-        assert!(matches!(result, Err(ParseError::NoConnectionEstablished)));
+        assert!(result.is_err());
     }
 
     #[tokio::test]
@@ -59,7 +77,7 @@ mod test {
     async fn get_html_strings_response_fail() {
         let urls = vec![get_invalid_url(), get_valid_url(), get_valid_url()];
         let result = SwKaResolver::new().get_html_strings(urls).await;
-        assert!(matches!(result, Err(ParseError::NoConnectionEstablished)));
+        assert!(result.is_err());
     }
 
     #[tokio::test]

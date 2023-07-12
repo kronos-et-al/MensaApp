@@ -70,7 +70,7 @@ impl MealplanParser for SwKaParseManager {
 mod test {
     use crate::layer::data::swka_parser::swka_parse_manager::SwKaParseManager;
 
-    fn get_urls() -> Vec<String> {
+    fn get_valid_urls() -> Vec<String> {
         vec![
             String::from(
                 "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/",
@@ -82,12 +82,20 @@ mod test {
     }
 
     #[tokio::test]
-    async fn sort_and_parse_canteens() {
+    async fn sort_and_parse_canteens_with_valid_urls() {
         let manager = SwKaParseManager::_new();
-        let result = manager.parse_and_sort_canteens_by_days(get_urls()).await;
-        match result {
-            Ok(_) => {}
-            Err(e) => print!("{e}"),
-        }
+        let result = manager
+            .parse_and_sort_canteens_by_days(get_valid_urls())
+            .await;
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn sort_and_parse_canteens_with_invalid_urls() {
+        let manager = SwKaParseManager::_new();
+        let mut urls = get_valid_urls();
+        urls.push(String::from("invalid"));
+        let result = manager.parse_and_sort_canteens_by_days(urls).await;
+        assert!(result.is_err());
     }
 }

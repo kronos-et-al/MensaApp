@@ -159,7 +159,7 @@ impl HTMLParser {
     /// Will return a [`ParseError`], when either one of the following cases occurs (in order of appearance):
     ///     1. If there is no node in the document, that has a class called [`ROOT_NODE_CLASS`]. This indicates that a wrong html file was passed.
     ///     2. If the number of dates does not match the number of days for which data exists. This case is more for completeness and should never occur
-    
+
     pub fn transform(html: &str) -> Result<Vec<(Date, ParseCanteen)>, ParseError> {
         let document = Html::parse_document(html);
         let root_node = Self::get_root_node(&document)?;

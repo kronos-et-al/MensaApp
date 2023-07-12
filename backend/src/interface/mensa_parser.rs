@@ -13,6 +13,8 @@ pub enum ParseError {
     NoConnectionEstablished,
     #[error("Some html code couldn't be decoded")]
     DecodeFailed,
+    #[error("The html reqwest client creation failed")]
+    ClientBuilderFailed,
 }
 #[async_trait]
 /// Parser interface. Provides functions which return canteen structs. Canteen structs contain raw data obtained by parsing mealplans.
