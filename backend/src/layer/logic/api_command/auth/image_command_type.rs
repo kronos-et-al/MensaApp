@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 #[derive(Copy, Clone)]
 pub enum ImageCommandType {
     ReportImage,
@@ -7,15 +9,16 @@ pub enum ImageCommandType {
     RemoveDownvote,
 }
 
-impl ToString for ImageCommandType {
-    fn to_string(&self) -> String {
-        match self {
+impl Display for ImageCommandType {
+
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let msg = match self {
             Self::ReportImage => "reportImage",
             Self::AddUpvote => "addUpvote",
             Self::AddDownvote => "addDownvote",
             Self::RemoveUpvote => "removeUpvote",
             Self::RemoveDownvote => "removeDownvote",
-        }
-        .into()
+        };
+        write!(f, "{msg}")
     }
 }

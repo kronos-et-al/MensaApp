@@ -1,7 +1,7 @@
 //! This interface allows to execute API commands.
 
 use async_trait::async_trait;
-use std::error::Error;
+use std::{error::Error, fmt::Display};
 use thiserror::Error;
 
 use crate::util::{ReportReason, Uuid};
@@ -55,12 +55,18 @@ pub struct InnerAuthInfo {
     pub hash: String,
 }
 
+impl Display for InnerAuthInfo {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "client id: `{}`, api identifier: `{}`, hash: `{}`", self.client_id, self.api_ident, self.hash)
+    }
+}
+
 /// Enum describing the possible ways, a command can fail.
 #[derive(Debug, Error)]
 pub enum CommandError {
     /// Error marking an invalid authentication.
-    #[error("invalid authentication information provided: {0:?}")]
-    BadAuth(InnerAuthInfo),
+    #[error("invalid authentication information provided: {0}")]
+    BadAuth(String),
     /// Error marking missing authentication.
     #[error("no authentication information provided")]
     NoAuth,
@@ -68,21 +74,9 @@ pub enum CommandError {
     #[error("internal error ocurred: {0}")]
     InternalError(#[from] Box<dyn Error + Send + Sync>),
     /// Error marking something went wrong with the data.
-    #[error("Data error occurred")]
-    DataError(DataError),
+    #[error("Data error occurred: {0}")]
+    DataError(#[from] DataError),
     /// Error marking something went wrong with the image hoster.
-    #[error("Image hoster error occurred")]
-    ImageHosterError(ImageHosterError),
-}
-
-impl From<DataError> for CommandError {
-    fn from(error: DataError) -> Self {
-        Self::DataError(error)
-    }
-}
-
-impl From<ImageHosterError> for CommandError {
-    fn from(error: ImageHosterError) -> Self {
-        Self::ImageHosterError(error)
-    }
+    #[error("Image hoster error occurred: {0}")]
+    ImageHosterError(#[from] ImageHosterError),
 }

@@ -38,7 +38,7 @@ impl Authenticator {
         if hash == provided_hash {
             Ok(())
         } else {
-            Err(CommandError::BadAuth(auth_info.clone()))
+            Err(CommandError::BadAuth(auth_info.to_string()))
         }
     }
 
@@ -61,7 +61,7 @@ impl Authenticator {
         if hash == provided_hash {
             Ok(())
         } else {
-            Err(CommandError::BadAuth(auth_info.clone()))
+            Err(CommandError::BadAuth(auth_info.to_string()))
         }
     }
 
@@ -80,7 +80,7 @@ impl Authenticator {
         if hash == provided_hash {
             Ok(())
         } else {
-            Err(CommandError::BadAuth(auth_info.clone()))
+            Err(CommandError::BadAuth(auth_info.to_string()))
         }
     }
 
@@ -91,8 +91,7 @@ impl Authenticator {
         params: &[&dyn AsRef<[u8]>],
     ) -> Result<Vec<u8>> {
         let api_key = self
-            .get_api_key(auth_info)
-            .ok_or(CommandError::BadAuth(auth_info.clone()))?;
+            .get_api_key(auth_info)?;
         let mut hasher = Sha512::new()
             .chain_update(request_name)
             .chain_update(auth_info.client_id)
@@ -107,13 +106,13 @@ impl Authenticator {
     fn get_provided_hash(auth_info: &InnerAuthInfo) -> Result<Vec<u8>> {
         STANDARD
             .decode(&auth_info.hash)
-            .map_err(|_| CommandError::BadAuth(auth_info.clone()))
+            .map_err(|_| CommandError::BadAuth(auth_info.to_string()))
     }
 
-    fn get_api_key(&self, auth_info: &InnerAuthInfo) -> Option<String> {
+    fn get_api_key(&self, auth_info: &InnerAuthInfo) -> Result<String> {
         self.api_keys
             .iter()
             .find(|key| key.starts_with(&auth_info.api_ident))
-            .map(Clone::clone)
+            .map(Clone::clone).ok_or(CommandError::BadAuth(format!("no matching api key found for `{}`", auth_info.api_ident)))
     }
 }
