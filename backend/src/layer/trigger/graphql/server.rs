@@ -151,7 +151,6 @@ pub(super) fn construct_schema(
         .data(data_access_box)
         .data(command_box)
         .extension(Tracing)
-        .limit_recursive_depth(10)
         .finish()
 }
 

@@ -277,39 +277,6 @@ async fn test_get_auth_info_null() {
 }
 
 #[tokio::test]
-#[should_panic = "The recursion depth of the query cannot be greater than"]
-async fn test_recursive_panic() {
-    let request = r#"
-    {
-      getCanteens {
-        lines {
-          canteen {
-            lines {
-              canteen {
-                lines {
-                  canteen {
-                    lines {
-                      canteen {
-                        lines {
-                          canteen {
-                            id
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    "#;
-    test_gql_request(request).await;
-}
-
-#[tokio::test]
 async fn test_recursive_line_canteen_ok() {
     let request = r#"
     {
