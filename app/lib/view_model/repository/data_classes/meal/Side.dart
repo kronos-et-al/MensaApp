@@ -25,6 +25,20 @@ class Side {
         _allergens = allergens,
         _additives = additives;
 
+  Side.copy({
+    required Side side,
+    String? id,
+    String? name,
+    FoodType? foodType,
+    Price? price,
+    List<Allergen>? allergens,
+    List<Additive>? additives,
+  })  : _id = id ?? side.id,
+        _name = name ?? side.name,
+        _foodType = foodType ?? side.foodType,
+        _price = price ?? side.price,
+        _allergens = allergens ?? side.allergens,
+        _additives = additives ?? side.additives;
 
   String get id => _id;
 
