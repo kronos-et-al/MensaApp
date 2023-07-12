@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:app/model/api_server/requests/querys.graphql.dart';
 import 'package:app/model/api_server/requests/schema.graphql.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
@@ -22,7 +20,6 @@ import 'package:app/view_model/repository/error_handling/MealPlanException.dart'
 import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 
 import 'package:app/view_model/repository/error_handling/Result.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -147,9 +144,16 @@ class GraphQlServerAccess implements IServerAccess {
       final mealPlan =
           _convertMealPlan(result.parsedData?.getCanteens ?? [], date);
 
-      completeList.addAll(mealPlan);
+      switch (mealPlan) {
+        case Success(value: final mealPlan):
+          {
+            completeList.addAll(mealPlan);
+          }
+        case Failure(exception: _):
+          {}
+      }
     }
-    return Success(completeList); // TODO when return error?
+    return Success(completeList);
   }
 
   @override
@@ -162,12 +166,11 @@ class GraphQlServerAccess implements IServerAccess {
     final mealData = result.parsedData?.getMeal;
     final exception = result.exception;
     if (exception != null) {
-      return Failure(exception);
+      return Failure(NoConnectionException(exception.toString()));
     }
 
     if (mealData == null) {
-      return Failure(NoMealException(// Todo correct exception
-          "Could not request meal from api: ${result.exception}"));
+      return Failure(NoMealException("Could not request meal from api"));
     }
 
     return Success(_convertMeal(mealData));
@@ -188,14 +191,13 @@ class GraphQlServerAccess implements IServerAccess {
 
     final mealPlan = _convertMealPlan(
         [result.parsedData?.getCanteen].nonNulls.toList(), date);
-    return Success(mealPlan);
+    return mealPlan;
   }
 
   static const defaultUuid = "00000000-0000-0000-0000-000000000000";
 
   @override
   Future<Canteen?> getDefaultCanteen() async {
-
     final result = await _client
         .query$GetDefaultCanteen(Options$Query$GetDefaultCanteen());
 
@@ -215,30 +217,32 @@ class GraphQlServerAccess implements IServerAccess {
 
 // --------------- utility helper methods ---------------
 
-List<MealPlan> _convertMealPlan(
-    List<Fragment$mealPlan> mealPlan, DateTime date) {
-  return mealPlan
+Result<List<MealPlan>, MealPlanException> _convertMealPlan(
+    List<Fragment$mealPlan> mealPlans, DateTime date) {
+  return Success(mealPlans
       .expand(
-        (e) => e.lines
+        (mealPlan) => mealPlan.lines
             .asMap()
-            .map((idx, e) => MapEntry(
+            .map((idx, line) => MapEntry(
                   idx,
                   MealPlan(
                     date: date,
                     line: Line(
-                        id: e.id,
-                        name: e.name,
-                        canteen: _convertCanteen(e.canteen),
+                        id: line.id,
+                        name: line.name,
+                        canteen: _convertCanteen(line.canteen),
                         position: idx),
                     // mensa closed when data available but no meals in list
-                    isClosed: e.meals?.isEmpty ?? false,
-                    meals: e.meals?.map((e) => _convertMeal(e)).toList() ?? [],
+                    isClosed: line.meals?.isEmpty ?? false,
+                    // TODO return noDataException if one lines meals are null
+                    meals:
+                        line.meals?.map((e) => _convertMeal(e)).toList() ?? [],
                   ),
                 ))
             .values
             .toList(),
       )
-      .toList();
+      .toList());
 }
 
 Meal _convertMeal(Fragment$mealInfo meal) {
