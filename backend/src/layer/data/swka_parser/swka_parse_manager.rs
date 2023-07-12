@@ -1,6 +1,6 @@
 use crate::interface::mensa_parser::model::ParseCanteen;
-use crate::interface::mensa_parser::MealplanParser;
-use crate::layer::data::swka_parser::html_parser::{HTMLParser, ParseError};
+use crate::interface::mensa_parser::{MealplanParser, ParseError};
+use crate::layer::data::swka_parser::html_parser::HTMLParser;
 use crate::layer::data::swka_parser::swka_link_creator::SwKaLinkCreator;
 use crate::layer::data::swka_parser::swka_resolver::SwKaResolver;
 use crate::util::Date;

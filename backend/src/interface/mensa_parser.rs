@@ -1,10 +1,19 @@
 //! This interface allows the reading of menus from an external source.
 pub mod model;
 
-use crate::layer::data::swka_parser::html_parser::ParseError;
 use crate::{interface::mensa_parser::model::ParseCanteen, util::Date};
 use async_trait::async_trait;
+use thiserror::Error;
 
+#[derive(Debug, Error)]
+pub enum ParseError {
+    #[error("The node was not found")]
+    InvalidHtmlDocument,
+    #[error("No connection could be established")]
+    NoConnectionEstablished,
+    #[error("Some html code couldn't be decoded")]
+    DecodeFailed,
+}
 #[async_trait]
 /// Parser interface. Provides functions which return canteen structs. Canteen structs contain raw data obtained by parsing mealplans.
 pub trait MealplanParser {

@@ -82,9 +82,7 @@
 //! //...
 //! ```
 
-use thiserror::Error;
-
-use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
+use crate::interface::mensa_parser::{ParseError, model::{Dish, ParseCanteen, ParseLine}};
 use crate::util::{Additive, Allergen, Date, MealType, Price};
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
@@ -134,15 +132,6 @@ const PARSE_E_MSG: &str = "Error while parsing";
 const SELECTOR_PARSE_E_MSG: &str = "Error while parsing Selector string";
 const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
 
-#[derive(Debug, Error)]
-pub enum ParseError {
-    #[error("The node was not found")]
-    InvalidHtmlDocument,
-    #[error("No connection could be established")]
-    NoConnectionEstablished,
-    #[error("Some html code couldn't be decoded")]
-    DecodeFailed,
-}
 
 pub struct HTMLParser;
 

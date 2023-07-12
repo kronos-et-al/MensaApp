@@ -1,4 +1,4 @@
-use crate::layer::data::swka_parser::html_parser::ParseError;
+use crate::interface::mensa_parser::ParseError;
 use futures::future::join_all;
 
 pub struct SwKaResolver;
@@ -33,7 +33,7 @@ impl SwKaResolver {
 
 #[cfg(test)]
 mod test {
-    use crate::layer::data::swka_parser::html_parser::ParseError;
+    use crate::interface::mensa_parser::ParseError;
     use crate::layer::data::swka_parser::swka_resolver::SwKaResolver;
 
     fn get_invalid_url() -> String {
