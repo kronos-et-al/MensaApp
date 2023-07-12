@@ -44,8 +44,10 @@ pub struct Meal {
     pub last_served: Option<Date>,
     /// The date when the meal will be served next.
     pub next_served: Option<Date>,
-    /// Relative frequency of the meal in the mealplan.
-    pub relative_frequency: f32,
+    /// Count how often meal was served in the last three months.
+    pub frequency: u32,
+    /// Whether this meal is new and was never served before.
+    pub new: bool,
     /// Amount of ratings for the meal
     pub rating_count: u32,
     /// The average rating of the meal
