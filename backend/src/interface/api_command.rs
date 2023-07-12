@@ -44,7 +44,7 @@ pub trait Command {
 pub type AuthInfo = Option<InnerAuthInfo>;
 
 /// Structure containing all information necessary for authenticating a client.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct InnerAuthInfo {
     /// Id of client, chosen at random.
     pub client_id: Uuid,
@@ -59,8 +59,8 @@ pub struct InnerAuthInfo {
 #[derive(Debug, Error)]
 pub enum CommandError {
     /// Error marking an invalid authentication.
-    #[error("invalid authentication information provided")]
-    BadAuth,
+    #[error("invalid authentication information provided: {0:?}")]
+    BadAuth(InnerAuthInfo),
     /// Error marking missing authentication.
     #[error("no authentication information provided")]
     NoAuth,

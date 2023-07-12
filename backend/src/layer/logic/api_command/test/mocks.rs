@@ -3,11 +3,15 @@
 use async_trait::async_trait;
 
 use crate::{
-    interface::{persistent_data::{
-        model::{ApiKey, ImageInfo},
-        CommandDataAccess, Result as DataResult,
-    }, image_hoster::{ImageHoster, model::ImageMetaData, Result as ImageResult}, admin_notification::{AdminNotification, ImageReportInfo}},
-    util::{ReportReason, Uuid, Date},
+    interface::{
+        admin_notification::{AdminNotification, ImageReportInfo},
+        image_hoster::{model::ImageMetaData, ImageHoster, Result as ImageResult},
+        persistent_data::{
+            model::{ApiKey, ImageInfo},
+            CommandDataAccess, Result as DataResult,
+        },
+    },
+    util::{Date, ReportReason, Uuid},
 };
 
 pub struct CommandDatabaseMock;
@@ -34,7 +38,12 @@ impl CommandDataAccess for CommandDatabaseMock {
     }
 
     /// Saves an image report
-    async fn add_report(&self, _image_id: Uuid, _client_id: Uuid, _reason: ReportReason) -> DataResult<()> {
+    async fn add_report(
+        &self,
+        _image_id: Uuid,
+        _client_id: Uuid,
+        _reason: ReportReason,
+    ) -> DataResult<()> {
         Ok(())
     }
 
@@ -59,7 +68,8 @@ impl CommandDataAccess for CommandDatabaseMock {
     }
 
     /// Adds an image link to the database. The image will be related to the given meal.
-    async fn link_image(&self, 
+    async fn link_image(
+        &self,
         _user_id: Uuid,
         _meal_id: Uuid,
         _image_hoster_id: String,
@@ -74,7 +84,7 @@ impl CommandDataAccess for CommandDatabaseMock {
     }
 
     /// Loads all api_keys from the database.
-    async fn get_api_keys(&self, ) -> DataResult<Vec<ApiKey>> {
+    async fn get_api_keys(&self) -> DataResult<Vec<ApiKey>> {
         let mut keys = Vec::new();
         for i in 2..10 {
             let key = ApiKey {
@@ -86,7 +96,6 @@ impl CommandDataAccess for CommandDatabaseMock {
         Ok(keys)
     }
 }
-
 
 pub struct CommandImageHosterMock;
 
@@ -116,7 +125,5 @@ pub struct CommandAdminNotificationMock;
 #[async_trait]
 impl AdminNotification for CommandAdminNotificationMock {
     /// Notifies an administrator about a newly reported image and the response automatically taken.
-    async fn notify_admin_image_report(&self, _info: ImageReportInfo) {
-        
-    }
+    async fn notify_admin_image_report(&self, _info: ImageReportInfo) {}
 }
