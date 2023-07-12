@@ -1,6 +1,6 @@
 use crate::interface::mealplan_management::MensaParseScheduling;
 use crate::interface::mensa_parser::model::ParseCanteen;
-use crate::interface::mensa_parser::MealplanParser;
+use crate::interface::mensa_parser::{MealplanParser, ParseError};
 use crate::interface::persistent_data::MealplanManagementDataAccess;
 use crate::layer::logic::mealplan_management::relation_resolver::RelationResolver;
 use crate::layer::logic::mealplan_management::util::{
@@ -9,6 +9,7 @@ use crate::layer::logic::mealplan_management::util::{
 use crate::util::Date;
 use async_trait::async_trait;
 use chrono::Utc;
+use tracing::log::warn;
 
 pub struct MealPlanManager<Parser, DataAccess>
 where
@@ -55,8 +56,16 @@ where
     /// Each successful resolving process is also logged.
     async fn start_update_parsing(&self) {
         let today = Utc::now().date_naive();
-        self.start_resolving(self.parser.parse(today).await, today)
-            .await;
+        match self.parser.parse(today).await {
+            Ok(parse_canteens) => {
+                self.start_resolving(parse_canteens, today)
+                    .await;
+            }
+            Err(error) => {
+                warn!("canteens parsed with errors: {error}");
+            }
+        }
+
     }
 
     /// Similar to `start_update_parsing` this method starts the parsing procedure for all meal plans **for the next four weeks**.<br>
@@ -64,10 +73,17 @@ where
     /// If during resolving an error occurs, the resolver stops and a log will be displayed.<br>
     /// Each successful resolving process is also logged.
     async fn start_full_parsing(&self) {
-        let parse_tuples = self.parser.parse_all().await;
-        for (date, parse_canteens) in parse_tuples {
-            self.start_resolving(parse_canteens, date).await;
+        match self.parser.parse_all().await {
+            Ok(parse_tuples) => {
+                for (date, parse_canteens) in parse_tuples {
+                    self.start_resolving(parse_canteens, date).await;
+                }
+            }
+            Err(error) => {
+                warn!("canteens parsed with errors: {error}");
+            }
         }
+
     }
 }
 
