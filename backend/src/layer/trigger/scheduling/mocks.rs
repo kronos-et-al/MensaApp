@@ -16,14 +16,22 @@ pub struct MensaParseMock {
 }
 
 impl MensaParseMock {
+    #[must_use]
     pub fn get_update_calls(&self) -> u32 {
-        *self.update_calls.lock().unwrap()
+        *self
+            .update_calls
+            .lock()
+            .expect("failed to lock mutex for `update_calls` counter")
     }
+
+    #[must_use]
     pub fn get_full_calls(&self) -> u32 {
-        *self.full_calls.lock().unwrap()
+        *self
+            .full_calls
+            .lock()
+            .expect("failed to lock mutex for `full_calls` counter")
     }
 }
-
 
 #[async_trait]
 impl MensaParseScheduling for MensaParseMock {
@@ -31,7 +39,10 @@ impl MensaParseScheduling for MensaParseMock {
     /// Only parse meals of the current date.
     async fn start_update_parsing(&self) {
         info!("start_update_parsing");
-        *self.update_calls.lock().unwrap() += 1;
+        *self
+            .update_calls
+            .lock()
+            .expect("failed to lock mutex for `update_calls` counter") += 1;
 
         return;
     }
@@ -40,7 +51,10 @@ impl MensaParseScheduling for MensaParseMock {
     /// Only parse meals for the next four weeks.
     async fn start_full_parsing(&self) {
         info!("start_full_parsing");
-        *self.full_calls.lock().unwrap() += 1;
+        *self
+            .full_calls
+            .lock()
+            .expect("failed to lock mutex for `full_calls` counter") += 1;
         return;
     }
 }
@@ -51,8 +65,12 @@ pub struct ImageReviewMock {
 }
 
 impl ImageReviewMock {
+    #[must_use]
     pub fn get_calls(&self) -> u32 {
-        *self.calls.lock().unwrap()
+        *self
+            .calls
+            .lock()
+            .expect("failed to lock mutex for `calls` counter")
     }
 }
 
@@ -61,7 +79,10 @@ impl ImageReviewScheduling for ImageReviewMock {
     /// Start the image review process.
     async fn start_image_review(&self) {
         info!("start_image_review");
-        *self.calls.lock().unwrap() += 1;
+        *self
+            .calls
+            .lock()
+            .expect("failed to lock mutex for `calls` counter") += 1;
         return;
     }
 }

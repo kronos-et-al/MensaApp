@@ -34,7 +34,6 @@ pub struct Scheduler {
 }
 
 impl Scheduler {
-    // TODO error handeling
     /// Creates a new scheduler with time plans specified in `info` and actions specified in the `scheduling`s.
     pub async fn new(
         info: ScheduleInfo,
@@ -101,8 +100,15 @@ impl Scheduler {
     }
 
     /// Starts the scheduler. It runs in the background until it is stopped with [`Self::shutdown()`].
+    ///
+    /// # Panics
+    /// Panics if called when already running or stoppen.
     pub async fn start(&mut self) {
-        assert_eq!(self.state, State::Created, "scheduler should only be started once");
+        assert_eq!(
+            self.state,
+            State::Created,
+            "scheduler should only be started once"
+        );
         self.scheduler
             .start()
             .await
@@ -112,6 +118,9 @@ impl Scheduler {
     }
 
     /// Stops the scheduler.
+    ///
+    /// # Panics
+    /// Panics if called when not running.
     pub async fn shutdown(&mut self) {
         assert_eq!(
             self.state,
