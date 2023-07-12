@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::Instant};
 
 use crate::interface::{
     image_review::ImageReviewScheduling, mealplan_management::MensaParseScheduling,
@@ -6,7 +6,7 @@ use crate::interface::{
 
 use tokio::sync::Notify;
 use tokio_cron_scheduler::{Job, JobScheduler};
-use tracing::info;
+use tracing::{info, info_span, Instrument};
 
 /// Structure containing [cron](https://cron.help/)-like schedules for running actions regularly.
 ///
@@ -45,15 +45,20 @@ impl Scheduler {
             .expect("cannot initialize scheduler");
 
         // === image review ===
+
         let image_review = Arc::new(image_scheduling);
-        // TODO add tracing spans
 
         let image_review_job =
             Job::new_async(info.image_review_schedule.as_ref(), move |_, _| {
                 let image_review = image_review.clone();
                 Box::pin(async move {
+                    info!("Started image review.");
+                    let start = Instant::now();
+
                     image_review.start_image_review().await;
-                })
+
+                    info!("Finished image review in {:?}.", start.elapsed());
+                }.instrument(info_span!("image_review")))
             })
             .expect("could not create schedule for image reviewing, you should also specify seconds in your cron expression");
 
@@ -63,14 +68,24 @@ impl Scheduler {
             .expect("could not add job for image reviewing to scheduler");
 
         // === mensa parsing ===
+
         let mensa_parse = Arc::new(parse_scheduling);
+
         // mensa update parsing
         let mensa_parse_update = mensa_parse.clone();
         let update_parse_job = Job::new_async(info.update_parse_schedule.as_ref(), move |_, _| {
             let mensa_parse = mensa_parse_update.clone();
-            Box::pin(async move {
-                mensa_parse.start_update_parsing().await;
-            })
+            Box::pin(
+                async move {
+                    info!("Started mensa update parsing.");
+                    let start: Instant = Instant::now();
+
+                    mensa_parse.start_update_parsing().await;
+
+                    info!("Finished mensa update parsing in {:?}.", start.elapsed());
+                }
+                .instrument(info_span!("update_parsing")),
+            )
         })
         .expect("could not create schedule for image reviewing");
 
@@ -82,9 +97,17 @@ impl Scheduler {
         // mensa full parsing
         let full_parse_job = Job::new_async(info.full_parse_schedule.as_ref(), move |_, _| {
             let mensa_parse = mensa_parse.clone();
-            Box::pin(async move {
-                mensa_parse.start_full_parsing().await;
-            })
+            Box::pin(
+                async move {
+                    info!("Started mensa full parsing.");
+                    let start: Instant = Instant::now();
+
+                    mensa_parse.start_full_parsing().await;
+
+                    info!("Finished mensa full parsing in {:?}.", start.elapsed());
+                }
+                .instrument(info_span!("full_parsing")),
+            )
         })
         .expect("could not create schedule for image reviewing");
 
@@ -155,7 +178,6 @@ mod tests {
 
     use super::*;
     use tracing::Level;
-
     #[tokio::test]
     async fn test_scheduling() {
         let subscriber = tracing_subscriber::FmtSubscriber::builder()

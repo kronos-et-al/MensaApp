@@ -3,7 +3,6 @@
 use std::sync::{Arc, Mutex};
 
 use async_trait::async_trait;
-use tracing::info;
 
 use crate::interface::{
     image_review::ImageReviewScheduling, mealplan_management::MensaParseScheduling,
@@ -38,7 +37,7 @@ impl MensaParseScheduling for MensaParseMock {
     /// Initiate the parsing procedure of the canteen-website.
     /// Only parse meals of the current date.
     async fn start_update_parsing(&self) {
-        info!("start_update_parsing");
+        // debug!("start_update_parsing");
         *self
             .update_calls
             .lock()
@@ -50,7 +49,7 @@ impl MensaParseScheduling for MensaParseMock {
     /// Initiate the parsing procedure of the canteen-website.
     /// Only parse meals for the next four weeks.
     async fn start_full_parsing(&self) {
-        info!("start_full_parsing");
+        // debug!("start_full_parsing");
         *self
             .full_calls
             .lock()
@@ -78,7 +77,7 @@ impl ImageReviewMock {
 impl ImageReviewScheduling for ImageReviewMock {
     /// Start the image review process.
     async fn start_image_review(&self) {
-        info!("start_image_review");
+        // debug!("start_image_review");
         *self
             .calls
             .lock()
