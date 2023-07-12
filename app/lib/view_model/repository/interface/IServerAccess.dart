@@ -1,4 +1,5 @@
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
+import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
 
 import '../data_classes/meal/ImageData.dart';
@@ -22,7 +23,7 @@ abstract class IServerAccess {
   /// This method returns the meal with the committed id.
   /// @param id The id of the meal
   /// @return The meal with the committed id or an error
-  Future<Result<Meal, Exception>> getMealFromId(String id);
+  Future<Result<Meal, Exception>> getMeal(Meal meal, Line line, DateTime date);
 
   /// This method updates the rating of the committed meal on the server.
   /// @param rating The new rating of the meal
