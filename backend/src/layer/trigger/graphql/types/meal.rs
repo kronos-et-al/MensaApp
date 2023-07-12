@@ -142,7 +142,7 @@ struct MealStatistics {
     /// Count how often meal was served in the last three months.
     frequency: u32,
     /// Whether this meal is new and was never served before.
-    new: bool
+    new: bool,
 }
 
 impl From<model::Meal> for Meal {
