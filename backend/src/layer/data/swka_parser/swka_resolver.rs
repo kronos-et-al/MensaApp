@@ -1,5 +1,5 @@
-use futures::future::join_all;
 use crate::layer::data::swka_parser::html_parser::ParseError;
+use futures::future::join_all;
 
 pub struct SwKaResolver;
 
@@ -19,15 +19,14 @@ impl SwKaResolver {
             .collect() // TODO hat happens when only some requests fail?
     }
 
-    
     async fn get_html(&self, url: &String) -> Result<String, ParseError> {
         let resp = match reqwest::get(url).await {
             Ok(url_data) => url_data,
-            Err(e) => return Err(ParseError::NoConnectionEstablished)
+            Err(_e) => return Err(ParseError::NoConnectionEstablished),
         };
         match resp.text().await {
             Ok(s) => Ok(s),
-            Err(_e) => Err(ParseError::DecodeFailed)
+            Err(_e) => Err(ParseError::DecodeFailed),
         }
     }
 }
@@ -37,8 +36,12 @@ mod test {
     use crate::layer::data::swka_parser::html_parser::ParseError;
     use crate::layer::data::swka_parser::swka_resolver::SwKaResolver;
 
-    fn get_invalid_url() -> String { String::from("A ship-shipping ship ships shipping-ships") }
-    fn get_valid_url() -> String { String::from("https://www.google.de") }
+    fn get_invalid_url() -> String {
+        String::from("A ship-shipping ship ships shipping-ships")
+    }
+    fn get_valid_url() -> String {
+        String::from("https://www.google.de")
+    }
 
     #[tokio::test]
     async fn get_html_response_fail() {
@@ -65,6 +68,4 @@ mod test {
         let result = SwKaResolver::new().get_html_strings(urls).await;
         assert!(result.is_ok());
     }
-
-
 }

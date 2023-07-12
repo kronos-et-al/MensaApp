@@ -4,7 +4,6 @@ use std::fmt::Display;
 
 use crate::util::{Additive, Allergen, MealType, Price};
 
-
 /// Canteen-Struct containing all mealplan information of an canteen. Contains raw data.
 #[derive(Debug)]
 pub struct ParseCanteen {
@@ -83,12 +82,7 @@ impl Display for Dish {
         write!(
             f,
             "{}\n{}\n{}{}{} Environment score: {}\n",
-            self.name,
-            self.price,
-            allergens,
-            additives,
-            self.meal_type,
-            self.env_score
+            self.name, self.price, allergens, additives, self.meal_type, self.env_score
         )
     }
 }

@@ -2,7 +2,7 @@
 //!
 //! For a complete list and explanations you can see [here](https://www.sw-ka.de/media/?file=4458listeallergesetzlichausweisungspflichtigenzusatzstoffeundallergenefuerwebsite160218.pdf&download).
 
-use std::{fmt::Display};
+use std::fmt::Display;
 
 use async_graphql::Enum;
 
@@ -112,7 +112,6 @@ impl Allergen {
             Self::Gl => "With gelatine",
         }
     }
-
 
     #[must_use]
     pub fn parse(s: &str) -> Option<Self> {
