@@ -239,8 +239,11 @@ type MealStatistics {
   # The date of the next time the meal will be served.
   nextServed: NaiveDate
 
-  # The relative frequency with which the meal is offered.
-  relativeFrequency: Float!
+  # Count how often meal was served in last three months.
+  frequency: Int!
+
+  # Whether this meal is new and was never served before.
+  new: Boolean!
 }
 
 # This enum lists all the types a meal can be of.

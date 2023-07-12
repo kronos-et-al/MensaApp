@@ -52,7 +52,8 @@ fragment mealInfo on Meal {
     statistics {
         lastServed
         nextServed
-        relativeFrequency
+        frequency
+        new
     }
     ratings {
         averageRating

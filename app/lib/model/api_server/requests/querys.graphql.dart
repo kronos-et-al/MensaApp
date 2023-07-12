@@ -1304,7 +1304,14 @@ const fragmentDefinitionmealInfo = FragmentDefinitionNode(
           selectionSet: null,
         ),
         FieldNode(
-          name: NameNode(value: 'relativeFrequency'),
+          name: NameNode(value: 'frequency'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'new'),
           alias: null,
           arguments: [],
           directives: [],
@@ -1541,19 +1548,22 @@ class Fragment$mealInfo$statistics {
   Fragment$mealInfo$statistics({
     this.lastServed,
     this.nextServed,
-    required this.relativeFrequency,
+    required this.frequency,
+    required this.$new,
     this.$__typename = 'MealStatistics',
   });
 
   factory Fragment$mealInfo$statistics.fromJson(Map<String, dynamic> json) {
     final l$lastServed = json['lastServed'];
     final l$nextServed = json['nextServed'];
-    final l$relativeFrequency = json['relativeFrequency'];
+    final l$frequency = json['frequency'];
+    final l$$new = json['new'];
     final l$$__typename = json['__typename'];
     return Fragment$mealInfo$statistics(
       lastServed: (l$lastServed as String?),
       nextServed: (l$nextServed as String?),
-      relativeFrequency: (l$relativeFrequency as num).toDouble(),
+      frequency: (l$frequency as int),
+      $new: (l$$new as bool),
       $__typename: (l$$__typename as String),
     );
   }
@@ -1562,7 +1572,9 @@ class Fragment$mealInfo$statistics {
 
   final String? nextServed;
 
-  final double relativeFrequency;
+  final int frequency;
+
+  final bool $new;
 
   final String $__typename;
 
@@ -1572,8 +1584,10 @@ class Fragment$mealInfo$statistics {
     _resultData['lastServed'] = l$lastServed;
     final l$nextServed = nextServed;
     _resultData['nextServed'] = l$nextServed;
-    final l$relativeFrequency = relativeFrequency;
-    _resultData['relativeFrequency'] = l$relativeFrequency;
+    final l$frequency = frequency;
+    _resultData['frequency'] = l$frequency;
+    final l$$new = $new;
+    _resultData['new'] = l$$new;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -1583,12 +1597,14 @@ class Fragment$mealInfo$statistics {
   int get hashCode {
     final l$lastServed = lastServed;
     final l$nextServed = nextServed;
-    final l$relativeFrequency = relativeFrequency;
+    final l$frequency = frequency;
+    final l$$new = $new;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$lastServed,
       l$nextServed,
-      l$relativeFrequency,
+      l$frequency,
+      l$$new,
       l$$__typename,
     ]);
   }
@@ -1612,9 +1628,14 @@ class Fragment$mealInfo$statistics {
     if (l$nextServed != lOther$nextServed) {
       return false;
     }
-    final l$relativeFrequency = relativeFrequency;
-    final lOther$relativeFrequency = other.relativeFrequency;
-    if (l$relativeFrequency != lOther$relativeFrequency) {
+    final l$frequency = frequency;
+    final lOther$frequency = other.frequency;
+    if (l$frequency != lOther$frequency) {
+      return false;
+    }
+    final l$$new = $new;
+    final lOther$$new = other.$new;
+    if (l$$new != lOther$$new) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -1647,7 +1668,8 @@ abstract class CopyWith$Fragment$mealInfo$statistics<TRes> {
   TRes call({
     String? lastServed,
     String? nextServed,
-    double? relativeFrequency,
+    int? frequency,
+    bool? $new,
     String? $__typename,
   });
 }
@@ -1668,7 +1690,8 @@ class _CopyWithImpl$Fragment$mealInfo$statistics<TRes>
   TRes call({
     Object? lastServed = _undefined,
     Object? nextServed = _undefined,
-    Object? relativeFrequency = _undefined,
+    Object? frequency = _undefined,
+    Object? $new = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Fragment$mealInfo$statistics(
@@ -1678,10 +1701,12 @@ class _CopyWithImpl$Fragment$mealInfo$statistics<TRes>
         nextServed: nextServed == _undefined
             ? _instance.nextServed
             : (nextServed as String?),
-        relativeFrequency:
-            relativeFrequency == _undefined || relativeFrequency == null
-                ? _instance.relativeFrequency
-                : (relativeFrequency as double),
+        frequency: frequency == _undefined || frequency == null
+            ? _instance.frequency
+            : (frequency as int),
+        $new: $new == _undefined || $new == null
+            ? _instance.$new
+            : ($new as bool),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -1697,7 +1722,8 @@ class _CopyWithStubImpl$Fragment$mealInfo$statistics<TRes>
   call({
     String? lastServed,
     String? nextServed,
-    double? relativeFrequency,
+    int? frequency,
+    bool? $new,
     String? $__typename,
   }) =>
       _res;

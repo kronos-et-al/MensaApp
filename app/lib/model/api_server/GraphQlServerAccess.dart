@@ -258,15 +258,22 @@ Meal _convertMeal(Fragment$mealInfo meal) {
     numberOfRatings: meal.ratings.ratingsCount,
     lastServed: _convertDate(meal.statistics.lastServed),
     nextServed: _convertDate(meal.statistics.nextServed),
-    relativeFrequency: _specifyFrequency(meal.statistics.relativeFrequency),
+    relativeFrequency: _specifyFrequency(meal.statistics),
     images: meal.images.map((e) => _convertImage(e)).toList(),
     sides: meal.sides.map((e) => _convertSide(e)).toList(),
   );
 }
 
-Frequency _specifyFrequency(double frequency) {
-  // TODO
-  return Frequency.normal;
+const int _rareMealLimit = 2;
+
+Frequency _specifyFrequency(Fragment$mealInfo$statistics statistics) {
+  if (statistics.$new) {
+    return Frequency.newMeal;
+  } else if (statistics.frequency <= _rareMealLimit) {
+    return Frequency.rare;
+  } else {
+    return Frequency.normal;
+  }
 }
 
 DateTime? _convertDate(String? date) {
