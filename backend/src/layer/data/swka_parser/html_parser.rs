@@ -386,6 +386,14 @@ mod tests {
     };
 
     #[tokio::test]
+    async fn test_1() {
+        test_html(
+            "./tests/test_1.html",
+            include_str!("./tests/test_1.html"),
+        );
+    }
+
+    #[tokio::test]
     async fn test_normal() {
         test_html(
             "./tests/test_normal.html",
