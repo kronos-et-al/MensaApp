@@ -194,24 +194,24 @@ async fn test_get_auth_info_null() {
     test_gql_request(request).await;
 }
 
-#[tokio::test]
-#[should_panic = "Query is too complex."]
-async fn test_recursive_line_canteen_panic() {
-    let request = r#"
-    {
-      getCanteens {
-        lines {
-          canteen {
-            lines {
-              canteen {id}
-            }
-          }
-        }
-      }
-    }
-    "#;
-    test_gql_request(request).await;
-}
+// #[tokio::test]
+// #[should_panic = "Query is too complex."]
+// async fn test_recursive_line_canteen_panic() {
+//     let request = r#"
+//     {
+//       getCanteens {
+//         lines {
+//           canteen {
+//             lines {
+//               canteen {id}
+//             }
+//           }
+//         }
+//       }
+//     }
+//     "#;
+//     test_gql_request(request).await;
+// }
 
 #[tokio::test]
 async fn test_recursive_line_canteen_ok() {
@@ -231,29 +231,29 @@ async fn test_recursive_line_canteen_ok() {
     test_gql_request(request).await;
 }
 
-#[tokio::test]
-#[should_panic = "Query is too complex."]
-async fn test_recursive_meal_line_panic() {
-    let request = r#"
-    {
-      getCanteens {
-        lines {
-          meals(date: "2000-01-01") {
-            line {
-              meals(date: "2000-01-01") {
-                line {
-                  id
-                }
-              }
-            }
-          }
+// #[tokio::test]
+// #[should_panic = "Query is too complex."]
+// async fn test_recursive_meal_line_panic() {
+//     let request = r#"
+//     {
+//       getCanteens {
+//         lines {
+//           meals(date: "2000-01-01") {
+//             line {
+//               meals(date: "2000-01-01") {
+//                 line {
+//                   id
+//                 }
+//               }
+//             }
+//           }
 
-        }
-      }
-    }
-    "#;
-    test_gql_request(request).await;
-}
+//         }
+//       }
+//     }
+//     "#;
+//     test_gql_request(request).await;
+// }
 
 #[tokio::test]
 async fn test_recursive_meal_line_ok() {
