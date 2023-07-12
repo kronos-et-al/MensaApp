@@ -82,7 +82,10 @@
 //! //...
 //! ```
 
-use crate::interface::mensa_parser::{ParseError, model::{Dish, ParseCanteen, ParseLine}};
+use crate::interface::mensa_parser::{
+    model::{Dish, ParseCanteen, ParseLine},
+    ParseError,
+};
 use crate::util::{Additive, Allergen, Date, MealType, Price};
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
@@ -131,7 +134,6 @@ const ADDITIVE_REGEX: &str = r"[0-9]{1,2}";
 const PARSE_E_MSG: &str = "Error while parsing";
 const SELECTOR_PARSE_E_MSG: &str = "Error while parsing Selector string";
 const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
-
 
 pub struct HTMLParser;
 
@@ -376,10 +378,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_1() {
-        test_html(
-            "./tests/test_1.html",
-            include_str!("./tests/test_1.html"),
-        );
+        test_html("./tests/test_1.html", include_str!("./tests/test_1.html"));
     }
 
     #[tokio::test]
