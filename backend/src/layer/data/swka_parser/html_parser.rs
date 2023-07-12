@@ -138,6 +138,10 @@ const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
 pub enum ParseError {
     #[error("The node was not found")]
     InvalidHtmlDocument,
+    #[error("No connection could be established")]
+    NoConnectionEstablished,
+    #[error("Some html code couldn't be decoded")]
+    DecodeFailed,
 }
 
 pub struct HTMLParser;
