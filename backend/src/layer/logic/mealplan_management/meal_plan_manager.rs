@@ -1,15 +1,12 @@
 use crate::interface::mealplan_management::MensaParseScheduling;
 use crate::interface::mensa_parser::model::ParseCanteen;
-use crate::interface::mensa_parser::{MealplanParser, ParseError};
+use crate::interface::mensa_parser::MealplanParser;
 use crate::interface::persistent_data::MealplanManagementDataAccess;
 use crate::layer::logic::mealplan_management::relation_resolver::RelationResolver;
-use crate::layer::logic::mealplan_management::util::{
-    error_canteen_resolved, trace_canteen_resolved,
-};
 use crate::util::Date;
 use async_trait::async_trait;
 use chrono::Utc;
-use tracing::log::warn;
+use tracing::log::{debug, warn};
 
 pub struct MealPlanManager<Parser, DataAccess>
 where
@@ -34,10 +31,10 @@ where
 
     async fn start_resolving(&self, parse_canteens: Vec<ParseCanteen>, date: Date) {
         for parse_canteen in parse_canteens {
-            let name = parse_canteen.name.clone();
+            let name = &parse_canteen.name.clone();
             match self.resolver.resolve(parse_canteen, date).await {
-                Ok(_canteen) => trace_canteen_resolved(&name),
-                Err(e) => error_canteen_resolved(&name, &e),
+                Ok(_canteen) => debug!("resolved canteen '{name}' with no errors"),
+                Err(error) => warn!("resolved canteen '{name}' with errors: {error}"),
             }
         }
     }
