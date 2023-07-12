@@ -51,7 +51,6 @@ impl SwKaResolver {
 
 #[cfg(test)]
 mod test {
-    use crate::interface::mensa_parser::ParseError;
     use crate::layer::data::swka_parser::swka_resolver::SwKaResolver;
 
     fn get_invalid_url() -> String {

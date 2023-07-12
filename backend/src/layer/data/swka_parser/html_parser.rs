@@ -255,7 +255,7 @@ impl HTMLParser {
         root_node
             .select(&selector)
             .next()
-            .map_or_else(std::vec::Vec::new, |date_node| {
+            .map_or_else(Vec::new, |date_node| {
                 let selector = Selector::parse(DAY_DATE_NODE_CLASS).expect(SELECTOR_PARSE_E_MSG);
                 let mut dates = Vec::new();
                 for element in date_node.select(&selector) {
@@ -333,7 +333,7 @@ impl HTMLParser {
         dish_node
             .select(&selector)
             .next()
-            .map_or_else(std::vec::Vec::new, |allergens_node| {
+            .map_or_else(Vec::new, |allergens_node| {
                 let allergens_raw = allergens_node.inner_html();
                 let regex = Regex::new(ALLERGEN_REGEX).expect(REGEX_PARSE_E_MSG);
                 regex
@@ -348,7 +348,7 @@ impl HTMLParser {
         dish_node
             .select(&selector)
             .next()
-            .map_or_else(std::vec::Vec::new, |additives_node| {
+            .map_or_else(Vec::new, |additives_node| {
                 let additives_raw = additives_node.inner_html();
                 let regex = Regex::new(ADDITIVE_REGEX).expect(REGEX_PARSE_E_MSG);
                 regex
