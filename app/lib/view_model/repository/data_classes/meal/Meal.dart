@@ -24,6 +24,7 @@ class Meal {
   final DateTime? _nextServed;
   final Frequency? _relativeFrequency;
   final List<ImageData>? _images;
+  final int? _numberOfOccurance;
   bool? _isFavorite;
 
   /// This constructor creates a meal with the committed values.
@@ -58,6 +59,7 @@ class Meal {
     DateTime? nextServed,
     Frequency? relativeFrequency,
     List<ImageData>? images,
+    int? numberOfOccurance,
     bool? isFavorite,
   })
       : _id = id,
@@ -74,6 +76,7 @@ class Meal {
         _nextServed = nextServed,
         _relativeFrequency = relativeFrequency,
         _images = images,
+        _numberOfOccurance = numberOfOccurance,
         _isFavorite = isFavorite;
 
   /// This constructor creates a meal with the committed values.
@@ -111,6 +114,7 @@ class Meal {
     DateTime? nextServed,
     Frequency? relativeFrequency,
     List<ImageData>? images,
+    int? numberOfOccurance,
     bool? isFavorite,
   })
       : _id = id ?? meal.id,
@@ -127,8 +131,11 @@ class Meal {
         _nextServed = nextServed ?? meal.nextServed,
         _relativeFrequency = relativeFrequency ?? meal.relativeFrequency,
         _images = images ?? meal.images,
+        _numberOfOccurance = numberOfOccurance ?? meal._numberOfOccurance,
         _isFavorite = isFavorite ?? meal.isFavorite;
 
+
+  int? get numberOfOccurance => _numberOfOccurance;
 
   void setFavorite() {
     _isFavorite = true;
