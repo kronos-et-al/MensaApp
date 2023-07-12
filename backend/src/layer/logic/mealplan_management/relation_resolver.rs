@@ -240,7 +240,10 @@ mod test {
         for i in 0..6 {
             dishes.push(get_dish_with_price(prices[i]))
         }
-        match RelationResolver::<MealplanManagementDatabaseMock>::determine_average_price(dishes.iter(), dishes.len()) {
+        match RelationResolver::<MealplanManagementDatabaseMock>::determine_average_price(
+            dishes.iter(),
+            dishes.len(),
+        ) {
             Ok(average) => {
                 assert!(450 < average);
                 assert!(460 > average);
