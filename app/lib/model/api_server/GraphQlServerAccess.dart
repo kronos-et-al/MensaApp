@@ -56,20 +56,25 @@ class GraphQlServerAccess implements IServerAccess {
 
   @override
   Future<bool> deleteDownvote(ImageData image) async {
-    var requestName = "removeDownvote";
-    var hash = _generateHashOfParameters(requestName, _serializeUuid(image.id));
+    const requestName = "removeDownvote";
+    final hash =
+        _generateHashOfParameters(requestName, _serializeUuid(image.id));
     _authenticate(hash);
 
     final result = await _client.mutate$RemoveDownvote(
         Options$Mutation$RemoveDownvote(
             variables: Variables$Mutation$RemoveDownvote(imageId: image.id)));
-    final parsedData = result.parsedData;
-    return parsedData?.removeDownvote ?? false;
+
+    return result.parsedData?.removeDownvote ?? false;
   }
 
   @override
   Future<bool> deleteUpvote(ImageData image) async {
-    // TODO auth
+    const requestName = "removeUpvote";
+    final hash =
+        _generateHashOfParameters(requestName, _serializeUuid(image.id));
+    _authenticate(hash);
+
     final result = await _client.mutate$RemoveUpvote(
         Options$Mutation$RemoveUpvote(
             variables: Variables$Mutation$RemoveUpvote(imageId: image.id)));
@@ -79,7 +84,11 @@ class GraphQlServerAccess implements IServerAccess {
 
   @override
   Future<bool> downvoteImage(ImageData image) async {
-    // TODO auth
+    const requestName = "addDownvote";
+    final hash =
+        _generateHashOfParameters(requestName, _serializeUuid(image.id));
+    _authenticate(hash);
+
     final result = await _client.mutate$AddDownvote(
         Options$Mutation$AddDownvote(
             variables: Variables$Mutation$AddDownvote(imageId: image.id)));
@@ -89,7 +98,11 @@ class GraphQlServerAccess implements IServerAccess {
 
   @override
   Future<bool> upvoteImage(ImageData image) async {
-    // TODO auth
+    const requestName = "addUpvote";
+    final hash =
+        _generateHashOfParameters(requestName, _serializeUuid(image.id));
+    _authenticate(hash);
+
     final result = await _client.mutate$AddUpvote(Options$Mutation$AddUpvote(
         variables: Variables$Mutation$AddUpvote(imageId: image.id)));
 
@@ -98,7 +111,11 @@ class GraphQlServerAccess implements IServerAccess {
 
   @override
   Future<bool> linkImage(String url, Meal meal) async {
-    // TODO: auth
+    const requestName = "addImage";
+    final hash = _generateHashOfParameters(
+        requestName, [..._serializeUuid(meal.id), ..._serializeString(url)]);
+    _authenticate(hash);
+
     final result = await _client.mutate$LinkImage(Options$Mutation$LinkImage(
         variables:
             Variables$Mutation$LinkImage(imageUrl: url, mealId: meal.id)));
@@ -108,19 +125,30 @@ class GraphQlServerAccess implements IServerAccess {
 
   @override
   Future<bool> reportImage(ImageData image, ReportCategory reportReason) async {
-    // TODO: auth
+    final convertedReason = _convertToReportReason(reportReason);
+
+    const requestName = "reportImage";
+    final hash = _generateHashOfParameters(requestName, [
+      ..._serializeUuid(image.id),
+      ..._serializeReportReason(convertedReason)
+    ]);
+    _authenticate(hash);
+
     final result = await _client.mutate$ReportImage(
         Options$Mutation$ReportImage(
             variables: Variables$Mutation$ReportImage(
-                imageId: image.id,
-                reason: _convertToReportReason(reportReason))));
+                imageId: image.id, reason: convertedReason)));
 
     return result.parsedData?.reportImage ?? false;
   }
 
   @override
   Future<bool> updateMealRating(int rating, Meal meal) async {
-    // TODO: auth
+    const requestName = "setRating";
+    final hash = _generateHashOfParameters(
+        requestName, [..._serializeUuid(meal.id), ..._serializeInt(rating)]);
+    _authenticate(hash);
+
     final result = await _client.mutate$UpdateRating(
         Options$Mutation$UpdateRating(
             variables: Variables$Mutation$UpdateRating(
@@ -234,7 +262,8 @@ class GraphQlServerAccess implements IServerAccess {
     _currentAuth = "Mensa $base64";
   }
 
-  String _generateHashOfParameters(String mutationName, List<int> parameterData) {
+  String _generateHashOfParameters(
+      String mutationName, List<int> parameterData) {
     var hash = sha512.convert([
       ..._serializeString(mutationName),
       ..._serializeUuid(_clientId),
@@ -263,7 +292,6 @@ class GraphQlServerAccess implements IServerAccess {
   List<int> _serializeUuid(String uuid) {
     return Uuid.parse(uuid);
   }
-
 }
 
 // --------------- utility helper methods ---------------
