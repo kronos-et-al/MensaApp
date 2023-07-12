@@ -18,8 +18,11 @@ pub enum DataError {
     #[error("the requested item could not be found in the database")]
     NoSuchItem,
     /// Error occurred during data request or an internal connection fault
-    #[error("internal error ocurred: {0}")]
+    #[error("internal error occurred: {0}")]
     InternalError(#[from] Box<dyn Error + Send + Sync>),
+    /// Error occurred during data calculation
+    #[error("calculation could not be parsed")]
+    CalculationError,
 }
 
 #[async_trait]

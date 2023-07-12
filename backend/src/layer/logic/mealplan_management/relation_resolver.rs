@@ -1,9 +1,9 @@
+use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
+use crate::interface::persistent_data::model::Line;
+use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
+use crate::util::Date;
 use std::slice::Iter;
 use tracing::warn;
-use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
-use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
-use crate::interface::persistent_data::model::Line;
-use crate::util::Date;
 
 pub struct RelationResolver<DataAccess>
 where
@@ -20,7 +20,7 @@ where
         Self { db }
     }
 
-    const PERCENTAGE: f32 = 0.8;
+    const PERCENTAGE: f64 = 0.8;
     const fn get_edge_case_meal() -> &'static str {
         "je 100 g"
     }
@@ -43,9 +43,8 @@ where
 
         for line in canteen.lines {
             let name = &line.name.clone();
-            match self.handle_line(line, date).await {
-                Err(_e) => warn!("Skip line '{:?}' as it could not be solved", name),
-                _ => {} // ignored
+            if let Err(_e) = self.handle_line(line, date).await {
+                warn!("Skip line '{:?}' as it could not be resolved", name);
             }
         }
         Ok(())
@@ -57,21 +56,28 @@ where
             None => self.db.insert_line(&line.name).await?,
         };
 
-        let average = self.determine_average_price(line.dishes.iter(), line.dishes.len());
+        let average = Self::determine_average_price(line.dishes.iter(), line.dishes.len())?;
 
         for dish in line.dishes {
             let name = &dish.name.clone();
-            match self.handle_dish(&db_line, dish, date, average).await {
-                Err(_e) => warn!("Skip dish '{:?}' as it could not be solved", name),
-                _ => {} // ignored
+            if let Err(_e) = self.handle_dish(&db_line, dish, date, average).await {
+                warn!("Skip dish '{:?}' as it could not be resolved", name);
             }
         }
         Ok(())
     }
 
-    async fn handle_dish(&self, db_line: &Line, dish: Dish, date: Date, average: u32) -> Result<(), DataError> {
+    async fn handle_dish(
+        &self,
+        db_line: &Line,
+        dish: Dish,
+        date: Date,
+        average: u32,
+    ) -> Result<(), DataError> {
         let similar_meal_result = self.db.get_similar_meal(&dish.name).await?;
         let similar_side_result = self.db.get_similar_side(&dish.name).await?;
+        let price_limit = f64::from(average) * Self::PERCENTAGE;
+
         // Case: A similar side and meal could be found. Uncommon case.
         // Case: Just a meal could be found.
         if let Some(similar_meal) = similar_meal_result {
@@ -84,7 +90,7 @@ where
                 .update_side(similar_side.id, db_line.id, date, &dish.name, &dish.price)
                 .await?;
         // Case: No similar meal could be found. Dish needs to be determined
-        } else if dish.price.price_student < (average as f32 * Self::PERCENTAGE) as u32
+        } else if (f64::from(dish.price.price_student)) < price_limit
             && !dish.name.contains(Self::get_edge_case_meal())
         {
             self.db
@@ -112,12 +118,18 @@ where
         Ok(())
     }
 
-    fn determine_average_price(&self, dishes: Iter<Dish>, len: usize) -> u32 {
+    fn determine_average_price(dishes: Iter<Dish>, len: usize) -> Result<u32, DataError> {
         let mut sum: u32 = 0;
         for dish in dishes {
             sum += dish.price.price_student;
         }
-        sum / len as u32
+        match u32::try_from(len) {
+            Ok(len) => Ok(sum / len),
+            Err(_e) => {
+                warn!("A calculation error occurred");
+                Err(DataError::CalculationError)
+            }
+        }
     }
 }
 
@@ -223,15 +235,17 @@ mod test {
 
     #[test]
     fn test_average_calc() {
-        let resolver = RelationResolver::_new(MealplanManagementDatabaseMock);
         let prices = vec![300, 455, 205, 660, 220, 880];
         let mut dishes = Vec::new();
         for i in 0..6 {
             dishes.push(get_dish_with_price(prices[i]))
         }
-        let res = resolver.determine_average_price(dishes.iter(), dishes.len());
-
-        assert!(450 < res);
-        assert!(460 > res);
+        match RelationResolver::<MealplanManagementDatabaseMock>::determine_average_price(dishes.iter(), dishes.len()) {
+            Ok(average) => {
+                assert!(450 < average);
+                assert!(460 > average);
+            }
+            Err(_e) => {}
+        };
     }
 }
