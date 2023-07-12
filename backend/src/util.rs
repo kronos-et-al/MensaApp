@@ -127,7 +127,6 @@ pub enum MealType {
     Unknown,
 }
 
-#[derive(Clone, Copy)]
 /// This enum lists all the predetermined reasons a image can be reported for.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
 pub enum ReportReason {
