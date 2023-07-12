@@ -2,6 +2,7 @@
 
 use async_trait::async_trait;
 
+use crate::interface::mensa_parser::ParseError;
 use crate::{
     interface::mensa_parser::{
         model::{Dish, ParseCanteen, ParseLine},
@@ -74,11 +75,11 @@ pub struct MealPlanParserMock;
 #[async_trait]
 impl MealplanParser for MealPlanParserMock {
     /// Initiate a parse procedure. Returns a canteen struct containing mealplan data of the given date.
-    async fn parse(&self, _day: Date) -> Vec<ParseCanteen> {
-        get_canteens(5, 10, 2)
+    async fn parse(&self, _day: Date) -> Result<Vec<ParseCanteen>, ParseError> {
+        Ok(get_canteens(5, 10, 2))
     }
     /// Initiate a parse procedure. Returns a tuple containing mealplan data of the next four weeks. The tuple contains a canteen struct with the related date.
-    async fn parse_all(&self) -> Vec<(Date, Vec<ParseCanteen>)> {
-        vec![(Date::default(), get_canteens(5, 10, 2))]
+    async fn parse_all(&self) -> Result<Vec<(Date, Vec<ParseCanteen>)>, ParseError> {
+        Ok(vec![(Date::default(), get_canteens(5, 10, 2))])
     }
 }

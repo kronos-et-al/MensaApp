@@ -13,7 +13,7 @@ impl<DataAccess> RelationResolver<DataAccess>
 where
     DataAccess: MealplanManagementDataAccess + Send + Sync,
 {
-    pub const fn new(db: DataAccess) -> Self {
+    pub const fn _new(db: DataAccess) -> Self {
         Self { db }
     }
     const fn get_edge_case_meal() -> &'static str {

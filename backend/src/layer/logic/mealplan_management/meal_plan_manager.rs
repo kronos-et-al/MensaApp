@@ -22,9 +22,9 @@ where
     DataAccess: MealplanManagementDataAccess + Send + Sync,
     Parser: MealplanParser + Send + Sync,
 {
-    pub const fn new(database: DataAccess, meal_plan_parser: Parser) -> Self {
+    pub const fn _new(database: DataAccess, meal_plan_parser: Parser) -> Self {
         Self {
-            resolver: RelationResolver::new(database),
+            resolver: RelationResolver::_new(database),
             parser: meal_plan_parser,
         }
     }
@@ -55,14 +55,12 @@ where
         let today = Utc::now().date_naive();
         match self.parser.parse(today).await {
             Ok(parse_canteens) => {
-                self.start_resolving(parse_canteens, today)
-                    .await;
+                self.start_resolving(parse_canteens, today).await;
             }
             Err(error) => {
-                warn!("canteens parsed with errors: {error}");
+                warn!("canteens parsed with error and can't be resolved: {error}");
             }
         }
-
     }
 
     /// Similar to `start_update_parsing` this method starts the parsing procedure for all meal plans **for the next four weeks**.<br>
@@ -77,10 +75,9 @@ where
                 }
             }
             Err(error) => {
-                warn!("canteens parsed with errors: {error}");
+                warn!("canteens parsed with error and can't be resolved: {error}");
             }
         }
-
     }
 }
 
