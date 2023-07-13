@@ -38,7 +38,7 @@ where
     /// A function that creates a new [`CommandHandler`]
     ///
     /// # Errors
-    /// Throws an error, if the api keys could not be gotten from [`command_data`]
+    /// Returns an error, if the api keys could not be gotten from [`command_data`]
     pub async fn new(command_data: D, admin_notification: A, image_hoster: I) -> Result<Self> {
         let keys: Vec<String> = command_data
             .get_api_keys()
@@ -79,11 +79,10 @@ where
 #[async_trait]
 impl<D, A, I> Command for CommandHandler<D, A, I>
 where
-    D: CommandDataAccess + Sync + Send,
-    A: AdminNotification + Sync + Send,
-    I: ImageHoster + Sync + Send,
+    D: CommandDataAccess,
+    A: AdminNotification,
+    I: ImageHoster,
 {
-    /// Command to report an image. It als gets checked whether the image shall get hidden.
     async fn report_image(
         &self,
         image_id: Uuid,
@@ -95,19 +94,20 @@ where
         let image_command_type = ImageCommandType::ReportImage(reason);
         self.auth
             .authn_image_command(&auth_info, image_id, image_command_type)?;
-        let info = self.command_data.get_image_info(image_id).await?;
+        let mut info = self.command_data.get_image_info(image_id).await?;
         if !info.approved {
+            info.report_count += 1;
             self.command_data
                 .add_report(image_id, auth_info.client_id, reason)
                 .await?;
-            let image_got_hidden = Self::will_be_hidden(&info);
-            if image_got_hidden {
+            let will_be_hidden = Self::will_be_hidden(&info);
+            if will_be_hidden {
                 self.command_data.hide_image(image_id).await?;
             }
             let report_info = ImageReportInfo {
                 reason,
                 image_id,
-                image_got_hidden,
+                image_got_hidden: will_be_hidden,
                 image_link: info.image_url,
                 report_count: info.report_count,
                 positive_rating_count: info.positive_rating_count,
@@ -122,7 +122,6 @@ where
         Ok(())
     }
 
-    /// Command to vote up an image. All down-votes of the same user get removed.
     async fn add_image_upvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
         let image_command_type = ImageCommandType::AddUpvote;
@@ -134,7 +133,6 @@ where
         Ok(())
     }
 
-    /// Command to vote down an image. All up-votes of the same user get removed.
     async fn add_image_downvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
         let image_command_type = ImageCommandType::AddDownvote;
@@ -146,7 +144,6 @@ where
         Ok(())
     }
 
-    /// Command to remove an up-vote for an image.
     async fn remove_image_upvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
         let image_command_type = ImageCommandType::RemoveUpvote;
@@ -158,7 +155,6 @@ where
         Ok(())
     }
 
-    /// Command to remove an down-vote for an image.
     async fn remove_image_downvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
         let image_command_type = ImageCommandType::RemoveDownvote;
@@ -170,7 +166,6 @@ where
         Ok(())
     }
 
-    /// Command to link an image to a meal.
     async fn add_image(&self, meal_id: Uuid, image_url: String, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
         self.auth
@@ -190,7 +185,6 @@ where
         Ok(())
     }
 
-    /// command to add a rating to a meal.
     async fn set_meal_rating(&self, meal_id: Uuid, rating: u32, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
         self.auth

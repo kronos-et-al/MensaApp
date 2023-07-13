@@ -9,6 +9,8 @@ pub enum ImageCommandType {
     AddDownvote,
     RemoveUpvote,
     RemoveDownvote,
+    SetRating,
+    AddImage,
 }
 
 impl Display for ImageCommandType {
@@ -19,6 +21,8 @@ impl Display for ImageCommandType {
             Self::AddDownvote => "addDownvote",
             Self::RemoveUpvote => "removeUpvote",
             Self::RemoveDownvote => "removeDownvote",
+            Self::SetRating => "setRating",
+            Self::AddImage => "addImage",
         };
         write!(f, "{msg}")
     }

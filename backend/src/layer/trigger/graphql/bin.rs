@@ -31,7 +31,7 @@ async fn main() {
             CommandImageHosterMock,
         )
         .await
-        .expect("could not craete command mock"),
+        .expect("could not create command mock"),
     );
     server.start();
     tokio::signal::ctrl_c()

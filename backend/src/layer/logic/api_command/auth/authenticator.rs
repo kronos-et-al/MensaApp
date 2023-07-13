@@ -9,8 +9,6 @@ use crate::{
 
 use super::image_command_type::ImageCommandType;
 
-const MEAL_RATING_COMMAND_NAME: &str = "setRating"; // TODO
-const ADD_IMAGE_COMMAND_NAME: &str = "addImage"; // TODO
 
 /// Class for authenticating commands.
 pub struct Authenticator {
@@ -64,9 +62,10 @@ impl Authenticator {
         meal_id: Uuid,
         rating: u32,
     ) -> Result<()> {
+        let request_name = ImageCommandType::SetRating.to_string();
         let hash = self.calculate_hash(
             auth_info,
-            MEAL_RATING_COMMAND_NAME,
+            &request_name,
             &[&meal_id, &rating.to_le_bytes()],
         )?;
         let provided_hash = Self::get_provided_hash(auth_info)?;
@@ -89,7 +88,8 @@ impl Authenticator {
         meal_id: Uuid,
         url: &String,
     ) -> Result<()> {
-        let hash = self.calculate_hash(auth_info, ADD_IMAGE_COMMAND_NAME, &[&meal_id, url])?;
+        let request_name = ImageCommandType::AddImage.to_string();
+        let hash = self.calculate_hash(auth_info, &request_name, &[&meal_id, url])?;
         let provided_hash = Self::get_provided_hash(auth_info)?;
 
         if hash == provided_hash {
