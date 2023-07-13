@@ -102,7 +102,7 @@ impl GraphQLServer {
         let server = Server::bind(&socket).serve(app.into_make_service());
 
         let shutdown_notify = Arc::new(Notify::new());
-        let shutdown_notify_sender = shutdown_notify.clone();
+        let shutdown_notify_sender = shutdown_notify;
 
         let with_shutdown =
             server.with_graceful_shutdown(async move { shutdown_notify_sender.notified().await });
