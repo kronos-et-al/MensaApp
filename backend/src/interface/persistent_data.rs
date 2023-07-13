@@ -27,7 +27,7 @@ pub enum DataError {
 
 #[async_trait]
 /// An interface for checking relations and inserting data structures. The MealplanManagement component uses this interface for database access.
-pub trait MealplanManagementDataAccess {
+pub trait MealplanManagementDataAccess: Send + Sync {
     /// Determines the canteen with the most similar name.
     async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Canteen>>;
     /// Determines the line with the most similar name.

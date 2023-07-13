@@ -7,16 +7,16 @@ use tracing::warn;
 
 pub struct RelationResolver<DataAccess>
 where
-    DataAccess: MealplanManagementDataAccess + Send + Sync,
+    DataAccess: MealplanManagementDataAccess,
 {
     db: DataAccess,
 }
 
 impl<DataAccess> RelationResolver<DataAccess>
 where
-    DataAccess: MealplanManagementDataAccess + Send + Sync,
+    DataAccess: MealplanManagementDataAccess,
 {
-    pub const fn _new(db: DataAccess) -> Self {
+    pub const fn new(db: DataAccess) -> Self {
         Self { db }
     }
 
