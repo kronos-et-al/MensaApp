@@ -85,7 +85,7 @@ pub trait MealplanManagementDataAccess {
 
 #[async_trait]
 /// An interface for image related data. The ImageReview component uses this interface for database access.
-pub trait ImageReviewDataAccess {
+pub trait ImageReviewDataAccess: Send + Sync {
     /// Returns the first n images sorted by rank which are related to an meal served at the given day.
     async fn get_n_images_by_rank_date(&self, n: u32, date: Date) -> Result<Vec<Image>>;
     /// Returns the first n images sorted by rank which are related to an meal served in the next week or which were not validated last week.

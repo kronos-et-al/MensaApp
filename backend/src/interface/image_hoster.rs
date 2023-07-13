@@ -10,7 +10,7 @@ pub type Result<T> = std::result::Result<T, ImageHosterError>;
 
 #[async_trait]
 /// This trait provides essential functions, which are necessary for image validation.
-pub trait ImageHoster {
+pub trait ImageHoster: Send + Sync {
     /// Checks if the given link is valid and provides additional information (ImageMetaData) from the hoster.
     async fn validate_url(url: String) -> Result<ImageMetaData>;
     /// Checks if an image still exists at the hoster website.
