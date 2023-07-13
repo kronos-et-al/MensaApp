@@ -7,7 +7,6 @@ use crate::{
 
 pub struct ImageReviewDatabaseMock;
 
-
 #[async_trait]
 impl ImageReviewDataAccess for ImageReviewDatabaseMock {
     /// Returns the first n images sorted by rank which are related to an meal served at the given day.
