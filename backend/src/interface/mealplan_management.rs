@@ -2,7 +2,7 @@
 use async_trait::async_trait;
 
 #[async_trait]
-pub trait MensaParseScheduling {
+pub trait MensaParseScheduling: Send + Sync {
     /// Initiate the parsing procedure of the canteen-website.
     /// Only parse meals of the current date.
     async fn start_update_parsing(&self);
