@@ -7,7 +7,7 @@ use crate::{
         admin_notification::{AdminNotification, ImageReportInfo},
         api_command::{AuthInfo, Command, CommandError, Result},
         image_hoster::ImageHoster,
-        persistent_data::CommandDataAccess,
+        persistent_data::{model::ImageInfo, CommandDataAccess},
     },
     layer::logic::api_command::auth::{
         authenticator::Authenticator, image_command_type::ImageCommandType,
@@ -54,19 +54,25 @@ where
         })
     }
 
-    fn will_be_hidden(date: Date, report_count: u32) -> bool {
-        Self::get_date_difference(date) < 30 && report_count > Self::get_report_barrier(date)
+    fn will_be_hidden(image: &ImageInfo) -> bool {
+        Self::days_since(image.upload_date) <= 30
+            && image.report_count > Self::get_report_barrier(image.upload_date)
     }
 
-    fn get_date_difference(date: Date) -> i64 {
+    fn days_since(date: Date) -> i64 {
         let today = Local::now().date_naive();
         let difference = today.signed_duration_since(date);
         difference.num_days()
     }
 
+    #[allow(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        clippy::cast_precision_loss
+    )]
     fn get_report_barrier(date: Date) -> u32 {
-        let t = Self::get_date_difference(date) as f64;
-        (REPORT_FACTOR * t * t).floor() as u32 + 5
+        let t = Self::days_since(date) as f64;
+        REPORT_FACTOR.mul_add(t * t, 5.0).floor() as u32
     }
 }
 
@@ -93,7 +99,7 @@ where
                 self.command_data
                     .add_report(image_id, auth_info.client_id, reason)
                     .await?;
-                let image_got_hidden = Self::will_be_hidden(info.upload_date, info.report_count);
+                let image_got_hidden = Self::will_be_hidden(&info);
                 if image_got_hidden {
                     self.command_data.hide_image(image_id).await?;
                 }
