@@ -59,11 +59,12 @@ fn get_meal() -> Meal {
         price: get_price(),
         last_served: None,
         next_served: None,
-        relative_frequency: 0.0,
+        frequency: 0,
         rating_count: 0,
         average_rating: 0.0,
         date: Date::default(),
         line_id: Uuid::default(),
+        new: false,
     }
 }
 

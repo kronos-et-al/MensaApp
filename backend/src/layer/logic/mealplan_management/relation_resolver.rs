@@ -43,14 +43,14 @@ where
 
         for line in canteen.lines {
             let name = &line.name.clone();
-            if let Err(_e) = self.handle_line(line, date).await {
+            if let Err(_e) = self.resolve_line(line, date).await {
                 warn!("Skip line '{:?}' as it could not be resolved", name);
             }
         }
         Ok(())
     }
 
-    async fn handle_line(&self, line: ParseLine, date: Date) -> Result<(), DataError> {
+    async fn resolve_line(&self, line: ParseLine, date: Date) -> Result<(), DataError> {
         let db_line = match self.db.get_similar_line(&line.name).await? {
             Some(similar_line) => self.db.update_line(similar_line.id, &line.name).await?,
             None => self.db.insert_line(&line.name).await?,
@@ -60,14 +60,14 @@ where
 
         for dish in line.dishes {
             let name = &dish.name.clone();
-            if let Err(_e) = self.handle_dish(&db_line, dish, date, average).await {
+            if let Err(_e) = self.resolve_dish(&db_line, dish, date, average).await {
                 warn!("Skip dish '{:?}' as it could not be resolved", name);
             }
         }
         Ok(())
     }
 
-    async fn handle_dish(
+    async fn resolve_dish(
         &self,
         db_line: &Line,
         dish: Dish,
@@ -212,14 +212,14 @@ mod test {
 
     #[tokio::test]
     async fn resolve_empty_canteen() {
-        let resolver = RelationResolver::_new(MealplanManagementDatabaseMock);
+        let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
         let res = resolver.resolve(get_empty_canteen(), Utc::now().date_naive());
         assert!(res.await.is_ok());
     }
 
     #[tokio::test]
     async fn resolve_canteens() {
-        let resolver = RelationResolver::_new(MealplanManagementDatabaseMock);
+        let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
         let mut rng = rand::thread_rng();
         for canteen in get_canteens(
             rng.gen_range(1..=10),
@@ -233,22 +233,36 @@ mod test {
         }
     }
 
+    #[tokio::test]
+    async fn resolve_line_with_rand_dishes() {
+        let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
+        let mut rng = rand::thread_rng();
+        let mut dishes = Vec::new();
+        for _ in 0..6 {
+            dishes.push(get_dish_with_price(rng.gen_range(80..=400)));
+        }
+        let line = get_line(dishes);
+        assert!(resolver
+            .resolve_line(line, Utc::now().date_naive())
+            .await
+            .is_ok());
+    }
+
     #[test]
     fn test_average_calc() {
         let prices = vec![300, 455, 205, 660, 220, 880];
         let mut dishes = Vec::new();
         for i in 0..6 {
-            dishes.push(get_dish_with_price(prices[i]))
+            dishes.push(get_dish_with_price(prices[i]));
         }
-        match RelationResolver::<MealplanManagementDatabaseMock>::determine_average_price(
-            dishes.iter(),
-            dishes.len(),
-        ) {
-            Ok(average) => {
-                assert!(450 < average);
-                assert!(460 > average);
-            }
-            Err(_e) => {}
+        if let Ok(average) =
+            RelationResolver::<MealplanManagementDatabaseMock>::determine_average_price(
+                dishes.iter(),
+                dishes.len(),
+            )
+        {
+            assert!(450 < average);
+            assert!(460 > average);
         };
     }
 }
