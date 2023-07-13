@@ -9,7 +9,6 @@ use crate::{
 
 use super::image_command_type::ImageCommandType;
 
-
 /// Class for authenticating commands.
 pub struct Authenticator {
     api_keys: Vec<String>,
@@ -63,11 +62,8 @@ impl Authenticator {
         rating: u32,
     ) -> Result<()> {
         let request_name = ImageCommandType::SetRating.to_string();
-        let hash = self.calculate_hash(
-            auth_info,
-            &request_name,
-            &[&meal_id, &rating.to_le_bytes()],
-        )?;
+        let hash =
+            self.calculate_hash(auth_info, &request_name, &[&meal_id, &rating.to_le_bytes()])?;
         let provided_hash = Self::get_provided_hash(auth_info)?;
 
         if hash == provided_hash {
