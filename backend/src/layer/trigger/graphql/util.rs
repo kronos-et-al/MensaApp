@@ -3,7 +3,7 @@ use std::ops::Deref;
 use async_graphql::Context;
 
 use base64::{engine::general_purpose, Engine};
-use tracing::{debug, trace};
+use tracing::debug;
 
 use crate::{
     interface::{
@@ -69,10 +69,6 @@ fn read_auth_from_header(header: &str) -> AuthInfo {
         api_ident,
         hash,
     })
-}
-
-pub fn trace_request() {
-    trace!("incoming request");
 }
 
 #[cfg(test)]

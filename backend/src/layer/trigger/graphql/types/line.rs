@@ -24,7 +24,6 @@ pub struct Line {
 impl Line {
     /// Provides the canteen this line belongs to.
     #[instrument(skip(ctx))]
-    #[graphql(complexity = "10 * child_complexity")]
     async fn canteen(&self, ctx: &Context<'_>) -> Result<Canteen> {
         trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
@@ -37,21 +36,18 @@ impl Line {
 
     /// Provides the meals offered at this line on a given day. Requires a date.
     #[instrument(skip(ctx))]
-    async fn meals(&self, ctx: &Context<'_>, date: Date) -> Result<Vec<Meal>> {
+    async fn meals(&self, ctx: &Context<'_>, date: Date) -> Result<Option<Vec<Meal>>> {
         trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         let meals = data_access
             .get_meals(self.id, date)
             .await?
-            .into_iter()
-            .map(Into::into)
-            .collect();
+            .map(|meals| meals.into_iter().map(Into::into).collect());
         Ok(meals)
     }
 }
 
 impl From<model::Line> for Line {
-    /// A function for converting Lines from `persistent_data/model/line` to types/line.
     fn from(value: model::Line) -> Self {
         Self {
             id: value.id,

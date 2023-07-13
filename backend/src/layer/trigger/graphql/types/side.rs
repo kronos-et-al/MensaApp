@@ -55,7 +55,6 @@ impl Side {
 }
 
 impl From<model::Side> for Side {
-    /// A function for converting Sides from `persistent_data/model/side` to `types/side`
     fn from(value: model::Side) -> Self {
         Self {
             id: value.id,

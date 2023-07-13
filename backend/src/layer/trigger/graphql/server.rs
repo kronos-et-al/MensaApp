@@ -80,7 +80,7 @@ impl GraphQLServer {
     /// Starts the GraphQL-Server. It will be running in the background until [`Self::shutdown()`] is called.
     ///
     /// # Panics
-    /// This function anics if the server is in the wrong state, meaning it is already running or shut down.
+    /// This function panics if the server is in the wrong state, meaning it is already running or shut down.
     pub fn start(&mut self) {
         assert!(
             matches!(self.state, State::Created),
@@ -110,7 +110,6 @@ impl GraphQLServer {
         let join_handle = tokio::spawn(with_shutdown);
 
         let shutdown = async move {
-            shutdown_notify.notify_waiters();
             join_handle
                 .await
                 .expect("web server should not have panicked")
@@ -140,7 +139,7 @@ impl GraphQLServer {
 }
 
 /// Constructs the graphql schema with all its settings.
-pub fn construct_schema(
+pub(super) fn construct_schema(
     data_access: impl RequestDataAccess + Sync + Send + 'static,
     command: impl Command + Sync + Send + 'static,
 ) -> GraphQLSchema {
@@ -151,7 +150,6 @@ pub fn construct_schema(
         .data(data_access_box)
         .data(command_box)
         .extension(Tracing)
-        .limit_complexity(100)
         .finish()
 }
 

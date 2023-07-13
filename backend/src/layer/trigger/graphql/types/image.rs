@@ -22,7 +22,6 @@ pub struct Image {
 
 #[ComplexObject]
 impl Image {
-    /// A function for determining whether or not the user upvoted the image.
     #[instrument(skip(ctx))]
     async fn personal_upvote(&self, ctx: &Context<'_>) -> Result<bool> {
         trace!(TRACE_QUERY_MESSAGE);
@@ -34,7 +33,7 @@ impl Image {
         let upvote = data.get_personal_upvote(self.id, client_id).await?;
         Ok(upvote)
     }
-    /// A function for determining whether or not the user downvoted the image.
+    /// This attribute specifies whether or not the user downvoted the image.
     #[instrument(skip(ctx))]
     async fn personal_downvote(&self, ctx: &Context<'_>) -> Result<bool> {
         trace!(TRACE_QUERY_MESSAGE);
@@ -49,7 +48,6 @@ impl Image {
 }
 
 impl From<model::Image> for Image {
-    /// A function for converting Images from `persistent_data/model/image` to `types/image`.
     fn from(value: model::Image) -> Self {
         Self {
             id: value.id,
