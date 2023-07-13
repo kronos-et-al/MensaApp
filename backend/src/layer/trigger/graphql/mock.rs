@@ -95,7 +95,6 @@ impl RequestDataAccess for RequestDatabaseMock {
         };
         Ok(Option::from(meal))
     }
-
     async fn get_meals(&self, _line_id: Uuid, _date: Date) -> DataResult<Option<Vec<Meal>>> {
         let meal1 = Meal {
             id: Uuid::default(),

@@ -110,7 +110,6 @@ impl GraphQLServer {
         let join_handle = tokio::spawn(with_shutdown);
 
         let shutdown = async move {
-            shutdown_notify.notify_one();
             join_handle
                 .await
                 .expect("web server should not have panicked")
