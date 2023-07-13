@@ -103,20 +103,20 @@ pub struct CommandImageHosterMock;
 #[async_trait]
 impl ImageHoster for CommandImageHosterMock {
     /// Checks if the given link is valid and provides additional information (ImageMetaData) from the hoster.
-    async fn validate_url(&self, url: String) -> ImageResult<ImageMetaData> {
+    async fn validate_url(&self, url: &str) -> ImageResult<ImageMetaData> {
         let meta_data = ImageMetaData {
             id: String::new(),
-            image_url: url,
+            image_url: url.to_string(),
             licence: String::new(),
         };
         Ok(meta_data)
     }
     /// Checks if an image still exists at the hoster website.
-    async fn check_existence(&self, _photo_id: String) -> ImageResult<bool> {
+    async fn check_existence(&self, _photo_id: &str) -> ImageResult<bool> {
         Ok(true)
     }
     /// Checks whether the licence is acceptable for our purposes.
-    async fn check_licence(&self, _photo_id: String) -> ImageResult<bool> {
+    async fn check_licence(&self, _photo_id: &str) -> ImageResult<bool> {
         Ok(true)
     }
 }

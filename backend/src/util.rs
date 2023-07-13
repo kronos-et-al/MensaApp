@@ -147,8 +147,7 @@ pub enum ReportReason {
     Other,
 }
 
-
-impl Display for ReportReason  {
+impl Display for ReportReason {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", AsShoutySnakeCase(format!("{self:?}")))
     }

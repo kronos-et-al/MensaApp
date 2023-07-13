@@ -12,7 +12,6 @@ pub enum ImageCommandType {
 }
 
 impl Display for ImageCommandType {
-
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let msg = match self {
             Self::ReportImage(_) => "reportImage",

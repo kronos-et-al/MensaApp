@@ -57,7 +57,11 @@ pub struct InnerAuthInfo {
 
 impl Display for InnerAuthInfo {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "client id: `{}`, api identifier: `{}`, hash: `{}`", self.client_id, self.api_ident, self.hash)
+        write!(
+            f,
+            "client id: `{}`, api identifier: `{}`, hash: `{}`",
+            self.client_id, self.api_ident, self.hash
+        )
     }
 }
 

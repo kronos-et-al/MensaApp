@@ -1,5 +1,3 @@
-
-
 use base64::{engine::general_purpose::STANDARD, Engine};
 
 use sha2::{Digest, Sha512};
@@ -41,13 +39,19 @@ impl Authenticator {
             String::new()
         };
 
-        let hash = self.calculate_hash(auth_info, &image_command_type.to_string(), &[&image_id, &report_reason])?;
+        let hash = self.calculate_hash(
+            auth_info,
+            &image_command_type.to_string(),
+            &[&image_id, &report_reason],
+        )?;
         let provided_hash = Self::get_provided_hash(auth_info)?;
 
         if hash == provided_hash {
             Ok(())
         } else {
-            Err(CommandError::BadAuth(format!("hash not matching: {auth_info}")))
+            Err(CommandError::BadAuth(format!(
+                "hash not matching: {auth_info}"
+            )))
         }
     }
 
@@ -70,7 +74,9 @@ impl Authenticator {
         if hash == provided_hash {
             Ok(())
         } else {
-            Err(CommandError::BadAuth(format!("hash not matching: {auth_info}")))
+            Err(CommandError::BadAuth(format!(
+                "hash not matching: {auth_info}"
+            )))
         }
     }
 
@@ -89,7 +95,9 @@ impl Authenticator {
         if hash == provided_hash {
             Ok(())
         } else {
-            Err(CommandError::BadAuth(format!("hash not matching: {auth_info}")))
+            Err(CommandError::BadAuth(format!(
+                "hash not matching: {auth_info}"
+            )))
         }
     }
 
@@ -99,8 +107,7 @@ impl Authenticator {
         request_name: &str,
         params: &[&dyn AsRef<[u8]>],
     ) -> Result<Vec<u8>> {
-        let api_key = self
-            .get_api_key(auth_info)?;
+        let api_key = self.get_api_key(auth_info)?;
         let mut hasher = Sha512::new()
             .chain_update(request_name)
             .chain_update(auth_info.client_id)
@@ -122,6 +129,10 @@ impl Authenticator {
         self.api_keys
             .iter()
             .find(|key| key.starts_with(&auth_info.api_ident))
-            .map(Clone::clone).ok_or(CommandError::BadAuth(format!("no matching api key found for `{}`", auth_info.api_ident)))
+            .map(Clone::clone)
+            .ok_or(CommandError::BadAuth(format!(
+                "no matching api key found for `{}`",
+                auth_info.api_ident
+            )))
     }
 }
