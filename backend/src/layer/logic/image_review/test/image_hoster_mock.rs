@@ -7,7 +7,7 @@ pub struct ImageHosterMock;
 #[async_trait]
 impl ImageHoster for ImageHosterMock {
     /// Checks if the given link is valid and provides additional information (ImageMetaData) from the hoster.
-    async fn validate_url(_url: String) -> Result<ImageMetaData> {
+    async fn validate_url(&self, _url: &str) -> Result<ImageMetaData> {
         Ok(ImageMetaData {
             id: String::default(),
             image_url: String::default(),
@@ -15,11 +15,11 @@ impl ImageHoster for ImageHosterMock {
         })
     }
     /// Checks if an image still exists at the hoster website.
-    async fn check_existence(_photo_id: String) -> Result<bool> {
+    async fn check_existence(&self, _photo_id: &str) -> Result<bool> {
         Ok(true)
     }
     /// Checks whether the licence is acceptable for our purposes.
-    async fn check_licence(_photo_id: String) -> Result<bool> {
+    async fn check_licence(&self, _photo_id: &str) -> Result<bool> {
         Ok(true)
     }
 }
