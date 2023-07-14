@@ -2,8 +2,8 @@
 //!
 //! For a complete list and explanations you can see [here](https://www.sw-ka.de/media/?file=4458listeallergesetzlichausweisungspflichtigenzusatzstoffeundallergenefuerwebsite160218.pdf&download).
 
-use std::fmt::Display;
 use async_graphql::Enum;
+use std::fmt::Display;
 
 /// Date type used in multiple places.
 pub type Date = chrono::NaiveDate;
@@ -175,8 +175,8 @@ pub enum Additive {
     Phenylalanine,
     /// This meals can contain alcohol.
     Alcohol,
-    /// This meals contains pressed meet.
-    PressedMeet,
+    /// This meals contains pressed meat.
+    PressedMeat,
     /// This meals is glazed with cacao.
     GlazingWithCacao,
     /// This meals contains pressed fish.
