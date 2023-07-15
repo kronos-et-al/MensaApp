@@ -56,7 +56,7 @@ where
             None => self.db.insert_line(&line.name).await?,
         };
 
-        let average = Self::determine_average_price(line.dishes.iter(), line.dishes.len())?;
+        let average = Self::average(line.dishes.iter());
 
         for dish in line.dishes {
             let name = &dish.name.clone();
@@ -72,11 +72,11 @@ where
         db_line: &Line,
         dish: Dish,
         date: Date,
-        average: u32,
+        average: f64,
     ) -> Result<(), DataError> {
         let similar_meal_result = self.db.get_similar_meal(&dish.name).await?;
         let similar_side_result = self.db.get_similar_side(&dish.name).await?;
-        let price_limit = f64::from(average) * Self::PERCENTAGE;
+        let price_limit = average * Self::PERCENTAGE;
 
         // Case: A similar side and meal could be found. Uncommon case.
         // Case: Just a meal could be found.
@@ -118,18 +118,14 @@ where
         Ok(())
     }
 
-    fn determine_average_price(dishes: Iter<Dish>, len: usize) -> Result<u32, DataError> {
-        let mut sum: u32 = 0;
-        for dish in dishes {
-            sum += dish.price.price_student;
-        }
-        match u32::try_from(len) {
-            Ok(len) => Ok(sum / len),
-            Err(_e) => {
-                warn!("A calculation error occurred");
-                Err(DataError::CalculationError)
-            }
-        }
+    fn decide_meal_or_side(dish_price: u32, average: f64) {
+
+    }
+
+    fn average(dishes: Iter<Dish>) -> f64 {
+        let len = dishes.len();
+        let sum: u32 = dishes.map(|dish| dish.price.price_student).sum();
+        f64::from(sum / u32::try_from(len).expect("RelationResolver.average: usize could not be casted to u32"))
     }
 }
 
@@ -255,14 +251,8 @@ mod test {
         for i in 0..6 {
             dishes.push(get_dish_with_price(prices[i]));
         }
-        if let Ok(average) =
-            RelationResolver::<MealplanManagementDatabaseMock>::determine_average_price(
-                dishes.iter(),
-                dishes.len(),
-            )
-        {
-            assert!(450 < average);
-            assert!(460 > average);
-        };
+        let average = RelationResolver::<MealplanManagementDatabaseMock>::average(dishes.iter());
+        assert!(450.0 < average);
+        assert!(460.0 > average);
     }
 }
