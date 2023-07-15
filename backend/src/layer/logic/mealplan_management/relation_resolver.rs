@@ -20,10 +20,8 @@ where
         Self { db }
     }
 
-    const PERCENTAGE: f64 = 0.8;
-    const fn get_edge_case_meal() -> &'static str {
-        "je 100 g"
-    }
+    const SIDE_PERCENTAGE_GAP: f64 = 0.8;
+    const EDGE_CASE_NAME: &'static str = "je 100 g";
 
     /// This method resolves relation problems with canteen data and the corresponding database.<br>
     /// After each resolve the object gets injected into the database.<br>
@@ -76,7 +74,7 @@ where
     ) -> Result<(), DataError> {
         let similar_meal_result = self.db.get_similar_meal(&dish.name).await?;
         let similar_side_result = self.db.get_similar_side(&dish.name).await?;
-        let price_limit = average * Self::PERCENTAGE;
+
 
         // Case: A similar side and meal could be found. Uncommon case.
         // Case: Just a meal could be found.
@@ -90,8 +88,7 @@ where
                 .update_side(similar_side.id, db_line.id, date, &dish.name, &dish.price)
                 .await?;
         // Case: No similar meal could be found. Dish needs to be determined
-        } else if (f64::from(dish.price.price_student)) < price_limit
-            && !dish.name.contains(Self::get_edge_case_meal())
+        } else if Self::is_side(dish.price.price_student, average, &dish.name)
         {
             self.db
                 .insert_side(
@@ -118,14 +115,18 @@ where
         Ok(())
     }
 
-    fn decide_meal_or_side(dish_price: u32, average: f64) {
-
+    fn is_side(dish_price: u32, average: f64, dish_name: &str) -> bool {
+        let price_limit = average * Self::SIDE_PERCENTAGE_GAP;
+        (f64::from(dish_price)) < price_limit && !dish_name.contains(Self::EDGE_CASE_NAME)
     }
 
     fn average(dishes: Iter<Dish>) -> f64 {
         let len = dishes.len();
         let sum: u32 = dishes.map(|dish| dish.price.price_student).sum();
-        f64::from(sum / u32::try_from(len).expect("RelationResolver.average: usize could not be casted to u32"))
+        f64::from(
+            sum / u32::try_from(len)
+                .expect("RelationResolver.average: usize could not be casted to u32"),
+        )
     }
 }
 
@@ -248,8 +249,8 @@ mod test {
     fn test_average_calc() {
         let prices = vec![300, 455, 205, 660, 220, 880];
         let mut dishes = Vec::new();
-        for i in 0..6 {
-            dishes.push(get_dish_with_price(prices[i]));
+        for i in prices {
+            dishes.push(get_dish_with_price(i));
         }
         let average = RelationResolver::<MealplanManagementDatabaseMock>::average(dishes.iter());
         assert!(450.0 < average);
