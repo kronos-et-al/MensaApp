@@ -41,8 +41,8 @@ where
 
         for line in canteen.lines {
             let name = &line.name.clone();
-            if let Err(_e) = self.resolve_line(line, date).await {
-                warn!("Skip line '{:?}' as it could not be resolved", name);
+            if (self.resolve_line(line, date).await).is_err() {
+                warn!("Skip line '{}' as it could not be resolved", name);
             }
         }
         Ok(())
@@ -58,8 +58,8 @@ where
 
         for dish in line.dishes {
             let name = &dish.name.clone();
-            if let Err(_e) = self.resolve_dish(&db_line, dish, date, average).await {
-                warn!("Skip dish '{:?}' as it could not be resolved", name);
+            if (self.resolve_dish(&db_line, dish, date, average).await).is_err() {
+                warn!("Skip dish '{}' as it could not be resolved", name);
             }
         }
         Ok(())
@@ -76,18 +76,18 @@ where
         let similar_side_result = self.db.get_similar_side(&dish.name).await?;
 
 
-        // Case: A similar side and meal could be found. Uncommon case.
-        // Case: Just a meal could be found.
+        // Case 1.1: A similar side and meal could be found. Uncommon case.
+        // Case 1.2: Or just a meal could be found.
         if let Some(similar_meal) = similar_meal_result {
             self.db
                 .update_meal(similar_meal.id, db_line.id, date, &dish.name, &dish.price)
                 .await?;
-        // Case: A similar side could be found
+        // Case 2: A similar side could be found.
         } else if let Some(similar_side) = similar_side_result {
             self.db
                 .update_side(similar_side.id, db_line.id, date, &dish.name, &dish.price)
                 .await?;
-        // Case: No similar meal could be found. Dish needs to be determined
+        // Case 3: No similar meal could be found. Dish needs to be determined.
         } else if Self::is_side(dish.price.price_student, average, &dish.name)
         {
             self.db
