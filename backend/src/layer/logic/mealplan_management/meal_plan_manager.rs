@@ -33,7 +33,7 @@ where
         for parse_canteen in parse_canteens {
             let name = &parse_canteen.name.clone();
             match self.resolver.resolve(parse_canteen, date).await {
-                Ok(_canteen) => debug!("resolved canteen '{name}' with no errors"),
+                Ok(_) => debug!("resolved canteen '{name}' with no errors"),
                 Err(error) => warn!("resolved canteen '{name}' with errors: {error}"),
             }
         }
@@ -46,7 +46,6 @@ where
     DataAccess: MealplanManagementDataAccess,
     Parser: MealplanParser,
 {
-    //TODO transactions if relation_resolve fails and we dont want uncompleted meal plans?
     /// This method starts the parsing procedure for all meal plans **of the current day**.<br>
     /// After parsing, the raw data objects (`Vec<ParseCanteen>`) will be inserted by the `RelationResolver` with the current day.<br>
     /// If during resolving an error occurs, the resolver stops and a log will be displayed.<br>
