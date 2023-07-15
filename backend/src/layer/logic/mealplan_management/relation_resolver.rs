@@ -80,12 +80,12 @@ where
         // Case 1.2: Or just a meal could be found.
         if let Some(similar_meal) = similar_meal_result {
             self.db
-                .update_meal(similar_meal.id, db_line.id, date, &dish.name, &dish.price)
+                .update_meal(similar_meal.id, db_line.id, date, &dish.name, dish.price)
                 .await?;
         // Case 2: A similar side could be found.
         } else if let Some(similar_side) = similar_side_result {
             self.db
-                .update_side(similar_side.id, db_line.id, date, &dish.name, &dish.price)
+                .update_side(similar_side.id, db_line.id, date, &dish.name, dish.price)
                 .await?;
         // Case 3: No similar meal could be found. Dish needs to be determined.
         } else if Self::is_side(dish.price.price_student, average, &dish.name)
@@ -94,7 +94,7 @@ where
                 .insert_side(
                     &dish.name,
                     dish.meal_type,
-                    &dish.price,
+                    dish.price,
                     date,
                     &dish.allergens,
                     &dish.additives,
@@ -105,7 +105,7 @@ where
                 .insert_meal(
                     &dish.name,
                     dish.meal_type,
-                    &dish.price,
+                    dish.price,
                     date,
                     &dish.allergens,
                     &dish.additives,

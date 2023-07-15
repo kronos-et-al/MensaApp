@@ -45,7 +45,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         line_id: Uuid,
         date: Date,
         name: &str,
-        price: &Price,
+        price: Price,
     ) -> Result<Meal>;
     /// Updates an existing side entity in the database. Returns the entity.
     async fn update_side(
@@ -54,7 +54,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         line_id: Uuid,
         date: Date,
         name: &str,
-        price: &Price,
+        price: Price,
     ) -> Result<Side>;
 
     /// Adds a new canteen entity to the database. Returns the new entity.
@@ -66,7 +66,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         &self,
         name: &str,
         meal_type: MealType,
-        price: &Price,
+        price: Price,
         next_served: Date,
         allergens: &[Allergen],
         additives: &[Additive],
@@ -76,7 +76,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         &self,
         name: &str,
         meal_type: MealType,
-        price: &Price,
+        price: Price,
         next_served: Date,
         allergens: &[Allergen],
         additives: &[Additive],
