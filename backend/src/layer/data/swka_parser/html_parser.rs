@@ -151,7 +151,7 @@ impl HTMLParser {
     ///
     /// ```
     /// use crate::mensa_app_backend::layer::data::swka_parser::html_parser::HTMLParser;
-    /// let canteen_data = HTMLParser::transform(include_str!("./tests/test_normal.html"));
+    /// let canteen_data = HTMLParser::transform(include_str!("./test_data/test_normal.html"));
     /// ```
     ///
     /// # Errors
@@ -399,38 +399,38 @@ mod tests {
 
     #[tokio::test]
     async fn test_1() {
-        test_html("./tests/test_1.html", include_str!("./tests/test_1.html"));
+        test_html("./test_data/test_1.html", include_str!("./test_data/test_1.html"));
     }
 
     #[tokio::test]
     async fn test_normal() {
         test_html(
-            "./tests/test_normal.html",
-            include_str!("./tests/test_normal.html"),
+            "./test_data/test_normal.html",
+            include_str!("./test_data/test_normal.html"),
         );
     }
 
     #[tokio::test]
     async fn test_no_meal_data() {
         test_html(
-            "./tests/test_no_meal_data.html",
-            include_str!("./tests/test_no_meal_data.html"),
+            "./test_data/test_no_meal_data.html",
+            include_str!("./test_data/test_no_meal_data.html"),
         );
     }
 
     #[tokio::test]
     async fn test_no_mealplan_shown() {
         test_html(
-            "./tests/test_no_mealplan_shown.html",
-            include_str!("./tests/test_no_mealplan_shown.html"),
+            "./test_data/test_no_mealplan_shown.html",
+            include_str!("./test_data/test_no_mealplan_shown.html"),
         );
     }
 
     #[tokio::test]
     async fn test_mensa_moltke() {
         test_html(
-            "./tests/test_mensa_moltke.html",
-            include_str!("./tests/test_mensa_moltke.html"),
+            "./test_data/test_mensa_moltke.html",
+            include_str!("./test_data/test_mensa_moltke.html"),
         );
     }
 
