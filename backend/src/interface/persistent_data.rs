@@ -19,8 +19,9 @@ pub enum DataError {
     NoSuchItem,
     /// Error occurred during data request or an internal connection fault
     #[error("internal error ocurred: {0}")]
-    InternalError(#[from] Box<dyn Error + Send + Sync>),
+    InternalError(#[from] sqlx::Error),
 }
+
 
 #[async_trait]
 /// An interface for checking relations and inserting data structures. The MealplanManagement component uses this interface for database access.

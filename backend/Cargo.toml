@@ -33,3 +33,6 @@ serial_test = "2.0.0"
 [[bin]]
 name = "graphql_mock"
 path = "src/layer/trigger/graphql/bin.rs"
+
+[profile.dev.package.sqlx-macros]
+opt-level = 3

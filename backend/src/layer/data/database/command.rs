@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use sqlx::{Pool, Postgres, query_as};
+use sqlx::{query, query_as, Pool, Postgres};
 
 use crate::{
     interface::persistent_data::{
@@ -66,6 +66,10 @@ impl CommandDataAccess for PersistentCommandData {
 
     /// Loads all api_keys from the database.
     async fn get_api_keys(&self) -> Result<Vec<ApiKey>> {
-        todo!()
+        let keys = sqlx::query_as!(ApiKey, "SELECT api_key as key, description FROM api_key")
+            .fetch_all(&self.pool)
+            .await?;
+
+        Ok(keys)
     }
 }
