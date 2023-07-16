@@ -162,46 +162,43 @@ impl HTMLParser {
     }
 
     fn get_canteens(root_node: &ElementRef) -> Vec<ParseCanteen> {
-        let mut canteens = Vec::new();
-        for day_node in Self::get_day_nodes(root_node) {
-            canteens.extend(Self::get_canteen(root_node, &day_node).into_iter());
-        }
-        canteens
+        Self::get_day_nodes(root_node)
+            .into_iter()
+            .filter_map(|day_node| Self::get_canteen(root_node, &day_node))
+            .collect()
     }
 
     fn get_canteen(root_node: &ElementRef, day_node: &ElementRef) -> Option<ParseCanteen> {
-        Self::get_canteen_name(root_node).map(|name| ParseCanteen {
-            name,
+        Some(ParseCanteen {
+            name: Self::get_canteen_name(root_node)?,
             lines: Self::get_lines(day_node),
         })
     }
 
     fn get_lines(day_node: &ElementRef) -> Vec<ParseLine> {
-        let mut lines: Vec<ParseLine> = Vec::new();
-        for line_node in Self::get_line_nodes(day_node) {
-            lines.extend(Self::get_line(&line_node).into_iter());
-        }
-        lines
+        Self::get_line_nodes(day_node)
+            .into_iter()
+            .filter_map(|line_node| Self::get_line(&line_node))
+            .collect()
     }
 
     fn get_line(line_node: &ElementRef) -> Option<ParseLine> {
-        Self::get_line_name(line_node).map(|name| ParseLine {
-            name,
+        Some(ParseLine {
+            name: Self::get_line_name(line_node)?,
             dishes: Self::get_dishes(line_node),
         })
     }
 
     fn get_dishes(line_node: &ElementRef) -> Vec<Dish> {
-        let mut dishes: Vec<Dish> = Vec::new();
-        for dish_node in Self::get_dish_nodes(line_node) {
-            dishes.extend(Self::get_dish(&dish_node).into_iter());
-        }
-        dishes
+        Self::get_dish_nodes(line_node)
+            .into_iter()
+            .filter_map(|dish_node| Self::get_dish(&dish_node))
+            .collect()
     }
 
     fn get_dish(dish_node: &ElementRef) -> Option<Dish> {
-        Self::get_dish_name(dish_node).map(|name| Dish {
-            name,
+        Some(Dish {
+            name: Self::get_dish_name(dish_node)?,
             price: Self::get_dish_price(dish_node),
             allergens: Self::get_dish_allergens(dish_node),
             additives: Self::get_dish_additives(dish_node),
