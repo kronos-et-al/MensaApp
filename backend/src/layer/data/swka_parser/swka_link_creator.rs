@@ -43,8 +43,8 @@ impl SwKaLinkCreator {
 
     fn get_all_urls_for_next_weeks_from_date(date: Date) -> Vec<String> {
         (0..NUMBER_OF_WEEKS_TO_POLL)
-        .flat_map(|week| Self::get_urls(date + Duration::weeks(week.into())))
-        .collect()
+            .flat_map(|week| Self::get_urls(date + Duration::weeks(week.into())))
+            .collect()
     }
 
     fn get_calender_week(day: Date) -> u32 {

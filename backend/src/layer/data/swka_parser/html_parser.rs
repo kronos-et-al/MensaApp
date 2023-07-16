@@ -315,7 +315,9 @@ impl HTMLParser {
     fn get_dish_allergens(dish_node: &ElementRef) -> Option<Vec<Allergen>> {
         let selector = Selector::parse(DISH_INFO_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         let allergens_node = dish_node.select(&selector).next()?;
-        Some(Self::get_allergens_through_regex(&allergens_node.inner_html()))
+        Some(Self::get_allergens_through_regex(
+            &allergens_node.inner_html(),
+        ))
     }
 
     fn get_allergens_through_regex(string: &str) -> Vec<Allergen> {
@@ -329,7 +331,9 @@ impl HTMLParser {
     fn get_dish_additives(dish_node: &ElementRef) -> Option<Vec<Additive>> {
         let selector = Selector::parse(DISH_INFO_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         let additives_node = dish_node.select(&selector).next()?;
-        Some(Self::get_additives_through_regex(&additives_node.inner_html()))
+        Some(Self::get_additives_through_regex(
+            &additives_node.inner_html(),
+        ))
     }
 
     fn get_additives_through_regex(string: &str) -> Vec<Additive> {
