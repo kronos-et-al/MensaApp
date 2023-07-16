@@ -3,11 +3,10 @@ class ImageData {
   final String _id;
   final String _url;
   final double _imageRank;
-  final int? _individualRating;
   final int _positiveRating;
   final int _negativeRating;
 
-
+  int? _individualRating;
 
   /// This constructor creates an image with the committed values.
   /// @param id The id of the image
@@ -35,13 +34,18 @@ class ImageData {
 
   int get positiveRating => _positiveRating;
 
-  int? get individualRating => _individualRating;
+  int get individualRating => _individualRating ?? 0;
 
   double get imageRank => _imageRank;
 
   String get url => _url;
 
   String get id => _id;
+
+
+  set individualRating(int value) {
+    _individualRating = value;
+  }
 
   Map<String, dynamic> toMap() {
     return {
