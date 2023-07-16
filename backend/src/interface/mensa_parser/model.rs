@@ -4,7 +4,7 @@ use std::fmt::Display;
 
 use crate::util::{Additive, Allergen, MealType, Price};
 
-/// Canteen-Struct containing all mealplan information of an canteen. Contains raw data.
+/// Canteen struct containing all meal plan information of an canteen. Contains raw data.
 #[derive(Debug)]
 pub struct ParseCanteen {
     /// Name of the canteen.
@@ -23,7 +23,7 @@ impl Display for ParseCanteen {
     }
 }
 
-/// Line-Struct containing all information of an line and their meals. Contains raw data.
+/// Line struct containing all information of an line and their meals. Contains raw data.
 #[derive(Debug)]
 pub struct ParseLine {
     /// Name of the line.
@@ -42,7 +42,7 @@ impl Display for ParseLine {
     }
 }
 
-/// Dish-Struct containing all information of a meal or side.
+/// Dish struct containing all information of a meal or side.
 #[derive(Debug)]
 pub struct Dish {
     /// Name of the dish.
@@ -55,7 +55,7 @@ pub struct Dish {
     pub additives: Vec<Additive>,
     /// Meal-Type of the dish.
     pub meal_type: MealType,
-    /// Environmental_score given by the swka.
+    /// Environmental score given by the swka.
     pub env_score: u32,
 }
 
