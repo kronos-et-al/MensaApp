@@ -115,11 +115,13 @@ const ENV_SCORE_ATTRIBUTE_NAME: &str = "data-rating";
 
 const DATE_FORMAT: &str = "%Y-%m-%d";
 /// A Regex for getting prices in euros. A price consists of 1 or more digits, followed by a comma and then exactly two digits
-const PRICE_REGEX: &str = r"(?<euros>[1-9]),(?<cents>[0-9]{2})";
+const PRICE_REGEX: &str = r"([0-9]*),([0-9]{2})";
 /// A Regex for getting allergens. An allergen consists of a single Uppercase letter followed by one or more upper- or lowercase letters (indicated by \w+)
 const ALLERGEN_REGEX: &str = r"[A-Z]\w+";
 /// A regex for getting additives. An additive consists of one or more digits
 const ADDITIVE_REGEX: &str = r"[0-9]{1,2}";
+
+const NUMBER_OF_MEAL_TYPES: u32 = 8;
 
 const PARSE_E_MSG: &str = "Error while parsing";
 const SELECTOR_PARSE_E_MSG: &str = "Error while parsing Selector string";
@@ -153,12 +155,11 @@ impl HTMLParser {
         let root_node = Self::get_root_node(&document)?;
         let dates = Self::get_dates(&root_node);
         let canteens = Self::get_canteens(&root_node);
-        if dates.len() == canteens.len() {
-            // Here we have two vectors of the same length: One containing Date and one containing ParseCanteen. In order to get one containing tuples of both we use zip()
-            Ok(dates.into_iter().zip(canteens.into_iter()).collect())
-        } else {
-            Err(ParseError::InvalidHtmlDocument)
+        if dates.len() != canteens.len() {
+            return Err(ParseError::InvalidHtmlDocument);
         }
+        // Here we have two vectors of the same length: One containing Date and one containing ParseCanteen. In order to get one containing tuples of both we use zip()
+        Ok(dates.into_iter().zip(canteens.into_iter()).collect())
     }
 
     fn get_canteens(root_node: &ElementRef) -> Vec<ParseCanteen> {
@@ -220,45 +221,49 @@ impl HTMLParser {
 
     fn get_day_nodes<'a>(root_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
         let selector = Selector::parse(DAY_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        root_node.select(&selector).collect::<Vec<_>>()
+        root_node.select(&selector).collect()
     }
 
     fn get_line_nodes<'a>(day_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
         let selector = Selector::parse(LINE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        day_node.select(&selector).collect::<Vec<_>>()
+        day_node.select(&selector).collect()
     }
 
     fn get_dish_nodes<'a>(line_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
         let mut dish_nodes = Vec::new();
-        for i in 0..8 {
-            let selector =
-                Selector::parse(&format!("{DISH_NODE_CLASS_SELECTOR}{i}")).expect(SELECTOR_PARSE_E_MSG);
-            dish_nodes.append(&mut line_node.select(&selector).collect::<Vec<_>>());
+        for i in 0..NUMBER_OF_MEAL_TYPES {
+            let selector = Selector::parse(&format!("{DISH_NODE_CLASS_SELECTOR}{i}"))
+                .expect(SELECTOR_PARSE_E_MSG);
+            dish_nodes.append(&mut line_node.select(&selector).collect());
         }
         dish_nodes
     }
 
     fn get_dates(root_node: &ElementRef) -> Vec<Date> {
-        let selector = Selector::parse(DAY_DATE_SUPER_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
+        let selector =
+            Selector::parse(DAY_DATE_SUPER_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         root_node
             .select(&selector)
             .next()
-            .map_or_else(Vec::new, |date_node| {
-                let selector = Selector::parse(DAY_DATE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
+            .map(|date_node| {
+                let selector =
+                    Selector::parse(DAY_DATE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
                 let mut dates = Vec::new();
                 for element in date_node.select(&selector) {
                     if let Some(date_string) = element.value().attr(DAY_DATE_ATTRIBUTE_NAME) {
-                        dates.push(
-                            Date::parse_from_str(date_string, DATE_FORMAT).expect(PARSE_E_MSG),
-                        );
+                        if let Ok(date) = Date::parse_from_str(date_string, DATE_FORMAT) {
+                            dates.push(date);
+                        }
                     }
                 }
                 dates
             })
+            .unwrap_or_default()
     }
 
     fn get_canteen_name(root_node: &ElementRef) -> Option<String> {
-        let selector = Selector::parse(CANTEEN_NAME_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
+        let selector =
+            Selector::parse(CANTEEN_NAME_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         root_node
             .select(&selector)
             .next()
@@ -294,7 +299,7 @@ impl HTMLParser {
     }
 
     fn get_dish_price(dish_node: &ElementRef) -> Price {
-        let mut prices: [u32; 4] = [0; 4];
+        let mut prices = [0_u32; 4];
         for i in 1..5 {
             let selector = Selector::parse(&format!("{DISH_PRICE_NODE_CLASS_SELECTOR}{i}"))
                 .expect(SELECTOR_PARSE_E_MSG);
@@ -302,7 +307,7 @@ impl HTMLParser {
                 let price_string: String = price_node.inner_html();
                 let regex = Regex::new(PRICE_REGEX).expect(REGEX_PARSE_E_MSG);
                 prices[i - 1] = regex.captures(&price_string).map_or(0, |capture| {
-                    format!("{}{}", &capture["euros"], &capture["cents"])
+                    format!("{}{}", &capture[1], &capture[2])
                         .parse::<u32>()
                         .expect(PARSE_E_MSG)
                 });
@@ -321,7 +326,7 @@ impl HTMLParser {
         dish_node
             .select(&selector)
             .next()
-            .map_or_else(Vec::new, |allergens_node| {
+            .map(|allergens_node| {
                 let allergens_raw = allergens_node.inner_html();
                 let regex = Regex::new(ALLERGEN_REGEX).expect(REGEX_PARSE_E_MSG);
                 regex
@@ -329,6 +334,7 @@ impl HTMLParser {
                     .filter_map(|a| Allergen::parse(a.as_str()))
                     .collect()
             })
+            .unwrap_or_default()
     }
 
     fn get_dish_additives(dish_node: &ElementRef) -> Vec<Additive> {
@@ -336,7 +342,7 @@ impl HTMLParser {
         dish_node
             .select(&selector)
             .next()
-            .map_or_else(Vec::new, |additives_node| {
+            .map(|additives_node| {
                 let additives_raw = additives_node.inner_html();
                 let regex = Regex::new(ADDITIVE_REGEX).expect(REGEX_PARSE_E_MSG);
                 regex
@@ -344,22 +350,21 @@ impl HTMLParser {
                     .filter_map(|a| Additive::parse(a.as_str()))
                     .collect()
             })
+            .unwrap_or_default()
     }
 
     fn get_dish_type(dish_node: &ElementRef) -> MealType {
         let selector = Selector::parse(DISH_TYPE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        let dish_type_nodes = dish_node.select(&selector).collect::<Vec<_>>();
-        for dish_type_node in dish_type_nodes {
-            let title = dish_type_node
-                .value()
-                .attr(DISH_TYPE_ATTRIBUTE_NAME)
-                .unwrap_or_default();
-            let dish_type = MealType::parse(title);
-            if dish_type != MealType::Unknown {
-                return dish_type;
-            }
-        }
-        MealType::Unknown
+        dish_node
+            .select(&selector)
+            .next()
+            .map_or(MealType::Unknown, |dish_type_node| {
+                let title = dish_type_node
+                    .value()
+                    .attr(DISH_TYPE_ATTRIBUTE_NAME)
+                    .unwrap_or_default();
+                MealType::parse(title)
+            })
     }
 
     fn get_dish_env_score(dish_node: &ElementRef) -> u32 {
@@ -368,7 +373,7 @@ impl HTMLParser {
         env_score_node
             .and_then(|x| x.value().attr(ENV_SCORE_ATTRIBUTE_NAME))
             .and_then(|s| s.parse::<u32>().ok())
-            .unwrap_or(0)
+            .unwrap_or_default()
     }
 }
 
@@ -387,7 +392,10 @@ mod tests {
 
     #[tokio::test]
     async fn test_1() {
-        test_html("./test_data/test_1.html", include_str!("./test_data/test_1.html"));
+        test_html(
+            "./test_data/test_1.html",
+            include_str!("./test_data/test_1.html"),
+        );
     }
 
     #[tokio::test]
