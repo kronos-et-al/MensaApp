@@ -10,5 +10,5 @@ CREATE TABLE food_plan (
   priceEmployee price NOT NULL,
   pricePupil price NOT NULL,
   priceGuest price NOT NULL,
-  PRIMARY KEY (line_id, food_id, date)
+  PRIMARY KEY (line_id, food_id, serve_date)
 );
