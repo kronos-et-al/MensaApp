@@ -297,20 +297,15 @@ impl HTMLParser {
     }
 
     fn get_dish_price(dish_node: &ElementRef) -> Price {
-        let mut prices = [0_u32; 4];
-        for i in 1..5 {
-            let selector = Selector::parse(&format!("{DISH_PRICE_NODE_CLASS_SELECTOR}{i}"))
-                .expect(SELECTOR_PARSE_E_MSG);
-            if let Some(price_node) = dish_node.select(&selector).next() {
-                prices[i - 1] =
-                    Self::get_price_through_regex(&price_node.inner_html()).unwrap_or_default();
-            }
-        }
+        let mut prices = (1..5)
+            .filter_map(|i| Selector::parse(&format!("{DISH_PRICE_NODE_CLASS_SELECTOR}{i}")).ok())
+            .filter_map(|selector| dish_node.select(&selector).next())
+            .filter_map(|price_node| Self::get_price_through_regex(&price_node.inner_html()));
         Price {
-            price_student: prices[0],
-            price_guest: prices[1],
-            price_employee: prices[2],
-            price_pupil: prices[3],
+            price_student: prices.next().unwrap_or_default(),
+            price_guest: prices.next().unwrap_or_default(),
+            price_employee: prices.next().unwrap_or_default(),
+            price_pupil: prices.next().unwrap_or_default(),
         }
     }
 
