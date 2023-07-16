@@ -14,6 +14,6 @@ enum FoodType {
   vegetarian,
   /// the food is vegan
   vegan,
-  /// the food type is unspcified
+  /// the food type is unspecified
   unknown,
 }

@@ -135,16 +135,20 @@ class Meal {
         _isFavorite = isFavorite ?? meal.isFavorite;
 
 
+  /// This method returns the number of occurences in three months.
   int? get numberOfOccurance => _numberOfOccurance;
 
+  /// This method adds the meal to the favorites.
   void setFavorite() {
     _isFavorite = true;
   }
 
+  /// This method deletes the meal from the favorites.
   void deleteFavorite() {
     _isFavorite = false;
   }
 
+  /// This method returns the information of the meal that are stored in the database.
   Map<String, dynamic> toMap() {
     return {
       'mealID': _id,
@@ -160,6 +164,7 @@ class Meal {
     };
   }
 
+  /// This method returns the additives as a map.
   List<Map<String, dynamic>> additiveToMap() {
     return _additives!.map((additive) => {
       'mealID': _id,
@@ -167,6 +172,7 @@ class Meal {
     }).toList();
   }
 
+  /// This method returns the allerens as a map.
   List<Map<String, dynamic>> allergenToMap() {
     return _allergens!.map((allergen) => {
       'mealID': _id,
