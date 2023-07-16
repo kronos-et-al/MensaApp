@@ -22,7 +22,6 @@ pub enum DataError {
     InternalError(#[from] sqlx::Error),
 }
 
-
 #[async_trait]
 /// An interface for checking relations and inserting data structures. The MealplanManagement component uses this interface for database access.
 pub trait MealplanManagementDataAccess {
