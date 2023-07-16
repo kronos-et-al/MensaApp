@@ -42,11 +42,9 @@ impl SwKaLinkCreator {
     }
 
     fn get_all_urls_for_next_weeks_from_date(date: Date) -> Vec<String> {
-        let mut all_urls = Vec::new();
-        for i in 0..NUMBER_OF_WEEKS_TO_POLL {
-            all_urls.append(&mut Self::get_urls(date + Duration::weeks(i.into())));
-        }
-        all_urls
+        (0..NUMBER_OF_WEEKS_TO_POLL)
+        .flat_map(|week| Self::get_urls(date + Duration::weeks(week.into())))
+        .collect()
     }
 
     fn get_calender_week(day: Date) -> u32 {

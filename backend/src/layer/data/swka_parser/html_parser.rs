@@ -121,7 +121,7 @@ const ALLERGEN_REGEX: &str = r"[A-Z]\w+";
 /// A regex for getting additives. An additive consists of one or more digits
 const ADDITIVE_REGEX: &str = r"[0-9]{1,2}";
 
-const NUMBER_OF_MEAL_TYPES: u32 = 8;
+const NUMBER_OF_MEAL_TYPES: usize = 8;
 
 const SELECTOR_PARSE_E_MSG: &str = "Error while parsing Selector string";
 const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
@@ -226,13 +226,10 @@ impl HTMLParser {
     }
 
     fn get_dish_nodes<'a>(line_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
-        let mut dish_nodes = Vec::new();
-        for i in 0..NUMBER_OF_MEAL_TYPES {
-            let selector = Selector::parse(&format!("{DISH_NODE_CLASS_SELECTOR}{i}"))
-                .expect(SELECTOR_PARSE_E_MSG);
-            dish_nodes.append(&mut line_node.select(&selector).collect());
-        }
-        dish_nodes
+        (0..NUMBER_OF_MEAL_TYPES)
+            .filter_map(|i| Selector::parse(&format!("{DISH_NODE_CLASS_SELECTOR}{i}")).ok())
+            .flat_map(|selector| line_node.select(&selector).collect::<Vec<_>>())
+            .collect()
     }
 
     fn get_dates(root_node: &ElementRef) -> Vec<Date> {
