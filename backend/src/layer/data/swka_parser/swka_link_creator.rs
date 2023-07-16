@@ -5,7 +5,7 @@
 //!
 //! Like this for example:
 //!
-//! <https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28>
+//! <https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28>
 
 use chrono::{Datelike, Duration, Local};
 
@@ -20,7 +20,7 @@ const MENSA_NAMES: [&str; 7] = [
     "mensa_tiefenbronner",
     "mensa_holzgarten",
 ];
-const BASE_URL: &str = "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/";
+const BASE_URL: &str = "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/";
 const URL_SEPARATOR: char = '/';
 const WEEK_SELECTOR: &str = "?kw=";
 const NUMBER_OF_WEEKS_TO_POLL: u32 = 4;
@@ -65,44 +65,44 @@ mod tests {
     use crate::{layer::data::swka_parser::swka_link_creator::SwKaLinkCreator, util::Date};
 
     const URLS_FOR_NEXT_WEEKS: [&str; 28] = [
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_moltke/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=29",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=29",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_moltke/?kw=29",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=29",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=29",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=29",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=29",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=30",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=30",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_moltke/?kw=30",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=30",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=30",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=30",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=30",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=31",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=31",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_moltke/?kw=31",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=31",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=31",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=31",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=31",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_moltke/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=29",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=29",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_moltke/?kw=29",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=29",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=29",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=29",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=29",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=30",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=30",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_moltke/?kw=30",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=30",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=30",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=30",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=30",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=31",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=31",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_moltke/?kw=31",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=31",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=31",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=31",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=31",
     ];
 
     const URLS_FOR_CURRENT_WEEK: [&str; 7] = [
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_moltke/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_moltke/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=28",
     ];
 
     #[tokio::test]
