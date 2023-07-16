@@ -16,10 +16,6 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
     _doneInitialization = _init();
   }
 
-  FavoriteMealAccess(this._database) {
-    _init();
-  }
-
   Future<void> _init() async {
     _favorites = await _database.getFavorites();
   }
