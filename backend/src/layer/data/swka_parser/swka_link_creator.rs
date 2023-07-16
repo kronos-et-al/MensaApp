@@ -7,7 +7,7 @@
 //!
 //! <https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28>
 
-use chrono::{Datelike, Local, Duration};
+use chrono::{Datelike, Duration, Local};
 
 use crate::util::Date;
 

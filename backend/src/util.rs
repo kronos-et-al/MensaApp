@@ -71,8 +71,6 @@ pub enum Allergen {
     Gl,
 }
 
-
-
 /// This enum lists every possible additive a meal can have.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
 pub enum Additive {

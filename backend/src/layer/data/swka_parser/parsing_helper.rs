@@ -1,4 +1,4 @@
-use crate::util::{Allergen, Additive, MealType};
+use crate::util::{Additive, Allergen, MealType};
 
 impl Allergen {
     #[must_use]
