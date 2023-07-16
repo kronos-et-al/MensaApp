@@ -22,7 +22,7 @@ tracing = "0.1"
 tracing-subscriber = {version = "0.2.0", features = ["env-filter"]}
 base64 = "0.21.2"
 tokio-cron-scheduler = "0.9.4"
-sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-native-tls", "postgres", "uuid", "chrono", "macros" ] }
+sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-native-tls", "postgres", "uuid", "chrono", "macros"] }
 
 
 [dev-dependencies]

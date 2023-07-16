@@ -36,9 +36,13 @@ For deployment of the server, initial settings like API tokens and other access 
 To make development easier, these can also be defined textually in a `.env` file. A preset with all available options is provided as `.env.default`. The `.env` file is the **only place you can put credentials safely** so that they get not published in the _public_ git repository.
 
 ### Databse
-Install docker and run:
-```bash
-docker run -itd -e POSTGRES_USER=postgres_user -e POSTGRES_PASSWORD=secret_password -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=mensa_app -p 5432:5432 -v data:/var/lib/postgresql/data --name postgresql postgres
-```
-This runs a postgres database as a docker container.
-To setup all relations install `cargo install sqlx-cli` and run `cargo sqlx mig run`.
+1. Setup your environment variable for the database. The default should be ok when you use the command below for your database.
+
+1. Install docker and run to spun up a database:
+    ```bash
+    docker run -itd -e POSTGRES_USER=postgres_user -e POSTGRES_PASSWORD=secret_password -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=mensa_app -p 5432:5432 -v data:/var/lib/postgresql/data --name postgresql postgres
+    ```
+    This runs a postgres database as a docker container.
+    To setup all relations install `cargo install sqlx-cli` and run `cargo sqlx mig run`.
+
+1. After adding a query in rust code, make sure to run `cargo sqlx prepare` to safe the database format for offline usage so compilation can be successful even if no database is present.
