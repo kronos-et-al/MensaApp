@@ -23,7 +23,7 @@ const fn get_price() -> Price {
     }
 }
 
-const fn get_price_by_reference(price: &Price) -> Price {
+const fn get_price_by_reference(price: Price) -> Price {
     Price {
         price_student: price.price_student,
         price_employee: price.price_employee,
@@ -59,11 +59,12 @@ fn get_meal() -> Meal {
         price: get_price(),
         last_served: None,
         next_served: None,
-        relative_frequency: 0.0,
+        frequency: 0,
         rating_count: 0,
         average_rating: 0.0,
         date: Date::default(),
         line_id: Uuid::default(),
+        new: false,
     }
 }
 
@@ -157,7 +158,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         _line_id: Uuid,
         _date: Date,
         name: &str,
-        price: &Price,
+        price: Price,
     ) -> Result<Meal> {
         let meal = Meal {
             id,
@@ -174,7 +175,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         _line_id: Uuid,
         _date: Date,
         name: &str,
-        price: &Price,
+        price: Price,
     ) -> Result<Side> {
         let side = Side {
             id,
@@ -206,7 +207,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         &self,
         name: &str,
         meal_type: MealType,
-        price: &Price,
+        price: Price,
         next_served: Date,
         _allergens: &[Allergen],
         _additives: &[Additive],
@@ -225,7 +226,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         &self,
         name: &str,
         meal_type: MealType,
-        price: &Price,
+        price: Price,
         _next_served: Date,
         _allergens: &[Allergen],
         _additives: &[Additive],

@@ -10,8 +10,8 @@ use tracing::log::{debug, warn};
 
 pub struct MealPlanManager<Parser, DataAccess>
 where
-    Parser: MealplanParser + Send + Sync,
-    DataAccess: MealplanManagementDataAccess + Send + Sync,
+    Parser: MealplanParser,
+    DataAccess: MealplanManagementDataAccess,
 {
     resolver: RelationResolver<DataAccess>,
     parser: Parser,
@@ -19,12 +19,12 @@ where
 
 impl<Parser, DataAccess> MealPlanManager<Parser, DataAccess>
 where
-    DataAccess: MealplanManagementDataAccess + Send + Sync,
-    Parser: MealplanParser + Send + Sync,
+    DataAccess: MealplanManagementDataAccess,
+    Parser: MealplanParser,
 {
-    pub const fn _new(database: DataAccess, meal_plan_parser: Parser) -> Self {
+    pub const fn new(database: DataAccess, meal_plan_parser: Parser) -> Self {
         Self {
-            resolver: RelationResolver::_new(database),
+            resolver: RelationResolver::new(database),
             parser: meal_plan_parser,
         }
     }
@@ -33,7 +33,7 @@ where
         for parse_canteen in parse_canteens {
             let name = &parse_canteen.name.clone();
             match self.resolver.resolve(parse_canteen, date).await {
-                Ok(_canteen) => debug!("resolved canteen '{name}' with no errors"),
+                Ok(_) => debug!("resolved canteen '{name}' with no errors"),
                 Err(error) => warn!("resolved canteen '{name}' with errors: {error}"),
             }
         }
@@ -43,10 +43,9 @@ where
 #[async_trait]
 impl<DataAccess, Parser> MensaParseScheduling for MealPlanManager<Parser, DataAccess>
 where
-    DataAccess: MealplanManagementDataAccess + Send + Sync,
-    Parser: MealplanParser + Send + Sync,
+    DataAccess: MealplanManagementDataAccess,
+    Parser: MealplanParser,
 {
-    //TODO transactions if relation_resolve fails and we dont want uncompleted meal plans?
     /// This method starts the parsing procedure for all meal plans **of the current day**.<br>
     /// After parsing, the raw data objects (`Vec<ParseCanteen>`) will be inserted by the `RelationResolver` with the current day.<br>
     /// If during resolving an error occurs, the resolver stops and a log will be displayed.<br>
@@ -91,13 +90,13 @@ mod test {
     // Tests seems useless; unless there are testing nothing crashes?
     #[tokio::test]
     async fn valid_start_update_parsing() {
-        let manager = MealPlanManager::_new(MealplanManagementDatabaseMock, MealPlanParserMock);
+        let manager = MealPlanManager::new(MealplanManagementDatabaseMock, MealPlanParserMock);
         manager.start_update_parsing().await;
     }
 
     #[tokio::test]
     async fn valid_start_full_parsing() {
-        let manager = MealPlanManager::_new(MealplanManagementDatabaseMock, MealPlanParserMock);
+        let manager = MealPlanManager::new(MealplanManagementDatabaseMock, MealPlanParserMock);
         manager.start_full_parsing().await;
     }
 }

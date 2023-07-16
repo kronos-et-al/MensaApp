@@ -20,14 +20,11 @@ pub enum DataError {
     /// Error occurred during data request or an internal connection fault
     #[error("internal error occurred: {0}")]
     InternalError(#[from] Box<dyn Error + Send + Sync>),
-    /// Error occurred during data calculation
-    #[error("calculation could not be parsed")]
-    CalculationError,
 }
 
 #[async_trait]
 /// An interface for checking relations and inserting data structures. The MealplanManagement component uses this interface for database access.
-pub trait MealplanManagementDataAccess {
+pub trait MealplanManagementDataAccess: Send + Sync {
     /// Determines the canteen with the most similar name.
     async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Canteen>>;
     /// Determines the line with the most similar name.
@@ -48,7 +45,7 @@ pub trait MealplanManagementDataAccess {
         line_id: Uuid,
         date: Date,
         name: &str,
-        price: &Price,
+        price: Price,
     ) -> Result<Meal>;
     /// Updates an existing side entity in the database. Returns the entity.
     async fn update_side(
@@ -57,7 +54,7 @@ pub trait MealplanManagementDataAccess {
         line_id: Uuid,
         date: Date,
         name: &str,
-        price: &Price,
+        price: Price,
     ) -> Result<Side>;
 
     /// Adds a new canteen entity to the database. Returns the new entity.
@@ -69,7 +66,7 @@ pub trait MealplanManagementDataAccess {
         &self,
         name: &str,
         meal_type: MealType,
-        price: &Price,
+        price: Price,
         next_served: Date,
         allergens: &[Allergen],
         additives: &[Additive],
@@ -79,7 +76,7 @@ pub trait MealplanManagementDataAccess {
         &self,
         name: &str,
         meal_type: MealType,
-        price: &Price,
+        price: Price,
         next_served: Date,
         allergens: &[Allergen],
         additives: &[Additive],
