@@ -11,11 +11,11 @@
 //!     <!-- it contains the name of the canteen -->
 //!     <h1 class="mensa_fullname">Dining Hall am Adenauerring</h1>
 //! <!-- ... -->
-//!     <!-- This is the super node of the day date node identified by -->
-//!     <!--`DAY_DATE_SUPER_NODE_CLASS_SELECTOR` it contains several day nodes. See below: -->
+//!     <!-- This is the super node of the date node identified by -->
+//!     <!--`DATE_SUPER_NODE_CLASS_SELECTOR` it contains several date nodes. See below: -->
 //!     <ul class="canteen-day-nav">
-//!     <!-- This is a day date node identified by `DAY_DATE_NODE_CLASS_SELECTOR` -->
-//!     <!-- it contains an attribute identified by `DAY_DATE_ATTRIBUTE_NAME`, -->
+//!     <!-- This is a date node identified by `DATE_NODE_CLASS_SELECTOR` -->
+//!     <!-- it contains an attribute identified by `DATE_ATTRIBUTE_NAME`, -->
 //!     <!-- which contains the date -->
 //!     <li>
 //!         <a id="canteen_day_nav_1"
@@ -96,9 +96,9 @@ use scraper::{ElementRef, Html, Selector};
 const ROOT_NODE_CLASS_SELECTOR: &str = "div.main-content";
 const CANTEEN_NAME_NODE_CLASS_SELECTOR: &str = "h1.mensa_fullname";
 
-const DAY_DATE_SUPER_NODE_CLASS_SELECTOR: &str = "ul.canteen-day-nav";
-const DAY_DATE_NODE_CLASS_SELECTOR: &str = "a";
-const DAY_DATE_ATTRIBUTE_NAME: &str = "rel";
+const DATE_SUPER_NODE_CLASS_SELECTOR: &str = "ul.canteen-day-nav";
+const DATE_NODE_CLASS_SELECTOR: &str = "a";
+const DATE_ATTRIBUTE_NAME: &str = "rel";
 const DAY_NODE_CLASS_SELECTOR: &str = "div.canteen-day";
 
 const LINE_NODE_CLASS_SELECTOR: &str = "tr.mensatype_rows";
@@ -238,7 +238,7 @@ impl HTMLParser {
                 let date_nodes = Self::get_date_nodes(&date_super_node);
                 let test: Vec<Date> = date_nodes
                     .into_iter()
-                    .filter_map(|date_node| date_node.value().attr(DAY_DATE_ATTRIBUTE_NAME))
+                    .filter_map(|date_node| date_node.value().attr(DATE_ATTRIBUTE_NAME))
                     .filter_map(|date_string| Date::parse_from_str(date_string, DATE_FORMAT).ok())
                     .collect();
                 test
@@ -248,12 +248,12 @@ impl HTMLParser {
 
     fn get_date_super_node<'a>(root_node: &'a ElementRef<'a>) -> Option<ElementRef<'a>> {
         let selector =
-            Selector::parse(DAY_DATE_SUPER_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
+            Selector::parse(DATE_SUPER_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         root_node.select(&selector).next()
     }
 
     fn get_date_nodes<'a>(date_super_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
-        let selector = Selector::parse(DAY_DATE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
+        let selector = Selector::parse(DATE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         date_super_node.select(&selector).collect()
     }
 
