@@ -152,7 +152,7 @@ impl HTMLParser {
     pub fn transform(html: &str) -> Result<Vec<(Date, ParseCanteen)>, ParseError> {
         let document = Html::parse_document(html);
         let root_node = Self::get_root_node(&document)?;
-        let dates = Self::get_dates(&root_node);
+        let dates = Self::get_dates(&root_node).unwrap_or_default();
         let canteens = Self::get_canteens(&root_node);
         if dates.len() != canteens.len() {
             return Err(ParseError::InvalidHtmlDocument);
@@ -200,10 +200,10 @@ impl HTMLParser {
         Some(Dish {
             name: Self::get_dish_name(dish_node)?,
             price: Self::get_dish_price(dish_node),
-            allergens: Self::get_dish_allergens(dish_node),
-            additives: Self::get_dish_additives(dish_node),
-            meal_type: Self::get_dish_type(dish_node),
-            env_score: Self::get_dish_env_score(dish_node),
+            allergens: Self::get_dish_allergens(dish_node).unwrap_or_default(),
+            additives: Self::get_dish_additives(dish_node).unwrap_or_default(),
+            meal_type: Self::get_dish_type(dish_node).unwrap_or(MealType::Unknown),
+            env_score: Self::get_dish_env_score(dish_node).unwrap_or_default(),
         })
     }
 
@@ -232,23 +232,20 @@ impl HTMLParser {
             .collect()
     }
 
-    fn get_dates(root_node: &ElementRef) -> Vec<Date> {
-        Self::get_date_super_node(root_node)
-            .map(|date_super_node| {
-                let date_nodes = Self::get_date_nodes(&date_super_node);
-                let test: Vec<Date> = date_nodes
-                    .into_iter()
-                    .filter_map(|date_node| date_node.value().attr(DATE_ATTRIBUTE_NAME))
-                    .filter_map(|date_string| Date::parse_from_str(date_string, DATE_FORMAT).ok())
-                    .collect();
-                test
-            })
-            .unwrap_or_default()
+    fn get_dates(root_node: &ElementRef) -> Option<Vec<Date>> {
+        let date_super_node = Self::get_date_super_node(root_node)?;
+        let date_nodes = Self::get_date_nodes(&date_super_node);
+        Some(
+            date_nodes
+                .into_iter()
+                .filter_map(|date_node| date_node.value().attr(DATE_ATTRIBUTE_NAME))
+                .filter_map(|date_string| Date::parse_from_str(date_string, DATE_FORMAT).ok())
+                .collect(),
+        )
     }
 
     fn get_date_super_node<'a>(root_node: &'a ElementRef<'a>) -> Option<ElementRef<'a>> {
-        let selector =
-            Selector::parse(DATE_SUPER_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
+        let selector = Selector::parse(DATE_SUPER_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         root_node.select(&selector).next()
     }
 
@@ -260,10 +257,8 @@ impl HTMLParser {
     fn get_canteen_name(root_node: &ElementRef) -> Option<String> {
         let selector =
             Selector::parse(CANTEEN_NAME_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        root_node
-            .select(&selector)
-            .next()
-            .map(|canteen_node| canteen_node.inner_html())
+        let canteen_node = root_node.select(&selector).next()?;
+        Some(canteen_node.inner_html())
     }
 
     fn get_line_name(line_node: &ElementRef) -> Option<String> {
@@ -317,59 +312,49 @@ impl HTMLParser {
         format!("{euros}{cents}").parse().ok()
     }
 
-    fn get_dish_allergens(dish_node: &ElementRef) -> Vec<Allergen> {
+    fn get_dish_allergens(dish_node: &ElementRef) -> Option<Vec<Allergen>> {
         let selector = Selector::parse(DISH_INFO_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        dish_node
-            .select(&selector)
-            .next()
-            .map(|allergens_node| {
-                let allergens_raw = allergens_node.inner_html();
-                let regex = Regex::new(ALLERGEN_REGEX).expect(REGEX_PARSE_E_MSG);
-                regex
-                    .find_iter(&allergens_raw)
-                    .filter_map(|a| Allergen::parse(a.as_str()))
-                    .collect()
-            })
-            .unwrap_or_default()
+        let allergens_node = dish_node.select(&selector).next()?;
+        let allergens_raw = allergens_node.inner_html();
+        Some(
+            Regex::new(ALLERGEN_REGEX)
+                .expect(REGEX_PARSE_E_MSG)
+                .find_iter(&allergens_raw)
+                .filter_map(|a| Allergen::parse(a.as_str()))
+                .collect(),
+        )
     }
 
-    fn get_dish_additives(dish_node: &ElementRef) -> Vec<Additive> {
+    fn get_dish_additives(dish_node: &ElementRef) -> Option<Vec<Additive>> {
         let selector = Selector::parse(DISH_INFO_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        dish_node
-            .select(&selector)
-            .next()
-            .map(|additives_node| {
-                let additives_raw = additives_node.inner_html();
-                let regex = Regex::new(ADDITIVE_REGEX).expect(REGEX_PARSE_E_MSG);
-                regex
-                    .find_iter(&additives_raw)
-                    .filter_map(|a| Additive::parse(a.as_str()))
-                    .collect()
-            })
-            .unwrap_or_default()
+        let additives_node = dish_node.select(&selector).next()?;
+        let additives_raw = additives_node.inner_html();
+        Some(
+            Regex::new(ADDITIVE_REGEX)
+                .expect(REGEX_PARSE_E_MSG)
+                .find_iter(&additives_raw)
+                .filter_map(|a| Additive::parse(a.as_str()))
+                .collect(),
+        )
     }
 
-    fn get_dish_type(dish_node: &ElementRef) -> MealType {
+    fn get_dish_type(dish_node: &ElementRef) -> Option<MealType> {
         let selector = Selector::parse(DISH_TYPE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        dish_node
-            .select(&selector)
-            .next()
-            .map_or(MealType::Unknown, |dish_type_node| {
-                let title = dish_type_node
-                    .value()
-                    .attr(DISH_TYPE_ATTRIBUTE_NAME)
-                    .unwrap_or_default();
-                MealType::parse(title)
-            })
+        let dish_type_node = dish_node.select(&selector).next()?;
+        dish_type_node
+            .value()
+            .attr(DISH_TYPE_ATTRIBUTE_NAME)
+            .map(MealType::parse)
     }
 
-    fn get_dish_env_score(dish_node: &ElementRef) -> u32 {
+    fn get_dish_env_score(dish_node: &ElementRef) -> Option<u32> {
         let selector = Selector::parse(ENV_SCORE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        let env_score_node = dish_node.select(&selector).next();
+        let env_score_node = dish_node.select(&selector).next()?;
         env_score_node
-            .and_then(|x| x.value().attr(ENV_SCORE_ATTRIBUTE_NAME))
-            .and_then(|s| s.parse::<u32>().ok())
-            .unwrap_or_default()
+            .value()
+            .attr(ENV_SCORE_ATTRIBUTE_NAME)?
+            .parse::<u32>()
+            .ok()
     }
 }
 
