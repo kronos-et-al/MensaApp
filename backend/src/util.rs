@@ -3,7 +3,6 @@
 //! For a complete list and explanations you can see [here](https://www.sw-ka.de/media/?file=4458listeallergesetzlichausweisungspflichtigenzusatzstoffeundallergenefuerwebsite160218.pdf&download).
 
 use async_graphql::Enum;
-use std::fmt::Display;
 
 /// Date type used in multiple places.
 pub type Date = chrono::NaiveDate;
@@ -72,81 +71,7 @@ pub enum Allergen {
     Gl,
 }
 
-impl Display for Allergen {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.value())
-    }
-}
 
-impl Allergen {
-    const fn value(&self) -> &str {
-        match self {
-            Self::Ca => "Cashews",
-            Self::Di => "Spelt and spelt gluten",
-            Self::Ei => "Eggs",
-            Self::Er => "Peanuts",
-            Self::Fi => "Fish",
-            Self::Ge => "Barley and barley gluten",
-            Self::Hf => "Oat and oat gluten",
-            Self::Ha => "Hazelnuts",
-            Self::Ka => "Kamut and kamut gluten",
-            Self::Kr => "Crustaceans",
-            Self::Lu => "Lupin",
-            Self::Ma => "Almonds",
-            Self::ML => "Milk/lactose",
-            Self::Pa => "Brazil nuts",
-            Self::Pe => "Pecans",
-            Self::Pi => "Pistachios",
-            Self::Qu => "Macadamia nuts",
-            Self::Ro => "Rye and rye gluten",
-            Self::Sa => "Sesame",
-            Self::Se => "Celery",
-            Self::Sf => "Sulphite",
-            Self::Sn => "Mustard",
-            Self::So => "Soy",
-            Self::Wa => "Walnuts",
-            Self::We => "Wheat and wheat gluten",
-            Self::Wt => "Molluscs",
-            Self::La => "With animal loaf",
-            Self::Gl => "With gelatine",
-        }
-    }
-
-    #[must_use]
-    pub fn parse(s: &str) -> Option<Self> {
-        match s {
-            "Ca" => Some(Self::Ca),
-            "Di" => Some(Self::Di),
-            "Ei" => Some(Self::Ei),
-            "Er" => Some(Self::Er),
-            "Fi" => Some(Self::Fi),
-            "Ge" => Some(Self::Ge),
-            "Hf" => Some(Self::Hf),
-            "Ha" => Some(Self::Ha),
-            "Ka" => Some(Self::Ka),
-            "Kr" => Some(Self::Kr),
-            "Lu" => Some(Self::Lu),
-            "Ma" => Some(Self::Ma),
-            "ML" => Some(Self::ML),
-            "Pa" => Some(Self::Pa),
-            "Pe" => Some(Self::Pe),
-            "Pi" => Some(Self::Pi),
-            "Qu" => Some(Self::Qu),
-            "Ro" => Some(Self::Ro),
-            "Sa" => Some(Self::Sa),
-            "Se" => Some(Self::Se),
-            "Sf" => Some(Self::Sf),
-            "Sn" => Some(Self::Sn),
-            "So" => Some(Self::So),
-            "Wa" => Some(Self::Wa),
-            "We" => Some(Self::We),
-            "Wt" => Some(Self::Wt),
-            "LAB" => Some(Self::La),
-            "GL" => Some(Self::Gl),
-            _ => None,
-        }
-    }
-}
 
 /// This enum lists every possible additive a meal can have.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
@@ -183,56 +108,6 @@ pub enum Additive {
     PressedFish,
 }
 
-impl Display for Additive {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.value())
-    }
-}
-
-impl Additive {
-    const fn value(&self) -> &str {
-        match self {
-            Self::Colorant => "Colorant",
-            Self::PreservingAgents => "Preserving agents",
-            Self::AntioxidantAgents => "Antioxidant agents",
-            Self::FlavourEnhancer => "Flavour enhancer",
-            Self::Phosphate => "Phosphate",
-            Self::SurfaceWaxed => "Surface waxed",
-            Self::Sulphur => "Sulphur",
-            Self::ArtificiallyBlackenedOlives => "Artificially blackened olives",
-            Self::Sweetener => "Sweetener",
-            Self::LaxativeIfOverused => "Laxative if overused",
-            Self::Phenylalanine => "Phenylalanine",
-            Self::Alcohol => "Alcohol",
-            Self::PressedMeat => "Pressed meat",
-            Self::GlazingWithCacao => "Glazing with cacao",
-            Self::PressedFish => "Pressed fish",
-        }
-    }
-
-    #[must_use]
-    pub fn parse(s: &str) -> Option<Self> {
-        match s {
-            "1" => Some(Self::Colorant),
-            "2" => Some(Self::PreservingAgents),
-            "3" => Some(Self::AntioxidantAgents),
-            "4" => Some(Self::FlavourEnhancer),
-            "5" => Some(Self::Phosphate),
-            "6" => Some(Self::SurfaceWaxed),
-            "7" => Some(Self::Sulphur),
-            "8" => Some(Self::ArtificiallyBlackenedOlives),
-            "9" => Some(Self::Sweetener),
-            "10" => Some(Self::LaxativeIfOverused),
-            "11" => Some(Self::Phenylalanine),
-            "12" => Some(Self::Alcohol),
-            "14" => Some(Self::PressedMeat),
-            "15" => Some(Self::GlazingWithCacao),
-            "27" => Some(Self::PressedFish),
-            _ => None,
-        }
-    }
-}
-
 /// This enum lists all the types a meal can be of.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
 pub enum MealType {
@@ -252,41 +127,6 @@ pub enum MealType {
     Fish,
     /// It is unknown whether this meal contains any meat or not.
     Unknown,
-}
-
-impl Display for MealType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.value())
-    }
-}
-
-impl MealType {
-    const fn value(&self) -> &str {
-        match self {
-            Self::Vegan => "veganes Gericht",
-            Self::Vegetarian => "vegetarisches Gericht",
-            Self::Beef => "enthält Rindfleisch",
-            Self::BeefAw => "enthält regionales Rindfleisch aus artgerechter Tierhaltung",
-            Self::Pork => "enthält Schweinefleisch",
-            Self::PorkAw => "enthält regionales Schweinefleisch aus artgerechter Tierhaltung",
-            Self::Fish => "MSC aus zertifizierter Fischerei",
-            Self::Unknown => "",
-        }
-    }
-
-    #[must_use]
-    pub fn parse(s: &str) -> Self {
-        match s {
-            "veganes Gericht" => Self::Vegan,
-            "vegetarisches Gericht" => Self::Vegetarian,
-            "enthält Rindfleisch" => Self::Beef,
-            "enthält regionales Rindfleisch aus artgerechter Tierhaltung" => Self::BeefAw,
-            "enthält Schweinefleisch" => Self::Pork,
-            "enthält regionales Schweinefleisch aus artgerechter Tierhaltung" => Self::PorkAw,
-            "MSC aus zertifizierter Fischerei" => Self::Fish,
-            _ => Self::Unknown,
-        }
-    }
 }
 
 /// This enum lists all the predetermined reasons a image can be reported for.
@@ -317,14 +157,4 @@ pub struct Price {
     pub price_guest: u32,
     /// Price of the dish for pupils.
     pub price_pupil: u32,
-}
-
-impl Display for Price {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "Prices: Student: {}, Employee: {}, Guest: {}, Pupil: {}",
-            self.price_student, self.price_employee, self.price_guest, self.price_pupil
-        )
-    }
 }

@@ -3,3 +3,4 @@ pub mod html_parser;
 mod swka_link_creator;
 mod swka_parse_manager;
 mod swka_resolver;
+mod parsing_helper;
