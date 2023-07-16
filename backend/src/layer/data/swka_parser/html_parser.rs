@@ -169,7 +169,7 @@ impl HTMLParser {
             // Here we have two vectors of the same length: One containing Date and one containing ParseCanteen. In order to get one containing tuples of both we use zip()
             Ok(dates.into_iter().zip(canteens.into_iter()).collect())
         } else {
-            Err(ParseError::InvalidHtmlDocument)
+            Err(ParseError::InvalidHtmlDocument("provided non equal amount of dates for canteens"))
         }
     }
 
@@ -227,7 +227,7 @@ impl HTMLParser {
         document
             .select(&selector)
             .next()
-            .ok_or(ParseError::InvalidHtmlDocument)
+            .ok_or(ParseError::InvalidHtmlDocument(ROOT_NODE_CLASS))
     }
 
     fn get_day_nodes<'a>(root_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {

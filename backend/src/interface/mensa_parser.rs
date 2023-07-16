@@ -7,13 +7,13 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum ParseError {
-    #[error("The node was not found")]
-    InvalidHtmlDocument,
-    #[error("No connection could be established")]
+    #[error("the node was not found: {0}")]
+    InvalidHtmlDocument(&'static str),
+    #[error("no connection could be established")]
     NoConnectionEstablished,
-    #[error("Some html code couldn't be decoded")]
+    #[error("some html code couldn't be decoded")]
     DecodeFailed,
-    #[error("The html reqwest client creation failed")]
+    #[error("the html reqwest client creation failed")]
     ClientBuilderFailed,
 }
 #[async_trait]
