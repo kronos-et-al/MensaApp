@@ -123,7 +123,6 @@ const ADDITIVE_REGEX: &str = r"[0-9]{1,2}";
 
 const NUMBER_OF_MEAL_TYPES: u32 = 8;
 
-const PARSE_E_MSG: &str = "Error while parsing";
 const SELECTOR_PARSE_E_MSG: &str = "Error while parsing Selector string";
 const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
 
@@ -240,25 +239,28 @@ impl HTMLParser {
     }
 
     fn get_dates(root_node: &ElementRef) -> Vec<Date> {
-        let selector =
-            Selector::parse(DAY_DATE_SUPER_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        root_node
-            .select(&selector)
-            .next()
-            .map(|date_node| {
-                let selector =
-                    Selector::parse(DAY_DATE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-                let mut dates = Vec::new();
-                for element in date_node.select(&selector) {
-                    if let Some(date_string) = element.value().attr(DAY_DATE_ATTRIBUTE_NAME) {
-                        if let Ok(date) = Date::parse_from_str(date_string, DATE_FORMAT) {
-                            dates.push(date);
-                        }
-                    }
-                }
-                dates
+        Self::get_date_super_node(root_node)
+            .map(|date_super_node| {
+                let date_nodes = Self::get_date_nodes(&date_super_node);
+                let test: Vec<Date> = date_nodes
+                    .into_iter()
+                    .filter_map(|date_node| date_node.value().attr(DAY_DATE_ATTRIBUTE_NAME))
+                    .filter_map(|date_string| Date::parse_from_str(date_string, DATE_FORMAT).ok())
+                    .collect();
+                test
             })
             .unwrap_or_default()
+    }
+
+    fn get_date_super_node<'a>(root_node: &'a ElementRef<'a>) -> Option<ElementRef<'a>> {
+        let selector =
+            Selector::parse(DAY_DATE_SUPER_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
+        root_node.select(&selector).next()
+    }
+
+    fn get_date_nodes<'a>(date_super_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
+        let selector = Selector::parse(DAY_DATE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
+        date_super_node.select(&selector).collect()
     }
 
     fn get_canteen_name(root_node: &ElementRef) -> Option<String> {
@@ -272,21 +274,23 @@ impl HTMLParser {
 
     fn get_line_name(line_node: &ElementRef) -> Option<String> {
         let selector = Selector::parse(LINE_NAME_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        line_node.select(&selector).next().map(|line_name_node| {
+        let line_name_node = line_node.select(&selector).next()?;
+        Some(
             line_name_node
                 .text()
                 .collect::<Vec<_>>()
                 .join(" ")
                 .trim()
-                .to_owned()
-        })
+                .to_owned(),
+        )
     }
 
     fn get_dish_name(dish_node: &ElementRef) -> Option<String> {
         let selector = Selector::parse(DISH_NAME_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        dish_node.select(&selector).next().map(|dish_name_node| {
-            Self::remove_multiple_whitespaces(&dish_name_node.text().collect::<String>())
-        })
+        let dish_name_node = dish_node.select(&selector).next()?;
+        Some(Self::remove_multiple_whitespaces(
+            &dish_name_node.text().collect::<String>(),
+        ))
     }
 
     fn remove_multiple_whitespaces(string: &str) -> String {
@@ -304,13 +308,8 @@ impl HTMLParser {
             let selector = Selector::parse(&format!("{DISH_PRICE_NODE_CLASS_SELECTOR}{i}"))
                 .expect(SELECTOR_PARSE_E_MSG);
             if let Some(price_node) = dish_node.select(&selector).next() {
-                let price_string: String = price_node.inner_html();
-                let regex = Regex::new(PRICE_REGEX).expect(REGEX_PARSE_E_MSG);
-                prices[i - 1] = regex.captures(&price_string).map_or(0, |capture| {
-                    format!("{}{}", &capture[1], &capture[2])
-                        .parse::<u32>()
-                        .expect(PARSE_E_MSG)
-                });
+                prices[i - 1] =
+                    Self::get_price_through_regex(&price_node.inner_html()).unwrap_or_default();
             }
         }
         Price {
@@ -319,6 +318,14 @@ impl HTMLParser {
             price_employee: prices[2],
             price_pupil: prices[3],
         }
+    }
+
+    fn get_price_through_regex(string: &str) -> Option<u32> {
+        let regex = Regex::new(PRICE_REGEX).expect(REGEX_PARSE_E_MSG);
+        let capture = regex.captures(string)?;
+        let euros = capture.get(1)?.as_str();
+        let cents = capture.get(2)?.as_str();
+        format!("{euros}{cents}").parse().ok()
     }
 
     fn get_dish_allergens(dish_node: &ElementRef) -> Vec<Allergen> {
