@@ -315,27 +315,29 @@ impl HTMLParser {
     fn get_dish_allergens(dish_node: &ElementRef) -> Option<Vec<Allergen>> {
         let selector = Selector::parse(DISH_INFO_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         let allergens_node = dish_node.select(&selector).next()?;
-        let allergens_raw = allergens_node.inner_html();
-        Some(
-            Regex::new(ALLERGEN_REGEX)
-                .expect(REGEX_PARSE_E_MSG)
-                .find_iter(&allergens_raw)
-                .filter_map(|a| Allergen::parse(a.as_str()))
-                .collect(),
-        )
+        Some(Self::get_allergens_through_regex(&allergens_node.inner_html()))
+    }
+
+    fn get_allergens_through_regex(string: &str) -> Vec<Allergen> {
+        Regex::new(ALLERGEN_REGEX)
+            .expect(REGEX_PARSE_E_MSG)
+            .find_iter(string)
+            .filter_map(|a| Allergen::parse(a.as_str()))
+            .collect()
     }
 
     fn get_dish_additives(dish_node: &ElementRef) -> Option<Vec<Additive>> {
         let selector = Selector::parse(DISH_INFO_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         let additives_node = dish_node.select(&selector).next()?;
-        let additives_raw = additives_node.inner_html();
-        Some(
-            Regex::new(ADDITIVE_REGEX)
-                .expect(REGEX_PARSE_E_MSG)
-                .find_iter(&additives_raw)
-                .filter_map(|a| Additive::parse(a.as_str()))
-                .collect(),
-        )
+        Some(Self::get_additives_through_regex(&additives_node.inner_html()))
+    }
+
+    fn get_additives_through_regex(string: &str) -> Vec<Additive> {
+        Regex::new(ADDITIVE_REGEX)
+            .expect(REGEX_PARSE_E_MSG)
+            .find_iter(string)
+            .filter_map(|a| Additive::parse(a.as_str()))
+            .collect()
     }
 
     fn get_dish_type(dish_node: &ElementRef) -> Option<MealType> {
