@@ -1,4 +1,5 @@
 
+import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -21,7 +22,7 @@ abstract class IImageAccess {
   /// @param image The image that should be upvoted
   /// @param context The context of the app used for displaying temporal messages.
   /// @return The result of the update
-  Future<void> upvoteImage(Image image, BuildContext context);
+  Future<void> upvoteImage(ImageData image, BuildContext context);
 
   /// This method adds a downvote to the committed image on the server.
   /// If the update is successful, a temporal success message is displayed.
@@ -29,7 +30,7 @@ abstract class IImageAccess {
   /// @param image The image that should be downvoted
   /// @param context The context of the app used for displaying temporal messages.
   /// @return The result of the update
-  Future<void> downvoteImage(Image image, BuildContext context);
+  Future<void> downvoteImage(ImageData image, BuildContext context);
 
   /// This method deletes an upvote from the committed image on the server.
   /// If the update is successful, a temporal success message is displayed.
@@ -37,7 +38,7 @@ abstract class IImageAccess {
   /// @param image The image that should be unupvoted
   /// @param context The context of the app used for displaying temporal messages.
   /// @return The result of the update
-  Future<void> deleteUpvote(Image image, BuildContext context);
+  Future<void> deleteUpvote(ImageData image, BuildContext context);
 
   /// This method deletes a downvote from the committed image on the server.
   /// If the update is successful, a temporal success message is displayed.
@@ -45,7 +46,7 @@ abstract class IImageAccess {
   /// @param image The image that should be undownvoted
   /// @param context The context of the app used for displaying temporal messages.
   /// @return The result of the update
-  Future<void> deleteDownvote(Image image, BuildContext context);
+  Future<void> deleteDownvote(ImageData image, BuildContext context);
 
   /// This method reports the committed image on the server.
   /// If the update is successful, a temporal success message is displayed.
@@ -54,5 +55,5 @@ abstract class IImageAccess {
   /// @param reportReason The reason why the image is reported
   /// @param context The context of the app used for displaying temporal messages.
   /// @return The result of the update
-  Future<void> reportImage(Image image, ReportCategory reportReason, BuildContext context);
+  Future<void> reportImage(ImageData image, ReportCategory reportReason, BuildContext context);
 }
