@@ -13,10 +13,8 @@ impl SwKaResolver {
 
     fn get_client() -> Result<Client, ParseError> {
         let client = Client::builder() // dont change or tests will fail!
-            .danger_accept_invalid_certs(true) //probably not needed
-            .timeout(Duration::from_millis(1000))
             .connect_timeout(Duration::from_millis(1000))
-            .user_agent("User-Agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36")
+            .user_agent("User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
             .build();
         match client {
             Ok(cl) => Ok(cl),
