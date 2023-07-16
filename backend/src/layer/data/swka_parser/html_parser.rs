@@ -3,18 +3,18 @@
 //! The general structure of the html file is as follows: (// Are added comments)
 //! ```html
 //! <!-- ... -->
-//! <!-- This is the root node identified by `ROOT_NODE_CLASS` -->
+//! <!-- This is the root node identified by [ROOT_NODE_CLASS_SELECTOR] -->
 //! <div class="main-content iwsetter">      
 //!
 //! <!-- ... -->
-//!     <!-- This is the canteen name node identified by `CANTEEN_NAME_NODE_CLASS` -->
+//!     <!-- This is the canteen name node identified by `CANTEEN_NAME_NODE_CLASS_SELECTOR` -->
 //!     <!-- it contains the name of the canteen -->
 //!     <h1 class="mensa_fullname">Dining Hall am Adenauerring</h1>
 //! <!-- ... -->
 //!     <!-- This is the super node of the day date node identified by -->
-//!     <!--`DAY_DATE_SUPER_NODE_CLASS` it contains several day nodes. See below: -->
+//!     <!--`DAY_DATE_SUPER_NODE_CLASS_SELECTOR` it contains several day nodes. See below: -->
 //!     <ul class="canteen-day-nav">
-//!     <!-- This is a day date node identified by `DAY_DATE_NODE_CLASS` -->
+//!     <!-- This is a day date node identified by `DAY_DATE_NODE_CLASS_SELECTOR` -->
 //!     <!-- it contains an attribute identified by `DAY_DATE_ATTRIBUTE_NAME`, -->
 //!     <!-- which contains the date -->
 //!     <li>
@@ -25,25 +25,25 @@
 //!         </a>
 //!     </ul>
 //! <!-- ... -->
-//!     <!-- This is a day node identified by `DAY_NODE_CLASS` -->
+//!     <!-- This is a day node identified by `DAY_NODE_CLASS_SELECTOR` -->
 //!     <!-- it contains all of the lines (which contain dishes) for the day -->
 //!     <div id="canteen_day_1" class="canteen-day">
 //! <!-- ... -->
-//!         <!-- This is a line node identified by `LINE_NODE_CLASS` -->
+//!         <!-- This is a line node identified by `LINE_NODE_CLASS_SELECTOR` -->
 //!         <!-- it contains all of the line information (name and dishes) -->
 //!         <tr class="mensatype_rows">
-//!             <!-- This is a line name node identified by `LINE_NAME_NODE_CLASS` -->
+//!             <!-- This is a line name node identified by `LINE_NAME_NODE_CLASS_SELECTOR` -->
 //!             <!-- it contains the name of the line -->
 //!             <td class="mensatype" style="white-space: normal !important;">
 //!                 <div>Linie 1<br>Gut & Günstig</div>
 //!             </td>
 //! <!-- ... -->
 //!             <!-- This is a dish node identified by -->
-//!             <!-- `DISH_NODE_CLASS+number between 0 and 8` -->
+//!             <!-- `DISH_NODE_CLASS_SELECTOR+number between 0 and 8` -->
 //!             <!-- it contains the dish information -->
 //!             <tr class="mt-7">
 //!                 <td class="mtd-icon">
-//!                     <!-- This is a dish type node identified by `DISH_TYPE_NODE_CLASS` -->
+//!                     <!-- This is a dish type node identified by `DISH_TYPE_NODE_CLASS_SELECTOR` -->
 //!                     <!-- it contains an attribute called `DISH_TYPE_ATTRIBUTE_NAME`, -->
 //!                     <!-- which contains the meal type -->
 //!                     <div>
@@ -53,17 +53,17 @@
 //!                     </div>
 //!                 </td>
 //!                 <td class="first menu-title" id="menu-title-5240287810491942285">
-//!                     <!-- This is the dish name node identified by `DISH_NAME_NODE_CLASS` -->
+//!                     <!-- This is the dish name node identified by `DISH_NAME_NODE_CLASS_SELECTOR` -->
 //!                     <!-- it contains the name of the dish -->
 //!                     <span onclick="toggleRating('5240287810491942285');" class="bg">
 //!                         <b>2 Dampfnudeln mit Vanillesoße</b>
 //!                     </span>
-//!                     <!-- This is the dish info node identified by `DISH_INFO_NODE_CLASS` -->
+//!                     <!-- This is the dish info node identified by `DISH_INFO_NODE_CLASS_SELECTOR` -->
 //!                     <!-- it contains the allergens and additives of the dish -->
 //!                     <sup>[Ei,ML,We]</sup>
 //!                 </td>
 //!                 <td style="text-align: right;vertical-align:bottom;">
-//!                     <!-- These are dish price nodes identified by `DISH_PRICE_NODE_CLASS` -->
+//!                     <!-- These are dish price nodes identified by `DISH_PRICE_NODE_CLASS_SELECTOR` -->
 //!                     <!-- they contain the prices of the meal. -->
 //!                     <!-- 1 = Student, 2 = Guest, 3 = Employee, 4 = Pupil -->
 //!                     <span class="bgp price_1">3,20 &euro;</span>
@@ -75,7 +75,7 @@
 //!                     title="&Oslash; Umwelt-Score"
 //!                     onclick="toggleRating('5240287810491942285')">
 //!                         <!-- This is the environment score node identified by -->
-//!                         <!--`ENV_SCORE_NODE_CLASS` it contains an attribute called -->
+//!                         <!--`ENV_SCORE_NODE_CLASS_SELECTOR` it contains an attribute called -->
 //!                         <!--`ENV_SCORE_ATTRIBUTE_NAME`, which contains the environment score -->
 //!                         <div id="average-stars-1551112451474757280"
 //!                             class="enviroment_score average" data-rating="3"
@@ -93,52 +93,39 @@ use crate::util::{Additive, Allergen, Date, MealType, Price};
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
 
-/// For docs see [`self`]
-const ROOT_NODE_CLASS: &str = "div.main-content";
-/// For docs see [`self`]
-const CANTEEN_NAME_NODE_CLASS: &str = "h1.mensa_fullname";
+const ROOT_NODE_CLASS_SELECTOR: &str = "div.main-content";
+const CANTEEN_NAME_NODE_CLASS_SELECTOR: &str = "h1.mensa_fullname";
 
-/// For docs see [`self`]
-const DAY_DATE_SUPER_NODE_CLASS: &str = "ul.canteen-day-nav";
-/// For docs see [`self`]
-const DAY_DATE_NODE_CLASS: &str = "a";
-/// For docs see [`self`]
+const DAY_DATE_SUPER_NODE_CLASS_SELECTOR: &str = "ul.canteen-day-nav";
+const DAY_DATE_NODE_CLASS_SELECTOR: &str = "a";
 const DAY_DATE_ATTRIBUTE_NAME: &str = "rel";
-/// For docs see [`self`]
-const DAY_NODE_CLASS: &str = "div.canteen-day";
+const DAY_NODE_CLASS_SELECTOR: &str = "div.canteen-day";
 
-/// For docs see [`self`]
-const LINE_NODE_CLASS: &str = "tr.mensatype_rows";
-/// For docs see [`self`]
-const LINE_NAME_NODE_CLASS: &str = "td.mensatype";
+const LINE_NODE_CLASS_SELECTOR: &str = "tr.mensatype_rows";
+const LINE_NAME_NODE_CLASS_SELECTOR: &str = "td.mensatype";
 
-/// For docs see [`self`]
-const DISH_NODE_CLASS: &str = "tr.mt-";
-/// For docs see [`self`]
-const DISH_TYPE_NODE_CLASS: &str = "img.mealicon_2";
-/// For docs see [`self`]
+const DISH_NODE_CLASS_SELECTOR: &str = "tr.mt-";
+const DISH_TYPE_NODE_CLASS_SELECTOR: &str = "img.mealicon_2";
 const DISH_TYPE_ATTRIBUTE_NAME: &str = "title";
-/// For docs see [`self`]
-const DISH_NAME_NODE_CLASS: &str = "span.bg";
-/// For docs see [`self`]
-const DISH_INFO_NODE_CLASS: &str = "sup";
-/// For docs see [`self`]
-const DISH_PRICE_NODE_CLASS: &str = "span.bgp.price_";
-/// For docs see [`self`]
-const ENV_SCORE_NODE_CLASS: &str = "div.enviroment_score.average";
-/// For docs see [`self`]
+const DISH_NAME_NODE_CLASS_SELECTOR: &str = "span.bg";
+const DISH_INFO_NODE_CLASS_SELECTOR: &str = "sup";
+const DISH_PRICE_NODE_CLASS_SELECTOR: &str = "span.bgp.price_";
+const ENV_SCORE_NODE_CLASS_SELECTOR: &str = "div.enviroment_score.average";
 const ENV_SCORE_ATTRIBUTE_NAME: &str = "data-rating";
 
 const DATE_FORMAT: &str = "%Y-%m-%d";
-const PRICE_REGEX: &str = r"(?<euros>[0-9]),(?<cents>[0-9]{2})";
+/// A Regex for getting prices in euros. A price consists of 1 or more digits, followed by a comma and then exactly two digits
+const PRICE_REGEX: &str = r"(?<euros>[1-9]),(?<cents>[0-9]{2})";
+/// A Regex for getting allergens. An allergen consists of a single Uppercase letter followed by one or more upper- or lowercase letters (indicated by \w+)
 const ALLERGEN_REGEX: &str = r"[A-Z]\w+";
+/// A regex for getting additives. An additive consists of one or more digits
 const ADDITIVE_REGEX: &str = r"[0-9]{1,2}";
 
 const PARSE_E_MSG: &str = "Error while parsing";
 const SELECTOR_PARSE_E_MSG: &str = "Error while parsing Selector string";
 const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
 
-/// A static class, that transforms html files into datatypes, that can be used for further processing using the [`HTMLParser::transform()`]-function.
+/// A static class, that transforms html files into datatypes, that can be used for further processing using the `HTMLParser::transform` function.
 pub struct HTMLParser;
 
 impl HTMLParser {
@@ -158,7 +145,7 @@ impl HTMLParser {
     /// # Errors
     ///
     /// Will return a [`ParseError`], when either one of the following cases occurs (in order of appearance):
-    ///     1. If there is no node in the document, that has a class called [`ROOT_NODE_CLASS`]. This indicates that a wrong html file was passed.
+    ///     1. If there is no node in the document, that has a class called [`ROOT_NODE_CLASS_SELECTOR`]. This indicates that a wrong html file was passed.
     ///     2. If the number of dates does not match the number of days for which data exists. This case is more for completeness and should never occur
 
     pub fn transform(html: &str) -> Result<Vec<(Date, ParseCanteen)>, ParseError> {
@@ -224,7 +211,7 @@ impl HTMLParser {
     }
 
     fn get_root_node(document: &Html) -> Result<ElementRef, ParseError> {
-        let selector = Selector::parse(ROOT_NODE_CLASS).expect(SELECTOR_PARSE_E_MSG);
+        let selector = Selector::parse(ROOT_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         document
             .select(&selector)
             .next()
@@ -232,12 +219,12 @@ impl HTMLParser {
     }
 
     fn get_day_nodes<'a>(root_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
-        let selector = Selector::parse(DAY_NODE_CLASS).expect(SELECTOR_PARSE_E_MSG);
+        let selector = Selector::parse(DAY_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         root_node.select(&selector).collect::<Vec<_>>()
     }
 
     fn get_line_nodes<'a>(day_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
-        let selector = Selector::parse(LINE_NODE_CLASS).expect(SELECTOR_PARSE_E_MSG);
+        let selector = Selector::parse(LINE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         day_node.select(&selector).collect::<Vec<_>>()
     }
 
@@ -245,19 +232,19 @@ impl HTMLParser {
         let mut dish_nodes = Vec::new();
         for i in 0..8 {
             let selector =
-                Selector::parse(&format!("{DISH_NODE_CLASS}{i}")).expect(SELECTOR_PARSE_E_MSG);
+                Selector::parse(&format!("{DISH_NODE_CLASS_SELECTOR}{i}")).expect(SELECTOR_PARSE_E_MSG);
             dish_nodes.append(&mut line_node.select(&selector).collect::<Vec<_>>());
         }
         dish_nodes
     }
 
     fn get_dates(root_node: &ElementRef) -> Vec<Date> {
-        let selector = Selector::parse(DAY_DATE_SUPER_NODE_CLASS).expect(SELECTOR_PARSE_E_MSG);
+        let selector = Selector::parse(DAY_DATE_SUPER_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         root_node
             .select(&selector)
             .next()
             .map_or_else(Vec::new, |date_node| {
-                let selector = Selector::parse(DAY_DATE_NODE_CLASS).expect(SELECTOR_PARSE_E_MSG);
+                let selector = Selector::parse(DAY_DATE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
                 let mut dates = Vec::new();
                 for element in date_node.select(&selector) {
                     if let Some(date_string) = element.value().attr(DAY_DATE_ATTRIBUTE_NAME) {
@@ -271,7 +258,7 @@ impl HTMLParser {
     }
 
     fn get_canteen_name(root_node: &ElementRef) -> Option<String> {
-        let selector = Selector::parse(CANTEEN_NAME_NODE_CLASS).expect(SELECTOR_PARSE_E_MSG);
+        let selector = Selector::parse(CANTEEN_NAME_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         root_node
             .select(&selector)
             .next()
@@ -279,7 +266,7 @@ impl HTMLParser {
     }
 
     fn get_line_name(line_node: &ElementRef) -> Option<String> {
-        let selector = Selector::parse(LINE_NAME_NODE_CLASS).expect(SELECTOR_PARSE_E_MSG);
+        let selector = Selector::parse(LINE_NAME_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         line_node.select(&selector).next().map(|line_name_node| {
             line_name_node
                 .text()
@@ -291,7 +278,7 @@ impl HTMLParser {
     }
 
     fn get_dish_name(dish_node: &ElementRef) -> Option<String> {
-        let selector = Selector::parse(DISH_NAME_NODE_CLASS).expect(SELECTOR_PARSE_E_MSG);
+        let selector = Selector::parse(DISH_NAME_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         dish_node.select(&selector).next().map(|dish_name_node| {
             Self::remove_multiple_whitespaces(&dish_name_node.text().collect::<String>())
         })
@@ -309,7 +296,7 @@ impl HTMLParser {
     fn get_dish_price(dish_node: &ElementRef) -> Price {
         let mut prices: [u32; 4] = [0; 4];
         for i in 1..5 {
-            let selector = Selector::parse(&format!("{DISH_PRICE_NODE_CLASS}{i}"))
+            let selector = Selector::parse(&format!("{DISH_PRICE_NODE_CLASS_SELECTOR}{i}"))
                 .expect(SELECTOR_PARSE_E_MSG);
             if let Some(price_node) = dish_node.select(&selector).next() {
                 let price_string: String = price_node.inner_html();
@@ -330,7 +317,7 @@ impl HTMLParser {
     }
 
     fn get_dish_allergens(dish_node: &ElementRef) -> Vec<Allergen> {
-        let selector = Selector::parse(DISH_INFO_NODE_CLASS).expect(SELECTOR_PARSE_E_MSG);
+        let selector = Selector::parse(DISH_INFO_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         dish_node
             .select(&selector)
             .next()
@@ -345,7 +332,7 @@ impl HTMLParser {
     }
 
     fn get_dish_additives(dish_node: &ElementRef) -> Vec<Additive> {
-        let selector = Selector::parse(DISH_INFO_NODE_CLASS).expect(SELECTOR_PARSE_E_MSG);
+        let selector = Selector::parse(DISH_INFO_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         dish_node
             .select(&selector)
             .next()
@@ -360,7 +347,7 @@ impl HTMLParser {
     }
 
     fn get_dish_type(dish_node: &ElementRef) -> MealType {
-        let selector = Selector::parse(DISH_TYPE_NODE_CLASS).expect(SELECTOR_PARSE_E_MSG);
+        let selector = Selector::parse(DISH_TYPE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         let dish_type_nodes = dish_node.select(&selector).collect::<Vec<_>>();
         for dish_type_node in dish_type_nodes {
             let title = dish_type_node
@@ -376,7 +363,7 @@ impl HTMLParser {
     }
 
     fn get_dish_env_score(dish_node: &ElementRef) -> u32 {
-        let selector = Selector::parse(ENV_SCORE_NODE_CLASS).expect(SELECTOR_PARSE_E_MSG);
+        let selector = Selector::parse(ENV_SCORE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         let env_score_node = dish_node.select(&selector).next();
         env_score_node
             .and_then(|x| x.value().attr(ENV_SCORE_ATTRIBUTE_NAME))
