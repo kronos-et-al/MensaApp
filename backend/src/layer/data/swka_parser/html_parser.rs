@@ -2,21 +2,21 @@
 
 //! The general structure of the html file is as follows: (// Are added comments)
 //! ```html
-//! //...
-//! // This is the root node identified by `ROOT_NODE_CLASS`
+//! <!-- ... -->
+//! <!-- This is the root node identified by `ROOT_NODE_CLASS` -->
 //! <div class="main-content iwsetter">      
 //!
-//! //...
-//!     // This is the canteen name node identified by `CANTEEN_NAME_NODE_CLASS`
-//!     // it contains the name of the canteen
+//! <!-- ... -->
+//!     <!-- This is the canteen name node identified by `CANTEEN_NAME_NODE_CLASS` -->
+//!     <!-- it contains the name of the canteen -->
 //!     <h1 class="mensa_fullname">Dining Hall am Adenauerring</h1>
-//! //...
-//!     // This is the super node of the day date node identified by
-//!     // `DAY_DATE_SUPER_NODE_CLASS` it contains several day nodes. See below:
+//! <!-- ... -->
+//!     <!-- This is the super node of the day date node identified by -->
+//!     <!--`DAY_DATE_SUPER_NODE_CLASS` it contains several day nodes. See below: -->
 //!     <ul class="canteen-day-nav">
-//!     // This is a day date node identified by `DAY_DATE_NODE_CLASS`
-//!     // it contains an attribute identified by `DAY_DATE_ATTRIBUTE_NAME`,
-//!     // which contains the date
+//!     <!-- This is a day date node identified by `DAY_DATE_NODE_CLASS` -->
+//!     <!-- it contains an attribute identified by `DAY_DATE_ATTRIBUTE_NAME`, -->
+//!     <!-- which contains the date -->
 //!     <li>
 //!         <a id="canteen_day_nav_1"
 //!             rel="2023-07-10"
@@ -24,27 +24,28 @@
 //!             <span>Mo 10.07.</span>
 //!         </a>
 //!     </ul>
-//! //...
-//!     // This is a day node identified by `DAY_NODE_CLASS`
-//!     // it contains all of the lines (which contain dishes) for the day
+//! <!-- ... -->
+//!     <!-- This is a day node identified by `DAY_NODE_CLASS` -->
+//!     <!-- it contains all of the lines (which contain dishes) for the day -->
 //!     <div id="canteen_day_1" class="canteen-day">
-//! //...
-//!         // This is a line node identified by `LINE_NODE_CLASS`
-//!         // it contains all of the line information (name and dishes)
+//! <!-- ... -->
+//!         <!-- This is a line node identified by `LINE_NODE_CLASS` -->
+//!         <!-- it contains all of the line information (name and dishes) -->
 //!         <tr class="mensatype_rows">
-//!             // This is a line name node identified by `LINE_NAME_NODE_CLASS`
-//!             // it contains the name of the line                
+//!             <!-- This is a line name node identified by `LINE_NAME_NODE_CLASS` -->
+//!             <!-- it contains the name of the line -->
 //!             <td class="mensatype" style="white-space: normal !important;">
 //!                 <div>Linie 1<br>Gut & Günstig</div>
 //!             </td>
-//! //...
-//!             // This is a dish node identified by `DISH_NODE_CLASS+number between 0 and 8`
-//!             // it contains the dish information
+//! <!-- ... -->
+//!             <!-- This is a dish node identified by -->
+//!             <!-- `DISH_NODE_CLASS+number between 0 and 8` -->
+//!             <!-- it contains the dish information -->
 //!             <tr class="mt-7">
 //!                 <td class="mtd-icon">
-//!                     // This is a dish type node identified by `DISH_TYPE_NODE_CLASS`
-//!                     // it contains an attribute called `DISH_TYPE_ATTRIBUTE_NAME`,
-//!                     // which contains the meal type
+//!                     <!-- This is a dish type node identified by `DISH_TYPE_NODE_CLASS` -->
+//!                     <!-- it contains an attribute called `DISH_TYPE_ATTRIBUTE_NAME`, -->
+//!                     <!-- which contains the meal type -->
 //!                     <div>
 //!                         <img src="/layout/icons/vegetarisches-gericht.svg"
 //!                         class="mealicon_2"
@@ -52,19 +53,19 @@
 //!                     </div>
 //!                 </td>
 //!                 <td class="first menu-title" id="menu-title-5240287810491942285">
-//!                     // This is the dish name node identified by `DISH_NAME_NODE_CLASS`
-//!                     // it contains the name of the dish
+//!                     <!-- This is the dish name node identified by `DISH_NAME_NODE_CLASS` -->
+//!                     <!-- it contains the name of the dish -->
 //!                     <span onclick="toggleRating('5240287810491942285');" class="bg">
 //!                         <b>2 Dampfnudeln mit Vanillesoße</b>
 //!                     </span>
-//!                     // This is the dish info node identified by `DISH_INFO_NODE_CLASS`
-//!                     // it contains the allergens and additives of the dish
+//!                     <!-- This is the dish info node identified by `DISH_INFO_NODE_CLASS` -->
+//!                     <!-- it contains the allergens and additives of the dish -->
 //!                     <sup>[Ei,ML,We]</sup>
 //!                 </td>
 //!                 <td style="text-align: right;vertical-align:bottom;">
-//!                     // These are dish price nodes identified by `DISH_PRICE_NODE_CLASS`
-//!                     // they contain the prices of the meal.
-//!                     // 1 = Student, 2 = Guest, 3 = Employee, 4 = Pupil
+//!                     <!-- These are dish price nodes identified by `DISH_PRICE_NODE_CLASS` -->
+//!                     <!-- they contain the prices of the meal. -->
+//!                     <!-- 1 = Student, 2 = Guest, 3 = Employee, 4 = Pupil -->
 //!                     <span class="bgp price_1">3,20 &euro;</span>
 //!                     <span class="bgp price_2">4,60 &euro;</span>
 //!                     <span class="bgp price_3">4,20 &euro;</span>
@@ -73,15 +74,15 @@
 //!                     <a href="javascript:;"
 //!                     title="&Oslash; Umwelt-Score"
 //!                     onclick="toggleRating('5240287810491942285')">
-//!                         // This is the environment score node identified by
-//!                         // `ENV_SCORE_NODE_CLASS` it contains an attribute called
-//!                         // `ENV_SCORE_ATTRIBUTE_NAME`, which contains the environment score
+//!                         <!-- This is the environment score node identified by -->
+//!                         <!--`ENV_SCORE_NODE_CLASS` it contains an attribute called -->
+//!                         <!--`ENV_SCORE_ATTRIBUTE_NAME`, which contains the environment score -->
 //!                         <div id="average-stars-1551112451474757280"
 //!                             class="enviroment_score average" data-rating="3"
 //!                             data-numstars="3"></div>
 //!                     </a>
 //!                 <tr>
-//! //...
+//! <!-- ... -->
 //! ```
 
 use crate::interface::mensa_parser::{
