@@ -17,6 +17,7 @@ import '../../repository/data_classes/meal/Side.dart';
 
 
 // todo wann ist das Zeug wirklich zu? einfach rauslöschen?
+// todo string for snack-bar
 class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   final ILocalStorage _preferences;
   final IServerAccess _api;
@@ -168,42 +169,33 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   }
 
   @override
-  Future<void> refreshMealplan(BuildContext context) async {
+  Future<String?> refreshMealplan() async {
     final mealPlan = await _getMealPlanFromServer();
 
     if (_mealPlans.isEmpty) {
       // show snack-bar
       // TODO get good text
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Error Refresh")));
-
-      return Future.value();
+      return "error";
     }
 
     _mealPlans = mealPlan;
     _filterMealPlans();
 
     notifyListeners();
+    return null;
   }
 
   @override
-  Future<void> updateMealRating(
-      int rating, Meal meal, BuildContext context) async {
+  Future<String> updateMealRating(int rating, Meal meal) async {
     final result = await _api.updateMealRating(rating, meal);
-    final messenger = ScaffoldMessenger.of(context);
 
     if (!result) {
-      // todo display error in snack-bar
-      messenger.showSnackBar(SnackBar(content: Text("Error Rating")));
-      return Future.value();
+      return "error";
     }
 
     _changeRatingOfMeal(meal, rating);
-
-    // todo display snack-bar success
-    messenger.showSnackBar(SnackBar(content: Text("Success Rating")));
-
     notifyListeners();
+    return "success";
   }
 
   void _changeRatingOfMeal(Meal changedMeal, int rating) {
