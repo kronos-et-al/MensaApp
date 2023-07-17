@@ -1,3 +1,4 @@
+import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
 
 import '../data_classes/meal/Meal.dart';
@@ -22,6 +23,16 @@ abstract class IDatabaseAccess {
   /// @param id The id of the meal
   /// @return The favorite meal with the committed id or an error
   Future<Result<Meal, Exception>> getMealFavorite(String id);
+
+  /// This method returns a favorite meals line.
+  /// @param the meal whose line is requested
+  /// @return the line that once offered the meal
+  Future<Line?> getFavoriteMealsLine(Meal meal);
+
+  /// this method returns a favorite meals date.
+  /// @param the meal whose date is requested
+  /// @return the date that once had offered the meal
+  Future<DateTime?> getFavoriteMealsDate(Meal meal);
 
   /// This method adds a favorite. If the favorite does already exists, it does nothing.
   /// @param meal The meal that should be added as favorite

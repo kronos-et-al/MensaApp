@@ -24,6 +24,7 @@ class Meal {
   final DateTime? _nextServed;
   final Frequency? _relativeFrequency;
   final List<ImageData>? _images;
+  final int? _numberOfOccurance;
   bool? _isFavorite;
 
   /// This constructor creates a meal with the committed values.
@@ -58,6 +59,7 @@ class Meal {
     DateTime? nextServed,
     Frequency? relativeFrequency,
     List<ImageData>? images,
+    int? numberOfOccurance,
     bool? isFavorite,
   })
       : _id = id,
@@ -74,7 +76,66 @@ class Meal {
         _nextServed = nextServed,
         _relativeFrequency = relativeFrequency,
         _images = images,
+        _numberOfOccurance = numberOfOccurance,
         _isFavorite = isFavorite;
+
+  /// This constructor creates a meal with the committed values.
+  /// If any values are not committed these values are replaced with the values of the committed Meal.
+  /// @param meal The meal that is copied
+  /// @param id The id of the meal
+  /// @param name The name of the meal
+  /// @param foodType The food type of the meal
+  /// @param price The price of the meal
+  /// @param allergens The allergens of the meal
+  /// @param additives The additives of the meal
+  /// @param sides The sides of the meal
+  /// @param individualRating The individual rating of the meal
+  /// @param numberOfRatings The number of ratings of the meal
+  /// @param averageRating The average rating of the meal
+  /// @param lastServed The date when the meal was last served
+  /// @param nextServed The date when the meal will be served next
+  /// @param relativeFrequency The relative frequency of the meal
+  /// @param images The images of the meal
+  /// @param isFavorite The favorite status of the meal
+  /// @return A meal with the committed values
+  Meal.copy({
+    required Meal meal,
+    String? id,
+    String? name,
+    FoodType? foodType,
+    Price? price,
+    List<Allergen>? allergens,
+    List<Additive>? additives,
+    List<Side>? sides,
+    int? individualRating,
+    int? numberOfRatings,
+    double? averageRating,
+    DateTime? lastServed,
+    DateTime? nextServed,
+    Frequency? relativeFrequency,
+    List<ImageData>? images,
+    int? numberOfOccurance,
+    bool? isFavorite,
+  })
+      : _id = id ?? meal.id,
+        _name = name ?? meal.name,
+        _foodType = foodType ?? meal.foodType,
+        _price = price ?? meal.price,
+        _allergens = allergens ?? meal.allergens,
+        _additives = additives ?? meal.additives,
+        _sides = sides ?? meal.sides,
+        _individualRating = individualRating ?? meal.individualRating,
+        _numberOfRatings = numberOfRatings ?? meal.numberOfRatings,
+        _averageRating = averageRating ?? meal.averageRating,
+        _lastServed = lastServed ?? meal.lastServed,
+        _nextServed = nextServed ?? meal.nextServed,
+        _relativeFrequency = relativeFrequency ?? meal.relativeFrequency,
+        _images = images ?? meal.images,
+        _numberOfOccurance = numberOfOccurance ?? meal._numberOfOccurance,
+        _isFavorite = isFavorite ?? meal.isFavorite;
+
+
+  int? get numberOfOccurance => _numberOfOccurance;
 
   void setFavorite() {
     _isFavorite = true;
@@ -142,4 +203,5 @@ class Meal {
   List<ImageData>? get images => _images;
 
   bool get isFavorite => _isFavorite ?? false;
+
 }

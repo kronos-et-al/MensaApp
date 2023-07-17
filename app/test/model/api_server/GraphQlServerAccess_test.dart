@@ -115,7 +115,7 @@ void main() async {
   });
 
   test('meal from id', () async {
-    var result = await serverAccess.getMealFromId(
+    var result = await serverAccess.getMeal(
         Meal(
             id: "bd3c88f9-5dc8-4773-85dc-53305930e7b6",
             name: "Best Meal",

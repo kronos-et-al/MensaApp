@@ -18,6 +18,17 @@ class MealPlan {
         _isClosed = isClosed,
         _meals = meals;
 
+  MealPlan.copy({
+    required MealPlan mealPlan,
+    DateTime? date,
+    Line? line,
+    bool? isClosed,
+    List<Meal>? meals,
+  })  : _date = date ?? mealPlan.date,
+        _line = line ?? mealPlan.line,
+        _isClosed = isClosed ?? mealPlan.isClosed,
+        _meals = meals ?? mealPlan.meals;
+
   DateTime get date => _date;
 
   Line get line => _line;

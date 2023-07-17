@@ -198,7 +198,7 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   @override
-  Future<Result<Meal, Exception>> getMealFromId(
+  Future<Result<Meal, Exception>> getMeal(
       Meal meal, Line line, DateTime date) async {
     final result = await _client.query$GetMeal(Options$Query$GetMeal(
         variables: Variables$Query$GetMeal(
