@@ -79,10 +79,9 @@ impl Authenticator {
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used)]
-    use base64::Engine;
 
     use crate::{
-        interface::api_command::{AuthInfo, InnerAuthInfo},
+        interface::api_command::InnerAuthInfo,
         layer::logic::api_command::auth::command_type::CommandType,
         util::{ReportReason, Uuid},
     };
