@@ -68,7 +68,7 @@ where
                     self.review_image(image).await;
                 }
             }
-            Err(error) => warn!("An error occurred while getting the images:  {error}"),
+            Err(error) => warn!("An error occurred while getting the images: {error}"),
         }
     }
 
@@ -105,5 +105,31 @@ where
                 image.id
             );
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::{
+        interface::persistent_data::DataError,
+        layer::logic::image_review::{
+            image_reviewer::ImageReviewer,
+            test::{
+                image_hoster_mock::ImageHosterMock,
+                image_review_database_mock::ImageReviewDatabaseMock,
+            },
+        },
+    };
+
+    #[tokio::test]
+    async fn test_review_images_warning_on_err() {
+        let image_hoster = ImageHosterMock::default();
+        let image_review_database = ImageReviewDatabaseMock::default();
+        let image_reviewer =
+            ImageReviewer::new(image_review_database.clone(), image_hoster.clone());
+        image_reviewer
+            .review_images(Err(DataError::NoSuchItem))
+            .await;
+        assert!(image_hoster.get_existence_calls() == 0);
     }
 }
