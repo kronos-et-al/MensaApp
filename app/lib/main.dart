@@ -1,17 +1,47 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
-  runApp(const MyApp());
+  final FlutterI18nDelegate delegate = FlutterI18nDelegate(
+    translationLoader: NamespaceFileTranslationLoader(
+        namespaces: ["common"],
+        useCountryCode: false,
+        basePath: 'assets/locales',
+        fallbackDir: 'de'),
+    missingTranslationHandler: (key, locale) {
+      if (kDebugMode) {
+        print("--- Missing Key: $key, languageCode: ${locale!.languageCode}");
+      }
+    },
+  );
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(MyApp(
+    delegate: delegate,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final FlutterI18nDelegate _delegate;
+
+  const MyApp({super.key, required FlutterI18nDelegate delegate})
+      : _delegate = delegate;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Mensa App',
+      localizationsDelegates: [
+        _delegate,
+        ...GlobalMaterialLocalizations.delegates,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('de'),
+      ],
       theme: ThemeData(
         brightness: Brightness.light,
         colorScheme: const ColorScheme(
@@ -43,13 +73,13 @@ class MyApp extends StatelessWidget {
             surfaceTint: Color(0xFF202020),
             onSurface: Color(0xFFFFFFFF)),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -59,8 +89,6 @@ class MyHomePage extends StatefulWidget {
   // case the title) provided by the parent (in this case the App widget) and
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
-
-  final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -110,9 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
+            I18nText("common.demo"),
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
