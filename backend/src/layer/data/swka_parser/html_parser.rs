@@ -408,6 +408,16 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_not_a_canteen_de() {
+        test_html("src/layer/data/swka_parser/test_data/test_not_a_canteen_de.html");
+    }
+
+    #[tokio::test]
+    async fn test_canteen_closed_de() {
+        test_html("src/layer/data/swka_parser/test_data/test_canteen_closed_de.html");
+    }
+
+    #[tokio::test]
     async fn test_canteen_closed() {
         test_html("src/layer/data/swka_parser/test_data/test_canteen_closed.html");
     }
@@ -425,7 +435,7 @@ mod tests {
         let file_contents = read_from_file(path).unwrap();
         let canteen_data = HTMLParser::transform(&file_contents).unwrap();
 
-        write_output_to_file(path, &canteen_data);
+        //write_output_to_file(path, &canteen_data);
         let expected = read_from_file(&path.replace(".html", ".txt"))
             .unwrap()
             .replace("\r\n", "\n");
