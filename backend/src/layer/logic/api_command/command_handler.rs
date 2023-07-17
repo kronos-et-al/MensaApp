@@ -9,9 +9,7 @@ use crate::{
         image_hoster::ImageHoster,
         persistent_data::{model::ImageInfo, CommandDataAccess},
     },
-    layer::logic::api_command::auth::{
-        authenticator::Authenticator, image_command_type::ImageCommandType,
-    },
+    layer::logic::api_command::auth::{authenticator::Authenticator, command_type::CommandType},
     util::{Date, ReportReason, Uuid},
 };
 
@@ -91,9 +89,8 @@ where
     ) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
 
-        let image_command_type = ImageCommandType::ReportImage(reason);
-        self.auth
-            .authn_image_command(&auth_info, image_id, image_command_type)?;
+        let command_type = CommandType::ReportImage { image_id, reason };
+        self.auth.authn_command(&auth_info, &command_type)?;
         let mut info = self.command_data.get_image_info(image_id).await?;
         if !info.approved {
             info.report_count += 1;
@@ -124,9 +121,8 @@ where
 
     async fn add_image_upvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
-        let image_command_type = ImageCommandType::AddUpvote;
-        self.auth
-            .authn_image_command(&auth_info, image_id, image_command_type)?;
+        let command_type = CommandType::AddUpvote { image_id };
+        self.auth.authn_command(&auth_info, &command_type)?;
         self.command_data
             .add_upvote(image_id, auth_info.client_id)
             .await?;
@@ -135,9 +131,8 @@ where
 
     async fn add_image_downvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
-        let image_command_type = ImageCommandType::AddDownvote;
-        self.auth
-            .authn_image_command(&auth_info, image_id, image_command_type)?;
+        let command_type = CommandType::AddDownvote { image_id };
+        self.auth.authn_command(&auth_info, &command_type)?;
         self.command_data
             .add_downvote(image_id, auth_info.client_id)
             .await?;
@@ -146,9 +141,8 @@ where
 
     async fn remove_image_upvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
-        let image_command_type = ImageCommandType::RemoveUpvote;
-        self.auth
-            .authn_image_command(&auth_info, image_id, image_command_type)?;
+        let command_type = CommandType::RemoveUpvote { image_id };
+        self.auth.authn_command(&auth_info, &command_type)?;
         self.command_data
             .remove_upvote(image_id, auth_info.client_id)
             .await?;
@@ -157,9 +151,8 @@ where
 
     async fn remove_image_downvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
-        let image_command_type = ImageCommandType::RemoveDownvote;
-        self.auth
-            .authn_image_command(&auth_info, image_id, image_command_type)?;
+        let command_type = CommandType::RemoveDownvote { image_id };
+        self.auth.authn_command(&auth_info, &command_type)?;
         self.command_data
             .remove_downvote(image_id, auth_info.client_id)
             .await?;
@@ -168,8 +161,11 @@ where
 
     async fn add_image(&self, meal_id: Uuid, image_url: String, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
-        self.auth
-            .authn_add_image_command(&auth_info, meal_id, &image_url)?;
+        let command_type = CommandType::AddImage {
+            meal_id,
+            url: image_url.clone(),
+        };
+        self.auth.authn_command(&auth_info, &command_type)?;
         let image_meta_data = self.image_hoster.validate_url(&image_url).await?;
         let licence_ok = self.image_hoster.check_licence(&image_meta_data.id).await?;
         if licence_ok {
@@ -187,8 +183,8 @@ where
 
     async fn set_meal_rating(&self, meal_id: Uuid, rating: u32, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
-        self.auth
-            .authn_meal_rating_command(&auth_info, meal_id, rating)?;
+        let command_type = CommandType::SetRating { meal_id, rating };
+        self.auth.authn_command(&auth_info, &command_type)?;
         self.command_data
             .add_rating(meal_id, auth_info.client_id, rating)
             .await?;
