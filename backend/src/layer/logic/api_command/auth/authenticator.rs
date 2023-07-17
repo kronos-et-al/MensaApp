@@ -288,6 +288,5 @@ mod tests {
         };
         let ok = auth.authn_command(&info, &command2);
         assert!(ok.is_err());
-
     }
 }
