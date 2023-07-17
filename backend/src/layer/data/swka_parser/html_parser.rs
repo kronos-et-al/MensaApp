@@ -212,7 +212,7 @@ impl HTMLParser {
         document
             .select(&selector)
             .next()
-            .ok_or(ParseError::InvalidHtmlDocument(ROOT_NODE_CLASS))
+            .ok_or(ParseError::InvalidHtmlDocument(ROOT_NODE_CLASS_SELECTOR))
     }
 
     fn get_day_nodes<'a>(root_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
