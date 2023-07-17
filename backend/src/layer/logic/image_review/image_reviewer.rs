@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use chrono::Local;
-use tracing::log::{debug, warn};
+use tracing::log::warn;
 
 use crate::interface::{
     image_hoster::ImageHoster,
@@ -25,7 +25,6 @@ where
     D: ImageReviewDataAccess,
     H: ImageHoster,
 {
-    /// Start the image review process.
     async fn start_image_review(&self) {
         let today = Local::now().date_naive();
         self.review_images(
@@ -65,40 +64,43 @@ where
     async fn review_images(&self, images: Result<Vec<Image>>) {
         match images {
             Ok(images) => {
-                debug!("NO HELP!");
-                if let Err(error) = self.review_image(&images).await {
-                    warn!("HELP! {error}");
+                for image in images {
+                    self.review_image(image).await;
                 }
             }
-            Err(error) => warn!("HELP! {error}"),
+            Err(error) => warn!("An error occurred while getting the images:  {error}"),
         }
     }
 
-    async fn review_image(&self, images: &Vec<Image>) -> Result<()> {
-        self.delete_nonexistent_images(images).await?;
-        self.mark_as_checked(images).await
-    }
-
-    async fn delete_nonexistent_images(&self, images: &Vec<Image>) -> Result<()> {
-        for image in images {
-            match self
-                .image_hoster
-                .check_existence(&image.image_hoster_id)
-                .await
-            {
-                Ok(exists) => {
-                    if !exists {
-                        self.data_access.delete_image(image.id).await?;
+    async fn review_image(&self, image: Image) {
+        match self
+            .image_hoster
+            .check_existence(&image.image_hoster_id)
+            .await
+        {
+            Ok(exists) => {
+                if !exists {
+                    match self.data_access.delete_image(image.id).await {
+                        Ok(deleted) => {
+                            if !deleted {
+                                warn!("The image with the id {} does not exist, but could not be deleted", image.id);
+                                return;
+                            }
+                        }
+                        Err(error) => {
+                            warn!("An error occurred while deleting the non-existent image with id {}: {error}", image.id);
+                            return;
+                        }
                     }
                 }
-                Err(error) => warn!("HELP! {error}"),
+            }
+            Err(error) => {
+                warn!("An error occurred while checking the image with id {} for its existence: {error}", image.id);
+                return;
             }
         }
-        Ok(())
-    }
-
-    async fn mark_as_checked(&self, existing_images: &[Image]) -> Result<()> {
-        let ids: Vec<uuid::Uuid> = existing_images.iter().map(|image| image.id).collect();
-        self.data_access.mark_as_checked(ids).await
+        if let Err(error) = self.data_access.mark_as_checked(image.id).await {
+            warn!("An error occurred while marking the image with id {} as checked: {error}", image.id);
+        }
     }
 }

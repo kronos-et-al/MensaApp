@@ -65,7 +65,7 @@ impl ImageReviewDataAccess for ImageReviewDatabaseMock {
         Ok(true)
     }
     /// Marks all images identified by the given uuids as checked.
-    async fn mark_as_checked(&self, _ids: Vec<Uuid>) -> Result<()> {
+    async fn mark_as_checked(&self, _id: Uuid) -> Result<()> {
         Ok(())
     }
 }
