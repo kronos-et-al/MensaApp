@@ -24,32 +24,29 @@ import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:crypto/crypto.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:convert/convert.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../view_model/repository/interface/IServerAccess.dart';
 import 'requests/mutations.graphql.dart';
 
 class GraphQlServerAccess implements IServerAccess {
-  final String _apiKey = const String.fromEnvironment('API_KEY');
+  final String _apiKey;
   late String _currentAuth;
   late final GraphQLClient _client;
   final String _clientId;
   final _dateFormat = DateFormat(dateFormatPattern);
 
-  GraphQlServerAccess._(this._clientId) {
+  GraphQlServerAccess._(this._clientId, String server, this._apiKey) {
     _client = GraphQLClient(
-        link: AuthLink(getToken: () => _currentAuth)
-            .concat(HttpLink(const String.fromEnvironment('API_URL'))),
+        link: AuthLink(getToken: () => _currentAuth).concat(HttpLink(server)),
         cache: GraphQLCache());
-    _authenticate("");
+    _authenticate(""); // provide default authentication with client id
   }
 
-  factory GraphQlServerAccess(String clientId) {
-    return GraphQlServerAccess._(clientId);
+  factory GraphQlServerAccess(String clientId, String server, String apiKey) {
+    return GraphQlServerAccess._(clientId, server, apiKey);
   }
 
   // ---------------------- mutations ----------------------

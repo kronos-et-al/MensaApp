@@ -1,7 +1,5 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
+import 'package:app/model/api_server/config.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
@@ -11,39 +9,11 @@ import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
 
 void main() async {
-  final GraphQlServerAccess serverAccess =
-      GraphQlServerAccess("1f16dcca-963e-4ceb-a8ca-843a7c9277a5");
-
-  test('auth at server', () async {
-    // TODO remove test
-    String token = "";
-    final httpLink = HttpLink(const String.fromEnvironment('API_URL'));
-    final authLink = AuthLink(getToken: () => token);
-
-    final GraphQLClient _client =
-        GraphQLClient(link: authLink.concat(httpLink), cache: GraphQLCache());
-
-    token =
-        "Mensa MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=";
-    var result = await _client.query(QueryOptions(
-      document: gql("""{
-    getMyAuth{clientId,apiIdent,hash}
-    }
-        """),
-    ));
-    expect(result.data?["getMyAuth"]?["clientId"],
-        "1d75d380-cf07-4edb-9046-a2d981bc219d");
-  });
-
-  test('environment endpoint defined', () {
-    expect(const String.fromEnvironment('API_URL').isNotEmpty, true,
-        reason:
-            "define secret file with `--dart-define-from-file=<path to secret.json>`, see README");
-  });
+  final GraphQlServerAccess serverAccess = GraphQlServerAccess(
+      "1f16dcca-963e-4ceb-a8ca-843a7c9277a5", testServer, testApiKey);
 
   test('remove downvote', () async {
     var deleted = await serverAccess.deleteDownvote(ImageData(
@@ -127,8 +97,8 @@ void main() async {
   test('update all', () async {
     var result = await serverAccess.updateAll();
 
-    var res = switch (result) {
-      Success(value: final mealplan) => true, // TODO
+    var _ = switch (result) {
+      Success(value: final _) => true, // TODO
       Failure(exception: final exception) => expect(exception.toString(), ""),
     };
   });
@@ -138,8 +108,8 @@ void main() async {
         Canteen(id: "bd3c88f9-5dc8-4773-85dc-53305930e7b6", name: "Canteen"),
         DateTime(2020, 11, 1));
 
-    var res = switch (result) {
-      Success(value: final mealplan) => true, //TODO
+    var _ = switch (result) {
+      Success(value: final _) => true, //TODO
       Failure(exception: final exception) => expect(exception.toString(), ""),
     };
   });
@@ -160,8 +130,8 @@ void main() async {
             position: 22),
         DateTime(2020, 11, 2));
 
-    var res = switch (result) {
-      Success(value: final mealplan) => true, // TODO better testing?
+    var _ = switch (result) {
+      Success(value: final _) => true, // TODO better testing?
       Failure(exception: final exception) =>
         expect(exception, true, reason: "exception while request"),
     };
@@ -171,19 +141,5 @@ void main() async {
     var canteen = await serverAccess.getDefaultCanteen();
 
     expect(canteen != null, true);
-  });
-
-  // TODO remove
-  test('transform auth', () async {
-    var clientId = "1d75d380-cf07-4edb-9046-a2d981bc219d";
-    var apiKey = "abc";
-    var hash = "123";
-
-    var authString = "${clientId}:${apiKey.substring(0, 3)}:$hash";
-    var bytes = utf8.encode(authString);
-    var base64 = base64Encode(bytes);
-
-    expect(
-        base64, "MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=");
   });
 }
