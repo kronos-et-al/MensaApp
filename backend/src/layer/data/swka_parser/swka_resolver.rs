@@ -12,8 +12,8 @@ impl SwKaResolver {
     }
 
     fn get_client() -> Result<Client, ParseError> {
-        let client = Client::builder() // dont change or tests will fail!
-            .connect_timeout(Duration::from_millis(1000))
+        let client = Client::builder()
+            .timeout(Duration::from_millis(1000))
             .user_agent("User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
             .build();
         match client {
