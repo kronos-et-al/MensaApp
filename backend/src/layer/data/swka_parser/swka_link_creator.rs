@@ -5,9 +5,9 @@
 //!
 //! Like this for example:
 //!
-//! <https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28>
+//! <https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28>
 
-use chrono::{Datelike, Days, Local};
+use chrono::{Datelike, Duration, Local};
 
 use crate::util::Date;
 
@@ -20,26 +20,20 @@ const MENSA_NAMES: [&str; 7] = [
     "mensa_tiefenbronner",
     "mensa_holzgarten",
 ];
-const BASE_URL: &str = "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/";
+const BASE_URL: &str = "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/";
 const URL_SEPARATOR: char = '/';
 const WEEK_SELECTOR: &str = "?kw=";
-const NUMBER_OF_WEEKS_TO_POLL: u64 = 4;
-const NUMBER_OF_DAYS_PER_WEEK: u64 = 7;
-
-const PARSE_E_MSG: &str = "Error while parsing";
+const NUMBER_OF_WEEKS_TO_POLL: u32 = 4;
 
 pub struct SwKaLinkCreator;
 
 impl SwKaLinkCreator {
     pub fn get_urls(day: Date) -> Vec<String> {
         let calender_week = Self::get_calender_week(day);
-        let mut urls = Vec::new();
-        for mensa in MENSA_NAMES {
-            urls.push(format!(
-                "{BASE_URL}{mensa}{URL_SEPARATOR}{WEEK_SELECTOR}{calender_week}"
-            ));
-        }
-        urls
+        MENSA_NAMES
+            .iter()
+            .map(|mensa| format!("{BASE_URL}{mensa}{URL_SEPARATOR}{WEEK_SELECTOR}{calender_week}"))
+            .collect()
     }
 
     pub fn get_all_urls() -> Vec<String> {
@@ -48,14 +42,9 @@ impl SwKaLinkCreator {
     }
 
     fn get_all_urls_for_next_weeks_from_date(date: Date) -> Vec<String> {
-        let mut all_urls = Vec::new();
-        for i in 0..NUMBER_OF_WEEKS_TO_POLL {
-            let day = date
-                .checked_add_days(Days::new(i * NUMBER_OF_DAYS_PER_WEEK))
-                .expect(PARSE_E_MSG);
-            all_urls.append(&mut Self::get_urls(day));
-        }
-        all_urls
+        (0..NUMBER_OF_WEEKS_TO_POLL)
+            .flat_map(|week| Self::get_urls(date + Duration::weeks(week.into())))
+            .collect()
     }
 
     fn get_calender_week(day: Date) -> u32 {
@@ -69,72 +58,62 @@ impl SwKaLinkCreator {
 
 #[cfg(test)]
 mod tests {
-    use std::{fs::File, io::Write};
+    #![allow(clippy::unwrap_used)]
 
     use crate::{layer::data::swka_parser::swka_link_creator::SwKaLinkCreator, util::Date};
 
     const URLS_FOR_NEXT_WEEKS: [&str; 28] = [
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_moltke/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=29",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=29",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_moltke/?kw=29",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=29",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=29",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=29",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=29",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=30",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=30",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_moltke/?kw=30",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=30",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=30",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=30",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=30",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=31",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=31",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_moltke/?kw=31",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=31",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=31",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=31",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=31",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_moltke/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=29",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=29",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_moltke/?kw=29",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=29",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=29",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=29",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=29",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=30",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=30",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_moltke/?kw=30",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=30",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=30",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=30",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=30",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=31",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=31",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_moltke/?kw=31",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=31",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=31",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=31",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=31",
     ];
 
     const URLS_FOR_CURRENT_WEEK: [&str; 7] = [
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_moltke/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=28",
-        "https://www.sw-ka.de/en/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_moltke/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=28",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=28",
     ];
 
     #[tokio::test]
     async fn test_get_urls() {
-        let date = Date::from_ymd_opt(2023, 7, 10);
-        assert!(date.is_some());
-        let date = date.expect("This case should never occur");
+        let date = Date::from_ymd_opt(2023, 7, 10).unwrap();
         let result = SwKaLinkCreator::get_urls(date);
         assert_eq!(result, URLS_FOR_CURRENT_WEEK);
     }
 
     #[tokio::test]
     async fn test_get_all_urls() {
-        let date = Date::from_ymd_opt(2023, 7, 10);
-        assert!(date.is_some());
-        let date = date.expect("This case should never occur");
+        let date = Date::from_ymd_opt(2023, 7, 10).unwrap();
         let result = SwKaLinkCreator::get_all_urls_for_next_weeks_from_date(date);
         assert_eq!(result, URLS_FOR_NEXT_WEEKS);
-    }
-
-    #[allow(dead_code)]
-    fn write_output_to_file(path: &str, data: &[String]) -> std::io::Result<()> {
-        let mut output = File::create(path)?;
-        write!(output, "{data:#?}")
     }
 }

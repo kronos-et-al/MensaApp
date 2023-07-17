@@ -1,45 +1,23 @@
 //! These structs are used for parse operations.
 
-use std::fmt::Display;
-
 use crate::util::{Additive, Allergen, MealType, Price};
 
-/// Canteen struct containing all meal plan information of an canteen. Contains raw data.
+/// Canteen struct containing all meal plan information of a canteen. Contains raw data.
 #[derive(Debug)]
 pub struct ParseCanteen {
     /// Name of the canteen.
     pub name: String,
-    /// All related lines.
+    /// All the [lines](ParseLine) situated within the canteen.
     pub lines: Vec<ParseLine>,
 }
 
-impl Display for ParseCanteen {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut lines = String::new();
-        for line in &self.lines {
-            lines.push_str(&format!("{line}\n"));
-        }
-        write!(f, "{}\n{lines}", self.name)
-    }
-}
-
-/// Line struct containing all information of an line and their meals. Contains raw data.
+/// Line struct containing all information of a line and their meals. Contains raw data.
 #[derive(Debug)]
 pub struct ParseLine {
     /// Name of the line.
     pub name: String,
-    /// All related dishes.
+    /// All [dishes](Dish) served at this [canteen](ParseCanteen) at a particular day.
     pub dishes: Vec<Dish>,
-}
-
-impl Display for ParseLine {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut dishes = String::new();
-        for dish in &self.dishes {
-            dishes.push_str(&format!("{dish}\n"));
-        }
-        write!(f, "{}\n\n{dishes}", self.name)
-    }
 }
 
 /// Dish struct containing all information of a meal or side.
@@ -47,42 +25,14 @@ impl Display for ParseLine {
 pub struct Dish {
     /// Name of the dish.
     pub name: String,
-    /// Price of the meal for students, employees, guests and pupils.
+    /// Price of the meal for students, employees, guests and pupils. See [Price].
     pub price: Price,
-    /// All containing allergens.
+    /// All containing allergens. See [Allergen]
     pub allergens: Vec<Allergen>,
-    /// All containing additives.
+    /// All containing additives. See [Additive]
     pub additives: Vec<Additive>,
-    /// Meal-Type of the dish.
+    /// Meal-Type of the dish. See [MealType]
     pub meal_type: MealType,
-    /// Environmental score given by the swka.
+    /// The environmental score of the dish, which is an integer between 0 and 3. (Higher is better) 0 indicates that no score was present.
     pub env_score: u32,
-}
-
-impl Display for Dish {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut allergens = if self.allergens.is_empty() {
-            String::new()
-        } else {
-            String::from("Allergens: ")
-        };
-        for allergen in &self.allergens {
-            allergens.push_str(&format!("{allergen}, "));
-        }
-
-        let mut additives = if self.additives.is_empty() {
-            String::new()
-        } else {
-            String::from("Additives: ")
-        };
-        for additive in &self.additives {
-            additives.push_str(&format!("{additive}, "));
-        }
-
-        write!(
-            f,
-            "{}\n{}\n{}{}{} Environment score: {}\n",
-            self.name, self.price, allergens, additives, self.meal_type, self.env_score
-        )
-    }
 }
