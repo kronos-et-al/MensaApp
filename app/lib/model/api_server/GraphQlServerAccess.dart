@@ -31,6 +31,7 @@ import 'package:uuid/uuid.dart';
 import '../../view_model/repository/interface/IServerAccess.dart';
 import 'requests/mutations.graphql.dart';
 
+/// This class is responsible for communicating with the server through the graphql api.
 class GraphQlServerAccess implements IServerAccess {
   final String _apiKey;
   late String _currentAuth;
@@ -45,8 +46,12 @@ class GraphQlServerAccess implements IServerAccess {
     _authenticate(""); // provide default authentication with client id
   }
 
-  factory GraphQlServerAccess(String clientId, String server, String apiKey) {
-    return GraphQlServerAccess._(clientId, server, apiKey);
+  /// This constructor returns an instance of the server access class.
+  /// To connect to the server, its address has to be provided as `address`.
+  /// To authenticate commands to the server, an api key has also to be specified.
+  /// The client identifier is necessary to request user specific information from the server.
+  factory GraphQlServerAccess(String address, String apiKey, String clientId) {
+    return GraphQlServerAccess._(clientId, address, apiKey);
   }
 
   // ---------------------- mutations ----------------------
@@ -251,12 +256,17 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   // --------------- auth ---------------
+  static const int apiKeyIdentifierPrefixLength = 10;
+  static const String authenticationScheme = "Mensa";
 
   void _authenticate(String hash) {
-    var authString = "$_clientId:${_apiKey.substring(0, 10)}:$hash";
-    var bytes = utf8.encode(authString);
-    var base64 = base64Encode(bytes);
-    _currentAuth = "Mensa $base64";
+    final apiKeyPrefix = _apiKey.length > apiKeyIdentifierPrefixLength
+        ? _apiKey.substring(0, apiKeyIdentifierPrefixLength)
+        : _apiKey;
+    final authString = "$_clientId:$apiKeyPrefix:$hash";
+    final bytes = utf8.encode(authString);
+    final base64 = base64Encode(bytes);
+    _currentAuth = "$authenticationScheme $base64";
   }
 
   String _generateHashOfParameters(

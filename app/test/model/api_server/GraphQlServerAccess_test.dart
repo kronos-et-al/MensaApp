@@ -13,7 +13,7 @@ import 'package:intl/intl.dart';
 
 void main() async {
   final GraphQlServerAccess serverAccess = GraphQlServerAccess(
-      "1f16dcca-963e-4ceb-a8ca-843a7c9277a5", testServer, testApiKey);
+      testServer, testApiKey, "1f16dcca-963e-4ceb-a8ca-843a7c9277a5");
 
   test('remove downvote', () async {
     var deleted = await serverAccess.deleteDownvote(ImageData(
