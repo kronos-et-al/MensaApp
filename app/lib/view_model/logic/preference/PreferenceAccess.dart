@@ -6,8 +6,9 @@ import 'package:app/view_model/repository/interface/ILocalStorage.dart';
 
 import 'package:flutter/foundation.dart';
 
+// todo muss vor Combined Meal Plan Access initialisiert werden
 class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
-  late ILocalStorage _access;
+  final ILocalStorage _access;
 
   late String _clientIdentifier;
   late MensaColorScheme _colorScheme;
@@ -24,8 +25,15 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
   Future<void> _init() async {
     _clientIdentifier = await _access.getClientIdentifier() ?? "";
     _colorScheme = await _access.getColorScheme() ?? MensaColorScheme.system;
-    _priceCategory = await _access.getPriceCategory() ?? PriceCategory.student;
     _mealPlanFormat = await _access.getMealPlanFormat() ?? MealPlanFormat.grid;
+
+    PriceCategory? category = await _access.getPriceCategory();
+    if (category == null) {
+      category = PriceCategory.student;
+      _access.setPriceCategory(category);
+    }
+
+    _priceCategory = category;
   }
 
   @override
