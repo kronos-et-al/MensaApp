@@ -379,68 +379,51 @@ mod tests {
 
     #[tokio::test]
     async fn test_1() {
-        test_html(
-            "./test_data/test_1.html",
-            include_str!("./test_data/test_1.html"),
-        );
+        test_html("./test_data/test_1.html");
     }
 
     #[tokio::test]
     async fn test_normal() {
-        test_html(
-            "./test_data/test_normal.html",
-            include_str!("./test_data/test_normal.html"),
-        );
+        test_html("./test_data/test_normal.html");
     }
 
     #[tokio::test]
     async fn test_no_meal_data() {
-        test_html(
-            "./test_data/test_no_meal_data.html",
-            include_str!("./test_data/test_no_meal_data.html"),
-        );
+        test_html("./test_data/test_no_meal_data.html");
     }
 
     #[tokio::test]
     async fn test_no_mealplan_shown() {
-        test_html(
-            "./test_data/test_no_mealplan_shown.html",
-            include_str!("./test_data/test_no_mealplan_shown.html"),
-        );
+        test_html("./test_data/test_no_mealplan_shown.html");
     }
 
     #[tokio::test]
     async fn test_mensa_moltke() {
-        test_html(
-            "./test_data/test_mensa_moltke.html",
-            include_str!("./test_data/test_mensa_moltke.html"),
-        );
+        test_html("./test_data/test_mensa_moltke.html");
     }
 
-    fn test_html(path: &str, file_contents: &str) {
-        let canteen_data = HTMLParser::transform(file_contents).unwrap();
+    fn test_html(path: &str) {
+        let path = path.replace("./", "src/layer/data/swka_parser/");
+        let file_contents = read_from_file(&path).unwrap();
+        let canteen_data = HTMLParser::transform(&file_contents).unwrap();
+
         //write_output_to_file(path, &canteen_data);
-        let contents = read_from_file(path);
-        assert!(contents.is_ok());
-        let contents = contents.unwrap().replace("\r\n", "\n");
-        assert_eq!(format!("{canteen_data:#?}"), contents);
+        let expected = read_from_file(&path.replace(".html", ".txt"))
+            .unwrap()
+            .replace("\r\n", "\n");
+        assert_eq!(format!("{canteen_data:#?}"), expected);
     }
     #[allow(dead_code)]
     fn write_output_to_file(
         path: &str,
         canteen_data: &[(Date, ParseCanteen)],
     ) -> std::io::Result<()> {
-        let output_path = path
-            .replace(".html", ".txt")
-            .replace("./", "src/layer/data/swka_parser/");
+        let output_path = path.replace(".html", ".txt");
         let mut output = File::create(output_path)?;
         write!(output, "{canteen_data:#?}")
     }
 
     fn read_from_file(path: &str) -> std::io::Result<String> {
-        let input_path = path
-            .replace(".html", ".txt")
-            .replace("./", "src/layer/data/swka_parser/");
-        fs::read_to_string(input_path)
+        fs::read_to_string(path)
     }
 }
