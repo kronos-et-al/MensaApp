@@ -83,7 +83,7 @@ where
                     match self.data_access.delete_image(image.id).await {
                         Ok(deleted) => {
                             if !deleted {
-                                warn!("The image with the id {} does not exist, but could not be deleted", image.id);
+                                warn!("The image with the id {} does not exist, but it could not be deleted", image.id);
                                 return;
                             }
                         }
@@ -100,7 +100,10 @@ where
             }
         }
         if let Err(error) = self.data_access.mark_as_checked(image.id).await {
-            warn!("An error occurred while marking the image with id {} as checked: {error}", image.id);
+            warn!(
+                "An error occurred while marking the image with id {} as checked: {error}",
+                image.id
+            );
         }
     }
 }

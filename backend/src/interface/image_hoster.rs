@@ -36,7 +36,7 @@ pub enum ImageHosterError {
     ServiceUnavailable,
     /// Format "xxx" not found error
     #[error("the requested response format was not found")]
-    FormatNotFound(#[from] Box<dyn Error + Send + Sync >),
+    FormatNotFound(#[from] Box<dyn Error + Send + Sync>),
     /// The connection failed to establish error
     #[error("no connection could be established")]
     NotConnected,
