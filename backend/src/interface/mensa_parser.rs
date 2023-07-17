@@ -17,7 +17,7 @@ pub enum ParseError {
     ClientBuilderFailed,
 }
 #[async_trait]
-/// Parser interface. Provides functions which return canteen structs. Canteen structs contain raw data obtained by parsing mealplans.
+/// Parser interface. Provides functions which return canteen structs. Canteen structs contain raw data obtained by parsing meal plans.
 pub trait MealplanParser {
     /// Initiate a parse procedure. Returns a canteen struct containing meal plan data of the given date.
     async fn parse(&self, day: Date) -> Result<Vec<ParseCanteen>, ParseError>;

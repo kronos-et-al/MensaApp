@@ -1,3 +1,5 @@
+//! [`SwKaResolver`] for obtaining html code from urls.
+
 use crate::interface::mensa_parser::ParseError;
 use futures::future::join_all;
 use reqwest::Client;
