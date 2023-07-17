@@ -8,14 +8,14 @@ use tracing::log::debug;
 
 pub struct SwKaResolver {
     client_timeout: Duration,
-    client_user_agent: String
+    client_user_agent: String,
 }
 
 impl SwKaResolver {
     pub const fn new(client_timeout: Duration, client_user_agent: String) -> Self {
         Self {
             client_user_agent,
-            client_timeout
+            client_timeout,
         }
     }
 
@@ -57,8 +57,8 @@ impl SwKaResolver {
 
 #[cfg(test)]
 mod test {
-    use std::time::Duration;
     use crate::layer::data::swka_parser::swka_resolver::SwKaResolver;
+    use std::time::Duration;
 
     fn get_invalid_url() -> String {
         String::from("A ship-shipping ship ships shipping-ships")

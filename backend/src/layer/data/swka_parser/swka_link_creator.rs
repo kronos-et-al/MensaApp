@@ -11,8 +11,6 @@ use chrono::{Datelike, Duration, Local};
 
 use crate::util::Date;
 
-
-
 const URL_SEPARATOR: char = '/';
 const WEEK_SELECTOR: &str = "?kw=";
 const NUMBER_OF_WEEKS_TO_POLL: u32 = 4;
@@ -26,7 +24,7 @@ impl SwKaLinkCreator {
     pub fn new(base_url: &str, valid_canteens: Vec<&str>) -> Self {
         Self {
             base_url,
-            valid_canteens
+            valid_canteens,
         }
     }
 
@@ -34,7 +32,7 @@ impl SwKaLinkCreator {
         let calender_week = Self::get_calender_week(day);
         self.valid_canteens
             .iter()
-            .map(|mensa| format!("{BASE_URL}{mensa}{URL_SEPARATOR}{WEEK_SELECTOR}{calender_week}"))
+            .map(|mensa| format!("{BASE_URL}{mensa}{URL_SEPARATOR}{WEEK_SELECTOR}{calender_week}", BASE_URL = self.base_url))
             .collect()
     }
 
@@ -118,7 +116,7 @@ mod tests {
     const BASE_URL: &str = "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/";
 
     fn get_creator() -> SwKaLinkCreator {
-        SwKaLinkCreator::new(BASE_URL,MENSA_NAMES)
+        SwKaLinkCreator::new(BASE_URL, MENSA_NAMES)
     }
 
     #[tokio::test]

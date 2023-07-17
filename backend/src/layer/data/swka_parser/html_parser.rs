@@ -155,7 +155,9 @@ impl HTMLParser {
         let dates = Self::get_dates(&root_node).unwrap_or_default();
         let canteens = Self::get_canteens(&root_node);
         if dates.len() != canteens.len() {
-            return Err(ParseError::InvalidHtmlDocument("provided non equal amount of dates for canteens"));
+            return Err(ParseError::InvalidHtmlDocument(
+                "provided non equal amount of dates for canteens",
+            ));
         }
         // Here we have two vectors of the same length: One containing Date and one containing ParseCanteen. In order to get one containing tuples of both we use zip()
         Ok(dates.into_iter().zip(canteens.into_iter()).collect())

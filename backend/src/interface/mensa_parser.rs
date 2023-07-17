@@ -10,10 +10,8 @@ pub struct ParseInfo {
     pub base_url: &'static str,
     pub valid_canteens: Vec<&'static str>,
     pub client_timeout: std::time::Duration,
-    pub client_user_agent: String
+    pub client_user_agent: String,
 }
-
-
 
 #[derive(Debug, Error)]
 pub enum ParseError {

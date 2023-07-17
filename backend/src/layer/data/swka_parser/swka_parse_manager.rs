@@ -10,14 +10,12 @@ use async_trait::async_trait;
 use std::collections::HashMap;
 
 pub struct SwKaParseManager {
-    parse_info: ParseInfo
+    parse_info: ParseInfo,
 }
 
 impl SwKaParseManager {
     pub const fn new(parse_info: ParseInfo) -> Self {
-        Self {
-            parse_info
-        }
+        Self { parse_info }
     }
 
     /// Sorts all canteens by days and urls in a hashmap.<br>
@@ -37,11 +35,17 @@ impl SwKaParseManager {
     }
 
     fn get_link_creator(&self) -> SwKaLinkCreator {
-        SwKaLinkCreator::new(self.parse_info.base_url.clone(), self.parse_info.valid_canteens.clone())
+        SwKaLinkCreator::new(
+            self.parse_info.base_url.clone(),
+            self.parse_info.valid_canteens.clone(),
+        )
     }
 
     fn get_resolver(&self) -> SwKaResolver {
-        SwKaResolver::new(self.parse_info.client_timeout.clone(), self.parse_info.client_user_agent.clone())
+        SwKaResolver::new(
+            self.parse_info.client_timeout.clone(),
+            self.parse_info.client_user_agent.clone(),
+        )
     }
 }
 
@@ -82,9 +86,9 @@ impl MealplanParser for SwKaParseManager {
 
 #[cfg(test)]
 mod test {
-    use std::time::Duration;
     use crate::interface::mensa_parser::ParseInfo;
     use crate::layer::data::swka_parser::swka_parse_manager::SwKaParseManager;
+    use std::time::Duration;
 
     fn get_valid_urls() -> Vec<String> {
         vec![
@@ -116,14 +120,12 @@ mod test {
 
     const BASE_URL: &str = "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/";
 
-
     const INFO: ParseInfo = ParseInfo {
         base_url: BASE_URL,
         valid_canteens: MENSA_NAMES,
         client_timeout: get_client_timeout(),
-        client_user_agent: get_client_user_agent()
+        client_user_agent: get_client_user_agent(),
     };
-
 
     #[tokio::test]
     async fn sort_and_parse_canteens_with_valid_urls() {
