@@ -24,5 +24,7 @@ enum Allergen {
   so,
   wa,
   we,
-  wt
+  wt,
+  la,
+  gt,
 }

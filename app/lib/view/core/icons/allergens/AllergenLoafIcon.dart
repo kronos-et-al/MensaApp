@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'AllergenIcon.dart';
+import 'IAllergenIcon.dart';
 
 /// This widget is used to display the icon for Loaf
-class AllergenLoafIcon extends AllergenIcon {
+class AllergenLoafIcon extends IAllergenIcon {
   const AllergenLoafIcon(
       {super.key, super.width, super.height, super.color});
 
