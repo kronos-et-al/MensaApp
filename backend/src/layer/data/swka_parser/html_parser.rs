@@ -379,35 +379,53 @@ mod tests {
 
     #[tokio::test]
     async fn test_1() {
-        test_html("./test_data/test_1.html");
+        test_html("src/layer/data/swka_parser/test_data/test_1.html");
     }
 
     #[tokio::test]
     async fn test_normal() {
-        test_html("./test_data/test_normal.html");
+        test_html("src/layer/data/swka_parser/test_data/test_normal.html");
     }
 
     #[tokio::test]
     async fn test_no_meal_data() {
-        test_html("./test_data/test_no_meal_data.html");
+        test_html("src/layer/data/swka_parser/test_data/test_no_meal_data.html");
     }
 
     #[tokio::test]
     async fn test_no_mealplan_shown() {
-        test_html("./test_data/test_no_mealplan_shown.html");
+        test_html("src/layer/data/swka_parser/test_data/test_no_mealplan_shown.html");
     }
 
     #[tokio::test]
     async fn test_mensa_moltke() {
-        test_html("./test_data/test_mensa_moltke.html");
+        test_html("src/layer/data/swka_parser/test_data/test_mensa_moltke.html");
+    }
+
+    #[tokio::test]
+    async fn test_not_a_canteen() {
+        test_html("src/layer/data/swka_parser/test_data/test_not_a_canteen.html");
+    }
+
+    #[tokio::test]
+    async fn test_canteen_closed() {
+        test_html("src/layer/data/swka_parser/test_data/test_canteen_closed.html");
+    }
+
+    #[tokio::test]
+    /// Tests an html page, that is not from the Studierendenwerk Karlsruhe. (Source: https://cbracco.github.io/html5-test-page/)
+    async fn test_invalid() {
+        let path = "src/layer/data/swka_parser/test_data/test_invalid.html";
+        let file_contents = read_from_file(path).unwrap();
+        let canteen_data = HTMLParser::transform(&file_contents);
+        assert!(canteen_data.is_err());
     }
 
     fn test_html(path: &str) {
-        let path = path.replace("./", "src/layer/data/swka_parser/");
-        let file_contents = read_from_file(&path).unwrap();
+        let file_contents = read_from_file(path).unwrap();
         let canteen_data = HTMLParser::transform(&file_contents).unwrap();
 
-        //write_output_to_file(path, &canteen_data);
+        write_output_to_file(path, &canteen_data);
         let expected = read_from_file(&path.replace(".html", ".txt"))
             .unwrap()
             .replace("\r\n", "\n");
