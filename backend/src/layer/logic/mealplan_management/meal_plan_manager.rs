@@ -34,7 +34,7 @@ where
         for parse_canteen in parse_canteens {
             let name = &parse_canteen.name.clone();
             match self.resolver.resolve(parse_canteen, date).await {
-                Ok(_) => debug!("resolved canteen '{name}' with no errors"),
+                Ok(()) => debug!("resolved canteen '{name}' with no errors"),
                 Err(error) => warn!("resolved canteen '{name}' with errors: {error}"),
             }
         }
