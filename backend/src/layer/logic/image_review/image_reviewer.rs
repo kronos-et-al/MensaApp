@@ -68,7 +68,7 @@ where
                     self.review_image(image).await;
                 }
             }
-            Err(error) => warn!("An error occurred while getting the images: {error}"),
+            Err(error) => warn!("an error occurred while getting the images: {error}"),
         }
     }
 
