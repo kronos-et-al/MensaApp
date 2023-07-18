@@ -22,6 +22,7 @@ where
     DataAccess: MealplanManagementDataAccess,
     Parser: MealplanParser,
 {
+    #[allow(dead_code)]
     pub const fn new(database: DataAccess, meal_plan_parser: Parser) -> Self {
         Self {
             resolver: RelationResolver::new(database),
