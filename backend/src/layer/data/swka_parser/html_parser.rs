@@ -89,7 +89,7 @@ use crate::interface::mensa_parser::{
 };
 use crate::util::{Additive, Allergen, Date, MealType, Price};
 use regex::Regex;
-use scraper::{ElementRef, Html, Selector, element_ref::Text};
+use scraper::{element_ref::Text, ElementRef, Html, Selector};
 
 const ROOT_NODE_CLASS_SELECTOR: &str = "div.main-content";
 const CANTEEN_NAME_NODE_CLASS_SELECTOR: &str = "h1.mensa_fullname";
@@ -158,7 +158,10 @@ impl HTMLParser {
             ));
         }
         // Here we have two vectors of the same length: One containing Date and one containing ParseCanteen. In order to get one containing tuples of both we use zip()
-        Ok(dates.into_iter().zip(canteen_for_all_days.into_iter()).collect())
+        Ok(dates
+            .into_iter()
+            .zip(canteen_for_all_days.into_iter())
+            .collect())
     }
 
     fn get_root_node(document: &Html) -> Result<ElementRef, ParseError> {
@@ -203,7 +206,10 @@ impl HTMLParser {
         root_node.select(&selector).collect()
     }
 
-    fn get_canteen_for_single_day(root_node: &ElementRef, day_node: &ElementRef) -> Option<ParseCanteen> {
+    fn get_canteen_for_single_day(
+        root_node: &ElementRef,
+        day_node: &ElementRef,
+    ) -> Option<ParseCanteen> {
         Some(ParseCanteen {
             name: Self::get_canteen_name(root_node)?,
             lines: Self::get_lines(day_node),
@@ -243,10 +249,7 @@ impl HTMLParser {
     }
 
     fn remove_unnecessary_html(text: Text<'_>) -> String {
-        text.collect::<Vec<_>>()
-        .join(" ")
-        .trim()
-        .to_owned()
+        text.collect::<Vec<_>>().join(" ").trim().to_owned()
     }
 
     fn get_dishes(line_node: &ElementRef) -> Vec<Dish> {
