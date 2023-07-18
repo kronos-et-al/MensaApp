@@ -32,10 +32,20 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Canteen>>;
     /// Determines the line with the most similar name.
     async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Line>>;
-    /// Determines the meal with the most similar name.
-    async fn get_similar_meal(&self, similar_name: &str, allergens: &[Allergen], additives: &[Additive]) -> Result<Option<Meal>>;
-    /// Determines the side with the most similar name.
-    async fn get_similar_side(&self, similar_name: &str, allergens: &[Allergen], additives: &[Additive]) -> Result<Option<Side>>;
+    /// Determines the meal with the most similar name, identical allergens and identical additives.
+    async fn get_similar_meal(
+        &self,
+        similar_name: &str,
+        allergens: &[Allergen],
+        additives: &[Additive],
+    ) -> Result<Option<Meal>>;
+    /// Determines the side with the most similar name, identical allergens and identical additives.
+    async fn get_similar_side(
+        &self,
+        similar_name: &str,
+        allergens: &[Allergen],
+        additives: &[Additive],
+    ) -> Result<Option<Side>>;
 
     /// Updates an existing canteen entity in the database. Returns the entity.
     async fn update_canteen(&self, uuid: Uuid, name: &str) -> Result<Canteen>;

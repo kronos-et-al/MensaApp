@@ -117,6 +117,7 @@ pub struct MealplanManagementDatabaseMock;
 
 #[async_trait]
 impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
+    async fn dissolve_relations(&self, _canteen: Canteen, _date: Date) {}
     //TODO update similar function mocks
 
     /// Determines all canteens with a similar name.
@@ -128,11 +129,21 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         Ok(get_lines(similar_name, 5).pop())
     }
     /// Determines all meals with a similar name.
-    async fn get_similar_meal(&self, similar_name: &str) -> Result<Option<Meal>> {
+    async fn get_similar_meal(
+        &self,
+        similar_name: &str,
+        _allergens: &[Allergen],
+        _additives: &[Additive],
+    ) -> Result<Option<Meal>> {
         Ok(get_meals(similar_name, 2).pop())
     }
     /// Determines all sides with a similar name.
-    async fn get_similar_side(&self, similar_name: &str) -> Result<Option<Side>> {
+    async fn get_similar_side(
+        &self,
+        similar_name: &str,
+        _allergens: &[Allergen],
+        _additives: &[Additive],
+    ) -> Result<Option<Side>> {
         Ok(get_sides(similar_name, 3).pop())
     }
 
