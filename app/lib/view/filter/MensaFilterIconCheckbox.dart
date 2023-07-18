@@ -1,11 +1,16 @@
 import 'package:app/view/core/icons/allergens/IAllergenIcon.dart';
 import 'package:flutter/material.dart';
 
+/// This widget is used to display a selectable icon with a text.
 class MensaFilterIconCheckbox<T> {
   final IAllergenIcon _icon;
   final String _text;
   final T value;
 
+  /// Creates a MensaFilterIconCheckbox widget.
+  /// @param icon The icon to display.
+  /// @param text The text to display.
+  /// @param value The value of the checkbox.
   const MensaFilterIconCheckbox(
       {required IAllergenIcon icon, required String text, required this.value})
       : _icon = icon,
