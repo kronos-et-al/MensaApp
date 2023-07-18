@@ -16,7 +16,7 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
     final result = await _api.deleteDownvote(image);
 
     if (!result) {
-      return "error";
+      return "snackbar.voteError";
     }
 
     image.deleteRating();
@@ -29,7 +29,7 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
     final result = await _api.deleteUpvote(image);
 
     if (!result) {
-      return "error";
+      return "snackbar.voteError";
     }
 
     image.deleteRating();
@@ -42,7 +42,7 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
     final result = await _api.downvoteImage(image);
 
     if (!result) {
-      return "error";
+      return "snackbar.voteError";
     }
 
     image.downvote();
@@ -55,13 +55,11 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
     final result = await _api.linkImage(url, meal);
 
     if (!result) {
-      return "error";
+      return "snackbar.linkImageError";
     }
 
-    // todo aktualisieren?
-
     notifyListeners();
-    return "success";
+    return "snackbar.linkImageSuccess";
   }
 
   @override
@@ -69,13 +67,13 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
     final result = await _api.reportImage(image, reportReason);
 
     if (!result) {
-      return "error";
+      return "snackbar.reportImageError";
     }
 
     // todo wie wird es nicht mehr angezeigt
 
     notifyListeners();
-    return "success";
+    return "snackbar.reportImageSuccess";
   }
 
   @override
@@ -83,7 +81,7 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
     final result = await _api.upvoteImage(image);
 
     if (!result) {
-      return "error";
+      return "snackbar.voteError";
     }
 
     image.upvote();
