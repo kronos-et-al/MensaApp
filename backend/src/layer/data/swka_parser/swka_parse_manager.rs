@@ -1,13 +1,21 @@
 //! The [`SwKaManager`] calls and transfers data between related classes.
 
 use crate::interface::mensa_parser::model::ParseCanteen;
-use crate::interface::mensa_parser::{MealplanParser, ParseError, ParseInfo};
+use crate::interface::mensa_parser::{MealplanParser, ParseError};
 use crate::layer::data::swka_parser::html_parser::HTMLParser;
 use crate::layer::data::swka_parser::swka_link_creator::SwKaLinkCreator;
 use crate::layer::data::swka_parser::swka_resolver::SwKaResolver;
 use crate::util::Date;
 use async_trait::async_trait;
 use std::collections::HashMap;
+
+#[derive(Debug)]
+pub struct ParseInfo {
+    pub base_url: String,
+    pub valid_canteens: Vec<String>,
+    pub client_timeout: std::time::Duration,
+    pub client_user_agent: String,
+}
 
 pub struct SwKaParseManager {
     parse_info: ParseInfo,
