@@ -3,8 +3,8 @@
 use crate::interface::mensa_parser::model::ParseCanteen;
 use crate::interface::mensa_parser::{MealplanParser, ParseError};
 use crate::layer::data::swka_parser::html_parser::HTMLParser;
+use crate::layer::data::swka_parser::swka_html_request::SwKaHtmlRequest;
 use crate::layer::data::swka_parser::swka_link_creator::SwKaLinkCreator;
-use crate::layer::data::swka_parser::swka_resolver::SwKaResolver;
 use crate::util::Date;
 use async_trait::async_trait;
 use std::collections::HashMap;
@@ -19,7 +19,7 @@ pub struct ParseInfo {
 
 pub struct SwKaParseManager {
     link_creator: SwKaLinkCreator,
-    resolver: SwKaResolver,
+    request: SwKaHtmlRequest,
     html_parser: HTMLParser,
 }
 
@@ -33,7 +33,7 @@ impl SwKaParseManager {
                 parse_info.base_url.clone(),
                 parse_info.valid_canteens.clone(),
             ),
-            resolver: SwKaResolver::new(parse_info.client_timeout, parse_info.client_user_agent)?,
+            request: SwKaHtmlRequest::new(parse_info.client_timeout, parse_info.client_user_agent)?,
             html_parser: HTMLParser::new(),
         })
     }
@@ -46,7 +46,7 @@ impl SwKaParseManager {
     ) -> Result<HashMap<Date, Vec<ParseCanteen>>, ParseError> {
         let mut map: HashMap<Date, Vec<ParseCanteen>> = HashMap::new();
 
-        for html in self.resolver.get_html_strings(urls).await? {
+        for html in self.request.get_html_strings(urls).await? {
             for (date, canteen) in self.html_parser.transform(&html)? {
                 map.entry(date).or_default().push(canteen);
             }
@@ -59,7 +59,7 @@ impl SwKaParseManager {
 impl MealplanParser for SwKaParseManager {
     /// This method handles the parsing procedure for the given day.
     /// To obtain the requested canteens, the manager calls [`SwKaLinkCreator`] to create urls for the meal plans.
-    /// The [`SwKaResolver`] loads the html code of the given website behind the urls.
+    /// The [`SwKaHtmlRequest`] loads the html code of the given website behind the urls.
     /// At least the [`HTMLParser`] interprets the html code into [`ParseCanteen`] objects.
     /// These objects will be returned.<br>
     /// `day: Date`<br>
@@ -76,7 +76,7 @@ impl MealplanParser for SwKaParseManager {
 
     /// This method handles the parsing procedure for each day in the next four weeks.
     /// To obtain the requested canteens, the manager calls [`SwKaLinkCreator`] to create urls for the meal plans.
-    /// The [`SwKaResolver`] loads the html code of the given website behind the urls.
+    /// The [`SwKaHtmlRequest`] loads the html code of the given website behind the urls.
     /// At least the [`HTMLParser`] interprets the html code into [`ParseCanteen`] objects.
     /// These objects will be returned.<br>
     /// ## Return

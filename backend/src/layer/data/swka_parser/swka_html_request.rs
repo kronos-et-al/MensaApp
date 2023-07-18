@@ -1,4 +1,4 @@
-//! [`SwKaResolver`] for obtaining html code from urls.
+//! [`SwKaHtmlRequest`] for obtaining html code from urls.
 
 use crate::interface::mensa_parser::ParseError;
 use futures::future::join_all;
@@ -6,12 +6,12 @@ use reqwest::Client;
 use std::time::Duration;
 use tracing::log::debug;
 
-pub struct SwKaResolver {
+pub struct SwKaHtmlRequest {
     client: Client,
 }
 
-impl SwKaResolver {
-    /// Method for creating a [`SwKaResolver`] instance.
+impl SwKaHtmlRequest {
+    /// Method for creating a [`SwKaHtmlRequest`] instance.
     /// # Errors
     /// If the request client creation fails an error 'll be returned.
     pub fn new(client_timeout: Duration, client_user_agent: String) -> Result<Self, ParseError> {
@@ -71,27 +71,27 @@ mod test {
 
     #[tokio::test]
     async fn get_html_response_fail() {
-        let result = test_util::get_resolver().get_html(&get_invalid_url()).await;
+        let result = test_util::get_request().get_html(&get_invalid_url()).await;
         assert!(result.is_err());
     }
 
     #[tokio::test]
     async fn get_html_response_no_fail() {
-        let result = test_util::get_resolver().get_html(&get_valid_url()).await;
+        let result = test_util::get_request().get_html(&get_valid_url()).await;
         assert!(result.is_ok());
     }
 
     #[tokio::test]
     async fn get_html_strings_response_fail() {
         let urls = vec![get_invalid_url(), get_valid_url(), get_valid_url()];
-        let result = test_util::get_resolver().get_html_strings(urls).await;
+        let result = test_util::get_request().get_html_strings(urls).await;
         assert!(result.is_err());
     }
 
     #[tokio::test]
     async fn get_html_strings_response_no_fail() {
         let urls = vec![get_valid_url(), get_valid_url()];
-        let result = test_util::get_resolver().get_html_strings(urls).await;
+        let result = test_util::get_request().get_html_strings(urls).await;
         assert!(result.is_ok());
     }
 }
