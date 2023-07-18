@@ -88,20 +88,20 @@ where
                             }
                         }
                         Err(error) => {
-                            warn!("An error occurred while deleting the non-existent image with id {}: {error}", image.id);
+                            warn!("an error occurred while deleting the non-existent image with id {}: {error}", image.id);
                             return;
                         }
                     }
                 }
             }
             Err(error) => {
-                warn!("An error occurred while checking the image with id {} for its existence: {error}", image.id);
+                warn!("an error occurred while checking the image with id {} for its existence: {error}", image.id);
                 return;
             }
         }
         if let Err(error) = self.data_access.mark_as_checked(image.id).await {
             warn!(
-                "An error occurred while marking the image with id {} as checked: {error}",
+                "an error occurred while marking the image with id {} as checked: {error}",
                 image.id
             );
         }
@@ -111,25 +111,108 @@ where
 #[cfg(test)]
 mod test {
     use crate::{
-        interface::persistent_data::DataError,
+        interface::persistent_data::{model::Image, DataError},
         layer::logic::image_review::{
             image_reviewer::ImageReviewer,
             test::{
-                image_hoster_mock::ImageHosterMock,
-                image_review_database_mock::ImageReviewDatabaseMock,
+                image_hoster_mock::{
+                    ImageHosterMock, PHOTO_ID_THAT_DOES_NOT_EXIST, PHOTO_ID_TO_FAIL_CHECK_EXISTENCE,
+                },
+                image_review_database_mock::{
+                    ImageReviewDatabaseMock, ID_TO_FAIL_DELETE, ID_TO_THROW_ERROR_ON_DELETE,
+                },
             },
         },
+        util::Uuid,
     };
 
     #[tokio::test]
     async fn test_review_images_warning_on_err() {
-        let image_hoster = ImageHosterMock::default();
-        let image_review_database = ImageReviewDatabaseMock::default();
-        let image_reviewer =
-            ImageReviewer::new(image_review_database.clone(), image_hoster.clone());
+        let image_reviewer = get_image_reviewer();
         image_reviewer
             .review_images(Err(DataError::NoSuchItem))
             .await;
-        assert!(image_hoster.get_existence_calls() == 0);
+        check_correct_call_number(&image_reviewer, 0, 0, 0);
+    }
+
+    #[tokio::test]
+    async fn test_review_image_ok() {
+        let image_reviewer = get_image_reviewer();
+        image_reviewer.review_image(get_default_image()).await;
+        check_correct_call_number(&image_reviewer, 1, 0, 1);
+    }
+
+    #[tokio::test]
+    async fn test_review_image_throws_error_when_checked() {
+        let image = Image {
+            image_hoster_id: PHOTO_ID_TO_FAIL_CHECK_EXISTENCE.to_string(),
+            ..get_default_image()
+        };
+        let image_reviewer = get_image_reviewer();
+        image_reviewer.review_image(image).await;
+        check_correct_call_number(&image_reviewer, 1, 0, 0);
+    }
+
+    #[tokio::test]
+    async fn test_review_nonexistent_image() {
+        let image = Image {
+            image_hoster_id: PHOTO_ID_THAT_DOES_NOT_EXIST.to_string(),
+            ..get_default_image()
+        };
+        let image_reviewer = get_image_reviewer();
+        image_reviewer.review_image(image).await;
+        check_correct_call_number(&image_reviewer, 1, 1, 1);
+    }
+
+    #[tokio::test]
+    async fn test_review_nonexistent_image_delete_error() {
+        let image = Image {
+            id: ID_TO_THROW_ERROR_ON_DELETE,
+            image_hoster_id: PHOTO_ID_THAT_DOES_NOT_EXIST.to_string(),
+            ..get_default_image()
+        };
+        let image_reviewer = get_image_reviewer();
+        image_reviewer.review_image(image).await;
+        check_correct_call_number(&image_reviewer, 1, 1, 0);
+    }
+
+    #[tokio::test]
+    async fn test_review_nonexistent_image_not_deleted() {
+        let image = Image {
+            id: ID_TO_FAIL_DELETE,
+            image_hoster_id: PHOTO_ID_THAT_DOES_NOT_EXIST.to_string(),
+            ..get_default_image()
+        };
+        let image_reviewer = get_image_reviewer();
+        image_reviewer.review_image(image).await;
+        check_correct_call_number(&image_reviewer, 1, 1, 0);
+    }
+
+    fn get_default_image() -> Image {
+        Image {
+            id: Uuid::from_u128(23u128),
+            image_hoster_id: "test".to_string(),
+            url: "www.test.com".to_string(),
+            rank: 0.0,
+            upvotes: 0,
+            downvotes: 0,
+        }
+    }
+
+    fn check_correct_call_number(
+        image_reviewer: &ImageReviewer<ImageReviewDatabaseMock, ImageHosterMock>,
+        exp_existence_calls: u32,
+        exp_delete_calls: u32,
+        exp_check_calls: u32,
+    ) {
+        assert!(image_reviewer.image_hoster.get_existence_calls() == exp_existence_calls);
+        assert!(image_reviewer.data_access.get_delete_image_calls() == exp_delete_calls);
+        assert!(image_reviewer.data_access.get_mark_as_checked_calls() == exp_check_calls);
+    }
+
+    fn get_image_reviewer() -> ImageReviewer<ImageReviewDatabaseMock, ImageHosterMock> {
+        let image_hoster = ImageHosterMock::default();
+        let image_review_database = ImageReviewDatabaseMock::default();
+        ImageReviewer::new(image_review_database, image_hoster)
     }
 }

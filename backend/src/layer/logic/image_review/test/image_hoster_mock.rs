@@ -2,9 +2,12 @@ use std::sync::{Arc, Mutex};
 
 use async_trait::async_trait;
 
-use crate::interface::image_hoster::{model::ImageMetaData, ImageHoster, Result};
+use crate::interface::image_hoster::{model::ImageMetaData, ImageHoster, Result, ImageHosterError};
 
-#[derive(Default, Clone)]
+pub const PHOTO_ID_TO_FAIL_CHECK_EXISTENCE: &str = "this image should throw an error, when checked for existence";
+pub const PHOTO_ID_THAT_DOES_NOT_EXIST: &str = "this image should not exist";
+
+#[derive(Default)]
 pub struct ImageHosterMock {
     existence_calls: Arc<Mutex<u32>>,
 }
@@ -30,12 +33,18 @@ impl ImageHoster for ImageHosterMock {
         })
     }
     /// Checks if an image still exists at the hoster website.
-    async fn check_existence(&self, _photo_id: &str) -> Result<bool> {
+    async fn check_existence(&self, photo_id: &str) -> Result<bool> {
         *self
             .existence_calls
             .lock()
             .expect("failed to lock mutex for `existence_calls` counter") += 1;
-        Ok(true)
+        if photo_id == PHOTO_ID_TO_FAIL_CHECK_EXISTENCE {
+            Err(ImageHosterError::PhotoNotFound)
+        } else if photo_id == PHOTO_ID_THAT_DOES_NOT_EXIST {
+            Ok(false)
+        } else {
+            Ok(true)
+        }
     }
     /// Checks whether the licence is acceptable for our purposes.
     async fn check_licence(&self, _photo_id: &str) -> Result<bool> {
