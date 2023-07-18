@@ -91,8 +91,8 @@ use crate::interface::mensa_parser::{
 };
 use crate::util::{Additive, Allergen, Date, MealType, Price};
 use regex::Regex;
-use scraper::{ElementRef, Html, Selector};
 use scraper::element_ref::Text;
+use scraper::{ElementRef, Html, Selector};
 
 const ROOT_NODE_CLASS_SELECTOR: &str = "div.main-content";
 const CANTEEN_NAME_NODE_CLASS_SELECTOR: &str = "h1.mensa_fullname";
@@ -131,6 +131,12 @@ const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
 pub struct HTMLParser;
 
 impl HTMLParser {
+    /// Method for creating a [`HTMLParser`] instance.
+    #[must_use]
+    pub const fn new() -> Self {
+        Self
+    }
+
     /// Transforms an html document into a vector containing tuples of `Date` and `ParseCanteens`
     ///
     /// # Arguments
@@ -155,9 +161,9 @@ impl HTMLParser {
         let dates = Self::get_dates(&root_node).unwrap_or_default();
         let canteen_for_all_days = Self::get_canteen_for_all_days(&root_node);
         if dates.len() != canteen_for_all_days.len() {
-            return Err(ParseError::InvalidHtmlDocument(
-                String::from("provided non equal amount of dates for canteens"),
-            ));
+            return Err(ParseError::InvalidHtmlDocument(String::from(
+                "provided non equal amount of dates for canteens",
+            )));
         }
         // Here we have two vectors of the same length: One containing Date and one containing ParseCanteen. In order to get one containing tuples of both we use zip()
         Ok(dates
