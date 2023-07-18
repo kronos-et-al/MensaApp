@@ -25,7 +25,7 @@ pub fn get_base_url() -> String {
 
 #[must_use]
 pub const fn get_client_timeout() -> Duration {
-    Duration::from_millis(1500)
+    Duration::from_millis(4000)
 }
 
 #[must_use]
