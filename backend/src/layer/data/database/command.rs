@@ -17,7 +17,7 @@ pub struct PersistentCommandData {
 #[async_trait]
 impl CommandDataAccess for PersistentCommandData {
     async fn get_image_info(&self, _image_id: Uuid) -> Result<ImageInfo> {
-        todo!()
+        todo!() // TODO needs image view
     }
 
     async fn hide_image(&self, image_id: Uuid) -> Result<()> {

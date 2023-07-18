@@ -11,7 +11,8 @@ pub type Date = chrono::NaiveDate;
 pub type Uuid = uuid::Uuid;
 
 /// This enum lists every possible allergen a meal can have.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type)]
+#[sqlx(type_name = "allergen", rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Allergen {
     /// This meal contains cashews.
     Ca,
@@ -72,7 +73,8 @@ pub enum Allergen {
 }
 
 /// This enum lists every possible additive a meal can have.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type)]
+#[sqlx(type_name = "additive", rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Additive {
     /// This meal contains colorants.
     Colorant,
@@ -107,7 +109,8 @@ pub enum Additive {
 }
 
 /// This enum lists all the types a meal can be of.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type)]
+#[sqlx(type_name = "food_type", rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum MealType {
     /// This meal is vegan.
     Vegan,
