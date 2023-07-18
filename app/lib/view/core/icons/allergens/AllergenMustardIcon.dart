@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'AllergenIcon.dart';
+import 'IAllergenIcon.dart';
 
 /// This widget is used to display the icon for Mustard
-class AllergenMustardIcon extends AllergenIcon {
+class AllergenMustardIcon extends IAllergenIcon {
   const AllergenMustardIcon(
       {super.key, super.width, super.height, super.color});
 

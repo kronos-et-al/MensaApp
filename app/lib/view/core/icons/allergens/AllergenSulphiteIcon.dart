@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'AllergenIcon.dart';
+import 'IAllergenIcon.dart';
 
 /// This widget is used to display the icon for Sulphite
-class AllergenSulphiteIcon extends AllergenIcon {
+class AllergenSulphiteIcon extends IAllergenIcon {
   const AllergenSulphiteIcon(
       {super.key, super.width, super.height, super.color});
 
