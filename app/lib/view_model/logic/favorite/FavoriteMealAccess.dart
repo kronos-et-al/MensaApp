@@ -30,6 +30,7 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
 
     await _database.addFavorite(meal);
     _favorites.add(meal);
+    meal.setFavorite();
     notifyListeners();
   }
 
@@ -55,6 +56,7 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
 
     await _database.deleteFavorite(meal);
     _favorites.removeWhere((element) => element.id == meal.id);
+    meal.deleteFavorite();
     notifyListeners();
   }
 
