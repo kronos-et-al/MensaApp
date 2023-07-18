@@ -16,7 +16,6 @@ impl<DataAccess> RelationResolver<DataAccess>
 where
     DataAccess: MealplanManagementDataAccess,
 {
-    #[allow(dead_code)]
     pub const fn new(db: DataAccess) -> Self {
         Self { db }
     }
