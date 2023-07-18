@@ -1,9 +1,9 @@
 //! [`SwKaResolver`] for obtaining html code from urls.
 
-use std::error::Error;
 use crate::interface::mensa_parser::ParseError;
 use futures::future::join_all;
 use reqwest::Client;
+use std::error::Error;
 use std::time::Duration;
 use tracing::log::debug;
 
@@ -50,7 +50,9 @@ impl SwKaResolver {
             .await
             .map_err(|e| ParseError::NoConnectionEstablished(e.to_string()))?;
         debug!("Url request finished: {:?}", resp);
-        resp.text().await.map_err(|e| ParseError::DecodeFailed(e.to_string()))
+        resp.text()
+            .await
+            .map_err(|e| ParseError::DecodeFailed(e.to_string()))
     }
 }
 

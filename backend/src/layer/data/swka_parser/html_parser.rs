@@ -130,6 +130,11 @@ const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
 pub struct HTMLParser;
 
 impl HTMLParser {
+
+    pub fn new() -> HTMLParser {
+        Self
+    }
+
     /// Transforms an html document into a vector containing tuples of `Date` and `ParseCanteens`
     ///
     /// # Arguments
@@ -140,7 +145,7 @@ impl HTMLParser {
     ///
     /// ```
     /// use crate::mensa_app_backend::layer::data::swka_parser::html_parser::HTMLParser;
-    /// let canteen_data = HTMLParser::transform(include_str!("./test_data/test_normal.html"));
+    /// let canteen_data = HTMLParser::new().transform(include_str!("./test_data/test_normal.html"));
     /// ```
     ///
     /// # Errors
@@ -148,15 +153,14 @@ impl HTMLParser {
     /// Will return a [`ParseError`], when either one of the following cases occurs (in order of appearance):
     ///     1. If there is no node in the document, that has a class called [`ROOT_NODE_CLASS_SELECTOR`]. This indicates that a wrong html file was passed.
     ///     2. If the number of dates does not match the number of days for which data exists. This case is more for completeness and should never occur
-
-    pub fn transform(html: &str) -> Result<Vec<(Date, ParseCanteen)>, ParseError> {
+    pub fn transform(&self, html: &str) -> Result<Vec<(Date, ParseCanteen)>, ParseError> {
         let document = Html::parse_document(html);
         let root_node = Self::get_root_node(&document)?;
         let dates = Self::get_dates(&root_node).unwrap_or_default();
         let canteens = Self::get_canteens(&root_node);
         if dates.len() != canteens.len() {
             return Err(ParseError::InvalidHtmlDocument(
-                "provided non equal amount of dates for canteens",
+                String::from("provided non equal amount of dates for canteens"),
             ));
         }
         // Here we have two vectors of the same length: One containing Date and one containing ParseCanteen. In order to get one containing tuples of both we use zip()
@@ -214,7 +218,7 @@ impl HTMLParser {
         document
             .select(&selector)
             .next()
-            .ok_or(ParseError::InvalidHtmlDocument(ROOT_NODE_CLASS_SELECTOR))
+            .ok_or(ParseError::InvalidHtmlDocument(String::from(ROOT_NODE_CLASS_SELECTOR)))
     }
 
     fn get_day_nodes<'a>(root_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
@@ -429,13 +433,13 @@ mod tests {
     async fn test_invalid() {
         let path = "src/layer/data/swka_parser/test_data/test_invalid.html";
         let file_contents = read_from_file(path).unwrap();
-        let canteen_data = HTMLParser::transform(&file_contents);
+        let canteen_data = HTMLParser::new().transform(&file_contents);
         assert!(canteen_data.is_err());
     }
 
     fn test_html(path: &str) {
         let file_contents = read_from_file(path).unwrap();
-        let canteen_data = HTMLParser::transform(&file_contents).unwrap();
+        let canteen_data = HTMLParser::new().transform(&file_contents).unwrap();
 
         //write_output_to_file(path, &canteen_data);
         let expected = read_from_file(&path.replace(".html", ".txt"))

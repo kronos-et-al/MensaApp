@@ -9,7 +9,7 @@ use crate::util::Date;
 use async_trait::async_trait;
 use std::collections::HashMap;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ParseInfo {
     pub base_url: String,
     pub valid_canteens: Vec<String>,
@@ -19,12 +19,20 @@ pub struct ParseInfo {
 
 pub struct SwKaParseManager {
     parse_info: ParseInfo,
+    link_creator: SwKaLinkCreator,
+    resolver: SwKaResolver,
+    html_parser: HTMLParser,
 }
 
 impl SwKaParseManager {
     #[must_use]
-    pub const fn new(parse_info: ParseInfo) -> Self {
-        Self { parse_info }
+    pub fn new(parse_info: ParseInfo) -> Self {
+        Self {
+            parse_info: parse_info.clone(),
+            link_creator: SwKaLinkCreator::new(parse_info.base_url.clone(), parse_info.valid_canteens.clone()),
+            resolver: SwKaResolver::new(parse_info.client_timeout, parse_info.client_user_agent.clone()),
+            html_parser: HTMLParser::new(),
+        }
     }
 
     /// Sorts all canteens by days and urls in a hashmap.<br>
@@ -35,26 +43,12 @@ impl SwKaParseManager {
     ) -> Result<HashMap<Date, Vec<ParseCanteen>>, ParseError> {
         let mut map: HashMap<Date, Vec<ParseCanteen>> = HashMap::new();
 
-        for html in self.get_resolver().get_html_strings(urls).await? {
-            for (date, canteen) in HTMLParser::transform(&html)? {
+        for html in self.resolver.get_html_strings(urls).await? {
+            for (date, canteen) in self.html_parser.transform(&html)? {
                 map.entry(date).or_default().push(canteen);
             }
         }
         Ok(map)
-    }
-
-    fn get_link_creator(&self) -> SwKaLinkCreator {
-        SwKaLinkCreator::new(
-            self.parse_info.base_url.clone(),
-            self.parse_info.valid_canteens.clone(),
-        )
-    }
-
-    fn get_resolver(&self) -> SwKaResolver {
-        SwKaResolver::new(
-            self.parse_info.client_timeout,
-            self.parse_info.client_user_agent.clone(),
-        )
     }
 }
 
@@ -71,7 +65,7 @@ impl MealplanParser for SwKaParseManager {
     /// All [`ParseCanteen`]s containing meal plan data for the given day or an error if something in the chain above fails.
     async fn parse(&self, day: Date) -> Result<Vec<ParseCanteen>, ParseError> {
         let mut map = self
-            .parse_and_sort_canteens_by_days(self.get_link_creator().get_urls(day))
+            .parse_and_sort_canteens_by_days(self.link_creator.get_urls(day))
             .await?;
 
         Ok(map.remove(&day).unwrap_or_default())
@@ -86,7 +80,7 @@ impl MealplanParser for SwKaParseManager {
     /// All [`ParseCanteen`]s grouped by their [`Date`] or an error if something in the chain above fails.
     async fn parse_all(&self) -> Result<Vec<(Date, Vec<ParseCanteen>)>, ParseError> {
         let map = self
-            .parse_and_sort_canteens_by_days(self.get_link_creator().get_all_urls())
+            .parse_and_sort_canteens_by_days(self.link_creator.get_all_urls())
             .await?;
 
         Ok(map.into_iter().collect())
