@@ -118,7 +118,7 @@ const DATE_FORMAT: &str = "%Y-%m-%d";
 const PRICE_REGEX: &str = r"([0-9]*),([0-9]{2})";
 /// A Regex for getting allergens. An allergen consists of a single Uppercase letter followed by one or more upper- or lowercase letters (indicated by \w+)
 const ALLERGEN_REGEX: &str = r"[A-Z]\w+";
-/// A regex for getting additives. An additive consists of one or more digits
+/// A regex for getting additives. An additive consists of one or two digits
 const ADDITIVE_REGEX: &str = r"[0-9]{1,2}";
 
 const NUMBER_OF_MEAL_TYPES: usize = 8;
@@ -140,7 +140,7 @@ impl HTMLParser {
     ///
     /// ```
     /// use crate::mensa_app_backend::layer::data::swka_parser::html_parser::HTMLParser;
-    /// let canteen_data = HTMLParser::transform(include_str!("./test_data/test_normal.html"));
+    /// let canteen_data = HTMLParser::transform(include_str!("./test_data/test_normal.html")).unwrap();
     /// ```
     ///
     /// # Errors
