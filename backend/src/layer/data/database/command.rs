@@ -4,7 +4,7 @@ use sqlx::{Pool, Postgres};
 use crate::{
     interface::persistent_data::{
         model::{ApiKey, ImageInfo},
-        CommandDataAccess, Result,
+        CommandDataAccess, DataError, Result,
     },
     util::{ReportReason, Uuid},
 };
@@ -16,12 +16,18 @@ pub struct PersistentCommandData {
 
 #[async_trait]
 impl CommandDataAccess for PersistentCommandData {
-    async fn get_image_info(&self, image_id: Uuid) -> Result<ImageInfo> {
+    async fn get_image_info(&self, _image_id: Uuid) -> Result<ImageInfo> {
         todo!()
     }
 
     async fn hide_image(&self, image_id: Uuid) -> Result<()> {
-        todo!()
+        sqlx::query!(
+            "UPDATE image SET currently_visible = false WHERE image_id = $1",
+            image_id
+        )
+        .execute(&self.pool)
+        .await?;
+        Ok(())
     }
 
     async fn add_report(
@@ -30,23 +36,59 @@ impl CommandDataAccess for PersistentCommandData {
         client_id: Uuid,
         reason: ReportReason,
     ) -> Result<()> {
-        todo!()
+        sqlx::query!(
+            "INSERT INTO image_report (image_id, user_id, reason) VALUES ($1, $2, $3)",
+            image_id,
+            client_id,
+            reason as _
+        )
+        .execute(&self.pool)
+        .await?;
+        Ok(())
     }
 
     async fn add_upvote(&self, image_id: Uuid, user_id: Uuid) -> Result<()> {
-        todo!()
+        sqlx::query!(
+            "INSERT INTO image_rating (user_id, image_id, rating) VALUES ($1, $2, 1)",
+            user_id,
+            image_id
+        )
+        .execute(&self.pool)
+        .await?;
+        Ok(())
     }
 
     async fn add_downvote(&self, image_id: Uuid, user_id: Uuid) -> Result<()> {
-        todo!()
+        sqlx::query!(
+            "INSERT INTO image_rating (user_id, image_id, rating) VALUES ($1, $2, -1)",
+            user_id,
+            image_id
+        )
+        .execute(&self.pool)
+        .await?;
+        Ok(())
     }
 
     async fn remove_upvote(&self, image_id: Uuid, user_id: Uuid) -> Result<()> {
-        todo!()
+        sqlx::query!(
+            "DELETE FROM image_rating WHERE user_id = $1 AND image_id = $2 AND rating = 1",
+            user_id,
+            image_id
+        )
+        .execute(&self.pool)
+        .await?;
+        Ok(())
     }
 
     async fn remove_downvote(&self, image_id: Uuid, user_id: Uuid) -> Result<()> {
-        todo!()
+        sqlx::query!(
+            "DELETE FROM image_rating WHERE user_id = $1 AND image_id = $2 AND rating = -1",
+            user_id,
+            image_id
+        )
+        .execute(&self.pool)
+        .await?;
+        Ok(())
     }
 
     async fn link_image(
@@ -56,11 +98,28 @@ impl CommandDataAccess for PersistentCommandData {
         image_hoster_id: String,
         url: String,
     ) -> Result<()> {
-        todo!()
+        sqlx::query!(
+            "INSERT INTO image (user_id, food_id, id, url) VALUES ($1, $2, $3, $4)",
+            user_id,
+            meal_id,
+            image_hoster_id,
+            url
+        )
+        .execute(&self.pool)
+        .await?;
+        Ok(())
     }
 
     async fn add_rating(&self, meal_id: Uuid, user_id: Uuid, rating: u32) -> Result<()> {
-        todo!()
+        sqlx::query!(
+            "INSERT INTO meal_rating (user_id, food_id, rating) VALUES ($1, $2, $3::smallint)",
+            user_id,
+            meal_id,
+            i16::try_from(rating).map_err(|e| DataError::TypeConversionError(e))?
+        )
+        .execute(&self.pool)
+        .await?;
+        Ok(())
     }
 
     async fn get_api_keys(&self) -> Result<Vec<ApiKey>> {

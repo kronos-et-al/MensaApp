@@ -128,7 +128,8 @@ pub enum MealType {
 }
 
 /// This enum lists all the predetermined reasons a image can be reported for.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type)]
+#[sqlx(type_name = "report_reason", rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ReportReason {
     /// This picture shows offensive content.
     Offensive,

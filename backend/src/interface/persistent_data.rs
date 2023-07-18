@@ -6,7 +6,7 @@ use crate::interface::persistent_data::model::{
 };
 use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason, Uuid};
 use async_trait::async_trait;
-use std::error::Error;
+use std::num::TryFromIntError;
 use thiserror::Error;
 
 pub type Result<T> = std::result::Result<T, DataError>;
@@ -20,6 +20,9 @@ pub enum DataError {
     /// Error occurred during data request or an internal connection fault
     #[error("internal error ocurred: {0}")]
     InternalError(#[from] sqlx::Error),
+    ///
+    #[error("error converting type {0}")]
+    TypeConversionError(TryFromIntError),
 }
 
 #[async_trait]
