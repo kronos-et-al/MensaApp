@@ -67,4 +67,8 @@ abstract class IMealAccess {
   /// @param date The new date
   /// @return The result of the update
   Future<void> changeDate(DateTime date);
+
+  /// This method checks if settings or favorites are changed since the last time the mealplan was displayed.
+  /// If they were changed it corrects the displayed data if needed.
+  Future<void> switchToMealPlanView();
 }

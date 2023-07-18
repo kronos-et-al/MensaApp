@@ -27,6 +27,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   late FilterPreferences _filter;
   late bool _noDataYet = false;
 
+  late PriceCategory _priceCategory;
+
   // waits until _init() is finished initializing
   late Future _doneInitialization;
 
@@ -37,6 +39,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   Future<void> _init() async {
     _displayedDate = DateTime.timestamp();
     _filter = await _preferences.getFilterPreferences() ?? FilterPreferences();
+    _priceCategory =
+        await _preferences.getPriceCategory() ?? PriceCategory.student;
 
     // get meal plans form server
     List<MealPlan> mealPlans = switch (await _api.updateAll()) {
@@ -185,7 +189,6 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       return Future.value(Failure(ClosedCanteenException("canteen closed")));
     }
 
-
     // everything is filtered
     if (_filteredMealPlan.isEmpty) {
       return Future.value(Failure(FilteredMealException("all filtered")));
@@ -256,6 +259,24 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     await _preferences.setFilterPreferences(_filter);
     await _filterMealPlans();
     notifyListeners();
+  }
+
+  @override
+  Future<void> switchToMealPlanView() async {
+    bool changed = await _updateFavorites();
+    final category = await _preferences.getPriceCategory();
+
+    // check if changed
+    if (category != null && category != _priceCategory) {
+      _priceCategory = category;
+      changed = true;
+    }
+
+    // refresh if changed
+    if (changed) {
+      await _filterMealPlans();
+      notifyListeners();
+    }
   }
 
   void _changeRatingOfMeal(Meal changedMeal, int rating) {
@@ -332,8 +353,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     }
 
     // check price
-    final price = side.price.getPrice(
-        await _preferences.getPriceCategory() ?? PriceCategory.student);
+    final price = side.price.getPrice(_priceCategory);
     if (price > _filter.price) {
       return false;
     }
@@ -357,8 +377,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       }
     }
 
-    final price = meal.price.getPrice(
-        await _preferences.getPriceCategory() ?? PriceCategory.student);
+    final price = meal.price.getPrice(_priceCategory);
 
     // check price
     if (_filter.price < price) {
@@ -467,5 +486,21 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
               meals: [])
         ];
     }
+  }
+
+  Future<bool> _updateFavorites() async {
+    final favorites = await _database.getFavorites();
+    bool changed = false;
+
+    for (final mealPlan in _mealPlans) {
+      for (final meal in mealPlan.meals) {
+        if (favorites.map((favorite) => favorite.id).contains(meal.id)) {
+          meal.setFavorite();
+          changed = true;
+        }
+      }
+    }
+
+    return changed;
   }
 }

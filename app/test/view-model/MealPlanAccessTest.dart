@@ -159,6 +159,8 @@ void main() {
         meals: [meals[3], meals[4]]),
   ];
 
+  final List<Meal> favorites = [meals[0], meals[1], meals[3]];
+
   setUpAll(() {
     registerFallbackValue(FilterPreferencesFake());
   });
@@ -207,8 +209,7 @@ void main() {
   group("filter meals", () {
     when(() => localStorage.setFilterPreferences(filter))
         .thenAnswer((_) async {});
-    when(() => database.getFavorites())
-        .thenAnswer((_) async => [meals[0], meals[1], meals[3]]);
+    when(() => database.getFavorites()).thenAnswer((_) async => favorites);
     when(() => localStorage.getPriceCategory())
         .thenAnswer((_) async => PriceCategory.student);
 
@@ -404,7 +405,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -430,7 +431,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -448,7 +449,8 @@ void main() {
 
         await mealPlanAccess.changeFilterPreferences(filter);
 
-        final List<MealPlan> returnedMealPlan = switch (await mealPlanAccess.getMealPlan()) {
+        final List<MealPlan> returnedMealPlan = switch (
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -468,7 +470,8 @@ void main() {
 
         await mealPlanAccess.changeFilterPreferences(filter);
 
-        final List<MealPlan> returnedMealPlan = switch (await mealPlanAccess.getMealPlan()) {
+        final List<MealPlan> returnedMealPlan = switch (
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -491,7 +494,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -531,7 +534,9 @@ void main() {
       test("price limit employee", () async {
         when(() => localStorage.getPriceCategory())
             .thenAnswer((_) async => PriceCategory.employee);
+        when(() => database.getFavorites()).thenAnswer((_) async => favorites);
 
+        mealPlanAccess.switchToMealPlanView();
         filter.price = 130;
 
         when(() => localStorage.setFilterPreferences(filter))
@@ -585,7 +590,8 @@ void main() {
 
       await mealPlanAccess.changeDate(DateTime.now());
 
-      final List<MealPlan> result = switch (await mealPlanAccess.getMealPlan()) {
+      final List<MealPlan> result = switch (
+          await mealPlanAccess.getMealPlan()) {
         Success(value: final value) => value,
         Failure(exception: _) => []
       };
