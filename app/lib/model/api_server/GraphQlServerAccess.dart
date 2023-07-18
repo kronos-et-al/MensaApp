@@ -235,8 +235,6 @@ class GraphQlServerAccess implements IServerAccess {
     return mealPlan;
   }
 
-  static const defaultUuid = "00000000-0000-0000-0000-000000000000";
-
   @override
   Future<Canteen?> getDefaultCanteen() async {
     final result = await _client
