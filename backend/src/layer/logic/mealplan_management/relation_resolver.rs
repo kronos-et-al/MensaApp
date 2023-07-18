@@ -31,7 +31,7 @@ where
     /// `date: Date`<br>This date decides when the meal will be served next.<br>
     /// **Return**<br>Occurring errors get passed to the `MealPlanManger`.
     pub async fn resolve(&self, canteen: ParseCanteen, date: Date) -> Result<(), DataError> {
-        match self.db.get_similar_canteen(&canteen.name).await? {
+        let db_canteen = match self.db.get_similar_canteen(&canteen.name).await? {
             Some(similar_canteen) => {
                 self.db
                     .update_canteen(similar_canteen.id, &canteen.name)
@@ -39,7 +39,7 @@ where
             }
             None => self.db.insert_canteen(&canteen.name).await?,
         };
-
+        self.db.dissolve_relations(db_canteen, date).await;
         for line in canteen.lines {
             let name = &line.name.clone();
             if (self.resolve_line(line, date).await).is_err() {
