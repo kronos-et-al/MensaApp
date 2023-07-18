@@ -92,6 +92,7 @@ use crate::interface::mensa_parser::{
 use crate::util::{Additive, Allergen, Date, MealType, Price};
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
+use scraper::element_ref::Text;
 
 const ROOT_NODE_CLASS_SELECTOR: &str = "div.main-content";
 const CANTEEN_NAME_NODE_CLASS_SELECTOR: &str = "h1.mensa_fullname";
@@ -118,7 +119,7 @@ const DATE_FORMAT: &str = "%Y-%m-%d";
 const PRICE_REGEX: &str = r"([0-9]*),([0-9]{2})";
 /// A Regex for getting allergens. An allergen consists of a single Uppercase letter followed by one or more upper- or lowercase letters (indicated by \w+)
 const ALLERGEN_REGEX: &str = r"[A-Z]\w+";
-/// A regex for getting additives. An additive consists of one or more digits
+/// A regex for getting additives. An additive consists of one or two digits
 const ADDITIVE_REGEX: &str = r"[0-9]{1,2}";
 
 const NUMBER_OF_MEAL_TYPES: usize = 8;
@@ -130,12 +131,6 @@ const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
 pub struct HTMLParser;
 
 impl HTMLParser {
-    /// Method for creating a [`HTMLParser`] instance.
-    #[must_use]
-    pub const fn new() -> Self {
-        Self
-    }
-
     /// Transforms an html document into a vector containing tuples of `Date` and `ParseCanteens`
     ///
     /// # Arguments
@@ -146,7 +141,7 @@ impl HTMLParser {
     ///
     /// ```
     /// use crate::mensa_app_backend::layer::data::swka_parser::html_parser::HTMLParser;
-    /// let canteen_data = HTMLParser::new().transform(include_str!("./test_data/test_normal.html"));
+    /// let canteen_data = HTMLParser::new().transform(include_str!("./test_data/test_normal.html")).unwrap();
     /// ```
     ///
     /// # Errors
@@ -158,60 +153,17 @@ impl HTMLParser {
         let document = Html::parse_document(html);
         let root_node = Self::get_root_node(&document)?;
         let dates = Self::get_dates(&root_node).unwrap_or_default();
-        let canteens = Self::get_canteens(&root_node);
-        if dates.len() != canteens.len() {
-            return Err(ParseError::InvalidHtmlDocument(String::from(
-                "provided non equal amount of dates for canteens",
-            )));
+        let canteen_for_all_days = Self::get_canteen_for_all_days(&root_node);
+        if dates.len() != canteen_for_all_days.len() {
+            return Err(ParseError::InvalidHtmlDocument(
+                String::from("provided non equal amount of dates for canteens"),
+            ));
         }
         // Here we have two vectors of the same length: One containing Date and one containing ParseCanteen. In order to get one containing tuples of both we use zip()
-        Ok(dates.into_iter().zip(canteens.into_iter()).collect())
-    }
-
-    fn get_canteens(root_node: &ElementRef) -> Vec<ParseCanteen> {
-        Self::get_day_nodes(root_node)
+        Ok(dates
             .into_iter()
-            .filter_map(|day_node| Self::get_canteen(root_node, &day_node))
-            .collect()
-    }
-
-    fn get_canteen(root_node: &ElementRef, day_node: &ElementRef) -> Option<ParseCanteen> {
-        Some(ParseCanteen {
-            name: Self::get_canteen_name(root_node)?,
-            lines: Self::get_lines(day_node),
-        })
-    }
-
-    fn get_lines(day_node: &ElementRef) -> Vec<ParseLine> {
-        Self::get_line_nodes(day_node)
-            .into_iter()
-            .filter_map(|line_node| Self::get_line(&line_node))
-            .collect()
-    }
-
-    fn get_line(line_node: &ElementRef) -> Option<ParseLine> {
-        Some(ParseLine {
-            name: Self::get_line_name(line_node)?,
-            dishes: Self::get_dishes(line_node),
-        })
-    }
-
-    fn get_dishes(line_node: &ElementRef) -> Vec<Dish> {
-        Self::get_dish_nodes(line_node)
-            .into_iter()
-            .filter_map(|dish_node| Self::get_dish(&dish_node))
-            .collect()
-    }
-
-    fn get_dish(dish_node: &ElementRef) -> Option<Dish> {
-        Some(Dish {
-            name: Self::get_dish_name(dish_node)?,
-            price: Self::get_dish_price(dish_node),
-            allergens: Self::get_dish_allergens(dish_node).unwrap_or_default(),
-            additives: Self::get_dish_additives(dish_node).unwrap_or_default(),
-            meal_type: Self::get_dish_type(dish_node).unwrap_or(MealType::Unknown),
-            env_score: Self::get_dish_env_score(dish_node).unwrap_or_default(),
-        })
+            .zip(canteen_for_all_days.into_iter())
+            .collect())
     }
 
     fn get_root_node(document: &Html) -> Result<ElementRef, ParseError> {
@@ -220,23 +172,6 @@ impl HTMLParser {
             .select(&selector)
             .next()
             .ok_or_else(|| ParseError::InvalidHtmlDocument(String::from(ROOT_NODE_CLASS_SELECTOR)))
-    }
-
-    fn get_day_nodes<'a>(root_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
-        let selector = Selector::parse(DAY_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        root_node.select(&selector).collect()
-    }
-
-    fn get_line_nodes<'a>(day_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
-        let selector = Selector::parse(LINE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        day_node.select(&selector).collect()
-    }
-
-    fn get_dish_nodes<'a>(line_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
-        (0..NUMBER_OF_MEAL_TYPES)
-            .filter_map(|i| Selector::parse(&format!("{DISH_NODE_CLASS_SELECTOR}{i}")).ok())
-            .flat_map(|selector| line_node.select(&selector).collect::<Vec<_>>())
-            .collect()
     }
 
     fn get_dates(root_node: &ElementRef) -> Option<Vec<Date>> {
@@ -261,6 +196,28 @@ impl HTMLParser {
         date_super_node.select(&selector).collect()
     }
 
+    fn get_canteen_for_all_days(root_node: &ElementRef) -> Vec<ParseCanteen> {
+        Self::get_day_nodes(root_node)
+            .into_iter()
+            .filter_map(|day_node| Self::get_canteen_for_single_day(root_node, &day_node))
+            .collect()
+    }
+
+    fn get_day_nodes<'a>(root_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
+        let selector = Selector::parse(DAY_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
+        root_node.select(&selector).collect()
+    }
+
+    fn get_canteen_for_single_day(
+        root_node: &ElementRef,
+        day_node: &ElementRef,
+    ) -> Option<ParseCanteen> {
+        Some(ParseCanteen {
+            name: Self::get_canteen_name(root_node)?,
+            lines: Self::get_lines(day_node),
+        })
+    }
+
     fn get_canteen_name(root_node: &ElementRef) -> Option<String> {
         let selector =
             Selector::parse(CANTEEN_NAME_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
@@ -268,17 +225,58 @@ impl HTMLParser {
         Some(canteen_node.inner_html())
     }
 
+    fn get_lines(day_node: &ElementRef) -> Vec<ParseLine> {
+        Self::get_line_nodes(day_node)
+            .into_iter()
+            .filter_map(|line_node| Self::get_line(&line_node))
+            .collect()
+    }
+
+    fn get_line_nodes<'a>(day_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
+        let selector = Selector::parse(LINE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
+        day_node.select(&selector).collect()
+    }
+
+    fn get_line(line_node: &ElementRef) -> Option<ParseLine> {
+        Some(ParseLine {
+            name: Self::get_line_name(line_node)?,
+            dishes: Self::get_dishes(line_node),
+        })
+    }
+
     fn get_line_name(line_node: &ElementRef) -> Option<String> {
         let selector = Selector::parse(LINE_NAME_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         let line_name_node = line_node.select(&selector).next()?;
-        Some(
-            line_name_node
-                .text()
-                .collect::<Vec<_>>()
-                .join(" ")
-                .trim()
-                .to_owned(),
-        )
+        Some(Self::remove_unnecessary_html(line_name_node.text()))
+    }
+
+    fn remove_unnecessary_html(text: Text<'_>) -> String {
+        text.collect::<Vec<_>>().join(" ").trim().to_owned()
+    }
+
+    fn get_dishes(line_node: &ElementRef) -> Vec<Dish> {
+        Self::get_dish_nodes(line_node)
+            .into_iter()
+            .filter_map(|dish_node| Self::get_dish(&dish_node))
+            .collect()
+    }
+
+    fn get_dish_nodes<'a>(line_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
+        (0..NUMBER_OF_MEAL_TYPES)
+            .filter_map(|i| Selector::parse(&format!("{DISH_NODE_CLASS_SELECTOR}{i}")).ok())
+            .flat_map(|selector| line_node.select(&selector).collect::<Vec<_>>())
+            .collect()
+    }
+
+    fn get_dish(dish_node: &ElementRef) -> Option<Dish> {
+        Some(Dish {
+            name: Self::get_dish_name(dish_node)?,
+            price: Self::get_dish_price(dish_node),
+            allergens: Self::get_dish_allergens(dish_node).unwrap_or_default(),
+            additives: Self::get_dish_additives(dish_node).unwrap_or_default(),
+            meal_type: Self::get_dish_type(dish_node).unwrap_or(MealType::Unknown),
+            env_score: Self::get_dish_env_score(dish_node).unwrap_or_default(),
+        })
     }
 
     fn get_dish_name(dish_node: &ElementRef) -> Option<String> {
