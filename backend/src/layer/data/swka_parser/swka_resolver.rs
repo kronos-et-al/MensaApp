@@ -31,11 +31,12 @@ impl SwKaResolver {
         }
     }
 
-    /// This function provides html code, which will be requested with the given url.<br>
-    /// `urls: Vec<String>` <br> urls to the requested html strings.<br>
-    /// **Return** <br> All html strings obtained by the urls as `Vec<String>`.
+    /// This function provides html code, which will be requested with the given url.
+    /// `urls: Vec<String>` <br> urls to the requested html strings.
+    /// ## Return
+    /// All html strings obtained by the urls as `Vec<String>`.
     /// # Errors
-    /// If the request or the decoding fails an error will be thrown.
+    /// If the request or the decoding fails an [`ParseError`] will be thrown.
     pub async fn get_html_strings(&self, urls: Vec<String>) -> Result<Vec<String>, ParseError> {
         join_all(urls.iter().map(|url| self.get_html(url)))
             .await
@@ -48,7 +49,6 @@ impl SwKaResolver {
             Ok(url_data) => url_data,
             Err(_e) => return Err(ParseError::NoConnectionEstablished),
         };
-        //print!("{:?}", resp);
         debug!("Url request finished: {:?}", resp);
         match resp.text().await {
             Ok(s) => Ok(s),

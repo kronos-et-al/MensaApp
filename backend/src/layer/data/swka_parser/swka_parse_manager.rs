@@ -59,7 +59,7 @@ impl MealplanParser for SwKaParseManager {
     /// These objects will be returned.<br>
     /// `day: Date`<br>
     /// The day this function looks for meal plans.<br>
-    /// **Return**<br>
+    /// ## Return
     /// All [`ParseCanteen`]s containing meal plan data for the given day or an error if something in the chain above fails.
     async fn parse(&self, day: Date) -> Result<Vec<ParseCanteen>, ParseError> {
         let mut map = self
@@ -74,7 +74,7 @@ impl MealplanParser for SwKaParseManager {
     /// The [`SwKaResolver`] loads the html code of the given website behind the urls.
     /// At least the [`HTMLParser`] interprets the html code into [`ParseCanteen`] objects.
     /// These objects will be returned.<br>
-    /// **Return**<br>
+    /// ## Return
     /// All [`ParseCanteen`]s grouped by their [`Date`] or an error if something in the chain above fails.
     async fn parse_all(&self) -> Result<Vec<(Date, Vec<ParseCanteen>)>, ParseError> {
         let map = self

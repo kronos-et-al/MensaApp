@@ -29,6 +29,9 @@ impl SwKaLinkCreator {
         }
     }
 
+    /// This method creates all urls for the given day.
+    /// ## Return
+    /// `Vec<String>` containing all urls.
     #[must_use]
     pub fn get_urls(&self, day: Date) -> Vec<String> {
         let calender_week = Self::get_calender_week(day);
@@ -43,6 +46,9 @@ impl SwKaLinkCreator {
             .collect()
     }
 
+    /// This method creates all urls for the next four weeks.
+    /// ## Return
+    /// `Vec<String>` containing all urls.
     #[must_use]
     pub fn get_all_urls(&self) -> Vec<String> {
         let today = Self::get_todays_date();
