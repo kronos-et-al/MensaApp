@@ -36,7 +36,11 @@ where
     ///
     /// # Errors
     /// Returns an error, if the api keys could not be gotten from [`command_data`]
-    pub async fn new(command_data: DataAccess, admin_notification: Notify, image_hoster: Hoster) -> Result<Self> {
+    pub async fn new(
+        command_data: DataAccess,
+        admin_notification: Notify,
+        image_hoster: Hoster,
+    ) -> Result<Self> {
         let keys: Vec<String> = command_data
             .get_api_keys()
             .await?
