@@ -153,24 +153,24 @@ impl HTMLParser {
         let document = Html::parse_document(html);
         let root_node = Self::get_root_node(&document)?;
         let dates = Self::get_dates(&root_node).unwrap_or_default();
-        let canteens = Self::get_canteens(&root_node);
-        if dates.len() != canteens.len() {
+        let canteen_for_all_days = Self::get_canteen_for_all_days(&root_node);
+        if dates.len() != canteen_for_all_days.len() {
             return Err(ParseError::InvalidHtmlDocument(
                 "provided non equal amount of dates for canteens",
             ));
         }
         // Here we have two vectors of the same length: One containing Date and one containing ParseCanteen. In order to get one containing tuples of both we use zip()
-        Ok(dates.into_iter().zip(canteens.into_iter()).collect())
+        Ok(dates.into_iter().zip(canteen_for_all_days.into_iter()).collect())
     }
 
-    fn get_canteens(root_node: &ElementRef) -> Vec<ParseCanteen> {
+    fn get_canteen_for_all_days(root_node: &ElementRef) -> Vec<ParseCanteen> {
         Self::get_day_nodes(root_node)
             .into_iter()
-            .filter_map(|day_node| Self::get_canteen(root_node, &day_node))
+            .filter_map(|day_node| Self::get_canteen_for_single_day(root_node, &day_node))
             .collect()
     }
 
-    fn get_canteen(root_node: &ElementRef, day_node: &ElementRef) -> Option<ParseCanteen> {
+    fn get_canteen_for_single_day(root_node: &ElementRef, day_node: &ElementRef) -> Option<ParseCanteen> {
         Some(ParseCanteen {
             name: Self::get_canteen_name(root_node)?,
             lines: Self::get_lines(day_node),
