@@ -202,8 +202,6 @@ void main() {
         expect(returnedMealPlan.contains(mealplan), true);
       }
     });
-
-    // todo initialization with other values
   });
 
   group("filter meals", () {
