@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use async_trait::async_trait;
 
 use crate::{
-    interface::persistent_data::{model::Image, ImageReviewDataAccess, Result, DataError},
+    interface::persistent_data::{model::Image, DataError, ImageReviewDataAccess, Result},
     util::{Date, Uuid},
 };
 

@@ -2,9 +2,10 @@ use std::sync::{Arc, Mutex};
 
 use async_trait::async_trait;
 
-use crate::interface::image_hoster::{model::ImageMetaData, ImageHoster, Result, ImageHosterError};
+use crate::interface::image_hoster::{model::ImageMetaData, ImageHoster, ImageHosterError, Result};
 
-pub const PHOTO_ID_TO_FAIL_CHECK_EXISTENCE: &str = "this image should throw an error, when checked for existence";
+pub const PHOTO_ID_TO_FAIL_CHECK_EXISTENCE: &str =
+    "this image should throw an error, when checked for existence";
 pub const PHOTO_ID_THAT_DOES_NOT_EXIST: &str = "this image should not exist";
 
 #[derive(Default)]
