@@ -18,25 +18,22 @@ pub struct ParseInfo {
 }
 
 pub struct SwKaParseManager {
-    parse_info: ParseInfo,
     link_creator: SwKaLinkCreator,
     resolver: SwKaResolver,
     html_parser: HTMLParser,
 }
 
 impl SwKaParseManager {
-    
+    /// Method for creating a [`SwKaParseManager`] instance.
+    /// # Errors
+    /// If the request client creation fails an error 'll be returned.
     pub fn new(parse_info: ParseInfo) -> Result<Self, ParseError> {
         Ok(Self {
-            parse_info: parse_info.clone(),
             link_creator: SwKaLinkCreator::new(
                 parse_info.base_url.clone(),
                 parse_info.valid_canteens.clone(),
             ),
-            resolver: SwKaResolver::new(
-                parse_info.client_timeout,
-                parse_info.client_user_agent.clone(),
-            )?,
+            resolver: SwKaResolver::new(parse_info.client_timeout, parse_info.client_user_agent)?,
             html_parser: HTMLParser::new(),
         })
     }
@@ -95,8 +92,9 @@ impl MealplanParser for SwKaParseManager {
 
 #[cfg(test)]
 mod test {
+    #![allow(clippy::unwrap_used)]
     use crate::layer::data::swka_parser::swka_parse_manager::SwKaParseManager;
-    use crate::layer::data::swka_parser::util;
+    use crate::layer::data::swka_parser::test_data::util as test_util;
 
     fn get_valid_urls() -> Vec<String> {
         vec![
@@ -111,7 +109,7 @@ mod test {
 
     #[tokio::test]
     async fn sort_and_parse_canteens_with_valid_urls() {
-        let manager = SwKaParseManager::new(util::get_parse_info()).unwrap();
+        let manager = SwKaParseManager::new(test_util::get_parse_info()).unwrap();
         let result = manager
             .parse_and_sort_canteens_by_days(get_valid_urls())
             .await;
@@ -120,7 +118,7 @@ mod test {
 
     #[tokio::test]
     async fn sort_and_parse_canteens_with_invalid_urls() {
-        let manager = SwKaParseManager::new(util::get_parse_info()).unwrap();
+        let manager = SwKaParseManager::new(test_util::get_parse_info()).unwrap();
         let mut urls = get_valid_urls();
         urls.push(String::from("invalid"));
         let result = manager.parse_and_sort_canteens_by_days(urls).await;

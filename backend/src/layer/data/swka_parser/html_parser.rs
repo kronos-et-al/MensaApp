@@ -130,7 +130,9 @@ const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
 pub struct HTMLParser;
 
 impl HTMLParser {
-    pub fn new() -> HTMLParser {
+    /// Method for creating a [`HTMLParser`] instance.
+    #[must_use]
+    pub const fn new() -> Self {
         Self
     }
 
@@ -217,9 +219,7 @@ impl HTMLParser {
         document
             .select(&selector)
             .next()
-            .ok_or(ParseError::InvalidHtmlDocument(String::from(
-                ROOT_NODE_CLASS_SELECTOR,
-            )))
+            .ok_or_else(|| ParseError::InvalidHtmlDocument(String::from(ROOT_NODE_CLASS_SELECTOR)))
     }
 
     fn get_day_nodes<'a>(root_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {

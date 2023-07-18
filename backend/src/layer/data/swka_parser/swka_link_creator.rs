@@ -21,6 +21,7 @@ pub struct SwKaLinkCreator {
 }
 
 impl SwKaLinkCreator {
+    /// Method for creating a [`SwKaLinkCreator`] instance.
     #[must_use]
     pub fn new(base_url: String, valid_canteens: Vec<String>) -> Self {
         Self {
@@ -74,7 +75,7 @@ impl SwKaLinkCreator {
 mod tests {
     #![allow(clippy::unwrap_used)]
 
-    use crate::layer::data::swka_parser::util;
+    use crate::layer::data::swka_parser::test_data::util as test_util;
     use crate::util::Date;
 
     const URLS_FOR_NEXT_WEEKS: [&str; 28] = [
@@ -121,14 +122,14 @@ mod tests {
     #[tokio::test]
     async fn test_get_urls() {
         let date = Date::from_ymd_opt(2023, 7, 10).unwrap();
-        let result = util::get_creator().get_urls(date);
+        let result = test_util::get_creator().get_urls(date);
         assert_eq!(result, URLS_FOR_CURRENT_WEEK);
     }
 
     #[tokio::test]
     async fn test_get_all_urls() {
         let date = Date::from_ymd_opt(2023, 7, 10).unwrap();
-        let result = util::get_creator().get_all_urls_for_next_weeks_from_date(date);
+        let result = test_util::get_creator().get_all_urls_for_next_weeks_from_date(date);
         assert_eq!(result, URLS_FOR_NEXT_WEEKS);
     }
 }
