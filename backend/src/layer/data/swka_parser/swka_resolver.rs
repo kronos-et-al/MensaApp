@@ -3,28 +3,34 @@
 use crate::interface::mensa_parser::ParseError;
 use futures::future::join_all;
 use reqwest::Client;
-use std::error::Error;
 use std::time::Duration;
 use tracing::log::debug;
 
 pub struct SwKaResolver {
     client_timeout: Duration,
     client_user_agent: String,
+    client: Client,
 }
 
 impl SwKaResolver {
-    #[must_use]
-    pub const fn new(client_timeout: Duration, client_user_agent: String) -> Self {
-        Self {
+    pub fn new(
+        client_timeout: Duration,
+        client_user_agent: String,
+    ) -> Result<SwKaResolver, ParseError> {
+        Ok(Self {
             client_timeout,
             client_user_agent,
-        }
+            client: SwKaResolver::get_client(client_timeout, &client_user_agent)?,
+        })
     }
 
-    fn get_client(&self) -> Result<Client, ParseError> {
+    fn get_client(
+        client_timeout: Duration,
+        client_user_agent: &String,
+    ) -> Result<Client, ParseError> {
         let client = Client::builder()
-            .timeout(self.client_timeout)
-            .user_agent(&self.client_user_agent)
+            .timeout(client_timeout)
+            .user_agent(client_user_agent)
             .build();
         client.map_err(|e| ParseError::ClientBuilderFailed(e.to_string()))
     }
@@ -44,7 +50,7 @@ impl SwKaResolver {
 
     async fn get_html(&self, url: &String) -> Result<String, ParseError> {
         let resp = self
-            .get_client()?
+            .client
             .get(url)
             .send()
             .await

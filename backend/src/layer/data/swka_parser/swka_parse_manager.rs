@@ -29,8 +29,14 @@ impl SwKaParseManager {
     pub fn new(parse_info: ParseInfo) -> Self {
         Self {
             parse_info: parse_info.clone(),
-            link_creator: SwKaLinkCreator::new(parse_info.base_url.clone(), parse_info.valid_canteens.clone()),
-            resolver: SwKaResolver::new(parse_info.client_timeout, parse_info.client_user_agent.clone()),
+            link_creator: SwKaLinkCreator::new(
+                parse_info.base_url.clone(),
+                parse_info.valid_canteens.clone(),
+            ),
+            resolver: SwKaResolver::new(
+                parse_info.client_timeout,
+                parse_info.client_user_agent.clone(),
+            ),
             html_parser: HTMLParser::new(),
         }
     }

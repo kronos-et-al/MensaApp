@@ -130,7 +130,6 @@ const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
 pub struct HTMLParser;
 
 impl HTMLParser {
-
     pub fn new() -> HTMLParser {
         Self
     }
@@ -159,9 +158,9 @@ impl HTMLParser {
         let dates = Self::get_dates(&root_node).unwrap_or_default();
         let canteens = Self::get_canteens(&root_node);
         if dates.len() != canteens.len() {
-            return Err(ParseError::InvalidHtmlDocument(
-                String::from("provided non equal amount of dates for canteens"),
-            ));
+            return Err(ParseError::InvalidHtmlDocument(String::from(
+                "provided non equal amount of dates for canteens",
+            )));
         }
         // Here we have two vectors of the same length: One containing Date and one containing ParseCanteen. In order to get one containing tuples of both we use zip()
         Ok(dates.into_iter().zip(canteens.into_iter()).collect())
@@ -218,7 +217,9 @@ impl HTMLParser {
         document
             .select(&selector)
             .next()
-            .ok_or(ParseError::InvalidHtmlDocument(String::from(ROOT_NODE_CLASS_SELECTOR)))
+            .ok_or(ParseError::InvalidHtmlDocument(String::from(
+                ROOT_NODE_CLASS_SELECTOR,
+            )))
     }
 
     fn get_day_nodes<'a>(root_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
