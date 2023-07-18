@@ -25,9 +25,9 @@ pub struct SwKaParseManager {
 }
 
 impl SwKaParseManager {
-    #[must_use]
-    pub fn new(parse_info: ParseInfo) -> Self {
-        Self {
+    
+    pub fn new(parse_info: ParseInfo) -> Result<Self, ParseError> {
+        Ok(Self {
             parse_info: parse_info.clone(),
             link_creator: SwKaLinkCreator::new(
                 parse_info.base_url.clone(),
@@ -36,9 +36,9 @@ impl SwKaParseManager {
             resolver: SwKaResolver::new(
                 parse_info.client_timeout,
                 parse_info.client_user_agent.clone(),
-            ),
+            )?,
             html_parser: HTMLParser::new(),
-        }
+        })
     }
 
     /// Sorts all canteens by days and urls in a hashmap.<br>
@@ -111,7 +111,7 @@ mod test {
 
     #[tokio::test]
     async fn sort_and_parse_canteens_with_valid_urls() {
-        let manager = SwKaParseManager::new(util::get_parse_info());
+        let manager = SwKaParseManager::new(util::get_parse_info()).unwrap();
         let result = manager
             .parse_and_sort_canteens_by_days(get_valid_urls())
             .await;
@@ -120,7 +120,7 @@ mod test {
 
     #[tokio::test]
     async fn sort_and_parse_canteens_with_invalid_urls() {
-        let manager = SwKaParseManager::new(util::get_parse_info());
+        let manager = SwKaParseManager::new(util::get_parse_info()).unwrap();
         let mut urls = get_valid_urls();
         urls.push(String::from("invalid"));
         let result = manager.parse_and_sort_canteens_by_days(urls).await;

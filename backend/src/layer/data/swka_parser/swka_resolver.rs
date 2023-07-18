@@ -16,7 +16,7 @@ impl SwKaResolver {
     pub fn new(
         client_timeout: Duration,
         client_user_agent: String,
-    ) -> Result<SwKaResolver, ParseError> {
+    ) -> Result<Self, ParseError> {
         Ok(Self {
             client_timeout,
             client_user_agent,
