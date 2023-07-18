@@ -1,5 +1,6 @@
 //! [`SwKaResolver`] for obtaining html code from urls.
 
+use std::error::Error;
 use crate::interface::mensa_parser::ParseError;
 use futures::future::join_all;
 use reqwest::Client;
@@ -25,10 +26,7 @@ impl SwKaResolver {
             .timeout(self.client_timeout)
             .user_agent(&self.client_user_agent)
             .build();
-        match client {
-            Ok(cl) => Ok(cl),
-            Err(_e) => Err(ParseError::ClientBuilderFailed),
-        }
+        client.map_err(|e| ParseError::ClientBuilderFailed(e.to_string()))
     }
 
     /// This function provides html code, which will be requested with the given url.
@@ -36,7 +34,7 @@ impl SwKaResolver {
     /// ## Return
     /// All html strings obtained by the urls as `Vec<String>`.
     /// # Errors
-    /// If the request or the decoding fails an [`ParseError`] will be thrown.
+    /// If the request or the decoding fails an [`ParseError`] will be returned.
     pub async fn get_html_strings(&self, urls: Vec<String>) -> Result<Vec<String>, ParseError> {
         join_all(urls.iter().map(|url| self.get_html(url)))
             .await
@@ -45,15 +43,14 @@ impl SwKaResolver {
     }
 
     async fn get_html(&self, url: &String) -> Result<String, ParseError> {
-        let resp = match self.get_client()?.get(url).send().await {
-            Ok(url_data) => url_data,
-            Err(_e) => return Err(ParseError::NoConnectionEstablished),
-        };
+        let resp = self
+            .get_client()?
+            .get(url)
+            .send()
+            .await
+            .map_err(|e| ParseError::NoConnectionEstablished(e.to_string()))?;
         debug!("Url request finished: {:?}", resp);
-        match resp.text().await {
-            Ok(s) => Ok(s),
-            Err(_e) => Err(ParseError::DecodeFailed),
-        }
+        resp.text().await.map_err(|e| ParseError::DecodeFailed(e.to_string()))
     }
 }
 

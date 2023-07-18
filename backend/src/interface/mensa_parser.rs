@@ -16,13 +16,13 @@ pub struct ParseInfo {
 #[derive(Debug, Error)]
 pub enum ParseError {
     #[error("the node was not found: {0}")]
-    InvalidHtmlDocument(&'static str),
+    InvalidHtmlDocument(String),
     #[error("no connection could be established")]
-    NoConnectionEstablished,
+    NoConnectionEstablished(String),
     #[error("some html code couldn't be decoded")]
-    DecodeFailed,
+    DecodeFailed(String),
     #[error("the html reqwest client creation failed")]
-    ClientBuilderFailed,
+    ClientBuilderFailed(String),
 }
 #[async_trait]
 /// Parser interface. Provides functions which return canteen structs. Canteen structs contain raw data obtained by parsing meal plans.
