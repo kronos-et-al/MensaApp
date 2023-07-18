@@ -1,5 +1,7 @@
-use crate::interface::mensa_parser::ParseInfo;
+#![allow(clippy::unwrap_used)]
+#![allow(dead_code)]
 use crate::layer::data::swka_parser::swka_link_creator::SwKaLinkCreator;
+use crate::layer::data::swka_parser::swka_parse_manager::ParseInfo;
 use crate::layer::data::swka_parser::swka_resolver::SwKaResolver;
 use std::time::Duration;
 
@@ -48,5 +50,5 @@ pub fn get_creator() -> SwKaLinkCreator {
 
 #[must_use]
 pub fn get_resolver() -> SwKaResolver {
-    SwKaResolver::new(get_client_timeout(), get_client_user_agent())
+    SwKaResolver::new(get_client_timeout(), get_client_user_agent()).unwrap()
 }
