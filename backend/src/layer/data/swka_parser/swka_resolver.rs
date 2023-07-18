@@ -12,10 +12,11 @@ pub struct SwKaResolver {
 }
 
 impl SwKaResolver {
+    #[must_use]
     pub const fn new(client_timeout: Duration, client_user_agent: String) -> Self {
         Self {
-            client_user_agent,
             client_timeout,
+            client_user_agent,
         }
     }
 
@@ -31,9 +32,10 @@ impl SwKaResolver {
     }
 
     /// This function provides html code, which will be requested with the given url.<br>
-    /// If the request or the decoding fails an error will be thrown. <br>
     /// `urls: Vec<String>` <br> urls to the requested html strings.<br>
     /// **Return** <br> All html strings obtained by the urls as `Vec<String>`.
+    /// # Errors
+    /// If the request or the decoding fails an error will be thrown.
     pub async fn get_html_strings(&self, urls: Vec<String>) -> Result<Vec<String>, ParseError> {
         join_all(urls.iter().map(|url| self.get_html(url)))
             .await
@@ -57,8 +59,7 @@ impl SwKaResolver {
 
 #[cfg(test)]
 mod test {
-    use crate::layer::data::swka_parser::swka_resolver::SwKaResolver;
-    use std::time::Duration;
+    use crate::layer::data::swka_parser::util;
 
     fn get_invalid_url() -> String {
         String::from("A ship-shipping ship ships shipping-ships")
@@ -66,40 +67,30 @@ mod test {
     fn get_valid_url() -> String {
         String::from("https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/")
     }
-    fn get_client_timeout() -> Duration {
-        Duration::from_millis(1000)
-    }
-    fn get_client_user_agent() -> String {
-        String::from("User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
-    }
-
-    fn get_resolver() -> SwKaResolver {
-        SwKaResolver::new(get_client_timeout(), get_client_user_agent())
-    }
 
     #[tokio::test]
     async fn get_html_response_fail() {
-        let result = get_resolver().get_html(&get_invalid_url()).await;
+        let result = util::get_resolver().get_html(&get_invalid_url()).await;
         assert!(result.is_err());
     }
 
     #[tokio::test]
     async fn get_html_response_no_fail() {
-        let result = get_resolver().get_html(&get_valid_url()).await;
+        let result = util::get_resolver().get_html(&get_valid_url()).await;
         assert!(result.is_ok());
     }
 
     #[tokio::test]
     async fn get_html_strings_response_fail() {
         let urls = vec![get_invalid_url(), get_valid_url(), get_valid_url()];
-        let result = get_resolver().get_html_strings(urls).await;
+        let result = util::get_resolver().get_html_strings(urls).await;
         assert!(result.is_err());
     }
 
     #[tokio::test]
     async fn get_html_strings_response_no_fail() {
         let urls = vec![get_valid_url(), get_valid_url()];
-        let result = get_resolver().get_html_strings(urls).await;
+        let result = util::get_resolver().get_html_strings(urls).await;
         assert!(result.is_ok());
     }
 }

@@ -7,8 +7,8 @@ use thiserror::Error;
 
 #[derive(Debug)]
 pub struct ParseInfo {
-    pub base_url: &'static str,
-    pub valid_canteens: Vec<&'static str>,
+    pub base_url: String,
+    pub valid_canteens: Vec<String>,
     pub client_timeout: std::time::Duration,
     pub client_user_agent: String,
 }

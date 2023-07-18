@@ -14,6 +14,7 @@ pub struct SwKaParseManager {
 }
 
 impl SwKaParseManager {
+    #[must_use]
     pub const fn new(parse_info: ParseInfo) -> Self {
         Self { parse_info }
     }
@@ -43,7 +44,7 @@ impl SwKaParseManager {
 
     fn get_resolver(&self) -> SwKaResolver {
         SwKaResolver::new(
-            self.parse_info.client_timeout.clone(),
+            self.parse_info.client_timeout,
             self.parse_info.client_user_agent.clone(),
         )
     }
@@ -86,9 +87,8 @@ impl MealplanParser for SwKaParseManager {
 
 #[cfg(test)]
 mod test {
-    use crate::interface::mensa_parser::ParseInfo;
     use crate::layer::data::swka_parser::swka_parse_manager::SwKaParseManager;
-    use std::time::Duration;
+    use crate::layer::data::swka_parser::util;
 
     fn get_valid_urls() -> Vec<String> {
         vec![
@@ -101,35 +101,9 @@ mod test {
         ]
     }
 
-    fn get_client_timeout() -> Duration {
-        Duration::from_millis(1000)
-    }
-    fn get_client_user_agent() -> String {
-        String::from("User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
-    }
-
-    const MENSA_NAMES: Vec<&str> = vec![
-        "mensa_adenauerring",
-        "mensa_gottesaue",
-        "mensa_moltke",
-        "mensa_x1moltkestrasse",
-        "mensa_erzberger",
-        "mensa_tiefenbronner",
-        "mensa_holzgarten",
-    ];
-
-    const BASE_URL: &str = "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/";
-
-    const INFO: ParseInfo = ParseInfo {
-        base_url: BASE_URL,
-        valid_canteens: MENSA_NAMES,
-        client_timeout: get_client_timeout(),
-        client_user_agent: get_client_user_agent(),
-    };
-
     #[tokio::test]
     async fn sort_and_parse_canteens_with_valid_urls() {
-        let manager = SwKaParseManager::new(INFO);
+        let manager = SwKaParseManager::new(util::get_parse_info());
         let result = manager
             .parse_and_sort_canteens_by_days(get_valid_urls())
             .await;
@@ -138,7 +112,7 @@ mod test {
 
     #[tokio::test]
     async fn sort_and_parse_canteens_with_invalid_urls() {
-        let manager = SwKaParseManager::new(INFO);
+        let manager = SwKaParseManager::new(util::get_parse_info());
         let mut urls = get_valid_urls();
         urls.push(String::from("invalid"));
         let result = manager.parse_and_sort_canteens_by_days(urls).await;
