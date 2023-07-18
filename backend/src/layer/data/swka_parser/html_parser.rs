@@ -1,5 +1,3 @@
-#![warn(missing_docs)]
-
 //! The general structure of the html file is as follows: (// Are added comments)
 //! ```html
 //! <!-- ... -->
