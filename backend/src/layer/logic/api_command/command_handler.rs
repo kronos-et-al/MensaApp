@@ -1,6 +1,5 @@
 use async_trait::async_trait;
 use chrono::Local;
-use std::marker::{Send, Sync};
 
 use crate::{
     interface::{
@@ -15,29 +14,29 @@ use crate::{
 
 const REPORT_FACTOR: f64 = 1.0 / 35.0;
 
-pub struct CommandHandler<D, A, I>
+pub struct CommandHandler<DataAccess, Notify, Hoster>
 where
-    D: CommandDataAccess + Sync + Send,
-    A: AdminNotification + Sync + Send,
-    I: ImageHoster + Sync + Send,
+    DataAccess: CommandDataAccess,
+    Notify: AdminNotification,
+    Hoster: ImageHoster,
 {
-    command_data: D,
-    admin_notification: A,
-    image_hoster: I,
+    command_data: DataAccess,
+    admin_notification: Notify,
+    image_hoster: Hoster,
     auth: Authenticator,
 }
 
-impl<D, A, I> CommandHandler<D, A, I>
+impl<DataAccess, Notify, Hoster> CommandHandler<DataAccess, Notify, Hoster>
 where
-    D: CommandDataAccess + Sync + Send,
-    A: AdminNotification + Sync + Send,
-    I: ImageHoster + Sync + Send,
+    DataAccess: CommandDataAccess,
+    Notify: AdminNotification,
+    Hoster: ImageHoster,
 {
     /// A function that creates a new [`CommandHandler`]
     ///
     /// # Errors
     /// Returns an error, if the api keys could not be gotten from [`command_data`]
-    pub async fn new(command_data: D, admin_notification: A, image_hoster: I) -> Result<Self> {
+    pub async fn new(command_data: DataAccess, admin_notification: Notify, image_hoster: Hoster) -> Result<Self> {
         let keys: Vec<String> = command_data
             .get_api_keys()
             .await?
@@ -75,11 +74,11 @@ where
 }
 
 #[async_trait]
-impl<D, A, I> Command for CommandHandler<D, A, I>
+impl<DataAccess, Notify, Hoster> Command for CommandHandler<DataAccess, Notify, Hoster>
 where
-    D: CommandDataAccess,
-    A: AdminNotification,
-    I: ImageHoster,
+    DataAccess: CommandDataAccess,
+    Notify: AdminNotification,
+    Hoster: ImageHoster,
 {
     async fn report_image(
         &self,
