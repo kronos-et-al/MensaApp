@@ -28,7 +28,8 @@ where
     /// If an similar object already exists, the existing object will be updated with the new object data.<br>
     /// `canteen: ParseCanteen`<br>This struct contains all canteen data e.g. lines and dishes.<br>
     /// `date: Date`<br>This date decides when the meal will be served next.<br>
-    /// **Return**<br>Occurring errors get passed to the `MealPlanManger`.
+    /// # Errors
+    /// Occurring errors get passed to the [`MealPlanManger`]
     pub async fn resolve(&self, canteen: ParseCanteen, date: Date) -> Result<(), DataError> {
         let db_canteen = match self.db.get_similar_canteen(&canteen.name).await? {
             Some(similar_canteen) => {

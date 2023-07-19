@@ -47,7 +47,7 @@ where
     Parser: MealplanParser,
 {
     /// This method starts the parsing procedure for all meal plans **of the current day**.<br>
-    /// After parsing, the raw data objects (`Vec<ParseCanteen>`) will be inserted by the `RelationResolver` with the current day.<br>
+    /// After parsing, the raw data objects (`Vec<ParseCanteen>`) will be inserted by the [`RelationResolver`] with the current day.<br>
     /// If during resolving an error occurs, the resolver stops and a log will be displayed.<br>
     /// Each successful resolving process is also logged.
     async fn start_update_parsing(&self) {
@@ -63,7 +63,7 @@ where
     }
 
     /// Similar to `start_update_parsing` this method starts the parsing procedure for all meal plans **for the next four weeks**.<br>
-    /// After parsing, the raw data objects (`Vec<(Date, Vec<ParseCanteen>>`) will be inserted by the `RelationResolver`.<br>
+    /// After parsing, the raw data objects (`Vec<(Date, Vec<ParseCanteen>>`) will be inserted by the [`RelationResolver`].<br>
     /// If during resolving an error occurs, the resolver stops and a log will be displayed.<br>
     /// Each successful resolving process is also logged.
     async fn start_full_parsing(&self) {
@@ -87,7 +87,6 @@ mod test {
     use crate::layer::logic::mealplan_management::test::meal_plan_parser_mock::MealPlanParserMock;
     use crate::layer::logic::mealplan_management::test::mealplan_management_database_mock::MealplanManagementDatabaseMock;
 
-    // Tests seems useless; unless there are testing nothing crashes?
     #[tokio::test]
     async fn valid_start_update_parsing() {
         let manager = MealPlanManager::new(MealplanManagementDatabaseMock, MealPlanParserMock);
