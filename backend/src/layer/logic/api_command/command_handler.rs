@@ -194,3 +194,134 @@ where
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod test {
+    #![allow(clippy::unwrap_used)]
+    use crate::interface::api_command::{Command, Result, InnerAuthInfo};
+    use crate::layer::logic::api_command::test::mocks::{INVALID_URL, MEAL_ID_TO_FAIL, IMAGE_ID_TO_FAIL};
+    use crate::layer::logic::api_command::{
+        command_handler::CommandHandler,
+        test::mocks::{CommandAdminNotificationMock, CommandDatabaseMock, CommandImageHosterMock},
+    };
+    use crate::util::Uuid;
+
+    #[tokio::test]
+    async fn test_new() {
+        assert!(get_handler().await.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_report_image() {
+        let handler = get_handler().await;
+    }
+
+    #[tokio::test]
+    async fn test_add_image_upvote() {
+        let handler = get_handler().await.unwrap();
+        let auth_info = Some(InnerAuthInfo {
+            api_ident: "YWpzZGg4Mn".into(),
+            hash: "Xz+c2URLRn6rDa58ExTWPXsj3FXnXu/3nPmV62XqypXkQnJTCwI/m9idDRyBqVjqh9ysPKd9tm6JngY/BSYh3Q==".into(),
+            client_id: Uuid::default(),
+        });
+        let image_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
+        
+        assert!(handler
+            .add_image_upvote(Uuid::default(), None)
+            .await
+            .is_err()); // No auth information present
+        assert!(handler.add_image_upvote(image_id, auth_info.clone()).await.is_ok());
+        assert!(handler.add_image_upvote(IMAGE_ID_TO_FAIL, auth_info.clone()).await.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_add_image_downvote() {
+        let handler = get_handler().await.unwrap();
+        let auth_info = Some(InnerAuthInfo {
+            api_ident: "YWpzZGg4Mn".into(),
+            hash: "AQPykbV6530qtbsE93KZsgl0KvORCz5LYH+HhzUSiX1FAFUjo/52y7rnTRq9tlUN3dzRa8xHxWg5y2PwIkItdg==".into(),
+            client_id: Uuid::try_from("4c57fc70-4839-4398-be08-d151c0dbb246").unwrap(),
+        });
+        let image_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
+        
+        assert!(handler
+            .add_image_downvote(Uuid::default(), None)
+            .await
+            .is_err()); // No auth information present
+        assert!(handler.add_image_downvote(image_id, auth_info.clone()).await.is_ok());
+        assert!(handler.add_image_downvote(IMAGE_ID_TO_FAIL, auth_info.clone()).await.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_remove_image_upvote() {
+        let handler = get_handler().await.unwrap();
+        let auth_info = Some(InnerAuthInfo {
+            api_ident: "YWpzZGg4Mn".into(),
+            hash: "lb4TH+zjHTl0Z9zijEZ7KtOFIBFHvY70rmZtX+Xk/fa++fGJtAS10EjFOqAgx/0scDJDbhpdn9WS5Yy5zCYeoQ==".into(),
+            client_id: Uuid::try_from("4c57fc70-4839-4398-be08-d151c0dbb246").unwrap(),
+        });
+        let image_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
+        
+        assert!(handler
+            .remove_image_upvote(Uuid::default(), None)
+            .await
+            .is_err()); // No auth information present
+        assert!(handler.remove_image_upvote(image_id, auth_info.clone()).await.is_ok());
+        assert!(handler.remove_image_upvote(IMAGE_ID_TO_FAIL, auth_info.clone()).await.is_err());
+    }
+    #[tokio::test]
+    async fn test_remove_image_downvote() {
+        let handler = get_handler().await.unwrap();
+        let auth_info = Some(InnerAuthInfo {
+            api_ident: "YWpzZGg4Mn".into(),
+            hash: "lb4TH+zjHTl0Z9zijEZ7KtOFIBFHvY70rmZtX+Xk/fa++fGJtAS10EjFOqAgx/0scDJDbhpdn9WS5Yy5zCYeoQ==".into(),
+            client_id: Uuid::try_from("4c57fc70-4839-4398-be08-d151c0dbb246").unwrap(),
+        });
+        let image_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
+        
+        assert!(handler
+            .remove_image_downvote(Uuid::default(), None)
+            .await
+            .is_err()); // No auth information present
+        assert!(handler.remove_image_downvote(image_id, auth_info.clone()).await.is_ok());
+        assert!(handler.remove_image_downvote(IMAGE_ID_TO_FAIL, auth_info.clone()).await.is_err());
+    }
+    #[tokio::test]
+    async fn test_add_image() {
+        let handler = get_handler().await.unwrap();
+        let auth_info = Some(InnerAuthInfo {
+            api_ident: "YWpzZGg4Mn".into(),
+            hash: "ozNFvc9F0FWdrkFuncTpWA8z+ugwwox4El21hNiHoJW1conWnAOL0q7g4iNWEdDViFyTBjmDhK17FKpmReAgrA==".into(),
+            client_id: Uuid::default(),
+        });
+        let meal_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
+        let image_url = "http://test.de";
+
+        assert!(handler.add_image(meal_id, image_url.to_string(), None).await.is_err());
+        assert!(handler.add_image(meal_id, image_url.to_string(), auth_info.clone()).await.is_ok());
+        assert!(handler.add_image(meal_id, INVALID_URL.to_string(), auth_info.clone()).await.is_err());
+        assert!(handler.add_image(MEAL_ID_TO_FAIL, image_url.to_string(), auth_info.clone()).await.is_err());
+    }
+    #[tokio::test]
+    async fn test_set_meal_rating() {
+        let handler = get_handler().await.unwrap();        
+        let auth_info = Some(InnerAuthInfo {
+            api_ident: "YWpzZGg4Mn".into(),
+            hash: "rHh8opE3qYEupyehP6ttMLVpgV0lTmGJE4rV53oFUUGCdQkzZnUu2snS/Hr4ZyYZ/1D7WiLonHSldbYSMLVBVQ==".into(),
+            client_id: Uuid::default(),
+        });
+        let meal_id = Uuid::try_from("94cf40a7-ade4-4c1f-b718-89b2d418c2d0").unwrap();
+        assert!(handler.set_meal_rating(meal_id, 0, None).await.is_err());
+        assert!(handler.set_meal_rating(meal_id, 2, auth_info.clone()).await.is_ok());
+        assert!(handler.set_meal_rating(MEAL_ID_TO_FAIL, 2, auth_info.clone()).await.is_err());
+    }
+
+    async fn get_handler() -> Result<
+        CommandHandler<CommandDatabaseMock, CommandAdminNotificationMock, CommandImageHosterMock>,
+    > {
+        let command_data = CommandDatabaseMock::default();
+        let admin_notification = CommandAdminNotificationMock::default();
+        let image_hoster = CommandImageHosterMock::default();
+        CommandHandler::new(command_data, admin_notification, image_hoster).await
+    }
+}
