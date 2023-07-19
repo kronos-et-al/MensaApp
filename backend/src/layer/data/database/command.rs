@@ -16,8 +16,19 @@ pub struct PersistentCommandData {
 
 #[async_trait]
 impl CommandDataAccess for PersistentCommandData {
-    async fn get_image_info(&self, _image_id: Uuid) -> Result<ImageInfo> {
-        todo!() // TODO needs image view
+    async fn get_image_info(&self, image_id: Uuid) -> Result<ImageInfo> {
+        // sqlx::query_as!(
+        //     ImageInfo,
+        //     r#"
+        //     SELECT approved, link_date as upload_date, report_count, url as image_url, 
+        //     upvotes as positive_rating_count, downvotes as negative_rating_coung, 
+        //     rank as image_rank
+        //     FROM image_detail
+        //     WHERE image_id = $1
+        //     "#,
+        //     image_id
+        // )
+        todo!()
     }
 
     async fn hide_image(&self, image_id: Uuid) -> Result<()> {

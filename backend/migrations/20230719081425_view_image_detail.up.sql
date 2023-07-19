@@ -19,7 +19,7 @@ RETURNS NULL ON NULL INPUT;
 
 
 CREATE VIEW image_detail AS ( 
-    SELECT image.*, upvotes, downvotes, report_count,
+    SELECT image.*, upvotes::integer, downvotes::integer, report_count::integer,
     image_rank(link_date, upvotes, downvotes, report_count, approved) as rank
     FROM (
         -- image

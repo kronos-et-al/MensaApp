@@ -116,10 +116,28 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_additives(&self, food_id: Uuid) -> Result<Vec<Additive>> {
-        todo!()
+        let res = sqlx::query!(
+            r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1"#,
+            food_id
+        )
+        .fetch_all(&self.pool)
+        .await?
+        .into_iter()
+        .map(|r| r.additive)
+        .collect();
+        Ok(res)
     }
 
     async fn get_allergens(&self, food_id: Uuid) -> Result<Vec<Allergen>> {
-        todo!()
+        let res = sqlx::query!(
+            r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1"#,
+            food_id
+        )
+        .fetch_all(&self.pool)
+        .await?
+        .into_iter()
+        .map(|r| r.allergen)
+        .collect();
+        Ok(res)
     }
 }
