@@ -1,3 +1,5 @@
+import 'package:app/model/database/model/database_model.dart';
+import 'package:app/view_model/repository/data_classes/meal/Additive.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Mealplan.dart';
@@ -9,6 +11,8 @@ import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../view_model/repository/data_classes/meal/Allergen.dart';
+import '../../view_model/repository/data_classes/mealplan/Line.dart';
 import 'model/db_favorite.dart';
 import 'model/db_image.dart';
 import 'model/db_meal.dart';
@@ -70,20 +74,50 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
 
   @override
   Future<int> addFavorite(Meal meal) async {
-    // TODO: implement addFavorite
-    throw UnimplementedError();
+    var db = await database;
+    var dbMeal = await _getMeal(meal.id);
+    var dbMealPlan = await _getMealPlan(dbMeal!.mealPlanID);
+    var dbLine = await _getLine(dbMealPlan!.lineID);
+    // FavoriteID is now the related mealID. Seems right. TODO: DateTime to String, if toString() isn't enough.
+    var favorite = DBFavorite(meal.id, dbLine!.lineID, meal.lastServed.toString(), meal.foodType, meal.price.student, meal.price.employee, meal.price.pupil, meal.price.guest);
+    return db.insert(
+      DBFavorite.tableName,
+      favorite.toMap()
+    );
   }
 
   @override
-  Future<void> deleteFavorite(Meal meal) {
-    // TODO: implement deleteFavorite
-    throw UnimplementedError();
+  Future<int> deleteFavorite(Meal meal) async {
+    var db = await database;
+    return db.delete(
+      DBFavorite.tableName,
+      where: '${DBFavorite.columnFavoriteID} = ?',
+      // Same as above: mealID and favID is the same meal.
+      whereArgs: [meal.id]
+    );
   }
 
   @override
-  Future<List<Meal>> getFavorites() {
-    // TODO: implement getFavorites
-    throw UnimplementedError();
+  Future<List<Meal>> getFavorites() async {
+    var db = await database;
+    var meals = List<Meal>.empty();
+    var dbFavoritesListResult = await db.query(DBFavorite.tableName);
+    for (Map<String, dynamic> favoriteMap in dbFavoritesListResult) {
+      var favorite = DBFavorite.fromMap(favoriteMap);
+      var dbMeal = await _getMeal(favorite.favoriteID);
+      var allergens = await _getMealAllergens(dbMeal!.mealID);
+      var additives = await _getMealAdditive(dbMeal.mealID);
+      var sides = await _getSides(dbMeal.mealID);
+      var sideAllergens = <DBSide, List<Allergen>>{};
+      var sideAdditives = <DBSide, List<Additive>>{};
+      for (DBSide side in sides) {
+        sideAllergens[side] = (await _getSideAllergens(side.sideID))!;
+        sideAdditives[side] = (await _getSideAdditive(side.sideID))!;
+      }
+      var images = await _getImages(dbMeal.mealID);
+      meals.add(DatabaseTransformer.fromDBMeal(dbMeal, allergens!, additives!, sides, sideAllergens, sideAdditives, images, true));
+    }
+    return meals;
   }
 
   @override
@@ -93,15 +127,47 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   }
 
   @override
-  Future<Result<List<Mealplan>>> getMealPlan(DateTime date, Canteen canteen) {
-    // TODO: implement getMealPlan
-    throw UnimplementedError();
+  Future<Result<List<Mealplan>>> getMealPlan(DateTime date, Canteen canteen) async {
+    var db = await database;
+    var result = await db.query(
+      DBMealPlan.tableName,
+      where: '${DBCanteen.tableName}.${DBCanteen.columnCanteenID} = ${DBLine.tableName}.${DBLine.columnCanteenID} AND ${DBLine.tableName}.${DBLine.columnLineID} = ${DBMealPlan.tableName}.${DBMealPlan.columnLineID} AND ${DBCanteen.tableName}.${DBCanteen.columnCanteenID} = "?" AND ${DBMealPlan.tableName}.${DBMealPlan.columnDate} = "?"',
+      whereArgs: [canteen.id, date.toString()]
+    );
+    if(result.isNotEmpty) {
+      return Success(result.map((mealPlanRow) => DBMealPlan.fromMap(mealPlanRow)).cast<Mealplan>().toList());
+    } else {
+      return Failure(result as Exception);
+    }
+
   }
 
   @override
-  Future<void> updateAll(List<Mealplan> mealplans) {
-    // TODO: implement updateAll
-    throw UnimplementedError();
+  Future<void> updateAll(List<Mealplan> mealPlans) async {
+    for (Mealplan mealPlan in mealPlans) {
+      await _insertCanteen(mealPlan.line.canteen);
+      await _insertLine(mealPlan.line);
+      await _insertMealPlan(mealPlan);
+    }
+  }
+
+  Future<int> _insertLine(Line line) async {
+    var db = await database;
+    var dbLine = DBLine(line.id, line.canteen.id, line.name, line.position);
+    return db.insert(DBLine.tableName, dbLine.toMap());
+  }
+
+  Future<int> _insertCanteen(Canteen canteen) async {
+    var db = await database;
+    var dbCanteen = DBCanteen(canteen.id, canteen.name);
+    return db.insert(DBCanteen.tableName, dbCanteen.toMap());
+  }
+
+  Future<int> _insertMealPlan(Mealplan mealPlan) async {
+    var db = await database;
+    var uuid = ''; // TODO: generate UUID
+    var dbMealPlan = DBMealPlan(uuid, mealPlan.line.id, mealPlan.date.toString(), mealPlan.isClosed);
+    return db.insert(DBMealPlan.tableName, dbMealPlan.toMap());
   }
 
   Future<DBCanteen?> _getCanteen(String canteenID) async {
@@ -160,6 +226,16 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     }
   }
 
+  Future<List<DBSide>> _getSides(String mealID) async {
+    var db = await database;
+    var result = await db.query(
+        DBSide.tableName,
+        where: '${DBSide.columnMealID} = ?',
+        whereArgs: [mealID]
+    );
+    return result.map((sideRow) => DBSide.fromMap(sideRow)).toList();
+  }
+
   Future<DBImage?> _getImage(String imageID) async {
     var db = await database;
     var result = await db.query(
@@ -172,6 +248,16 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     } else {
       return null;
     }
+  }
+
+  Future<List<DBImage>> _getImages(String mealID) async {
+    var db = await database;
+    var result = await db.query(
+        DBImage.tableName,
+        where: '${DBImage.columnMealID} = ?',
+        whereArgs: [mealID]
+    );
+    return result.map((imageRow) => DBImage.fromMap(imageRow)).toList();
   }
 
   Future<DBMealPlan?> _getMealPlan(String mealPlanID) async {
@@ -201,4 +287,45 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
       return null;
     }
   }
+
+  Future<List<Allergen>?> _getMealAllergens(String id) async {
+    var db = await database;
+    var result = await db.query(
+        DBMealAllergen.tableName,
+        where: '${DBMealAllergen.columnMealID} = ?',
+        whereArgs: [id]
+    );
+    return result.map((allergenMap) => DBMealAllergen.fromMap(allergenMap).allergen).toList();
+  }
+
+  Future<List<Allergen>?> _getSideAllergens(String id) async {
+    var db = await database;
+    var result = await db.query(
+        DBSideAllergen.tableName,
+        where: '${DBSideAllergen.columnSideID} = ?',
+        whereArgs: [id]
+    );
+    return result.map((allergenMap) => DBMealAllergen.fromMap(allergenMap).allergen).toList();
+  }
+
+  Future<List<Additive>?> _getMealAdditive(String id) async {
+    var db = await database;
+    var result = await db.query(
+        DBMealAdditive.tableName,
+        where: '${DBMealAdditive.columnMealID} = ?',
+        whereArgs: [id]
+    );
+    return result.map((allergenMap) => DBMealAdditive.fromMap(allergenMap).additive).toList();
+  }
+
+  Future<List<Additive>?> _getSideAdditive(String id) async {
+    var db = await database;
+    var result = await db.query(
+        DBSideAdditive.tableName,
+        where: '${DBSideAdditive.columnSideID} = ?',
+        whereArgs: [id]
+    );
+    return result.map((allergenMap) => DBSideAdditive.fromMap(allergenMap).additive).toList();
+  }
+
 }
