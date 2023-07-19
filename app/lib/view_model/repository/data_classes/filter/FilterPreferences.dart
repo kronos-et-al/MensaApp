@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import 'Sorting.dart';
 import 'Frequency.dart';
 import '../meal/Allergen.dart';
@@ -35,7 +37,7 @@ class FilterPreferences {
   })
       : _categories = categories ?? _getAllFoodTypes(),
         _allergens = allergens ?? _getAllAllergen(),
-        _price = price ?? 10,
+        _price = price ?? 1000,
         _rating = rating ?? 0,
         _frequency = frequency ?? _getAllFrequencies(),
         _onlyFavorite = onlyFavorite ?? false,
@@ -142,6 +144,7 @@ class FilterPreferences {
     _frequency = [Frequency.newMeal];
   }
 
+  // todo wollen wir hier auch neue Gerichte?
   /// only rare meals are to be shown
   setRareFrequency() {
     _frequency = [Frequency.rare];
@@ -198,4 +201,29 @@ class FilterPreferences {
     }
     return list;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FilterPreferences &&
+          runtimeType == other.runtimeType &&
+          listEquals(_categories, other._categories) &&
+          listEquals(_allergens, other._allergens) &&
+          _price == other._price &&
+          _rating == other._rating &&
+          listEquals(_frequency, other._frequency) &&
+          _onlyFavorite == other._onlyFavorite &&
+          _sortedBy == other._sortedBy &&
+          _ascending == other._ascending;
+
+  @override
+  int get hashCode =>
+      _categories.hashCode ^
+      _allergens.hashCode ^
+      _price.hashCode ^
+      _rating.hashCode ^
+      _frequency.hashCode ^
+      _onlyFavorite.hashCode ^
+      _sortedBy.hashCode ^
+      _ascending.hashCode;
 }

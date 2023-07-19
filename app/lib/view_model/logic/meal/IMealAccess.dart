@@ -1,7 +1,6 @@
 import 'package:app/view_model/repository/data_classes/filter/FilterPreferences.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
-import 'package:flutter/cupertino.dart';
 
 import '../../repository/data_classes/meal/Meal.dart';
 import '../../repository/data_classes/mealplan/Canteen.dart';
@@ -23,21 +22,21 @@ abstract class IMealAccess {
   Future<Result<Meal, Exception>> getWholeFavorite(String id);
 
   /// This method updates all meal plans of the committed date of the committed canteen.
-  /// If the connection to the server fails, an temporal error message is displayed.
+  /// It returns a string that should be displayed in a temporal message or null.
   /// @param date The date of the mealplan
   /// @param canteen The canteen of the mealplan
   /// @param context The context of the app used for displaying temporal messages.
-  /// @return The result of the update
-  Future<void> refreshMealplan(BuildContext context);
+  /// @return It returns a string that should be displayed in a temporal message or null.
+  Future<String?> refreshMealplan();
 
   /// This method updates the rating of the committed meal on the server.
-  /// If the update is successful, a temporal success message is displayed.
-  /// If the connection to the server fails, an temporal error message is displayed.
+  /// It returns a non empty string that should be displayed in a temporal message,
+  /// or a null, saying that nothing should be printed.
   /// @param rating The new rating of the meal
   /// @param meal The meal that should be updated
   /// @param context The context of the app used for displaying temporal messages.
-  /// @return The result of the update
-  Future<void> updateMealRating(int rating, Meal meal, BuildContext context);
+  /// @return It returns a string that should be displayed in a temporal message.
+  Future<String> updateMealRating(int rating, Meal meal);
 
   /// This method returns the currently selected filter preferences.
   /// @return The selected filter preferences.
@@ -68,4 +67,8 @@ abstract class IMealAccess {
   /// @param date The new date
   /// @return The result of the update
   Future<void> changeDate(DateTime date);
+
+  /// This method checks if settings or favorites are changed since the last time the mealplan was displayed.
+  /// If they were changed it corrects the displayed data if needed.
+  Future<void> switchToMealPlanView();
 }

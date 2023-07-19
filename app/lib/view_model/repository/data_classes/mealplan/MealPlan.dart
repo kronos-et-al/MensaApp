@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../meal/Meal.dart';
 import 'Line.dart';
 
@@ -45,4 +47,19 @@ class MealPlan {
     };
   }
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MealPlan &&
+          runtimeType == other.runtimeType &&
+          _date.year == other._date.year &&
+          _date.month == other._date.month &&
+          _date.day == other._date.day &&
+          _line == other._line &&
+          _isClosed == other._isClosed &&
+          listEquals(_meals, other._meals);
+
+  @override
+  int get hashCode =>
+      _date.hashCode ^ _line.hashCode ^ _isClosed.hashCode ^ _meals.hashCode;
 }
