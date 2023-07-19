@@ -1,15 +1,17 @@
 use async_trait::async_trait;
+use sqlx::{Pool, Postgres};
 
 use crate::{
     interface::persistent_data::{
         model::{Canteen, Line, Meal, Side},
-        Result,
-        MealplanManagementDataAccess,
+        MealplanManagementDataAccess, Result,
     },
-    util::{Date, Allergen, Additive, Uuid, MealType, Price},
+    util::{Additive, Allergen, Date, MealType, Price, Uuid},
 };
 
-pub struct PersistentMealplanManagementData;
+pub struct PersistentMealplanManagementData {
+    pub(super) pool: Pool<Postgres>,
+}
 
 #[async_trait]
 impl MealplanManagementDataAccess for PersistentMealplanManagementData {
@@ -40,10 +42,28 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     }
 
     async fn update_canteen(&self, uuid: Uuid, name: &str) -> Result<Canteen> {
-        todo!()
+        sqlx::query_as!(
+            Canteen,
+            "UPDATE canteen 
+            SET canteen_id = $1, name = $2
+            RETURNING canteen_id as id, name ",
+            uuid, 
+            name
+        ).fetch_one(&self.pool)
+        .await
+        .map_err(Into::into)
     }
     async fn update_line(&self, uuid: Uuid, name: &str) -> Result<Line> {
-        todo!()
+        sqlx::query_as!(
+            Line,
+            "UPDATE line 
+            SET line_id = $1, name = $2 
+            RETURNING line_id as id, name, canteen_id",
+            uuid, 
+            name
+        ).fetch_one(&self.pool)
+        .await
+        .map_err(Into::into)
     }
     async fn update_meal(
         &self,
@@ -67,10 +87,26 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     }
 
     async fn insert_canteen(&self, name: &str) -> Result<Canteen> {
-        todo!()
+        sqlx::query_as!(
+            Canteen,
+            "INSERT INTO canteen (name) 
+            VALUES ($1) 
+            RETURNING canteen_id as id, name ",
+            name
+        ).fetch_one(&self.pool)
+        .await
+        .map_err(Into::into)
     }
     async fn insert_line(&self, name: &str) -> Result<Line> {
-        todo!()
+        sqlx::query_as!(
+            Line,
+            "INSERT INTO line (name) 
+            VALUES ($1) 
+            RETURNING line_id as id, name, canteen_id",
+            name
+        ).fetch_one(&self.pool)
+        .await
+        .map_err(Into::into)
     }
     async fn insert_meal(
         &self,
