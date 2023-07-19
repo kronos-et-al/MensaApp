@@ -174,8 +174,8 @@ where
         if licence_ok {
             self.command_data
                 .link_image(
-                    meal_id,
                     auth_info.client_id,
+                    meal_id,
                     image_meta_data.id,
                     image_meta_data.image_url,
                 )
