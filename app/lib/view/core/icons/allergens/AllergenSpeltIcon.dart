@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'AllergenIcon.dart';
+import 'IAllergenIcon.dart';
 
 /// This widget is used to display the icon for Spelt
-class AllergenSpeltIcon extends AllergenIcon {
+class AllergenSpeltIcon extends IAllergenIcon {
   const AllergenSpeltIcon(
       {super.key, super.width, super.height, super.color});
 

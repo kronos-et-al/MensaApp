@@ -1,0 +1,89 @@
+query GetMealPlanForDay($date: NaiveDate!) {
+    getCanteens {
+        ...mealPlan
+    }
+}
+
+query GetCanteenDate($canteenId: UUID!, $date: NaiveDate!) {
+    getCanteen(canteenId: $canteenId) {
+        ...mealPlan
+    }
+}
+
+query GetMeal($date: NaiveDate!, $mealId: UUID!, $lineId: UUID!) {
+    getMeal(date: $date, mealId: $mealId, lineId: $lineId) {
+        ...mealInfo
+    }
+}
+
+query GetDefaultCanteen {
+    getCanteens {
+        ...canteen
+    }
+}
+
+fragment canteen on Canteen {
+    id
+    name
+}
+
+fragment mealPlan on Canteen {
+    lines {
+        id
+        name
+        canteen {
+            ...canteen
+        }
+        meals(date: $date) {
+            ...mealInfo
+        }
+    }
+}
+
+fragment mealInfo on Meal {
+    id
+    name
+    mealType
+    price {
+        ...price
+    }
+    allergens
+    additives
+    statistics {
+        lastServed
+        nextServed
+        frequency
+        new
+    }
+    ratings {
+        averageRating
+        personalRating
+        ratingsCount
+    }
+    images {
+        id
+        url
+        rank
+        personalDownvote
+        personalUpvote
+        downvotes
+        upvotes
+    }
+    sides {
+        id
+        name
+        additives
+        allergens
+        price {
+            ...price
+        }
+        mealType
+    }
+}
+
+fragment price on Price {
+    employee
+    guest
+    pupil
+    student
+}

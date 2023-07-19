@@ -48,6 +48,10 @@ dependencies:
 
   provider: ^6.0.5
   mocktail: ^0.3.0
+  graphql_flutter: ^5.1.1
+  crypto: ^3.0.3
+  convert: ^3.1.1
+  uuid: ^3.0.7
 
 dev_dependencies:
   flutter_test:
@@ -59,6 +63,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  graphql_codegen: ^0.12.2
+  build_runner: ^2.4.6
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
