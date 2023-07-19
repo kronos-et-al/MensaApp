@@ -75,7 +75,7 @@ impl SwKaLinkCreator {
 mod tests {
     #![allow(clippy::unwrap_used)]
 
-    use crate::layer::data::swka_parser::test_data::util as test_util;
+    use crate::layer::data::swka_parser::test::const_test_data as test_util;
     use crate::util::Date;
 
     const URLS_FOR_NEXT_WEEKS: [&str; 28] = [

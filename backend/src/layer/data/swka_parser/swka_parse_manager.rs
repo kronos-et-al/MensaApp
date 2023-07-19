@@ -94,7 +94,7 @@ impl MealplanParser for SwKaParseManager {
 mod test {
     #![allow(clippy::unwrap_used)]
     use crate::layer::data::swka_parser::swka_parse_manager::SwKaParseManager;
-    use crate::layer::data::swka_parser::test_data::util as test_util;
+    use crate::layer::data::swka_parser::test::const_test_data as test_util;
 
     fn get_valid_urls() -> Vec<String> {
         vec![

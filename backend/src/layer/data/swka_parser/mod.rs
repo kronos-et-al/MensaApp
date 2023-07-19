@@ -4,4 +4,4 @@ pub mod parsing_helper;
 pub mod swka_html_request;
 pub mod swka_link_creator;
 pub mod swka_parse_manager;
-mod test_data;
+mod test;

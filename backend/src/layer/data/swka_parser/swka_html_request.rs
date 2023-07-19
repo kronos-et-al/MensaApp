@@ -60,7 +60,7 @@ impl SwKaHtmlRequest {
 
 #[cfg(test)]
 mod test {
-    use crate::layer::data::swka_parser::test_data::util as test_util;
+    use crate::layer::data::swka_parser::test::const_test_data as test_util;
 
     fn get_invalid_url() -> String {
         String::from("A ship-shipping ship ships shipping-ships")
