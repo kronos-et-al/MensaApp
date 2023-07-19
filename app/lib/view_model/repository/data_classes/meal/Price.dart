@@ -39,4 +39,11 @@ class Price {
     };
   }
 
+  int get guest => _guest;
+
+  int get pupil => _pupil;
+
+  int get employee => _employee;
+
+  int get student => _student;
 }
