@@ -26,5 +26,5 @@ enum Allergen {
   we,
   wt,
   la,
-  gt,
+  gl
 }
