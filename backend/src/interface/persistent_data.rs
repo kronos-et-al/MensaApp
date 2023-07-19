@@ -119,7 +119,7 @@ pub trait ImageReviewDataAccess {
 
 #[async_trait]
 /// An interface for graphql mutation data manipulation. The Command component uses this interface for database access.
-pub trait CommandDataAccess {
+pub trait CommandDataAccess: Sync + Send {
     /// Returns the ImageInfo struct of image.
     async fn get_image_info(&self, image_id: Uuid) -> Result<ImageInfo>;
     /// Marks an image as hidden. Hidden images cant be seen by users.

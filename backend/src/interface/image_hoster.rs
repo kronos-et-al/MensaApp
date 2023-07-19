@@ -10,13 +10,13 @@ pub type Result<T> = std::result::Result<T, ImageHosterError>;
 
 #[async_trait]
 /// This trait provides essential functions, which are necessary for image validation.
-pub trait ImageHoster {
+pub trait ImageHoster: Sync + Send {
     /// Checks if the given link is valid and provides additional information (ImageMetaData) from the hoster.
-    async fn validate_url(url: String) -> Result<ImageMetaData>;
+    async fn validate_url(&self, url: &str) -> Result<ImageMetaData>;
     /// Checks if an image still exists at the hoster website.
-    async fn check_existence(photo_id: String) -> Result<bool>;
+    async fn check_existence(&self, photo_id: &str) -> Result<bool>;
     /// Checks whether the licence is acceptable for our purposes.
-    async fn check_licence(photo_id: String) -> Result<bool>;
+    async fn check_licence(&self, photo_id: &str) -> Result<bool>;
 }
 
 /// Enum describing the possible ways, a image hoster request can fail.
@@ -36,7 +36,7 @@ pub enum ImageHosterError {
     ServiceUnavailable,
     /// Format "xxx" not found error
     #[error("the requested response format was not found")]
-    FormatNotFound(#[from] Box<dyn Error>),
+    FormatNotFound(#[from] Box<dyn Error + Send + Sync>),
     /// The connection failed to establish error
     #[error("no connection could be established")]
     NotConnected,

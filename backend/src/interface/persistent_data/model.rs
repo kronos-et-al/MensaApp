@@ -86,6 +86,7 @@ pub struct Image {
     pub downvotes: u32,
 }
 
+#[derive(Clone)]
 pub struct ImageInfo {
     /// True if an administrator validated the image.
     pub approved: bool,
