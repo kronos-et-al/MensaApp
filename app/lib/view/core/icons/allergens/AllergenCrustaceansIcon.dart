@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'AllergenIcon.dart';
+import 'IAllergenIcon.dart';
 
 /// This widget is used to display the icon for Crustaceans
-class AllergenCrustaceansIcon extends AllergenIcon {
+class AllergenCrustaceansIcon extends IAllergenIcon {
   const AllergenCrustaceansIcon(
       {super.key, super.width, super.height, super.color});
 
