@@ -80,9 +80,6 @@ impl Authenticator {
 mod tests {
     #![allow(clippy::unwrap_used)]
 
-
-    use base64::{alphabet::STANDARD, engine::general_purpose, Engine};
-
     use crate::{
         interface::api_command::InnerAuthInfo,
         layer::logic::api_command::auth::command_type::CommandType,
