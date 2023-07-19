@@ -106,7 +106,7 @@ impl CommandDataAccess for CommandDatabaseMock {
         _image_hoster_id: String,
         _url: String,
     ) -> DataResult<()> {
-        if MEAL_ID_TO_FAIL == meal_id{
+        if MEAL_ID_TO_FAIL == meal_id {
             Err(DataError::NoSuchItem)
         } else {
             Ok(())
