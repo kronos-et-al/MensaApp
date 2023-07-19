@@ -156,6 +156,7 @@ mod test {
             allergens: vec![],
             additives: vec![],
             meal_type: MealType::Vegan,
+            env_score: 0,
         }
     }
 
@@ -171,6 +172,7 @@ mod test {
             allergens: vec![],
             additives: vec![],
             meal_type: MealType::Vegan,
+            env_score: 0,
         }
     }
 
