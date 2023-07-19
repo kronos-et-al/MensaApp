@@ -7,11 +7,15 @@ import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Mealplan.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:app/view_model/repository/interface/IDatabaseAccess.dart';
+import 'dart:async';
 
+import 'package:flutter/widgets.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 class SQLiteDatabaseAccess implements IDatabaseAccess {
   /// The string to create a table for the canteen.
-  final String _canteen = '''
+  static const String _canteen = '''
     CREATE TABLE Canteen (
       canteenID TEXT PRIMARY KEY,
       name TEXT NOT NULL
@@ -19,7 +23,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   ''';
 
   /// The string to create a table for a line of a canteen.
-  final String _line = '''
+  static const String _line = '''
     CREATE TABLE Line(
       lineID TEXT PRIMARY KEY,
       canteenID TEXT NOT NULL,
@@ -30,7 +34,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   ''';
 
   /// The string to create a table for a mealplan.
-  final String _mealplan = '''
+  static const String _mealplan = '''
     CREATE TABLE MealPlan(
       mealplanID TEXT,
       lineID TEXT NOT NULL,
@@ -42,7 +46,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   ''';
 
   /// The string to create a table for a meal.
-  final String _meal = '''
+  static final String _meal = '''
     CREATE TABLE Meal(
       mealID TEXT PRIMARY KEY,
       mealplanID TEXT NOT NULL,
@@ -63,7 +67,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   ''';
 
   /// The string to create a table for a side.
-  final String _side = '''
+  static final String _side = '''
     CREATE TABLE Side(
       sideID TEXT PRIMARY KEY,
       mealID TEXT NOT NULL,
@@ -78,7 +82,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   ''';
 
   /// The string to create a table for an additive.
-  final String _image = '''
+  static const String _image = '''
     CREATE TABLE Image(
       imageID TEXT PRIMARY KEY,
       mealID TEXT NOT NULL,
@@ -88,7 +92,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   ''';
 
   /// The string to create a table for an additive of a meal.
-  final String _mealAdditive = '''
+  static final String _mealAdditive = '''
     CREATE TABLE MealAdditive(
       mealID TEXT,
       additiveID TEXT CHECK IN (${Additive.values.map((additive) => "'$additive'").join(', ')}),
@@ -98,7 +102,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   ''';
 
   /// The string to create a table for an allergen of a meal.
-  final String _mealAllergen = '''
+  static final String _mealAllergen = '''
     CREATE TABLE MealAllergen(
       mealID TEXT,
       allergenID TEXT CHECK IN (${Allergen.values.map((allergen) => "'$allergen'").join(', ')}),
@@ -108,7 +112,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   ''';
 
   /// The string to create a table for an additive of a side.
-  final String _sideAdditive = '''
+  static final String _sideAdditive = '''
     CREATE TABLE SideAdditive(
       sideID TEXT,
       additiveID TEXT CHECK IN (${Additive.values.map((additive) => "'$additive'").join(', ')}),
@@ -118,7 +122,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   ''';
 
   /// The string to create a table for an allergen of a side.
-  final String _sideAllergen = '''
+  static final String _sideAllergen = '''
     CREATE TABLE SideAllergen(
       sideID TEXT,
       allergenID TEXT CHECK IN (${Allergen.values.map((allergen) => "'$allergen'").join(', ')}),
@@ -128,7 +132,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   ''';
 
   /// The string to create a table for a favorite.
-  final String _favorite = '''
+  static final String _favorite = '''
     CREATE TABLE Favorite(
       favoriteID TEXT PRIMARY KEY,
       lineID TEXT NOT NULL,
@@ -142,8 +146,47 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     )
   ''';
 
-  SQLiteDatabaseAccess() {
-    // TODO: implement constructor
+  static List<String> _getDatabaseBuilder() {
+    return [
+      _canteen,
+      _line,
+      _mealplan,
+      _meal,
+      _side,
+      _image,
+      _mealAdditive,
+      _mealAllergen,
+      _sideAdditive,
+      _sideAllergen,
+      _favorite
+    ];
+  }
+
+  // Database access is provided by a singleton instance to prevent several databases.
+  static final SQLiteDatabaseAccess _databaseAccess = SQLiteDatabaseAccess._internal();
+
+  factory SQLiteDatabaseAccess() {
+    return _databaseAccess;
+  }
+
+  SQLiteDatabaseAccess._internal() {
+    db = _initiate();
+  }
+
+  static const String _dbName = 'meal_plan.db';
+  late final Future<Database> db;
+
+  static Future<Database> _initiate()  async {
+    WidgetsFlutterBinding.ensureInitialized();
+    return await openDatabase(
+        join(await getDatabasesPath(), _dbName),
+        onCreate: (db, version) {
+          for (String sql in _getDatabaseBuilder()) {
+             db.execute(sql);
+          }
+        },
+        version: 1,
+    );
   }
 
   @override
