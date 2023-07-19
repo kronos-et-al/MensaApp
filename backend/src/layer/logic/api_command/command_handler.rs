@@ -228,6 +228,10 @@ mod test {
             .report_image(image_id, reason, auth_info.clone())
             .await
             .is_ok());
+        let auth_info = Some(InnerAuthInfo {
+            hash: "x2D2nVGg9oCyt44TB/pA5LACvo5ZghPVJDMNCfAZOiME8hS1CF4NKaFK3chfbwVEnmZxlVRfmWK2nGHE7yBknQ==".into(),
+            ..auth_info.unwrap()
+        });
         assert!(handler
             .report_image(IMAGE_ID_TO_FAIL, reason, auth_info.clone())
             .await
@@ -249,6 +253,10 @@ mod test {
             .add_image_upvote(image_id, auth_info.clone())
             .await
             .is_ok());
+        let auth_info = Some(InnerAuthInfo {
+            hash: "nNfedG2cgeaOutiLzHSUDbYWRS0tDVwK482ULfqDkV0h/nZl6ZN5bwesenmr+CZBJrc2MT1Ps/I+5sKDy2qdCw==".into(),
+            ..auth_info.unwrap()
+        });
         assert!(handler
             .add_image_upvote(IMAGE_ID_TO_FAIL, auth_info.clone())
             .await
@@ -270,6 +278,11 @@ mod test {
             .add_image_downvote(image_id, auth_info.clone())
             .await
             .is_ok());
+
+        let auth_info = Some(InnerAuthInfo {
+                hash: "jFEnp7ky0dbUrisVR5Rh6GOAywS1GGePT6TBbuIumbPjoRHkOgO1vW9iJPc64evEX6YuvdNZTpu4JET2bYxJdw==".into(),
+                ..auth_info.unwrap()
+            });
         assert!(handler
             .add_image_downvote(IMAGE_ID_TO_FAIL, auth_info.clone())
             .await
@@ -281,18 +294,27 @@ mod test {
         let handler = get_handler().await.unwrap();
         let auth_info = Some(InnerAuthInfo {
             api_ident: "YWpzZGg4Mn".into(),
-            hash: "lb4TH+zjHTl0Z9zijEZ7KtOFIBFHvY70rmZtX+Xk/fa++fGJtAS10EjFOqAgx/0scDJDbhpdn9WS5Yy5zCYeoQ==".into(),
+            hash: "8jYXv/+3YqO9j9zJnrkSGy4Bx1VZLgXoW95RodDWZ/PmzcAqqhyKiv2gI09JCBUuBOZoDMkNPhCjbesBkCGaxg==".into(),
             client_id: Uuid::try_from("4c57fc70-4839-4398-be08-d151c0dbb246").unwrap(),
         });
         let image_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
 
         assert!(handler.remove_image_upvote(image_id, None).await.is_err()); // No auth information present
-                                                                             //assert!(handler.remove_image_upvote(image_id, auth_info.clone()).await.is_ok());
+
+        assert!(handler
+            .remove_image_upvote(image_id, auth_info.clone())
+            .await
+            .is_ok());
+        let auth_info = Some(InnerAuthInfo {
+            hash: "75irLLawyqHZ6RyENq6LgVH91qViG8K9p30xefHUygKYBTkHeAAxMX7zfvmil4FuIr1FcKhFcO7YnubS6JhBrA==".into(),
+            ..auth_info.unwrap()
+        });
         assert!(handler
             .remove_image_upvote(IMAGE_ID_TO_FAIL, auth_info.clone())
             .await
             .is_err());
     }
+
     #[tokio::test]
     async fn test_remove_image_downvote() {
         let handler = get_handler().await.unwrap();
@@ -308,11 +330,17 @@ mod test {
             .remove_image_downvote(image_id, auth_info.clone())
             .await
             .is_ok());
+
+        let auth_info = Some(InnerAuthInfo {
+                hash: "Jv4OClK/9hYeTQPdInfwjoNtUmVmoLp4+q7LEI5gKhDJLdeaEX+cER7BvFU5JTuzQhG7T8sae55fgYF+ybK7cQ==".into(),
+                ..auth_info.unwrap()
+            });
         assert!(handler
             .remove_image_downvote(IMAGE_ID_TO_FAIL, auth_info.clone())
             .await
             .is_err());
     }
+
     #[tokio::test]
     async fn test_add_image() {
         let handler = get_handler().await.unwrap();
@@ -332,15 +360,24 @@ mod test {
             .add_image(meal_id, image_url.to_string(), auth_info.clone())
             .await
             .is_ok());
+        let auth_info = Some(InnerAuthInfo {
+            hash: "JWN194mSo+ZAMH4ohZ4WO1//k3NH9ztxIFuWjdrKy6ct3+Y4P7zqQs1JiE7p63TkCDRVqlobEqi7bIGuAjGFZg==".into(),
+            ..auth_info.unwrap()
+        });
         assert!(handler
             .add_image(meal_id, INVALID_URL.to_string(), auth_info.clone())
             .await
             .is_err());
+        let auth_info = Some(InnerAuthInfo {
+            hash: "TLvbxrv6azE4FpA2sROa8CD8ACdRGjj1M6OtLl1h4Q/NYypCKagZz0C2c4SEsoGjRpIbMAaKprFMcavssf2z2w==".into(),
+            ..auth_info.unwrap()
+        });
         assert!(handler
             .add_image(MEAL_ID_TO_FAIL, image_url.to_string(), auth_info.clone())
             .await
             .is_err());
     }
+
     #[tokio::test]
     async fn test_set_meal_rating() {
         let handler = get_handler().await.unwrap();
@@ -355,6 +392,11 @@ mod test {
             .set_meal_rating(meal_id, 2, auth_info.clone())
             .await
             .is_ok());
+
+        let auth_info = Some(InnerAuthInfo {
+            hash: "0gdAkgRigzK+vV4IkP20QdUBZPco1E8zQC01F8WiPNO5BMEyKd+W/PiC7abF68B/s8wRW1MgY/7VdscEaKBQDA==".into(),
+            ..auth_info.unwrap()
+        });
         assert!(handler
             .set_meal_rating(MEAL_ID_TO_FAIL, 2, auth_info.clone())
             .await
