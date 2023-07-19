@@ -98,8 +98,8 @@ pub enum Additive {
     Phenylalanine,
     /// This meals can contain alcohol.
     Alcohol,
-    /// This meals contains pressed meet.
-    PressedMeet,
+    /// This meals contains pressed meat.
+    PressedMeat,
     /// This meals is glazed with cacao.
     GlazingWithCacao,
     /// This meals contains pressed fish.

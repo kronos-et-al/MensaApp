@@ -9,13 +9,16 @@ pub type Result<T> = std::result::Result<T, ParseError>;
 
 #[derive(Debug, Error)]
 pub enum ParseError {
-    #[error("the node was not found")]
-    InvalidHtmlDocument,
+    #[error("the node was not found: {0}")]
+    InvalidHtmlDocument(String),
     #[error("no connection could be established")]
-    NoConnectionEstablished,
+    NoConnectionEstablished(String),
     #[error("some html code couldn't be decoded")]
-    DecodeFailed,
+    DecodeFailed(String),
+    #[error("the html reqwest client creation failed")]
+    ClientBuilderFailed(String),
 }
+
 #[async_trait]
 /// Parser interface. Provides functions which return canteen structs. Canteen structs contain raw data obtained by parsing mealplans.
 pub trait MealplanParser: Send + Sync {
