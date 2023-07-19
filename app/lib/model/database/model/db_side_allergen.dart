@@ -38,4 +38,8 @@ class DBSideAllergen implements DatabaseModel {
     )
   ''';
   }
+
+  Allergen get allergen => _allergen;
+
+  String get sideID => _sideID;
 }

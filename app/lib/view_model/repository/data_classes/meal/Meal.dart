@@ -16,7 +16,7 @@ class Meal {
   final List<Side>? _sides;
   final int? _individualRating;
   final int? _numberOfRatings;
-  final int? _averageRating;
+  final double? _averageRating;
   final DateTime? _lastServed;
   final DateTime? _nextServed;
   final Frequency? _relativeFrequency;
@@ -33,7 +33,7 @@ class Meal {
     List<Side>? sides,
     int? individualRating,
     int? numberOfRatings,
-    int? averageRating,
+    double? averageRating,
     DateTime? lastServed,
     DateTime? nextServed,
     Frequency? relativeFrequency,
