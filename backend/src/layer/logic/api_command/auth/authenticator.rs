@@ -80,6 +80,9 @@ impl Authenticator {
 mod tests {
     #![allow(clippy::unwrap_used)]
 
+
+    use base64::{alphabet::STANDARD, engine::general_purpose, Engine};
+
     use crate::{
         interface::api_command::InnerAuthInfo,
         layer::logic::api_command::auth::command_type::CommandType,
@@ -171,11 +174,11 @@ mod tests {
 
         let info = InnerAuthInfo {
             api_ident: "YWpzZGg4Mn".into(),
-            hash: "lb4TH+zjHTl0Z9zijEZ7KtOFIBFHvY70rmZtX+Xk/fa++fGJtAS10EjFOqAgx/0scDJDbhpdn9WS5Yy5zCYeoQ==".into(),
+            hash: "8jYXv/+3YqO9j9zJnrkSGy4Bx1VZLgXoW95RodDWZ/PmzcAqqhyKiv2gI09JCBUuBOZoDMkNPhCjbesBkCGaxg==".into(),
             client_id: Uuid::try_from("4c57fc70-4839-4398-be08-d151c0dbb246").unwrap(),
         };
 
-        let command = CommandType::RemoveDownvote {
+        let command = CommandType::RemoveUpvote {
             image_id: Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap(),
         };
 
