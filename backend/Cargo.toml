@@ -30,6 +30,7 @@ tokio-cron-scheduler = "0.9.4"
 [dev-dependencies]
 serde_json = "1.0"
 serial_test = "2.0.0"
+rand = "0.8.0"
 
 [[bin]]
 name = "graphql_mock"
