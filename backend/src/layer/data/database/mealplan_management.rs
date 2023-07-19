@@ -83,6 +83,31 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         name: &str,
         price: Price,
     ) -> Result<Side> {
+        /*
+        sqlx::query!(
+        "UPDATE food, food_plan
+        SET food.name = $1, 
+        food_plan.priceStudent = $2, 
+        food_plan.priceEmployee = $3,
+        food_plan.pricePupil = $4,
+        food_plan.priceGuest = $5
+        FROM food_plan
+        WHERE food.food_id = $6,
+        food_plan.food_id = food.food_id,
+        food_plan.line_id = $7,
+        food_plan.serve_date = $8
+        RETURNING food.food_id, food.name, food.food_type",
+        name,
+        price.price_student,
+        price.price_employee,
+        price.price_pupil,
+        price.price_guest,
+        uuid,
+        line_id,
+        date
+        ).execute(&self.pool)
+        .await;
+        */
         todo!()
     }
 
