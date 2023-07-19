@@ -28,7 +28,7 @@ impl CommandDataAccess for CommandDatabaseMock {
     /// Returns the ImageInfo struct of image.
     async fn get_image_info(&self, _image_id: Uuid) -> DataResult<ImageInfo> {
         let info = ImageInfo {
-            approved: true,
+            approved: false,
             upload_date: Date::default(),
             report_count: 100,
             image_url: String::new(),
@@ -40,18 +40,26 @@ impl CommandDataAccess for CommandDatabaseMock {
     }
 
     /// Marks an image as hidden. Hidden images cant be seen by users.
-    async fn hide_image(&self, _image_id: Uuid) -> DataResult<()> {
-        Ok(())
+    async fn hide_image(&self, image_id: Uuid) -> DataResult<()> {
+        if IMAGE_ID_TO_FAIL == image_id {
+            Err(DataError::NoSuchItem)
+        } else {
+            Ok(())
+        }
     }
 
     /// Saves an image report
     async fn add_report(
         &self,
-        _image_id: Uuid,
+        image_id: Uuid,
         _client_id: Uuid,
         _reason: ReportReason,
     ) -> DataResult<()> {
-        Ok(())
+        if IMAGE_ID_TO_FAIL == image_id {
+            Err(DataError::NoSuchItem)
+        } else {
+            Ok(())
+        }
     }
 
     /// Adds an upvote to the given image. An user can only down- or upvote an image.
@@ -96,9 +104,9 @@ impl CommandDataAccess for CommandDatabaseMock {
         _user_id: Uuid,
         meal_id: Uuid,
         _image_hoster_id: String,
-        url: String,
+        _url: String,
     ) -> DataResult<()> {
-        if MEAL_ID_TO_FAIL == meal_id || url == INVALID_URL {
+        if MEAL_ID_TO_FAIL == meal_id{
             Err(DataError::NoSuchItem)
         } else {
             Ok(())
