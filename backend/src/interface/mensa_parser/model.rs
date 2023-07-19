@@ -2,32 +2,37 @@
 
 use crate::util::{Additive, Allergen, MealType, Price};
 
-/// Canteen-Struct containing all mealplan information of an canteen. Contains raw data.
+/// Canteen struct containing all meal plan information of a canteen. Contains raw data.
+#[derive(Debug)]
 pub struct ParseCanteen {
     /// Name of the canteen.
     pub name: String,
-    /// All related lines.
+    /// All the [lines](ParseLine) situated within the canteen.
     pub lines: Vec<ParseLine>,
 }
 
-/// Line-Struct containing all information of an line and their meals. Contains raw data.
+/// Line struct containing all information of a line and their meals. Contains raw data.
+#[derive(Debug)]
 pub struct ParseLine {
     /// Name of the line.
     pub name: String,
-    /// All related dishes.
+    /// All [dishes](Dish) served at this [canteen](ParseCanteen) at a particular day.
     pub dishes: Vec<Dish>,
 }
 
-/// Dish-Struct containing all information of a meal or side.
+/// Dish struct containing all information of a meal or side.
+#[derive(Debug)]
 pub struct Dish {
     /// Name of the dish.
     pub name: String,
-    /// Price of the meal for students, employees, guests and pupils.
+    /// Price of the meal for students, employees, guests and pupils. See [Price].
     pub price: Price,
-    /// All containing allergens.
+    /// All containing allergens. See [Allergen]
     pub allergens: Vec<Allergen>,
-    /// All containing additives.
+    /// All containing additives. See [Additive]
     pub additives: Vec<Additive>,
-    /// Meal-Type of the dish.
+    /// Meal-Type of the dish. See [MealType]
     pub meal_type: MealType,
+    /// The environmental score of the dish, which is an integer between 0 and 3. (Higher is better) 0 indicates that no score was present.
+    pub env_score: u32,
 }

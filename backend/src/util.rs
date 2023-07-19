@@ -100,8 +100,8 @@ pub enum Additive {
     Phenylalanine,
     /// This meals can contain alcohol.
     Alcohol,
-    /// This meals contains pressed meet.
-    PressedMeet,
+    /// This meals contains pressed meat.
+    PressedMeat,
     /// This meals is glazed with cacao.
     GlazingWithCacao,
     /// This meals contains pressed fish.
@@ -149,7 +149,7 @@ pub enum ReportReason {
 }
 
 /// This struct contains all price classes. All prices are listed in euro.
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Price {
     /// Price of the dish for students.
     pub price_student: u32,
