@@ -111,7 +111,7 @@ class Meal {
 
   int? get numberOfRatings => _numberOfRatings;
 
-  int? get averageRating => _averageRating;
+  double? get averageRating => _averageRating;
 
   DateTime? get lastServed => _lastServed;
 
