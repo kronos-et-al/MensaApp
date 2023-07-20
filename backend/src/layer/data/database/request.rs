@@ -298,7 +298,10 @@ mod tests {
         provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
-        let lines = request.get_lines(Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap()).await.unwrap();
+        let lines = request
+            .get_lines(Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap())
+            .await
+            .unwrap();
         assert!(lines.len() == 3);
         assert!(lines[0].name == "line 1");
         assert!(lines[1].name == "line 2");
@@ -331,14 +334,15 @@ mod tests {
     async fn provide_dummy_data(pool: &PgPool) {
         const INSERT_FAILED: &str = "failed to insert";
 
-        sqlx::query!("INSERT INTO canteen(canteen_id, name) VALUES 
+        sqlx::query!(
+            "INSERT INTO canteen(canteen_id, name) VALUES 
         ('10728cc4-1e07-4e18-a9d9-ca45b9782413', 'my favorite canteen'), 
         ('8f10c56d-da9b-4f62-b4c1-16feb0f98c67', 'second canteen'), 
-        ('f2885f67-fc95-4205-bc7d-b2fb78cee0a8', 'bad canteen')")
-            .execute(pool)
-            .await
-            .expect(INSERT_FAILED);
-
+        ('f2885f67-fc95-4205-bc7d-b2fb78cee0a8', 'bad canteen')"
+        )
+        .execute(pool)
+        .await
+        .expect(INSERT_FAILED);
 
         sqlx::query!("INSERT INTO line(line_id, canteen_id, name, position) VALUES 
         ('61b27158-817c-4716-bd41-2a8901391ea4', '10728cc4-1e07-4e18-a9d9-ca45b9782413', 'line 2', 2), 

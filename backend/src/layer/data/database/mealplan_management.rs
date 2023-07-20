@@ -1,6 +1,7 @@
 use async_trait::async_trait;
 use sqlx::{Pool, Postgres};
 
+use super::types::DatabasePrice;
 use crate::{
     interface::persistent_data::{
         model::{Canteen, Line, Meal, Side},
@@ -16,35 +17,28 @@ pub struct PersistentMealplanManagementData {
 #[async_trait]
 impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     async fn dissolve_relations(&self, canteen: Canteen, date: Date) -> Result<()> {
-        let line_ids = sqlx::query!(
-            "SELECT line_id
-        FROM line
-        WHERE canteen_id = $1",
+        sqlx::query!(
+            "
+            DELETE FROM food_plan
+            WHERE serve_date = $1 
+            AND line_id IN (SELECT line_id FROM line WHERE canteen_id = $2)
+            ",
+            date,
             canteen.id
         )
-        .fetch_all(&self.pool)
-        .await?
-        .into_iter()
-        .map(|record| record.line_id);
-        for line_id in line_ids {
-            sqlx::query!(
-                "DELETE FROM food_plan
-                WHERE serve_date = $1
-                AND line_id = $2",
-                date,
-                line_id
-            )
-            .execute(&self.pool)
-            .await?;
-        }
+        .execute(&self.pool)
+        .await?;
         Ok(())
     }
+
     async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Canteen>> {
         todo!()
     }
+
     async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Line>> {
         todo!()
     }
+
     async fn get_similar_meal(
         &self,
         similar_name: &str,
@@ -53,6 +47,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     ) -> Result<Option<Meal>> {
         todo!()
     }
+
     async fn get_similar_side(
         &self,
         similar_name: &str,
@@ -65,9 +60,12 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     async fn update_canteen(&self, uuid: Uuid, name: &str) -> Result<Canteen> {
         sqlx::query_as!(
             Canteen,
-            "UPDATE canteen 
-            SET canteen_id = $1, name = $2
-            RETURNING canteen_id as id, name ",
+            "
+            UPDATE canteen 
+            SET name = $2
+            WHERE canteen_id = $1
+            RETURNING canteen_id as id, name
+            ",
             uuid,
             name
         )
@@ -75,12 +73,16 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         .await
         .map_err(Into::into)
     }
+
     async fn update_line(&self, uuid: Uuid, name: &str) -> Result<Line> {
         sqlx::query_as!(
             Line,
-            "UPDATE line 
-            SET line_id = $1, name = $2 
-            RETURNING line_id as id, name, canteen_id",
+            "
+            UPDATE line 
+            SET name = $2
+            WHERE line_id = $1
+            RETURNING line_id as id, name, canteen_id
+            ",
             uuid,
             name
         )
@@ -88,6 +90,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         .await
         .map_err(Into::into)
     }
+
     async fn update_meal(
         &self,
         uuid: Uuid,
@@ -96,8 +99,24 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         name: &str,
         price: Price,
     ) -> Result<Meal> {
+        sqlx::query!("UPDATE food SET name = $2 WHERE food_id = $1", uuid, name)
+            .execute(&self.pool)
+            .await?;
+        let price: DatabasePrice = price.try_into()?;
+        sqlx::query!(
+            "INSERT INTO food_plan(food_id, line_id, serve_date, prices) VALUES ($1, $2, $3, $4)",
+            uuid,
+            line_id,
+            date,
+            price as _
+        )
+        .execute(&self.pool)
+        .await?;
+
+        // Todo is the complete meal really needed? not returning it would make things much more simpler
         todo!()
     }
+
     async fn update_side(
         &self,
         uuid: Uuid,
@@ -106,66 +125,55 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         name: &str,
         price: Price,
     ) -> Result<Side> {
-        /*
-        let price_test = sqlx::query!(
-            "UPDATE food_plan
-        SET prices = '(1, 2, 3, 4)'
-        WHERE food_id = $1
-          AND line_id = $2
-          AND serve_date = $3
-        RETURNING prices",
+        // todo same as meal? combine?
+        sqlx::query!("UPDATE food SET name = $2 WHERE food_id = $1", uuid, name)
+            .execute(&self.pool)
+            .await?;
+        let price: DatabasePrice = price.try_into()?;
+        sqlx::query!(
+            "INSERT INTO food_plan(food_id, line_id, serve_date, prices) VALUES ($1, $2, $3, $4)",
             uuid,
             line_id,
-            date
+            date,
+            price as _
         )
-        .fetch_one(&self.pool)
+        .execute(&self.pool)
         .await?;
 
-        let price = price_test.prices;
-        let side_test = sqlx::query!(
-            r#"UPDATE food
-            SET name = $1
-            WHERE food_id = $2
-            RETURNING food_id as id, name, food_type as "food_type: MealType""#,
-            name,
-            uuid,
-        )
-        .fetch_one(&self.pool)
-        .await?;
-        Ok(Side {
-            id: side_test.id,
-            name: side_test.name,
-            meal_type: side_test.food_type,
-            price,
-        })
-         */
+        // Todo is the complete meal really needed? not returning it would make things much more simpler
         todo!()
     }
 
     async fn insert_canteen(&self, name: &str) -> Result<Canteen> {
         sqlx::query_as!(
             Canteen,
-            "INSERT INTO canteen (name) 
+            "
+            INSERT INTO canteen (name) 
             VALUES ($1) 
-            RETURNING canteen_id as id, name ",
+            RETURNING canteen_id as id, name
+            ",
             name
         )
         .fetch_one(&self.pool)
         .await
         .map_err(Into::into)
     }
+
     async fn insert_line(&self, name: &str) -> Result<Line> {
         sqlx::query_as!(
             Line,
-            "INSERT INTO line (name) 
+            "
+            INSERT INTO line (name) 
             VALUES ($1) 
-            RETURNING line_id as id, name, canteen_id",
+            RETURNING line_id as id, name, canteen_id
+            ",
             name
         )
         .fetch_one(&self.pool)
         .await
         .map_err(Into::into)
     }
+
     async fn insert_meal(
         &self,
         name: &str,
@@ -177,6 +185,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     ) -> Result<Meal> {
         todo!()
     }
+
     async fn insert_side(
         &self,
         name: &str,
