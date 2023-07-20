@@ -10,6 +10,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../view_model/repository/data_classes/meal/Allergen.dart';
 import '../../view_model/repository/data_classes/mealplan/Line.dart';
@@ -165,8 +166,8 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
 
   Future<int> _insertMealPlan(Mealplan mealPlan) async {
     var db = await database;
-    var uuid = ''; // TODO: generate UUID
-    var dbMealPlan = DBMealPlan(uuid, mealPlan.line.id, mealPlan.date.toString(), mealPlan.isClosed);
+    var uuid = const Uuid(); // TODO: generate UUID or get uuid from backend
+    var dbMealPlan = DBMealPlan(uuid.toString(), mealPlan.line.id, mealPlan.date.toString(), mealPlan.isClosed);
     return db.insert(DBMealPlan.tableName, dbMealPlan.toMap());
   }
 
