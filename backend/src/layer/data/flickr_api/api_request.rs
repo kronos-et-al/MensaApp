@@ -1,6 +1,9 @@
+use std::time::Duration;
+use crate::interface::image_hoster::ImageHosterError;
 
 pub struct ApiRequest {
-    api_key: String
+    api_key: String,
+    client: reqwest::Client
 }
 
 impl ApiRequest {
@@ -15,10 +18,22 @@ impl ApiRequest {
     const TAG_PHOTO_ID: &'static str = "&photo_id=";
     const FORMAT: &'static str = "&format=json&nojsoncallback=1";
 
-    pub const fn new(api_key: String) -> Self {
-        Self {
-            api_key
-        }
+    pub const fn new(api_key: String, client_timeout: Duration, client_user_agent: String) -> Result<ApiRequest, ImageHosterError> {
+        Ok(Self {
+            api_key,
+            client: Self::get_client(client_timeout, client_user_agent)?,
+        })
+    }
+
+    fn get_client(
+        client_timeout: Duration,
+        client_user_agent: String,
+    ) -> Result<reqwest::Client, ImageHosterError> {
+        let client = reqwest::Client::builder()
+            .timeout(client_timeout)
+            .user_agent(client_user_agent)
+            .build();
+        client.map_err(|e| ImageHosterError::ClientBuilderFailed(e.to_string()))
     }
 
     pub fn flickr_photos_getSizes(api_key: String, photo_id: String) -> String {

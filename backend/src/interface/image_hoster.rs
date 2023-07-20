@@ -40,4 +40,6 @@ pub enum ImageHosterError {
     /// The connection failed to establish error
     #[error("no connection could be established")]
     NotConnected,
+    #[error("the html reqwest client creation failed")]
+    ClientBuilderFailed(String),
 }
