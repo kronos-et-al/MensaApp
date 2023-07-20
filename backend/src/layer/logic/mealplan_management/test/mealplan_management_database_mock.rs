@@ -117,7 +117,9 @@ pub struct MealplanManagementDatabaseMock;
 
 #[async_trait]
 impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
-    async fn dissolve_relations(&self, _canteen: Canteen, _date: Date) {}
+    async fn dissolve_relations(&self, _canteen: Canteen, _date: Date) -> Result<()> {
+        todo!()
+    }
     //TODO update similar function mocks
 
     /// Determines all canteens with a similar name.
