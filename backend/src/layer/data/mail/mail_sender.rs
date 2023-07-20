@@ -19,7 +19,7 @@ pub struct MailSender {
 
 impl MailSender {
     /// Creates a new [`MailSender`] with the attributes defined in config. Also creates an SMTP connection to the smtp server defined in config
-    /// 
+    ///
     /// # Errors
     /// Returns an error, if the connection could not be established to the smtp server
     pub fn new(config: MailInfo) -> Result<Self> {
@@ -33,6 +33,30 @@ impl MailSender {
         } else {
             Err(DataError::NoSuchItem)
         }
+    }
+    fn get_report(info: &ImageReportInfo) -> String {
+        let image_link = info.image_link.as_str();
+        let image_id = info.image_id;
+        let report_count = info.report_count;
+        let reason = info.reason;
+        let image_got_hidden = info.image_got_hidden;
+        let positive_rating_count = info.positive_rating_count;
+        let negative_rating_count = info.negative_rating_count;
+        let get_image_rank = info.get_image_rank;
+
+        format!(
+            "The image at the url {image_link}
+        with the id {image_id}
+        was reported {report_count} times.
+        Reason: {reason}
+        Image automatically hidden: {image_got_hidden}
+        
+        Additional Data:
+        Positive ratings: {positive_rating_count}
+        Negative ratings: {negative_rating_count}
+        Rank: {get_image_rank}
+        "
+        )
     }
 }
 
@@ -48,7 +72,7 @@ impl AdminNotification for MailSender {
                         .from(sender)
                         .to(reciever)
                         .subject("An image was reported for reviewing")
-                        .body(format!("{info:#?}"))
+                        .body(Self::get_report(&info))
                     {
                         Err(error) => warn!("The email could not be created: {error}"),
                         Ok(email) => match self.mailer.send(&email) {
