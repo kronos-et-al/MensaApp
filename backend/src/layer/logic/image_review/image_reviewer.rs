@@ -1,12 +1,31 @@
 use async_trait::async_trait;
 use chrono::Local;
+use thiserror::Error;
 use tracing::log::warn;
 
-use crate::interface::{
-    image_hoster::ImageHoster,
-    image_review::ImageReviewScheduling,
-    persistent_data::{model::Image, ImageReviewDataAccess, Result},
+use crate::{
+    interface::{
+        image_hoster::ImageHoster,
+        image_review::ImageReviewScheduling,
+        persistent_data::{model::Image, ImageReviewDataAccess, Result},
+    },
+    util::Uuid,
 };
+
+pub type ReviewerResult<T> = std::result::Result<T, ReviewerError>;
+
+/// Enum describing the possible ways, the mail notification can fail.
+#[derive(Debug, Error, PartialEq, Eq)]
+pub enum ReviewerError {
+    #[error("an error occurred while getting the images")]
+    ImageGetError,
+    #[error("an error occurred while deleting the non-existent image {0:#?}")]
+    DeleteError(Uuid),
+    #[error("an error occurred while checking the image with id {0:#?} for its existence")]
+    CheckError(Uuid),
+    #[error("an error occurred while marking the image with id {0:#?} as checked")]
+    MarkError(Uuid),
+}
 
 const NUMBER_OF_IMAGES_TO_CHECK: u32 = 500;
 
@@ -62,49 +81,39 @@ where
     }
 
     async fn review_images(&self, images: Result<Vec<Image>>) {
-        match images {
-            Ok(images) => {
-                for image in images {
-                    self.review_image(image).await;
-                }
-            }
-            Err(error) => warn!("an error occurred while getting the images: {error}"),
+        if let Err(error) =  self.try_review_images(images).await {
+            warn!("{error:#?}");
         }
     }
 
-    async fn review_image(&self, image: Image) {
-        match self
+    async fn try_review_images(&self, images: Result<Vec<Image>>) -> ReviewerResult<()> {
+        let images = images.map_err(|_e| ReviewerError::ImageGetError)?;
+        for image in images {
+            self.review_image(&image).await?;
+        }
+        Ok(())
+    }
+
+    async fn review_image(&self, image: &Image) -> ReviewerResult<()> {
+        let exists = self
             .image_hoster
             .check_existence(&image.image_hoster_id)
             .await
-        {
-            Ok(exists) => {
-                if !exists {
-                    match self.data_access.delete_image(image.id).await {
-                        Ok(deleted) => {
-                            if !deleted {
-                                warn!("The image with the id {} does not exist, but it could not be deleted", image.id);
-                                return;
-                            }
-                        }
-                        Err(error) => {
-                            warn!("an error occurred while deleting the non-existent image with id {}: {error}", image.id);
-                            return;
-                        }
-                    }
-                }
-            }
-            Err(error) => {
-                warn!("an error occurred while checking the image with id {} for its existence: {error}", image.id);
-                return;
+            .map_err(|_e| ReviewerError::CheckError(image.id))?;
+        if !exists {
+            let deleted = self
+                .data_access
+                .delete_image(image.id)
+                .await
+                .map_err(|_e| ReviewerError::DeleteError(image.id))?;
+            if !deleted {
+                return Err(ReviewerError::DeleteError(image.id));
             }
         }
-        if let Err(error) = self.data_access.mark_as_checked(image.id).await {
-            warn!(
-                "an error occurred while marking the image with id {} as checked: {error}",
-                image.id
-            );
-        }
+        self.data_access
+            .mark_as_checked(image.id)
+            .await
+            .map_err(|_e| ReviewerError::MarkError(image.id))
     }
 }
 
@@ -113,7 +122,7 @@ mod test {
     use crate::{
         interface::persistent_data::{model::Image, DataError},
         layer::logic::image_review::{
-            image_reviewer::ImageReviewer,
+            image_reviewer::{ImageReviewer, ReviewerError},
             test::{
                 image_hoster_mock::{
                     ImageHosterMock, PHOTO_ID_THAT_DOES_NOT_EXIST, PHOTO_ID_TO_FAIL_CHECK_EXISTENCE,
@@ -138,7 +147,7 @@ mod test {
     #[tokio::test]
     async fn test_review_image_ok() {
         let image_reviewer = get_image_reviewer();
-        image_reviewer.review_image(get_default_image()).await;
+        assert!(image_reviewer.review_image(&get_default_image()).await.is_ok());
         check_correct_call_number(&image_reviewer, 1, 0, 1);
     }
 
@@ -149,7 +158,7 @@ mod test {
             ..get_default_image()
         };
         let image_reviewer = get_image_reviewer();
-        image_reviewer.review_image(image).await;
+        assert_eq!(image_reviewer.review_image(&image).await, Err(ReviewerError::CheckError(image.id)));
         check_correct_call_number(&image_reviewer, 1, 0, 0);
     }
 
@@ -160,7 +169,7 @@ mod test {
             ..get_default_image()
         };
         let image_reviewer = get_image_reviewer();
-        image_reviewer.review_image(image).await;
+        assert!(image_reviewer.review_image(&image).await.is_ok());
         check_correct_call_number(&image_reviewer, 1, 1, 1);
     }
 
@@ -172,7 +181,7 @@ mod test {
             ..get_default_image()
         };
         let image_reviewer = get_image_reviewer();
-        image_reviewer.review_image(image).await;
+        assert_eq!(image_reviewer.review_image(&image).await, Err(ReviewerError::DeleteError(image.id)));
         check_correct_call_number(&image_reviewer, 1, 1, 0);
     }
 
@@ -184,7 +193,7 @@ mod test {
             ..get_default_image()
         };
         let image_reviewer = get_image_reviewer();
-        image_reviewer.review_image(image).await;
+        assert_eq!(image_reviewer.review_image(&image).await, Err(ReviewerError::DeleteError(image.id)));
         check_correct_call_number(&image_reviewer, 1, 1, 0);
     }
 
