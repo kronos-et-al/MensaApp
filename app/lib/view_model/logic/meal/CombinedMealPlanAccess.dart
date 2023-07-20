@@ -238,6 +238,13 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   }
 
   @override
+  Future<List<Canteen>> getAvailableCanteens() async {
+    await _doneInitialization;
+
+    return await _api.getCanteens() ?? List<Canteen>.empty();
+  }
+
+  @override
   Future<DateTime> getDate() async {
     await _doneInitialization;
 

@@ -67,4 +67,8 @@ abstract class IServerAccess {
   /// This method requests the default canteen from the server.
   /// @return The default canteen or null if no connection could be established.
   Future<Canteen?> getDefaultCanteen();
+
+  /// This method requests all canteens from the server.
+  /// @return All canteens or null if no connection could be established.
+  Future<List<Canteen>?> getCanteens();
 }

@@ -183,7 +183,7 @@ class AllergenIcon extends IAllergenIcon {
             width: width,
             height: height,
             color: _color ?? Theme.of(context).colorScheme.onSurface);
-      case Allergen.gt:
+      case Allergen.gl:
         return AllergenGelatineIcon(
             width: width,
             height: height,
