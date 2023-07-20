@@ -135,13 +135,12 @@ impl RequestDataAccess for PersistentRequestData {
         .fetch_all(&self.pool)
         .await?
         .into_iter()
-        .map(|side| Ok(Side {
+        .filter_map(|side| Some(Side {
             id: side.food_id, 
             meal_type: side.meal_type, 
             name: side.name, 
-            price: side.price.try_into()? // todo remove silent error, find better solution
-        },))
-        .filter_map(Result::ok)
+            price: side.price.try_into().ok()? // todo remove silent error, find better solution
+        }))
         .collect();
 
         Ok(vec)
@@ -152,7 +151,34 @@ impl RequestDataAccess for PersistentRequestData {
         meal_id: Uuid,
         client_id: Option<Uuid>,
     ) -> Result<Vec<Image>> {
-        todo!()
+        let images = sqlx::query!(
+            "
+            SELECT image_id as id, id as image_hoster_id, url, rank, downvotes, upvotes FROM (
+                SELECT image_id 
+                FROM image JOIN image_report r USING (image_id)
+                WHERE currently_visible AND food_id = $1
+                GROUP BY image_id
+                HAVING COUNT(*) FILTER (WHERE r.user_id = $2) = 0
+            ) not_reported JOIN image_detail USING (image_id)
+            ",
+            meal_id,
+            client_id
+        )
+        .fetch_all(&self.pool)
+        .await?
+        .into_iter()
+        .filter_map(|r| {
+            Some(Image {
+                id: r.id,
+                url: r.url?,
+                rank: r.rank?,
+                image_hoster_id: r.image_hoster_id?,
+                downvotes: r.downvotes? as u32,
+                upvotes: r.upvotes? as u32,
+            })
+        })
+        .collect();
+        Ok(images)
     }
 
     async fn get_personal_rating(&self, meal_id: Uuid, client_id: Uuid) -> Result<Option<u32>> {
