@@ -272,6 +272,16 @@ mod tests {
   
     }
 
+    #[sqlx::test]
+    async fn test_line(pool: PgPool) {
+        provide_dummy_data(&pool).await;
+        let request = PersistentRequestData { pool };
+
+        let lines = request.get_lines(Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap()).await.unwrap();
+        assert!(lines.len() == 3);
+        assert!(lines[0].name == "line 1");
+    }
+
     async fn provide_dummy_data(pool: &PgPool) {
         const INSERT_FAILED: &str = "failed to insert";
 
@@ -285,8 +295,8 @@ mod tests {
 
 
         sqlx::query!("INSERT INTO line(canteen_id, name, position) VALUES 
-        ('10728cc4-1e07-4e18-a9d9-ca45b9782413', 'line 1', 1), 
         ('10728cc4-1e07-4e18-a9d9-ca45b9782413', 'line 2', 2), 
+        ('10728cc4-1e07-4e18-a9d9-ca45b9782413', 'line 1', 1), 
         ('10728cc4-1e07-4e18-a9d9-ca45b9782413', 'special line', 3),
         ('8f10c56d-da9b-4f62-b4c1-16feb0f98c67', 'single line', 0)")
             .execute(pool)
