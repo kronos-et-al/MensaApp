@@ -30,7 +30,7 @@ pub enum DataError {
 pub trait MealplanManagementDataAccess: Send + Sync {
     /// Removes all relations to the meal plan at the given date and the given canteen.
     /// Without removing changes in the meal plan couldn't be updated.
-    async fn dissolve_relations(&self, canteen: Canteen, date: Date);
+    async fn dissolve_relations(&self, canteen: Canteen, date: Date) -> Result<()>;
     /// Determines the canteen with the most similar name.
     async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Canteen>>;
     /// Determines the line with the most similar name.

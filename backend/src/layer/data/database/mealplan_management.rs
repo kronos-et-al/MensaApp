@@ -11,7 +11,6 @@ use crate::{
     util::{Additive, Allergen, Date, MealType, Price, Uuid},
 };
 
-
 #[derive(sqlx::Type)]
 #[sqlx(type_name = "prices")]
 struct DatabasePrice {
@@ -57,8 +56,29 @@ pub struct PersistentMealplanManagementData {
 
 #[async_trait]
 impl MealplanManagementDataAccess for PersistentMealplanManagementData {
-    async fn dissolve_relations(&self, canteen: Canteen, date: Date) {
-        todo!()
+    async fn dissolve_relations(&self, canteen: Canteen, date: Date) -> Result<()> {
+        let line_ids = sqlx::query!(
+            "SELECT line_id
+        FROM line
+        WHERE canteen_id = $1",
+            canteen.id
+        )
+        .fetch_all(&self.pool)
+        .await?
+        .into_iter()
+        .map(|record| record.line_id);
+        for line_id in line_ids {
+            sqlx::query!(
+                "DELETE FROM food_plan
+                WHERE serve_date = $1
+                AND line_id = $2",
+                date,
+                line_id
+            )
+            .execute(&self.pool)
+            .await?;
+        }
+        Ok(())
     }
     async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Canteen>> {
         todo!()
@@ -141,7 +161,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         )
         .fetch_one(&self.pool)
         .await?;
-        
+
         let price = price_test.prices;
         let side_test = sqlx::query!(
             r#"UPDATE food
