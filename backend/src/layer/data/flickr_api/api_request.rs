@@ -1,4 +1,5 @@
 use std::time::Duration;
+use tracing::log::debug;
 use crate::interface::image_hoster::ImageHosterError;
 
 pub struct ApiRequest {
@@ -8,7 +9,7 @@ pub struct ApiRequest {
 
 impl ApiRequest {
 
-    const TEST_URL: &'static str = "https://api.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=ca370d51a054836007519a00ff4ce59e&per_page=10";
+    const TEST_URL: &'static str = "https://api.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=c761a4ffc2977f985d68edda64f178df&per_page=10";
 
     const BASE_URL: &'static str = "https://api.flickr.com/services/rest/?method=";
     const GET_SIZES: &'static str = "flickr.photos.getSizes";
@@ -36,11 +37,24 @@ impl ApiRequest {
         client.map_err(|e| ImageHosterError::ClientBuilderFailed(e.to_string()))
     }
 
-    pub fn flickr_photos_getSizes(api_key: String, photo_id: String) -> String {
-        todo!()
+    async fn request(&self, url: String) -> Result<String, ImageHosterError> {
+        let resp = self.client.get(url).send().await.map_err(|e| ImageHosterError::NotConnected)?;
+        debug!("Url request finished: {:?}", resp);
+        Ok(resp.json().await.map_err(|e| ImageHosterError::DecodeFailed(e))?)
     }
 
-    pub fn flickr_photos_licenses_getLicenseHistory(api_key: String, photo_id: String) -> String {
-        todo!()
+    pub async fn flickr_photos_get_sizes(&self, api_key: String, photo_id: String) -> String {
+        let url = format!("{BASE_URL}{GET_SIZES}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{FORMAT}", BASE_URL = Self::BASE_URL, GET_SIZES = Self::GET_SIZES, TAG_API_KEY = Self::TAG_API_KEY, TAG_PHOTO_ID = Self::TAG_PHOTO_ID, FORMAT = Self::FORMAT);
+        return self.request(url).await?;
     }
+
+    pub async fn flickr_photos_licenses_get_license_history(&self, api_key: String, photo_id: String) -> String {
+        let url = format!("{BASE_URL}{GET_LICENCE_HISTORY}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{FORMAT}", BASE_URL = Self::BASE_URL, GET_LICENCE_HISTORY = Self::GET_LICENCE_HISTORY, TAG_API_KEY = Self::TAG_API_KEY, TAG_PHOTO_ID = Self::TAG_PHOTO_ID, FORMAT = Self::FORMAT);
+        return self.request(url).await?;
+    }
+}
+
+#[cfg(test)]
+mod test {
+
 }

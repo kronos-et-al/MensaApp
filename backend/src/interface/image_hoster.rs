@@ -42,4 +42,6 @@ pub enum ImageHosterError {
     NotConnected,
     #[error("the html reqwest client creation failed")]
     ClientBuilderFailed(String),
+    #[error("some html code couldn't be decoded")]
+    DecodeFailed(String)
 }
