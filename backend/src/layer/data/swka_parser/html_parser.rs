@@ -90,28 +90,34 @@ use crate::interface::mensa_parser::{
     ParseError,
 };
 use crate::util::{Additive, Allergen, Date, MealType, Price};
-use lazy_static::{lazy_static};
+use lazy_static::lazy_static;
 use regex::Regex;
 use scraper::element_ref::Text;
 use scraper::{ElementRef, Html, Selector};
 
-lazy_static!{
+lazy_static! {
     static ref ROOT_NODE_CLASS_SELECTOR: Selector = Selector::parse("div.main-content").expect(SELECTOR_PARSE_E_MSG);
     static ref CANTEEN_NAME_NODE_CLASS_SELECTOR: Selector = Selector::parse("h1.mensa_fullname").expect(SELECTOR_PARSE_E_MSG);
-    
+
     static ref DATE_SUPER_NODE_CLASS_SELECTOR: Selector = Selector::parse("ul.canteen-day-nav").expect(SELECTOR_PARSE_E_MSG);
     static ref DATE_NODE_CLASS_SELECTOR: Selector = Selector::parse("a").expect(SELECTOR_PARSE_E_MSG);
     static ref DAY_NODE_CLASS_SELECTOR: Selector = Selector::parse("div.canteen-day").expect(SELECTOR_PARSE_E_MSG);
-    
+
     static ref LINE_NODE_CLASS_SELECTOR: Selector = Selector::parse("tr.mensatype_rows").expect(SELECTOR_PARSE_E_MSG);
     static ref LINE_NAME_NODE_CLASS_SELECTOR: Selector = Selector::parse("td.mensatype").expect(SELECTOR_PARSE_E_MSG);
-    
+
     static ref DISH_TYPE_NODE_CLASS_SELECTOR: Selector = Selector::parse("img.mealicon_2").expect(SELECTOR_PARSE_E_MSG);
     static ref DISH_NAME_NODE_CLASS_SELECTOR: Selector = Selector::parse("span.bg").expect(SELECTOR_PARSE_E_MSG);
     static ref DISH_INFO_NODE_CLASS_SELECTOR: Selector = Selector::parse("sup").expect(SELECTOR_PARSE_E_MSG);
     static ref ENV_SCORE_NODE_CLASS_SELECTOR: Selector = Selector::parse("div.enviroment_score.average").expect(SELECTOR_PARSE_E_MSG);
-}
 
+    /// A Regex for getting prices in euros. A price consists of 1 or more digits, followed by a comma and then exactly two digits.
+    static ref PRICE_REGEX: Regex = Regex::new(r"([0-9]*),([0-9]{2})").expect(REGEX_PARSE_E_MSG);
+    /// A Regex for getting allergens. An allergen consists of a single Uppercase letter followed by one or more upper- or lowercase letters (indicated by \w+).
+    static ref ALLERGEN_REGEX: Regex = Regex::new(r"[A-Z]\w+").expect(REGEX_PARSE_E_MSG);
+    /// A regex for getting additives. An additive consists of one or two digits.
+    static ref ADDITIVE_REGEX: Regex = Regex::new(r"[0-9]{1,2}").expect(REGEX_PARSE_E_MSG);
+}
 
 const DISH_NODE_CLASS_SELECTOR_PREFIX: &str = "tr.mt-";
 const DISH_PRICE_NODE_CLASS_SELECTOR_PREFIX: &str = "span.bgp.price_";
@@ -121,12 +127,6 @@ const DISH_TYPE_ATTRIBUTE_NAME: &str = "title";
 const ENV_SCORE_ATTRIBUTE_NAME: &str = "data-rating";
 
 const DATE_FORMAT: &str = "%Y-%m-%d";
-/// A Regex for getting prices in euros. A price consists of 1 or more digits, followed by a comma and then exactly two digits
-const PRICE_REGEX: &str = r"([0-9]*),([0-9]{2})";
-/// A Regex for getting allergens. An allergen consists of a single Uppercase letter followed by one or more upper- or lowercase letters (indicated by \w+)
-const ALLERGEN_REGEX: &str = r"[A-Z]\w+";
-/// A regex for getting additives. An additive consists of one or two digits
-const ADDITIVE_REGEX: &str = r"[0-9]{1,2}";
 
 const NUMBER_OF_MEAL_TYPES: usize = 8;
 
@@ -182,7 +182,9 @@ impl HTMLParser {
         document
             .select(&ROOT_NODE_CLASS_SELECTOR)
             .next()
-            .ok_or_else(|| ParseError::InvalidHtmlDocument(format!("{:?}", *ROOT_NODE_CLASS_SELECTOR)))
+            .ok_or_else(|| {
+                ParseError::InvalidHtmlDocument(format!("{:?}", *ROOT_NODE_CLASS_SELECTOR))
+            })
     }
 
     fn get_dates(root_node: &ElementRef) -> Option<Vec<Date>> {
@@ -301,7 +303,9 @@ impl HTMLParser {
 
     fn get_dish_price(dish_node: &ElementRef) -> Price {
         let mut prices = (1..5)
-            .filter_map(|i| Selector::parse(&format!("{DISH_PRICE_NODE_CLASS_SELECTOR_PREFIX}{i}")).ok())
+            .filter_map(|i| {
+                Selector::parse(&format!("{DISH_PRICE_NODE_CLASS_SELECTOR_PREFIX}{i}")).ok()
+            })
             .filter_map(|selector| dish_node.select(&selector).next())
             .filter_map(|price_node| Self::get_price_through_regex(&price_node.inner_html()));
         Price {
@@ -313,8 +317,7 @@ impl HTMLParser {
     }
 
     fn get_price_through_regex(string: &str) -> Option<u32> {
-        let regex = Regex::new(PRICE_REGEX).expect(REGEX_PARSE_E_MSG);
-        let capture = regex.captures(string)?;
+        let capture = PRICE_REGEX.captures(string)?;
         let euros = capture.get(1)?.as_str();
         let cents = capture.get(2)?.as_str();
         format!("{euros}{cents}").parse().ok()
@@ -328,8 +331,7 @@ impl HTMLParser {
     }
 
     fn get_allergens_through_regex(string: &str) -> Vec<Allergen> {
-        Regex::new(ALLERGEN_REGEX)
-            .expect(REGEX_PARSE_E_MSG)
+        ALLERGEN_REGEX
             .find_iter(string)
             .filter_map(|a| Allergen::parse(a.as_str()))
             .collect()
@@ -343,8 +345,7 @@ impl HTMLParser {
     }
 
     fn get_additives_through_regex(string: &str) -> Vec<Additive> {
-        Regex::new(ADDITIVE_REGEX)
-            .expect(REGEX_PARSE_E_MSG)
+        ADDITIVE_REGEX
             .find_iter(string)
             .filter_map(|a| Additive::parse(a.as_str()))
             .collect()
