@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO meal_rating (user_id, food_id, rating) VALUES ($1, $2, $3::smallint)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Int2"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "7f6b4a0eb0e8719ad0ed441c3bd5d8d253d9f96dfce6b42576233d319559e7f7"
+}

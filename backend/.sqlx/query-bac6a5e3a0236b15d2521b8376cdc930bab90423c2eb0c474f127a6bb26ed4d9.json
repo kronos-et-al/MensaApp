@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO line (name) \n            VALUES ($1) \n            RETURNING line_id as id, name, canteen_id",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "canteen_id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "bac6a5e3a0236b15d2521b8376cdc930bab90423c2eb0c474f127a6bb26ed4d9"
+}

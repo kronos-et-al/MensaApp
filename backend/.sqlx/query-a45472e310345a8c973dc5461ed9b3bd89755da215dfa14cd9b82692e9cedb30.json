@@ -1,0 +1,35 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE line \n            SET line_id = $1, name = $2 \n            RETURNING line_id as id, name, canteen_id",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "canteen_id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "a45472e310345a8c973dc5461ed9b3bd89755da215dfa14cd9b82692e9cedb30"
+}
