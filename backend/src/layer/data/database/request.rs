@@ -11,6 +11,7 @@ use crate::{
 
 use super::types::DatabasePrice;
 /// Class implementing all database requests arising from graphql manipulations.
+#[derive(Debug)]
 pub struct PersistentRequestData {
     pub(super) pool: Pool<Postgres>,
 }
@@ -73,21 +74,23 @@ impl RequestDataAccess for PersistentRequestData {
             date
         )
         .fetch_optional(&self.pool)
-        .await?.and_then(|m| Some(Meal {
-            id: m.food_id?,
-            line_id: m.line_id?,
-            date: m.date?,
-            name: m.name?,
-            meal_type: m.meal_type?,
-            price: m.price?.try_into().ok()?,
-            frequency: m.frequency? as u32,
-            new: m.new?,
-            last_served: m.last_served,
-            next_served: m.next_served,
-            average_rating: m.average_rating.unwrap_or(DEFAULT_RATING),
-            rating_count: m.rating_count? as u32
-
-        }));
+        .await?
+        .and_then(|m| {
+            Some(Meal {
+                id: m.food_id?,
+                line_id: m.line_id?,
+                date: m.date?,
+                name: m.name?,
+                meal_type: m.meal_type?,
+                price: m.price?.try_into().ok()?,
+                frequency: m.frequency? as u32,
+                new: m.new?,
+                last_served: m.last_served,
+                next_served: m.next_served,
+                average_rating: m.average_rating.unwrap_or(DEFAULT_RATING),
+                rating_count: m.rating_count? as u32,
+            })
+        });
 
         Ok(meal)
     }
@@ -106,21 +109,25 @@ impl RequestDataAccess for PersistentRequestData {
             date
         )
         .fetch_all(&self.pool)
-        .await?.into_iter().filter_map(|m| Some(Meal {
-            id: m.food_id?,
-            line_id: m.line_id?,
-            date: m.date?,
-            name: m.name?,
-            meal_type: m.meal_type?,
-            price: m.price?.try_into().ok()?,
-            frequency: m.frequency? as u32,
-            new: m.new?,
-            last_served: m.last_served,
-            next_served: m.next_served,
-            average_rating: m.average_rating.unwrap_or(DEFAULT_RATING),
-            rating_count: m.rating_count? as u32
-
-        })).collect();
+        .await?
+        .into_iter()
+        .filter_map(|m| {
+            Some(Meal {
+                id: m.food_id?,
+                line_id: m.line_id?,
+                date: m.date?,
+                name: m.name?,
+                meal_type: m.meal_type?,
+                price: m.price?.try_into().ok()?,
+                frequency: m.frequency? as u32,
+                new: m.new?,
+                last_served: m.last_served,
+                next_served: m.next_served,
+                average_rating: m.average_rating.unwrap_or(DEFAULT_RATING),
+                rating_count: m.rating_count? as u32,
+            })
+        })
+        .collect();
 
         Ok(Some(meal))
     }
@@ -245,5 +252,47 @@ impl RequestDataAccess for PersistentRequestData {
         .map(|r| r.allergen)
         .collect();
         Ok(res)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #![allow(clippy::unwrap_used)]
+    use super::*;
+    use sqlx::PgPool;
+
+    #[sqlx::test]
+    async fn test_canteen(pool: PgPool) {
+        provide_dummy_data(&pool).await;
+        let request = PersistentRequestData { pool };
+
+        let canteen = request.get_canteens().await.unwrap();
+        assert!(canteen.len() == 3);
+        assert!(canteen[0].name == "my favorite canteen");
+  
+    }
+
+    async fn provide_dummy_data(pool: &PgPool) {
+        const INSERT_FAILED: &str = "failed to insert";
+
+        sqlx::query!("INSERT INTO canteen(canteen_id, name) VALUES 
+        ('10728cc4-1e07-4e18-a9d9-ca45b9782413', 'my favorite canteen'), 
+        ('8f10c56d-da9b-4f62-b4c1-16feb0f98c67', 'second canteen'), 
+        ('f2885f67-fc95-4205-bc7d-b2fb78cee0a8', 'bad canteen')")
+            .execute(pool)
+            .await
+            .expect(INSERT_FAILED);
+
+
+        sqlx::query!("INSERT INTO line(canteen_id, name, position) VALUES 
+        ('10728cc4-1e07-4e18-a9d9-ca45b9782413', 'line 1', 1), 
+        ('10728cc4-1e07-4e18-a9d9-ca45b9782413', 'line 2', 2), 
+        ('10728cc4-1e07-4e18-a9d9-ca45b9782413', 'special line', 3),
+        ('8f10c56d-da9b-4f62-b4c1-16feb0f98c67', 'single line', 0)")
+            .execute(pool)
+            .await
+            .expect(INSERT_FAILED);
+
+
     }
 }
