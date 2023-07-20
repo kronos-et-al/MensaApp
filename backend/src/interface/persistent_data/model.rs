@@ -86,7 +86,7 @@ pub struct Image {
     pub downvotes: u32,
 }
 
-pub struct ImageInfo {
+pub struct ImageInfo { // todo merge with image??
     /// True if an administrator validated the image.
     pub approved: bool,
     /// Upload date of the image.

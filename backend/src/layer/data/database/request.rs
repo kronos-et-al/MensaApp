@@ -139,7 +139,7 @@ impl RequestDataAccess for PersistentRequestData {
             id: side.food_id, 
             meal_type: side.meal_type, 
             name: side.name, 
-            price: side.price.try_into().ok()? // todo remove silent error, find better solution
+            price: side.price.try_into().ok()? // todo remove silent error, find better solution; maybe even panic as this should never occur and this we should notice?
         }))
         .collect();
 
