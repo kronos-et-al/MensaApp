@@ -5,7 +5,7 @@ pub struct MailInfo {
     pub smtp_server: String,
     /// The port, which the mail server listens to SMTP-requests
     pub smtp_port: u16,
-    /// Username for the connection to the mail server
+    /// Username for the connection to the mail server. Must be a valid e-mail address
     pub username: String,
     /// Password for the connection to the mail server
     pub password: String,
