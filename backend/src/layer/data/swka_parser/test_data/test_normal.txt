@@ -1,0 +1,3282 @@
+[
+    (
+        2023-07-10,
+        ParseCanteen {
+            name: "Dining Hall am Adenauerring",
+            lines: [
+                ParseLine {
+                    name: "Linie 1 Gut & Günstig",
+                    dishes: [
+                        Dish {
+                            name: "Geflügel - Cevapcici, Ajvar, Djuvec Reis",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 1,
+                        },
+                        Dish {
+                            name: "zu jedem Gericht reichen wir ein Dessert oder Salat",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "2 Dampfnudeln mit Vanillesoße",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 2,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 2 Vegane Linie",
+                    dishes: [
+                        Dish {
+                            name: "zu jedem Gericht reichen wir ein Dessert oder Salat",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Mediterraner Gemüsegulasch mit Räuchertofu, dazu Sommerweizen",
+                            price: Price {
+                                price_student: 350,
+                                price_employee: 520,
+                                price_guest: 770,
+                                price_pupil: 405,
+                            },
+                            allergens: [
+                                Se,
+                                So,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 3",
+                    dishes: [
+                        Dish {
+                            name: "Käse - Tortellini - Gemüsepfanne",
+                            price: Price {
+                                price_student: 385,
+                                price_employee: 565,
+                                price_guest: 845,
+                                price_pupil: 445,
+                            },
+                            allergens: [
+                                Ei,
+                                La,
+                                ML,
+                                Se,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Blattsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 4",
+                    dishes: [
+                        Dish {
+                            name: "Blattsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Hausgemachte Gnocchi mit verschiedenen Soßen",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 5",
+                    dishes: [
+                        Dish {
+                            name: "Blattsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagessuppe",
+                            price: Price {
+                                price_student: 55,
+                                price_employee: 55,
+                                price_guest: 75,
+                                price_pupil: 55,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Cordon bleu vom Schwein mit Bratensoße",
+                            price: Price {
+                                price_student: 370,
+                                price_employee: 545,
+                                price_guest: 815,
+                                price_pupil: 425,
+                            },
+                            allergens: [
+                                ML,
+                                Se,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                                AntioxidantAgents,
+                            ],
+                            meal_type: Pork,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Kroketten",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 105,
+                                price_guest: 130,
+                                price_pupil: 105,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                FlavourEnhancer,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "Bohnengemüse",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [
+                                Se,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 1,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Schnitzel-/ Burgerbar",
+                    dishes: [
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Verschiedene Desserts im Portionsbecher",
+                            price: Price {
+                                price_student: 65,
+                                price_employee: 65,
+                                price_guest: 65,
+                                price_pupil: 65,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Schweine- und Hähnchenschnitzel, vegetarische Leckereien, Salatbuffet und Pommes - alles zur Wahl zu einem Preis",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ei,
+                                Hf,
+                                ML,
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [
+                                FlavourEnhancer,
+                                Phosphate,
+                            ],
+                            meal_type: Pork,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 6",
+                    dishes: [
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Hamburger Buffet Preis je 100 g",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                Sa,
+                                Sf,
+                                Sn,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                PreservingAgents,
+                                AntioxidantAgents,
+                            ],
+                            meal_type: Beef,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings, Preis je 100 g",
+                            price: Price {
+                                price_student: 100,
+                                price_employee: 138,
+                                price_guest: 200,
+                                price_pupil: 116,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Spätausgabe und Abendessen",
+                    dishes: [
+                        Dish {
+                            name: "Spätausgabe 14:00 bis 14:30 an der Linie 2 Info zum Speisenangebot direkt an der Ausgabe",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[kœri]werk 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Reine Kalbsbratwurst mit Currysoße",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Beef,
+                            env_score: 1,
+                        },
+                        Dish {
+                            name: "Vegane Tofu - Bratwurst mit Currysoße",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Ma,
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "koerifrites",
+                            price: Price {
+                                price_student: 130,
+                                price_employee: 130,
+                                price_guest: 130,
+                                price_pupil: 130,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Zu jeder Currywurst reichen wir frisches Baguette",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Cafeteria 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Geflügelfrikadelle mit Brötchen",
+                            price: Price {
+                                price_student: 280,
+                                price_employee: 280,
+                                price_guest: 280,
+                                price_pupil: 280,
+                            },
+                            allergens: [
+                                Ei,
+                                Ge,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tomatenstrudel",
+                            price: Price {
+                                price_student: 190,
+                                price_employee: 190,
+                                price_guest: 190,
+                                price_pupil: 190,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                Sa,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pizza 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Pizza Margherita vegetarisch - frische Tomaten, Mozzarella, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                Ei,
+                                La,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza alla bolognese - Pizza mit Rinderhackfleisch, Lauch und roten Zwiebeln",
+                            price: Price {
+                                price_student: 455,
+                                price_employee: 625,
+                                price_guest: 910,
+                                price_pupil: 525,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: BeefAw,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Mykonos vegan - Paprika, Oliven, rote Zwiebeln, vegane Käsealternative und Mais",
+                            price: Price {
+                                price_student: 445,
+                                price_employee: 610,
+                                price_guest: 890,
+                                price_pupil: 515,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                ArtificiallyBlackenedOlives,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Mykonos - Hirtenkäse, Paprika, Oliven, rote Zwiebeln und Mais",
+                            price: Price {
+                                price_student: 445,
+                                price_employee: 610,
+                                price_guest: 890,
+                                price_pupil: 515,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                ArtificiallyBlackenedOlives,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pasta",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[pizza]werk Salate / Vorspeisen",
+                    dishes: [
+                        Dish {
+                            name: "Insalata piccola - kleiner Blattsalat mit Tomate, Gurke und Ei",
+                            price: Price {
+                                price_student: 180,
+                                price_employee: 180,
+                                price_guest: 225,
+                                price_pupil: 180,
+                            },
+                            allergens: [
+                                Ei,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+            ],
+        },
+    ),
+    (
+        2023-07-11,
+        ParseCanteen {
+            name: "Dining Hall am Adenauerring",
+            lines: [
+                ParseLine {
+                    name: "Linie 1 Gut & Günstig",
+                    dishes: [
+                        Dish {
+                            name: "Pasta in Tomatensoße mit Speck, Peperoncini und Reibekäse",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                PreservingAgents,
+                            ],
+                            meal_type: PorkAw,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "zu jedem Gericht reichen wir frisches Obst oder Salat",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [
+                                SurfaceWaxed,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pasta in Tomaten - Broccolisoße mit Reibekäse",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                ML,
+                                Se,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 2 Vegane Linie",
+                    dishes: [
+                        Dish {
+                            name: "Kartoffel-Spinatgratin mit veganer Käsealternative in heller veganer Soja-Kräutersoße",
+                            price: Price {
+                                price_student: 350,
+                                price_employee: 520,
+                                price_guest: 770,
+                                price_pupil: 405,
+                            },
+                            allergens: [
+                                Se,
+                                So,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "zu jedem Gericht reichen wir frisches Obst oder Salat",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [
+                                SurfaceWaxed,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 3",
+                    dishes: [
+                        Dish {
+                            name: "Blattsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Hackfleisch - Reispfanne",
+                            price: Price {
+                                price_student: 365,
+                                price_employee: 540,
+                                price_guest: 805,
+                                price_pupil: 420,
+                            },
+                            allergens: [
+                                Se,
+                            ],
+                            additives: [],
+                            meal_type: BeefAw,
+                            env_score: 2,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 4",
+                    dishes: [
+                        Dish {
+                            name: "Blattsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Hausgemachte Gnocchi mit verschiedenen Soßen",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 5",
+                    dishes: [
+                        Dish {
+                            name: "Blattsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagessuppe",
+                            price: Price {
+                                price_student: 55,
+                                price_employee: 55,
+                                price_guest: 75,
+                                price_pupil: 55,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Bifteki mit Tsatsiki",
+                            price: Price {
+                                price_student: 395,
+                                price_employee: 585,
+                                price_guest: 870,
+                                price_pupil: 455,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                Se,
+                                Sn,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Beef,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Country Potatoes",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 105,
+                                price_guest: 130,
+                                price_pupil: 105,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "Karottengemüse",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [
+                                Se,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Schnitzel-/ Burgerbar",
+                    dishes: [
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Verschiedene Desserts im Portionsbecher",
+                            price: Price {
+                                price_student: 65,
+                                price_employee: 65,
+                                price_guest: 65,
+                                price_pupil: 65,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Schweine- und Hähnchenschnitzel, vegetarische Leckereien, Salatbuffet und Pommes - alles zur Wahl zu einem Preis",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ei,
+                                Hf,
+                                ML,
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [
+                                FlavourEnhancer,
+                                Phosphate,
+                            ],
+                            meal_type: Pork,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 6",
+                    dishes: [
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Hamburger Buffet Preis je 100 g",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                Sa,
+                                Sf,
+                                Sn,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                PreservingAgents,
+                                AntioxidantAgents,
+                            ],
+                            meal_type: Beef,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings, Preis je 100 g",
+                            price: Price {
+                                price_student: 100,
+                                price_employee: 138,
+                                price_guest: 200,
+                                price_pupil: 116,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Spätausgabe und Abendessen",
+                    dishes: [
+                        Dish {
+                            name: "Spätausgabe 14:00 bis 14:30 an der Linie 2 Info zum Speisenangebot direkt an der Ausgabe",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[kœri]werk 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Reine Kalbsbratwurst mit Currysoße",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Beef,
+                            env_score: 1,
+                        },
+                        Dish {
+                            name: "Vegane Tofu - Bratwurst mit Currysoße",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Ma,
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "koerifrites",
+                            price: Price {
+                                price_student: 130,
+                                price_employee: 130,
+                                price_guest: 130,
+                                price_pupil: 130,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Zu jeder Currywurst reichen wir frisches Baguette",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Cafeteria 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Börekschnecke mit Käse",
+                            price: Price {
+                                price_student: 200,
+                                price_employee: 200,
+                                price_guest: 200,
+                                price_pupil: 200,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Fleischkäse im Brötchen",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 210,
+                                price_guest: 210,
+                                price_pupil: 210,
+                            },
+                            allergens: [
+                                Ge,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                                AntioxidantAgents,
+                                Phosphate,
+                            ],
+                            meal_type: Pork,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pizza 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Pizza Margherita vegetarisch - frische Tomaten, Mozzarella, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                Ei,
+                                La,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza alla bolognese - Pizza mit Rinderhackfleisch, Lauch und roten Zwiebeln",
+                            price: Price {
+                                price_student: 455,
+                                price_employee: 625,
+                                price_guest: 910,
+                                price_pupil: 525,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: BeefAw,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Mykonos vegan - Paprika, Oliven, rote Zwiebeln, vegane Käsealternative und Mais",
+                            price: Price {
+                                price_student: 445,
+                                price_employee: 610,
+                                price_guest: 890,
+                                price_pupil: 515,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                ArtificiallyBlackenedOlives,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Mykonos - Hirtenkäse, Paprika, Oliven, rote Zwiebeln und Mais",
+                            price: Price {
+                                price_student: 445,
+                                price_employee: 610,
+                                price_guest: 890,
+                                price_pupil: 515,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                ArtificiallyBlackenedOlives,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pasta",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[pizza]werk Salate / Vorspeisen",
+                    dishes: [
+                        Dish {
+                            name: "Insalata piccola - kleiner Blattsalat mit Tomate, Gurke und Ei",
+                            price: Price {
+                                price_student: 180,
+                                price_employee: 180,
+                                price_guest: 225,
+                                price_pupil: 180,
+                            },
+                            allergens: [
+                                Ei,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+            ],
+        },
+    ),
+    (
+        2023-07-12,
+        ParseCanteen {
+            name: "Dining Hall am Adenauerring",
+            lines: [
+                ParseLine {
+                    name: "Linie 1 Gut & Günstig",
+                    dishes: [
+                        Dish {
+                            name: "zu jedem Gericht reichen wir ein Dessert oder Salat",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Linseneintopf mit Saiten und Baguettebrötchen",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                                AntioxidantAgents,
+                            ],
+                            meal_type: PorkAw,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Linseneintopf mit veganer Soja - Wurst und Baguettebrötchen",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 2 Vegane Linie",
+                    dishes: [
+                        Dish {
+                            name: "zu jedem Gericht reichen wir ein Dessert oder Salat",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tomaten-Chili-Knoblauchspaghetti mit Tofu",
+                            price: Price {
+                                price_student: 350,
+                                price_employee: 520,
+                                price_guest: 770,
+                                price_pupil: 405,
+                            },
+                            allergens: [
+                                So,
+                                We,
+                            ],
+                            additives: [
+                                ArtificiallyBlackenedOlives,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 3",
+                    dishes: [
+                        Dish {
+                            name: "Blattsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Schupfnudel-Karotten-Champignon-Pfanne mit Hirtenkäse-Quark-Dip",
+                            price: Price {
+                                price_student: 385,
+                                price_employee: 565,
+                                price_guest: 845,
+                                price_pupil: 445,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Verschiedene Dessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [
+                                ML,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 4",
+                    dishes: [
+                        Dish {
+                            name: "Blattsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Hausgemachte Gnocchi mit verschiedenen Soßen",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Verschiedene Dessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [
+                                ML,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 5",
+                    dishes: [
+                        Dish {
+                            name: "Blattsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagessuppe",
+                            price: Price {
+                                price_student: 55,
+                                price_employee: 55,
+                                price_guest: 75,
+                                price_pupil: 55,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Party Frikadellen mit Senfsoße",
+                            price: Price {
+                                price_student: 290,
+                                price_employee: 430,
+                                price_guest: 640,
+                                price_pupil: 335,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                Se,
+                                Sn,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Pork,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Sommergemüse",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "Langkornreis",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "Verschiedene Dessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [
+                                ML,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Schnitzel-/ Burgerbar",
+                    dishes: [
+                        Dish {
+                            name: "Verschiedene Desserts im Portionsbecher",
+                            price: Price {
+                                price_student: 65,
+                                price_employee: 65,
+                                price_guest: 65,
+                                price_pupil: 65,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Schweine- und Hähnchenschnitzel, vegetarische Leckereien, Salatbuffet und Pommes - alles zur Wahl zu einem Preis",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ei,
+                                Hf,
+                                ML,
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [
+                                FlavourEnhancer,
+                                Phosphate,
+                            ],
+                            meal_type: Pork,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Verschiedene Dessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [
+                                ML,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 6",
+                    dishes: [
+                        Dish {
+                            name: "Hamburger Buffet Preis je 100 g",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                Sa,
+                                Sf,
+                                Sn,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                PreservingAgents,
+                                AntioxidantAgents,
+                            ],
+                            meal_type: Beef,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings, Preis je 100 g",
+                            price: Price {
+                                price_student: 100,
+                                price_employee: 138,
+                                price_guest: 200,
+                                price_pupil: 116,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Verschiedene Dessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [
+                                ML,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Spätausgabe und Abendessen",
+                    dishes: [
+                        Dish {
+                            name: "Spätausgabe 14:00 bis 14:30 an der Linie 2 Info zum Speisenangebot direkt an der Ausgabe",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[kœri]werk 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Reine Kalbsbratwurst mit Currysoße",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Beef,
+                            env_score: 1,
+                        },
+                        Dish {
+                            name: "Vegane Tofu - Bratwurst mit Currysoße",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Ma,
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "koerifrites",
+                            price: Price {
+                                price_student: 130,
+                                price_employee: 130,
+                                price_guest: 130,
+                                price_pupil: 130,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Zu jeder Currywurst reichen wir frisches Baguette",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Cafeteria 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Pizzafleischkäse im Brötchen",
+                            price: Price {
+                                price_student: 240,
+                                price_employee: 240,
+                                price_guest: 240,
+                                price_pupil: 240,
+                            },
+                            allergens: [
+                                Ge,
+                                La,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                                AntioxidantAgents,
+                                Phosphate,
+                            ],
+                            meal_type: Pork,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Käse Mozzarella Fächer",
+                            price: Price {
+                                price_student: 190,
+                                price_employee: 190,
+                                price_guest: 190,
+                                price_pupil: 190,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pizza 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Pizza Margherita vegetarisch - frische Tomaten, Mozzarella, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                Ei,
+                                La,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza alla bolognese - Pizza mit Rinderhackfleisch, Lauch und roten Zwiebeln",
+                            price: Price {
+                                price_student: 455,
+                                price_employee: 625,
+                                price_guest: 910,
+                                price_pupil: 525,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: BeefAw,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Mykonos vegan - Paprika, Oliven, rote Zwiebeln, vegane Käsealternative und Mais",
+                            price: Price {
+                                price_student: 445,
+                                price_employee: 610,
+                                price_guest: 890,
+                                price_pupil: 515,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                ArtificiallyBlackenedOlives,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Mykonos - Hirtenkäse, Paprika, Oliven, rote Zwiebeln und Mais",
+                            price: Price {
+                                price_student: 445,
+                                price_employee: 610,
+                                price_guest: 890,
+                                price_pupil: 515,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                ArtificiallyBlackenedOlives,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pasta",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[pizza]werk Salate / Vorspeisen",
+                    dishes: [
+                        Dish {
+                            name: "Insalata piccola - kleiner Blattsalat mit Tomate, Gurke und Ei",
+                            price: Price {
+                                price_student: 180,
+                                price_employee: 180,
+                                price_guest: 225,
+                                price_pupil: 180,
+                            },
+                            allergens: [
+                                Ei,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+            ],
+        },
+    ),
+    (
+        2023-07-13,
+        ParseCanteen {
+            name: "Dining Hall am Adenauerring",
+            lines: [
+                ParseLine {
+                    name: "Linie 1 Gut & Günstig",
+                    dishes: [
+                        Dish {
+                            name: "Pasta mit Broccoli - Schinkensoße und Reibekäse",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                ML,
+                                Se,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                PreservingAgents,
+                                AntioxidantAgents,
+                            ],
+                            meal_type: Pork,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "zu jedem Gericht reichen wir frisches Obst oder Salat",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [
+                                SurfaceWaxed,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pasta mit Rote Linsen - Bolognese und Reibekäse",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                ML,
+                                Se,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 2,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 2 Vegane Linie",
+                    dishes: [
+                        Dish {
+                            name: "Kichererbsen - Kokos - Korma mit Mandel - Duftreis",
+                            price: Price {
+                                price_student: 350,
+                                price_employee: 520,
+                                price_guest: 770,
+                                price_pupil: 405,
+                            },
+                            allergens: [
+                                Ma,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "zu jedem Gericht reichen wir frisches Obst oder Salat",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [
+                                SurfaceWaxed,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 3",
+                    dishes: [
+                        Dish {
+                            name: "Blattsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Solidaritätsessen: Vegane Paella",
+                            price: Price {
+                                price_student: 255,
+                                price_employee: 430,
+                                price_guest: 560,
+                                price_pupil: 295,
+                            },
+                            allergens: [
+                                Se,
+                            ],
+                            additives: [
+                                AntioxidantAgents,
+                                ArtificiallyBlackenedOlives,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 4",
+                    dishes: [
+                        Dish {
+                            name: "Blattsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Hausgemachte Gnocchi mit verschiedenen Soßen",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 5",
+                    dishes: [
+                        Dish {
+                            name: "Blattsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagessuppe",
+                            price: Price {
+                                price_student: 55,
+                                price_employee: 55,
+                                price_guest: 75,
+                                price_pupil: 55,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Kalbfleischbällchen mit Paprikasoße",
+                            price: Price {
+                                price_student: 340,
+                                price_employee: 500,
+                                price_guest: 750,
+                                price_pupil: 395,
+                            },
+                            allergens: [
+                                Ei,
+                                Se,
+                                We,
+                            ],
+                            additives: [
+                                AntioxidantAgents,
+                            ],
+                            meal_type: Beef,
+                            env_score: 1,
+                        },
+                        Dish {
+                            name: "Ofenkartoffel",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 105,
+                                price_guest: 130,
+                                price_pupil: 105,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "Balkangemüse",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [
+                                Se,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 2,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Schnitzel-/ Burgerbar",
+                    dishes: [
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Verschiedene Desserts im Portionsbecher",
+                            price: Price {
+                                price_student: 65,
+                                price_employee: 65,
+                                price_guest: 65,
+                                price_pupil: 65,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Schweine- und Hähnchenschnitzel, vegetarische Leckereien, Salatbuffet und Pommes - alles zur Wahl zu einem Preis",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ei,
+                                Hf,
+                                ML,
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [
+                                FlavourEnhancer,
+                                Phosphate,
+                            ],
+                            meal_type: Pork,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 6",
+                    dishes: [
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Hamburger Buffet Preis je 100 g",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                Sa,
+                                Sf,
+                                Sn,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                PreservingAgents,
+                                AntioxidantAgents,
+                            ],
+                            meal_type: Beef,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings, Preis je 100 g",
+                            price: Price {
+                                price_student: 100,
+                                price_employee: 138,
+                                price_guest: 200,
+                                price_pupil: 116,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Spätausgabe und Abendessen",
+                    dishes: [
+                        Dish {
+                            name: "Spätausgabe 14:00 bis 14:30 an der Linie 2 Info zum Speisenangebot direkt an der Ausgabe",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[kœri]werk 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Reine Kalbsbratwurst mit Currysoße",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Beef,
+                            env_score: 1,
+                        },
+                        Dish {
+                            name: "Vegane Tofu - Bratwurst mit Currysoße",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Ma,
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "koerifrites",
+                            price: Price {
+                                price_student: 130,
+                                price_employee: 130,
+                                price_guest: 130,
+                                price_pupil: 130,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Zu jeder Currywurst reichen wir frisches Baguette",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Cafeteria 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Schweinefrikadelle mit Brötchen",
+                            price: Price {
+                                price_student: 270,
+                                price_employee: 270,
+                                price_guest: 270,
+                                price_pupil: 270,
+                            },
+                            allergens: [
+                                Ei,
+                                Ge,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Pork,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Spinatstrudel",
+                            price: Price {
+                                price_student: 190,
+                                price_employee: 190,
+                                price_guest: 190,
+                                price_pupil: 190,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pizza 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Pizza Margherita vegetarisch - frische Tomaten, Mozzarella, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                Ei,
+                                La,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza alla bolognese - Pizza mit Rinderhackfleisch, Lauch und roten Zwiebeln",
+                            price: Price {
+                                price_student: 455,
+                                price_employee: 625,
+                                price_guest: 910,
+                                price_pupil: 525,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: BeefAw,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Mykonos vegan - Paprika, Oliven, rote Zwiebeln, vegane Käsealternative und Mais",
+                            price: Price {
+                                price_student: 445,
+                                price_employee: 610,
+                                price_guest: 890,
+                                price_pupil: 515,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                ArtificiallyBlackenedOlives,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Mykonos - Hirtenkäse, Paprika, Oliven, rote Zwiebeln und Mais",
+                            price: Price {
+                                price_student: 445,
+                                price_employee: 610,
+                                price_guest: 890,
+                                price_pupil: 515,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                ArtificiallyBlackenedOlives,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pasta",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[pizza]werk Salate / Vorspeisen",
+                    dishes: [
+                        Dish {
+                            name: "Insalata piccola - kleiner Blattsalat mit Tomate, Gurke und Ei",
+                            price: Price {
+                                price_student: 180,
+                                price_employee: 180,
+                                price_guest: 225,
+                                price_pupil: 180,
+                            },
+                            allergens: [
+                                Ei,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+            ],
+        },
+    ),
+    (
+        2023-07-14,
+        ParseCanteen {
+            name: "Dining Hall am Adenauerring",
+            lines: [
+                ParseLine {
+                    name: "Linie 1 Gut & Günstig",
+                    dishes: [
+                        Dish {
+                            name: "zu jedem Gericht reichen wir ein Dessert oder Salat",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Scharfe Sombrero - Reispfanne mit Hackfleisch, Gemüse und Tomatensoße",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                Se,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: BeefAw,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Scharfe Sombrero - Reispfanne mit knusprigen Gemüse Crossini und Tomatensoße",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                ML,
+                                Se,
+                                So,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 2,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 2 Vegane Linie",
+                    dishes: [
+                        Dish {
+                            name: "Sellerieschnitzel mit Ratatouille und Ofenkartoffel",
+                            price: Price {
+                                price_student: 350,
+                                price_employee: 520,
+                                price_guest: 770,
+                                price_pupil: 405,
+                            },
+                            allergens: [
+                                Se,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "Veganes Tagesdessert",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 105,
+                                price_guest: 130,
+                                price_pupil: 105,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "zu jedem Gericht reichen wir frisches Obst oder Salat",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [
+                                SurfaceWaxed,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 3",
+                    dishes: [
+                        Dish {
+                            name: "Blattsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Spätzle-Pilz-Pfanne",
+                            price: Price {
+                                price_student: 295,
+                                price_employee: 435,
+                                price_guest: 650,
+                                price_pupil: 340,
+                            },
+                            allergens: [
+                                Di,
+                                Ei,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 2,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 4",
+                    dishes: [
+                        Dish {
+                            name: "Blattsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Hausgemachte Gnocchi mit verschiedenen Soßen",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 5",
+                    dishes: [
+                        Dish {
+                            name: "Blattsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagessuppe",
+                            price: Price {
+                                price_student: 55,
+                                price_employee: 55,
+                                price_guest: 75,
+                                price_pupil: 55,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Paniertes Alaska Seelachsfilet mit Kräuterdip",
+                            price: Price {
+                                price_student: 395,
+                                price_employee: 585,
+                                price_guest: 870,
+                                price_pupil: 455,
+                            },
+                            allergens: [
+                                Fi,
+                                ML,
+                                Sn,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Fish,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Mischgemüse",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [
+                                Se,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "hausgemachter Kartoffelsalat",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Schnitzel-/ Burgerbar",
+                    dishes: [
+                        Dish {
+                            name: "Tagesdessert",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Verschiedene Desserts im Portionsbecher",
+                            price: Price {
+                                price_student: 65,
+                                price_employee: 65,
+                                price_guest: 65,
+                                price_pupil: 65,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Schweine- und Hähnchenschnitzel, vegetarische Leckereien, Salatbuffet und Pommes - alles zur Wahl zu einem Preis",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ei,
+                                Hf,
+                                ML,
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [
+                                FlavourEnhancer,
+                                Phosphate,
+                            ],
+                            meal_type: Pork,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Linie 6",
+                    dishes: [
+                        Dish {
+                            name: "Hamburger Buffet Preis je 100 g",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                Sa,
+                                Sf,
+                                Sn,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                PreservingAgents,
+                                AntioxidantAgents,
+                            ],
+                            meal_type: Beef,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings, Preis je 100 g",
+                            price: Price {
+                                price_student: 100,
+                                price_employee: 138,
+                                price_guest: 200,
+                                price_pupil: 116,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Spätausgabe und Abendessen",
+                    dishes: [
+                        Dish {
+                            name: "Spätausgabe 14:00 bis 14:30 an der Linie 2 Info zum Speisenangebot direkt an der Ausgabe",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[kœri]werk 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Reine Kalbsbratwurst mit Currysoße",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Beef,
+                            env_score: 1,
+                        },
+                        Dish {
+                            name: "Vegane Tofu - Bratwurst mit Currysoße",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Ma,
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "koerifrites",
+                            price: Price {
+                                price_student: 130,
+                                price_employee: 130,
+                                price_guest: 130,
+                                price_pupil: 130,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Zu jeder Currywurst reichen wir frisches Baguette",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Cafeteria 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Hähnchenschnitzel mit Brötchen",
+                            price: Price {
+                                price_student: 280,
+                                price_employee: 280,
+                                price_guest: 280,
+                                price_pupil: 280,
+                            },
+                            allergens: [
+                                Ge,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                AntioxidantAgents,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Börek mit Spinatfüllung",
+                            price: Price {
+                                price_student: 200,
+                                price_employee: 200,
+                                price_guest: 200,
+                                price_pupil: 200,
+                            },
+                            allergens: [
+                                Se,
+                                So,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                                AntioxidantAgents,
+                                FlavourEnhancer,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pizza 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Pizza Margherita vegetarisch - frische Tomaten, Mozzarella, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                Ei,
+                                La,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza alla bolognese - Pizza mit Rinderhackfleisch, Lauch und roten Zwiebeln",
+                            price: Price {
+                                price_student: 455,
+                                price_employee: 625,
+                                price_guest: 910,
+                                price_pupil: 525,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: BeefAw,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Mykonos vegan - Paprika, Oliven, rote Zwiebeln, vegane Käsealternative und Mais",
+                            price: Price {
+                                price_student: 445,
+                                price_employee: 610,
+                                price_guest: 890,
+                                price_pupil: 515,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                ArtificiallyBlackenedOlives,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Mykonos - Hirtenkäse, Paprika, Oliven, rote Zwiebeln und Mais",
+                            price: Price {
+                                price_student: 445,
+                                price_employee: 610,
+                                price_guest: 890,
+                                price_pupil: 515,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                ArtificiallyBlackenedOlives,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pasta",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[pizza]werk Salate / Vorspeisen",
+                    dishes: [
+                        Dish {
+                            name: "Insalata piccola - kleiner Blattsalat mit Tomate, Gurke und Ei",
+                            price: Price {
+                                price_student: 180,
+                                price_employee: 180,
+                                price_guest: 225,
+                                price_pupil: 180,
+                            },
+                            allergens: [
+                                Ei,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+            ],
+        },
+    ),
+]

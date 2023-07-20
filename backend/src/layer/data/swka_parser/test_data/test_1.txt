@@ -1,0 +1,54 @@
+[
+    (
+        2023-03-16,
+        ParseCanteen {
+            name: "Menseria Moltkestraẞe 30",
+            lines: [
+                ParseLine {
+                    name: "Gut & Günstig",
+                    dishes: [
+                        Dish {
+                            name: "Liebe Gäste, die Speisenausgabe findet heute in der Mensa Moltke statt.",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                    ],
+                },
+            ],
+        },
+    ),
+    (
+        2023-03-17,
+        ParseCanteen {
+            name: "Menseria Moltkestraẞe 30",
+            lines: [
+                ParseLine {
+                    name: "Gut & Günstig",
+                    dishes: [
+                        Dish {
+                            name: "Liebe Gäste, die Speisenausgabe findet heute in der Mensa Moltke statt.",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                    ],
+                },
+            ],
+        },
+    ),
+]

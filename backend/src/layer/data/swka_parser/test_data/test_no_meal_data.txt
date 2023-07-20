@@ -1,0 +1,492 @@
+[
+    (
+        2023-07-31,
+        ParseCanteen {
+            name: "Dining Hall am Adenauerring",
+            lines: [
+                ParseLine {
+                    name: "Linie 1 Gut & Günstig",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 2 Vegane Linie",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 3",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 4",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 5",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Schnitzel-/ Burgerbar",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 6",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Spätausgabe und Abendessen",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[kœri]werk 11-14 Uhr",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Cafeteria 11-14 Uhr",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pizza 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Pizza Margherita vegetarisch - frische Tomaten, Mozzarella, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                Ei,
+                                La,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pasta",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[pizza]werk Salate / Vorspeisen",
+                    dishes: [],
+                },
+            ],
+        },
+    ),
+    (
+        2023-08-01,
+        ParseCanteen {
+            name: "Dining Hall am Adenauerring",
+            lines: [
+                ParseLine {
+                    name: "Linie 1 Gut & Günstig",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 2 Vegane Linie",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 3",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 4",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 5",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Schnitzel-/ Burgerbar",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 6",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Spätausgabe und Abendessen",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[kœri]werk 11-14 Uhr",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Cafeteria 11-14 Uhr",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pizza 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Pizza Margherita vegetarisch - frische Tomaten, Mozzarella, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                Ei,
+                                La,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pasta",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[pizza]werk Salate / Vorspeisen",
+                    dishes: [],
+                },
+            ],
+        },
+    ),
+    (
+        2023-08-02,
+        ParseCanteen {
+            name: "Dining Hall am Adenauerring",
+            lines: [
+                ParseLine {
+                    name: "Linie 1 Gut & Günstig",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 2 Vegane Linie",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 3",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 4",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 5",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Schnitzel-/ Burgerbar",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 6",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Spätausgabe und Abendessen",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[kœri]werk 11-14 Uhr",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Cafeteria 11-14 Uhr",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pizza 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Pizza Margherita vegetarisch - frische Tomaten, Mozzarella, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                Ei,
+                                La,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pasta",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[pizza]werk Salate / Vorspeisen",
+                    dishes: [],
+                },
+            ],
+        },
+    ),
+    (
+        2023-08-03,
+        ParseCanteen {
+            name: "Dining Hall am Adenauerring",
+            lines: [
+                ParseLine {
+                    name: "Linie 1 Gut & Günstig",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 2 Vegane Linie",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 3",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 4",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 5",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Schnitzel-/ Burgerbar",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 6",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Spätausgabe und Abendessen",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[kœri]werk 11-14 Uhr",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Cafeteria 11-14 Uhr",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pizza 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Pizza Margherita vegetarisch - frische Tomaten, Mozzarella, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                Ei,
+                                La,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pasta",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[pizza]werk Salate / Vorspeisen",
+                    dishes: [],
+                },
+            ],
+        },
+    ),
+    (
+        2023-08-04,
+        ParseCanteen {
+            name: "Dining Hall am Adenauerring",
+            lines: [
+                ParseLine {
+                    name: "Linie 1 Gut & Günstig",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 2 Vegane Linie",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 3",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 4",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 5",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Schnitzel-/ Burgerbar",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Linie 6",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Spätausgabe und Abendessen",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[kœri]werk 11-14 Uhr",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Cafeteria 11-14 Uhr",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pizza 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Pizza Margherita vegetarisch - frische Tomaten, Mozzarella, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                Ei,
+                                La,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
+                            price: Price {
+                                price_student: 405,
+                                price_employee: 555,
+                                price_guest: 810,
+                                price_pupil: 470,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "[pizza]werk Pasta",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[pizza]werk Salate / Vorspeisen",
+                    dishes: [],
+                },
+            ],
+        },
+    ),
+]
