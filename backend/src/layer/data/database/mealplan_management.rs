@@ -1,3 +1,5 @@
+use std::num::TryFromIntError;
+
 use async_trait::async_trait;
 use sqlx::{Pool, Postgres};
 
@@ -8,6 +10,46 @@ use crate::{
     },
     util::{Additive, Allergen, Date, MealType, Price, Uuid},
 };
+
+
+#[derive(sqlx::Type)]
+#[sqlx(type_name = "prices")]
+struct DatabasePrice {
+    /// Price of the dish for students.
+    pub student: i32,
+    /// Price of the dish for employees.
+    pub employee: i32,
+    /// Price of the dish for guests.
+    pub guest: i32,
+    /// Price of the dish for pupils.
+    pub pupil: i32,
+}
+
+impl TryFrom<DatabasePrice> for Price {
+    type Error = TryFromIntError;
+
+    fn try_from(value: DatabasePrice) -> std::result::Result<Self, Self::Error> {
+        Ok(Self {
+            price_student: value.student.try_into()?,
+            price_employee: value.employee.try_into()?,
+            price_guest: value.guest.try_into()?,
+            price_pupil: value.pupil.try_into()?,
+        })
+    }
+}
+
+impl TryFrom<Price> for DatabasePrice {
+    type Error = TryFromIntError;
+
+    fn try_from(value: Price) -> std::result::Result<Self, Self::Error> {
+        Ok(Self {
+            student: value.price_student.try_into()?,
+            employee: value.price_employee.try_into()?,
+            guest: value.price_guest.try_into()?,
+            pupil: value.price_pupil.try_into()?,
+        })
+    }
+}
 
 pub struct PersistentMealplanManagementData {
     pub(super) pool: Pool<Postgres>,
@@ -47,9 +89,10 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
             "UPDATE canteen 
             SET canteen_id = $1, name = $2
             RETURNING canteen_id as id, name ",
-            uuid, 
+            uuid,
             name
-        ).fetch_one(&self.pool)
+        )
+        .fetch_one(&self.pool)
         .await
         .map_err(Into::into)
     }
@@ -59,9 +102,10 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
             "UPDATE line 
             SET line_id = $1, name = $2 
             RETURNING line_id as id, name, canteen_id",
-            uuid, 
+            uuid,
             name
-        ).fetch_one(&self.pool)
+        )
+        .fetch_one(&self.pool)
         .await
         .map_err(Into::into)
     }
@@ -84,30 +128,38 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         price: Price,
     ) -> Result<Side> {
         /*
-        sqlx::query!(
-        "UPDATE food, food_plan
-        SET food.name = $1, 
-        food_plan.priceStudent = $2, 
-        food_plan.priceEmployee = $3,
-        food_plan.pricePupil = $4,
-        food_plan.priceGuest = $5
-        FROM food_plan
-        WHERE food.food_id = $6,
-        food_plan.food_id = food.food_id,
-        food_plan.line_id = $7,
-        food_plan.serve_date = $8
-        RETURNING food.food_id, food.name, food.food_type",
-        name,
-        price.price_student,
-        price.price_employee,
-        price.price_pupil,
-        price.price_guest,
-        uuid,
-        line_id,
-        date
-        ).execute(&self.pool)
-        .await;
-        */
+        let price_test = sqlx::query!(
+            "UPDATE food_plan
+        SET prices = '(1, 2, 3, 4)'
+        WHERE food_id = $1
+          AND line_id = $2
+          AND serve_date = $3
+        RETURNING prices",
+            uuid,
+            line_id,
+            date
+        )
+        .fetch_one(&self.pool)
+        .await?;
+        
+        let price = price_test.prices;
+        let side_test = sqlx::query!(
+            r#"UPDATE food
+            SET name = $1
+            WHERE food_id = $2
+            RETURNING food_id as id, name, food_type as "food_type: MealType""#,
+            name,
+            uuid,
+        )
+        .fetch_one(&self.pool)
+        .await?;
+        Ok(Side {
+            id: side_test.id,
+            name: side_test.name,
+            meal_type: side_test.food_type,
+            price,
+        })
+         */
         todo!()
     }
 
@@ -118,7 +170,8 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
             VALUES ($1) 
             RETURNING canteen_id as id, name ",
             name
-        ).fetch_one(&self.pool)
+        )
+        .fetch_one(&self.pool)
         .await
         .map_err(Into::into)
     }
@@ -129,7 +182,8 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
             VALUES ($1) 
             RETURNING line_id as id, name, canteen_id",
             name
-        ).fetch_one(&self.pool)
+        )
+        .fetch_one(&self.pool)
         .await
         .map_err(Into::into)
     }
