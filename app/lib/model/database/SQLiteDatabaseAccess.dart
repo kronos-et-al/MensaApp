@@ -378,5 +378,4 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     );
     return result.map((allergenMap) => DBSideAdditive.fromMap(allergenMap).additive).toList();
   }
-
 }
