@@ -1,32 +1,14 @@
 //! This interface allows administrators to be notified of reporting requests.
 
 use async_trait::async_trait;
-use thiserror::Error;
 
 use crate::util::{ReportReason, Uuid};
-
-pub type MailResult<T> = std::result::Result<T, MailError>;
 
 /// Interface for notification of administrators.
 #[async_trait]
 pub trait AdminNotification: Sync + Send {
     /// Notifies an administrator about a newly reported image and the response automatically taken.
     async fn notify_admin_image_report(&self, info: ImageReportInfo);
-}
-
-/// Enum describing the possible ways, the mail notification can fail.
-#[derive(Debug, Error)]
-pub enum MailError {
-    #[error("The sender could not be created")]
-    SenderError,
-    #[error("The reciever could not be created")]
-    RecieverError,
-    #[error("The template file could not be read")]
-    TemplateError,
-    #[error("The email could not be created")]
-    MailParseError,
-    #[error("Could not send email")]
-    MailSendError,
 }
 
 #[derive(Debug)]

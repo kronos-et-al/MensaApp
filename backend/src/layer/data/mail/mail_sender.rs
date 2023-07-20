@@ -1,6 +1,7 @@
 use std::{collections::HashMap, fs};
 
 use async_trait::async_trait;
+use thiserror::Error;
 
 use lettre::{
     message::Mailbox, transport::smtp::authentication::Credentials, Message, SmtpTransport,
@@ -10,7 +11,7 @@ use uuid::fmt::Simple;
 
 use crate::{
     interface::{
-        admin_notification::{AdminNotification, ImageReportInfo, MailResult, MailError},
+        admin_notification::{AdminNotification, ImageReportInfo},
         persistent_data::{DataError, Result},
     },
     startup::config::mail_info::MailInfo,
@@ -19,7 +20,24 @@ use crate::{
 use string_template::Template;
 use tracing::{info, warn};
 
+pub type MailResult<T> = std::result::Result<T, MailError>;
+
 const REPORT_TEMPLATE_FILE: &str = "template.txt";
+
+/// Enum describing the possible ways, the mail notification can fail.
+#[derive(Debug, Error)]
+pub enum MailError {
+    #[error("The sender could not be created")]
+    SenderError,
+    #[error("The reciever could not be created")]
+    RecieverError,
+    #[error("The template file could not be read")]
+    TemplateError,
+    #[error("The email could not be created")]
+    MailParseError,
+    #[error("Could not send email")]
+    MailSendError,
+}
 
 pub struct MailSender {
     config: MailInfo,
@@ -63,8 +81,9 @@ impl MailSender {
             .subject("An image was reported for reviewing")
             .body(report)
             .map_err(|_e| MailError::MailParseError)?;
-        self.mailer.send(&email)
-        .map_err(|_e| MailError::MailSendError)?;
+        self.mailer
+            .send(&email)
+            .map_err(|_e| MailError::MailSendError)?;
         info!("Email sent successfully!");
         Ok(())
     }
@@ -104,7 +123,7 @@ impl MailSender {
         args.insert("get_image_rank", get_image_rank);
 
         Ok(template.render(&args))
-    }    
+    }
 }
 
 #[cfg(test)]
