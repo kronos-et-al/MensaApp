@@ -1,6 +1,6 @@
-use scraper::{ElementRef, Html, Selector};
-use crate::interface::image_hoster::ImageHosterError;
 use crate::interface::image_hoster::model::ImageMetaData;
+use crate::interface::image_hoster::ImageHosterError;
+use scraper::{Html, Selector};
 
 pub struct XMLParser;
 
@@ -30,8 +30,6 @@ pub struct XMLParser;
 // 	<err code="0" msg="Sorry, the Flickr API service is not currently available." />
 // </rsp>
 
-
-
 const SIZE_LABEL_SELECTOR: &str = r#"size label="Medium 800""#;
 const SELECTED_TAG: &str = "source";
 
@@ -44,24 +42,27 @@ impl XMLParser {
         Self
     }
 
-    pub fn parse_to_image(&self, xml: String, photo_id: String, licence: String) -> ImageMetaData {
+    pub fn parse_to_image(&self, xml: String, photo_id: &str, licence: &str) -> ImageMetaData {
         let document = Html::parse_fragment(&xml);
-        let preferred_size_tag = Selector::parse(SIZE_LABEL_SELECTOR).map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
+        let preferred_size_tag = Selector::parse(SIZE_LABEL_SELECTOR)
+            .map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
         let input = match document.select(&preferred_size_tag).next() {
-            None => Err(ImageHosterError::DecodeFailed(e.to_string())),
-            Some(input) => input
+            None => Err(ImageHosterError::DecodeFailed(String::from(
+                "A selector could not be found",
+            ))),
+            _ => {}
         };
         let image_url = input.value().attr(SELECTED_TAG);
 
         ImageMetaData {
-            id: photo_id,
+            id: String::from(photo_id),
             image_url,
-            licence
+            licence: String::from(licence),
         };
         todo!()
     }
 
-    pub fn get_licence(&self, xml: String) -> String {
+    pub fn get_licence(&self, xml: String) -> &str {
         todo!()
     }
 
@@ -74,7 +75,7 @@ impl XMLParser {
             105 => ImageHosterError::ServiceUnavailable,
             111 => ImageHosterError::FormatNotFound(err_info),
             112 => ImageHosterError::FormatNotFound(err_info),
-            _ => ImageHosterError::SomethingWentWrong(err_info)
+            _ => ImageHosterError::SomethingWentWrong(err_info),
         }
     }
 }

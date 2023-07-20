@@ -1,5 +1,5 @@
-use std::{env, fs};
 use std::time::Duration;
+use std::{env, fs};
 
 /// For all valid tests this image 'll be used: https://www.flickr.com/photos/gerdavs/52310534489/
 

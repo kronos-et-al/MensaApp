@@ -3,7 +3,6 @@ pub mod model;
 
 use crate::interface::image_hoster::model::ImageMetaData;
 use async_trait::async_trait;
-use std::error::Error;
 use thiserror::Error;
 
 pub type Result<T> = std::result::Result<T, ImageHosterError>;
@@ -14,9 +13,9 @@ pub trait ImageHoster: Sync + Send {
     /// Checks if the given link is valid and provides additional information (ImageMetaData) from the hoster.
     async fn validate_url(&self, url: &str) -> Result<ImageMetaData>;
     /// Checks if an image still exists at the hoster website.
-    async fn check_existence(&self, photo_id: &str) -> Result<bool>;
+    async fn check_existence(&self, photo_id: &str) -> bool;
     /// Checks whether the licence is acceptable for our purposes.
-    async fn check_licence(&self, photo_id: &str) -> Result<bool>;
+    async fn check_licence(&self, photo_id: &str) -> bool;
 }
 
 /// Enum describing the possible ways, a image hoster request can fail.
@@ -36,12 +35,14 @@ pub enum ImageHosterError {
     ServiceUnavailable,
     /// Format "xxx" not found error
     #[error("the requested response format was not found")]
-    FormatNotFound(#[from] Box<dyn Error + Send + Sync>),
+    FormatNotFound(String),
     /// The connection failed to establish error
     #[error("no connection could be established")]
     NotConnected,
     #[error("the html reqwest client creation failed")]
     ClientBuilderFailed(String),
     #[error("some html code couldn't be decoded")]
-    DecodeFailed(String)
+    DecodeFailed(String),
+    #[error("some undefined image hoster error occurred")]
+    SomethingWentWrong(String),
 }

@@ -3,5 +3,5 @@
 //! It uses its API see <https://www.flickr.com/services/api/>.
 mod api_request;
 mod flickr_api_handler;
-mod xml_parser;
 mod test;
+mod xml_parser;
