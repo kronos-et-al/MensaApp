@@ -21,8 +21,8 @@ pub enum DataError {
     #[error("internal error ocurred: {0}")]
     InternalError(#[from] sqlx::Error),
     ///
-    #[error("error converting type {0}")]
-    TypeConversionError(TryFromIntError),
+    #[error("error converting type: {0}")]
+    TypeConversionError(#[from] TryFromIntError),
 }
 
 #[async_trait]

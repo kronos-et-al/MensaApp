@@ -4,3 +4,4 @@ pub mod factory;
 pub mod image_review;
 pub mod mealplan_management;
 pub mod request;
+mod types;

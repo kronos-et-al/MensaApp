@@ -1,4 +1,3 @@
-use async_graphql::futures_util::TryFutureExt;
 use async_trait::async_trait;
 use sqlx::{Pool, Postgres};
 
@@ -7,13 +6,16 @@ use crate::{
         model::{Canteen, Image, Line, Meal, Side},
         DataError, RequestDataAccess, Result,
     },
-    util::{Additive, Allergen, Date, Uuid},
+    util::{Additive, Allergen, Date, MealType, Uuid},
 };
 
+use super::types::DatabasePrice;
 /// Class implementing all database requests arising from graphql manipulations.
 pub struct PersistentRequestData {
     pub(super) pool: Pool<Postgres>,
 }
+
+const DEFAULT_RATING: f32 = 5. / 2.;
 
 #[async_trait]
 impl RequestDataAccess for PersistentRequestData {
@@ -58,7 +60,61 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_meal(&self, id: Uuid, line_id: Uuid, date: Date) -> Result<Option<Meal>> {
-        todo!()
+        let meal = sqlx::query!(
+            r#"
+        SELECT food_id as id, name, food_type as "meal_type: MealType",
+            prices as "price: DatabasePrice", serve_date as date, line_id
+        FROM meal JOIN food USING (food_id) JOIN food_plan USING (food_id)
+        WHERE food_id = $1 AND line_id = $2 AND serve_date = $3 
+        
+        "#,
+            id,
+            line_id,
+            date
+        )
+        .fetch_optional(&self.pool)
+        .await?;
+
+        let Some(meal) = meal else {
+            return Ok(None);
+        };
+
+        let statistics = sqlx::query!(
+            "SELECT (COUNT(*) = 0) as new, 
+            COUNT(*) FILTER (WHERE serve_date > CURRENT_DATE - 30 * 3) as frequency,
+            MAX(serve_date) FILTER (WHERE serve_date < CURRENT_DATE) as last_served,
+            MIN(serve_date) FILTER (WHERE serve_date > CURRENT_DATE) as next_served
+            FROM food_plan WHERE food_id = $1",
+            id
+        )
+        .fetch_one(&self.pool)
+        .await?;
+
+        let ratings = sqlx::query!(
+            "SELECT AVG(rating::real)::real as average_rating, COUNT(*) as rating_count 
+            FROM meal_rating 
+            WHERE food_id = $1",
+            id
+        )
+        .fetch_one(&self.pool)
+        .await?;
+
+        Ok(Some(Meal {
+            id,
+            date,
+            line_id,
+            name: meal.name,
+            meal_type: meal.meal_type,
+            price: meal.price.try_into()?,
+
+            last_served: statistics.last_served,
+            next_served: statistics.next_served,
+            frequency: statistics.frequency.unwrap_or_default() as u32,
+            new: statistics.new.unwrap_or_default(),
+
+            rating_count: ratings.rating_count.unwrap_or_default() as u32,
+            average_rating: ratings.average_rating.unwrap_or(DEFAULT_RATING),
+        }))
     }
 
     async fn get_meals(&self, line_id: Uuid, date: Date) -> Result<Option<Vec<Meal>>> {

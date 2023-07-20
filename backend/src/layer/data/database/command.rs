@@ -20,8 +20,8 @@ impl CommandDataAccess for PersistentCommandData {
         // sqlx::query_as!(
         //     ImageInfo,
         //     r#"
-        //     SELECT approved, link_date as upload_date, report_count, url as image_url, 
-        //     upvotes as positive_rating_count, downvotes as negative_rating_coung, 
+        //     SELECT approved, link_date as upload_date, report_count, url as image_url,
+        //     upvotes as positive_rating_count, downvotes as negative_rating_coung,
         //     rank as image_rank
         //     FROM image_detail
         //     WHERE image_id = $1
