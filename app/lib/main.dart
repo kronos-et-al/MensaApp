@@ -6,7 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 void main() {
   final FlutterI18nDelegate delegate = FlutterI18nDelegate(
     translationLoader: NamespaceFileTranslationLoader(
-        namespaces: ["common", "ratings"],
+        namespaces: ["common", "ratings", "mealplanException", "snackbar"],
         useCountryCode: false,
         basePath: 'assets/locales',
         fallbackDir: 'de'),
