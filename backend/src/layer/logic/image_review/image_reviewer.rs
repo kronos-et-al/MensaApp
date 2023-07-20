@@ -81,7 +81,7 @@ where
     }
 
     async fn review_images(&self, images: Result<Vec<Image>>) {
-        if let Err(error) =  self.try_review_images(images).await {
+        if let Err(error) = self.try_review_images(images).await {
             warn!("{error:#?}");
         }
     }
@@ -147,7 +147,10 @@ mod test {
     #[tokio::test]
     async fn test_review_image_ok() {
         let image_reviewer = get_image_reviewer();
-        assert!(image_reviewer.review_image(&get_default_image()).await.is_ok());
+        assert!(image_reviewer
+            .review_image(&get_default_image())
+            .await
+            .is_ok());
         check_correct_call_number(&image_reviewer, 1, 0, 1);
     }
 
@@ -158,7 +161,10 @@ mod test {
             ..get_default_image()
         };
         let image_reviewer = get_image_reviewer();
-        assert_eq!(image_reviewer.review_image(&image).await, Err(ReviewerError::CheckError(image.id)));
+        assert_eq!(
+            image_reviewer.review_image(&image).await,
+            Err(ReviewerError::CheckError(image.id))
+        );
         check_correct_call_number(&image_reviewer, 1, 0, 0);
     }
 
@@ -181,7 +187,10 @@ mod test {
             ..get_default_image()
         };
         let image_reviewer = get_image_reviewer();
-        assert_eq!(image_reviewer.review_image(&image).await, Err(ReviewerError::DeleteError(image.id)));
+        assert_eq!(
+            image_reviewer.review_image(&image).await,
+            Err(ReviewerError::DeleteError(image.id))
+        );
         check_correct_call_number(&image_reviewer, 1, 1, 0);
     }
 
@@ -193,7 +202,10 @@ mod test {
             ..get_default_image()
         };
         let image_reviewer = get_image_reviewer();
-        assert_eq!(image_reviewer.review_image(&image).await, Err(ReviewerError::DeleteError(image.id)));
+        assert_eq!(
+            image_reviewer.review_image(&image).await,
+            Err(ReviewerError::DeleteError(image.id))
+        );
         check_correct_call_number(&image_reviewer, 1, 1, 0);
     }
 
