@@ -4,3 +4,4 @@
 mod api_request;
 mod flickr_api_handler;
 mod xml_parser;
+mod test;

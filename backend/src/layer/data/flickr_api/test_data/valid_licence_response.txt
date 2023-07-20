@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rsp stat="fail">
+	<err code="0" msg="Sorry, the Flickr API service is not currently available." />
+</rsp>
