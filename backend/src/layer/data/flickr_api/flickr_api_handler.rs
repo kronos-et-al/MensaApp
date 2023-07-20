@@ -4,6 +4,7 @@ use crate::interface::image_hoster::model::ImageMetaData;
 use crate::layer::data::flickr_api::api_request::ApiRequest;
 use crate::layer::data::flickr_api::xml_parser::XMLParser;
 
+#[derive(Debug, Clone)]
 pub struct HosterInfo {
     api_key: String
 }
