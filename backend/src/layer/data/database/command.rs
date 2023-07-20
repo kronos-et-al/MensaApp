@@ -17,18 +17,31 @@ pub struct PersistentCommandData {
 #[async_trait]
 impl CommandDataAccess for PersistentCommandData {
     async fn get_image_info(&self, image_id: Uuid) -> Result<ImageInfo> {
-        // sqlx::query_as!(
-        //     ImageInfo,
-        //     r#"
-        //     SELECT approved, link_date as upload_date, report_count, url as image_url,
-        //     upvotes as positive_rating_count, downvotes as negative_rating_coung,
-        //     rank as image_rank
-        //     FROM image_detail
-        //     WHERE image_id = $1
-        //     "#,
-        //     image_id
-        // )
-        todo!()
+        let recort = sqlx::query!(
+            r#"
+            SELECT approved, link_date as upload_date, report_count, url as image_url,
+            upvotes as positive_rating_count, downvotes as negative_rating_count,
+            rank as image_rank
+            FROM image_detail
+            WHERE image_id = $1
+            "#,
+            image_id
+        )
+        .fetch_one(&self.pool)
+        .await?;
+
+        (|| {
+            Some(ImageInfo {
+                approved: recort.approved?,
+                image_url: recort.image_url?,
+                image_rank: recort.image_rank?,
+                report_count: recort.report_count? as u32,
+                upload_date: recort.upload_date?,
+                negative_rating_count: recort.negative_rating_count? as u32,
+                positive_rating_count: recort.positive_rating_count? as u32,
+            })
+        })()
+        .ok_or(DataError::NoSuchItem)
     }
 
     async fn hide_image(&self, image_id: Uuid) -> Result<()> {
