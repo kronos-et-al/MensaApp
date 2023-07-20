@@ -62,12 +62,11 @@ impl RequestDataAccess for PersistentRequestData {
     async fn get_meal(&self, id: Uuid, line_id: Uuid, date: Date) -> Result<Option<Meal>> {
         let meal = sqlx::query!(
             r#"
-        SELECT food_id as id, name, food_type as "meal_type: MealType",
-            prices as "price: DatabasePrice", serve_date as date, line_id
-        FROM meal JOIN food USING (food_id) JOIN food_plan USING (food_id)
-        WHERE food_id = $1 AND line_id = $2 AND serve_date = $3 
-        
-        "#,
+            SELECT food_id as id, name, food_type as "meal_type: MealType",
+                prices as "price: DatabasePrice", serve_date as date, line_id
+            FROM meal JOIN food USING (food_id) JOIN food_plan USING (food_id)
+            WHERE food_id = $1 AND line_id = $2 AND serve_date = $3
+            "#,
             id,
             line_id,
             date
@@ -80,7 +79,8 @@ impl RequestDataAccess for PersistentRequestData {
         };
 
         let statistics = sqlx::query!(
-            "SELECT (COUNT(*) = 0) as new, 
+            "
+            SELECT (COUNT(*) = 0) as new, 
             COUNT(*) FILTER (WHERE serve_date > CURRENT_DATE - 30 * 3) as frequency,
             MAX(serve_date) FILTER (WHERE serve_date < CURRENT_DATE) as last_served,
             MIN(serve_date) FILTER (WHERE serve_date > CURRENT_DATE) as next_served
@@ -91,7 +91,8 @@ impl RequestDataAccess for PersistentRequestData {
         .await?;
 
         let ratings = sqlx::query!(
-            "SELECT AVG(rating::real)::real as average_rating, COUNT(*) as rating_count 
+            "
+            SELECT AVG(rating::real)::real as average_rating, COUNT(*) as rating_count 
             FROM meal_rating 
             WHERE food_id = $1",
             id
@@ -122,7 +123,28 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_sides(&self, line_id: Uuid, date: Date) -> Result<Vec<Side>> {
-        todo!()
+        let vec = sqlx::query!(
+            r#"
+            SELECT food_id, name, food_type as "meal_type: MealType", prices as "price: DatabasePrice"
+            FROM food JOIN food_plan USING (food_id)
+            WHERE line_id = $1 AND serve_date = $2
+            "#,
+            line_id,
+            date
+        )
+        .fetch_all(&self.pool)
+        .await?
+        .into_iter()
+        .map(|side| Ok(Side {
+            id: side.food_id, 
+            meal_type: side.meal_type, 
+            name: side.name, 
+            price: side.price.try_into()? // todo remove silent error, find better solution
+        },))
+        .filter_map(Result::ok)
+        .collect();
+
+        Ok(vec)
     }
 
     async fn get_visible_images(
@@ -142,8 +164,7 @@ impl RequestDataAccess for PersistentRequestData {
         .fetch_optional(&self.pool)
         .await
         .map_err(Into::<DataError>::into)?;
-        let res =
-            res.map(|i| u32::try_from(i.rating).expect("rating violating database constrains"));
+        let res = res.map(|i| i.rating as u32);
         Ok(res)
     }
 
