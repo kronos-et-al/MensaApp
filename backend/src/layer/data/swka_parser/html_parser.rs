@@ -129,6 +129,7 @@ const ENV_SCORE_ATTRIBUTE_NAME: &str = "data-rating";
 const DATE_FORMAT: &str = "%Y-%m-%d";
 
 const NUMBER_OF_MEAL_TYPES: usize = 8;
+const PRICE_TYPE_COUNT: usize = 4;
 
 const SELECTOR_PARSE_E_MSG: &str = "Error while parsing Selector string";
 const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
@@ -302,7 +303,7 @@ impl HTMLParser {
     }
 
     fn get_dish_price(dish_node: &ElementRef) -> Price {
-        let mut prices = (1..5)
+        let mut prices = (1..=PRICE_TYPE_COUNT)
             .filter_map(|i| {
                 Selector::parse(&format!("{DISH_PRICE_NODE_CLASS_SELECTOR_PREFIX}{i}")).ok()
             })
