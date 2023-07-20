@@ -2,12 +2,15 @@ use std::{collections::HashMap, fs};
 
 use async_trait::async_trait;
 
-use lettre::{transport::smtp::authentication::Credentials, Message, SmtpTransport, Transport};
+use lettre::{
+    message::Mailbox, transport::smtp::authentication::Credentials, Message, SmtpTransport,
+    Transport,
+};
 use uuid::fmt::Simple;
 
 use crate::{
     interface::{
-        admin_notification::{AdminNotification, ImageReportInfo},
+        admin_notification::{AdminNotification, ImageReportInfo, MailResult, MailError},
         persistent_data::{DataError, Result},
     },
     startup::config::mail_info::MailInfo,
@@ -21,6 +24,15 @@ const REPORT_TEMPLATE_FILE: &str = "template.txt";
 pub struct MailSender {
     config: MailInfo,
     mailer: SmtpTransport,
+}
+
+#[async_trait]
+impl AdminNotification for MailSender {
+    async fn notify_admin_image_report(&self, info: ImageReportInfo) {
+        if let Err(error) = self.try_notify_admin_image_report(&info) {
+            warn!("{error:?}");
+        }
+    }
 }
 
 impl MailSender {
@@ -40,10 +52,38 @@ impl MailSender {
             Err(DataError::NoSuchItem)
         }
     }
-    
-    fn get_report(info: &ImageReportInfo) -> Result<String> {
+
+    fn try_notify_admin_image_report(&self, info: &ImageReportInfo) -> MailResult<()> {
+        let sender = self.get_sender()?;
+        let reciever = self.get_reciever()?;
+        let report = Self::get_report(info)?;
+        let email = Message::builder()
+            .from(sender)
+            .to(reciever)
+            .subject("An image was reported for reviewing")
+            .body(report)
+            .map_err(|_e| MailError::MailParseError)?;
+        self.mailer.send(&email)
+        .map_err(|_e| MailError::MailSendError)?;
+        info!("Email sent successfully!");
+        Ok(())
+    }
+
+    fn get_sender(&self) -> MailResult<Mailbox> {
+        format!("app <{}>", self.config.username.clone())
+            .parse()
+            .map_err(|_e| MailError::SenderError)
+    }
+
+    fn get_reciever(&self) -> MailResult<Mailbox> {
+        format!("admin <{}>", self.config.admin_email_address)
+            .parse()
+            .map_err(|_e| MailError::RecieverError)
+    }
+
+    fn get_report(info: &ImageReportInfo) -> MailResult<String> {
         let template_file_contents =
-            fs::read_to_string(REPORT_TEMPLATE_FILE).map_err(|_e| DataError::NoSuchItem)?;
+            fs::read_to_string(REPORT_TEMPLATE_FILE).map_err(|_e| MailError::TemplateError)?;
         let template = Template::new(&template_file_contents);
         let mut args = HashMap::new();
         let image_link: &str = &info.image_link;
@@ -64,36 +104,7 @@ impl MailSender {
         args.insert("get_image_rank", get_image_rank);
 
         Ok(template.render(&args))
-    }
-}
-
-#[async_trait]
-impl AdminNotification for MailSender {
-    async fn notify_admin_image_report(&self, info: ImageReportInfo) {
-        match format!("app <{}>", self.config.username.clone()).parse() {
-            Err(error) => warn!("The sender could not be created: {error}"),
-            Ok(sender) => match format!("admin <{}>", self.config.admin_email_address).parse() {
-                Err(error) => warn!("The reciever could not be created: {error:?}"),
-                Ok(reciever) => match Self::get_report(&info) {
-                    Err(error) => warn!("The template file could not be read: {error:?}"),
-                    Ok(report) => {
-                        match Message::builder()
-                            .from(sender)
-                            .to(reciever)
-                            .subject("An image was reported for reviewing")
-                            .body(report)
-                        {
-                            Err(error) => warn!("The email could not be created: {error:?}"),
-                            Ok(email) => match self.mailer.send(&email) {
-                                Ok(_) => info!("Email sent successfully!"),
-                                Err(error) => warn!("Could not send email: {error:?}"),
-                            },
-                        }
-                    }
-                },
-            },
-        }
-    }
+    }    
 }
 
 #[cfg(test)]
