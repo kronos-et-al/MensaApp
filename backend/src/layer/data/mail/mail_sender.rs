@@ -1,6 +1,9 @@
+use std::{collections::HashMap, fs};
+
 use async_trait::async_trait;
 
 use lettre::{transport::smtp::authentication::Credentials, Message, SmtpTransport, Transport};
+use uuid::fmt::Simple;
 
 use crate::{
     interface::{
@@ -10,7 +13,10 @@ use crate::{
     startup::config::mail_info::MailInfo,
 };
 
+use string_template::Template;
 use tracing::{info, warn};
+
+const REPORT_TEMPLATE_FILE: &str = "template.txt";
 
 pub struct MailSender {
     config: MailInfo,
@@ -34,29 +40,30 @@ impl MailSender {
             Err(DataError::NoSuchItem)
         }
     }
-    fn get_report(info: &ImageReportInfo) -> String {
-        let image_link = info.image_link.as_str();
-        let image_id = info.image_id;
-        let report_count = info.report_count;
-        let reason = info.reason;
-        let image_got_hidden = info.image_got_hidden;
-        let positive_rating_count = info.positive_rating_count;
-        let negative_rating_count = info.negative_rating_count;
-        let get_image_rank = info.get_image_rank;
+    
+    fn get_report(info: &ImageReportInfo) -> Result<String> {
+        let template_file_contents =
+            fs::read_to_string(REPORT_TEMPLATE_FILE).map_err(|_e| DataError::NoSuchItem)?;
+        let template = Template::new(&template_file_contents);
+        let mut args = HashMap::new();
+        let image_link: &str = &info.image_link;
+        args.insert("image_link", image_link);
+        let image_id: &str = &Simple::from_uuid(info.image_id).to_string();
+        args.insert("image_id", image_id);
+        let report_count: &str = &info.report_count.to_string();
+        args.insert("report_count", report_count);
+        let reason: &str = &info.reason.to_string();
+        args.insert("reason", reason);
+        let image_got_hidden: &str = &info.image_got_hidden.to_string();
+        args.insert("image_got_hidden", image_got_hidden);
+        let positive_rating_count: &str = &info.positive_rating_count.to_string();
+        args.insert("positive_rating_count", positive_rating_count);
+        let negative_rating_count: &str = &info.negative_rating_count.to_string();
+        args.insert("negative_rating_count", negative_rating_count);
+        let get_image_rank: &str = &info.get_image_rank.to_string();
+        args.insert("get_image_rank", get_image_rank);
 
-        format!(
-            "The image at the url {image_link}
-        with the id {image_id}
-        was reported {report_count} times.
-        Reason: {reason}
-        Image automatically hidden: {image_got_hidden}
-        
-        Additional Data:
-        Positive ratings: {positive_rating_count}
-        Negative ratings: {negative_rating_count}
-        Rank: {get_image_rank}
-        "
-        )
+        Ok(template.render(&args))
     }
 }
 
@@ -66,21 +73,24 @@ impl AdminNotification for MailSender {
         match format!("app <{}>", self.config.username.clone()).parse() {
             Err(error) => warn!("The sender could not be created: {error}"),
             Ok(sender) => match format!("admin <{}>", self.config.admin_email_address).parse() {
-                Err(error) => warn!("The reciever could not be created: {error}"),
-                Ok(reciever) => {
-                    match Message::builder()
-                        .from(sender)
-                        .to(reciever)
-                        .subject("An image was reported for reviewing")
-                        .body(Self::get_report(&info))
-                    {
-                        Err(error) => warn!("The email could not be created: {error}"),
-                        Ok(email) => match self.mailer.send(&email) {
-                            Ok(_) => info!("Email sent successfully!"),
-                            Err(e) => warn!("Could not send email: {e:?}"),
-                        },
+                Err(error) => warn!("The reciever could not be created: {error:?}"),
+                Ok(reciever) => match Self::get_report(&info) {
+                    Err(error) => warn!("The template file could not be read: {error:?}"),
+                    Ok(report) => {
+                        match Message::builder()
+                            .from(sender)
+                            .to(reciever)
+                            .subject("An image was reported for reviewing")
+                            .body(report)
+                        {
+                            Err(error) => warn!("The email could not be created: {error:?}"),
+                            Ok(email) => match self.mailer.send(&email) {
+                                Ok(_) => info!("Email sent successfully!"),
+                                Err(error) => warn!("Could not send email: {error:?}"),
+                            },
+                        }
                     }
-                }
+                },
             },
         }
     }
