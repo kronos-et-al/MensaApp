@@ -1,4 +1,10 @@
-use mensa_app_backend::layer::trigger::graphql::{server::GraphQLServerInfo, *};
+use mensa_app_backend::layer::{
+    logic::api_command::{
+        command_handler::CommandHandler,
+        test::mocks::{CommandAdminNotificationMock, CommandDatabaseMock, CommandImageHosterMock},
+    },
+    trigger::graphql::{server::GraphQLServerInfo, *},
+};
 use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
 
@@ -16,7 +22,17 @@ async fn main() {
     // run server
     let info = GraphQLServerInfo { port: 8090 };
 
-    let mut server = server::GraphQLServer::new(info, mock::RequestDatabaseMock, mock::CommandMock);
+    let mut server = server::GraphQLServer::new(
+        info,
+        mock::RequestDatabaseMock,
+        CommandHandler::new(
+            CommandDatabaseMock,
+            CommandAdminNotificationMock,
+            CommandImageHosterMock,
+        )
+        .await
+        .expect("could not create command mock"),
+    );
     server.start();
     tokio::signal::ctrl_c()
         .await

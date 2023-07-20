@@ -61,13 +61,13 @@ fn read_auth_from_header(header: &str) -> AuthInfo {
     let parts: Vec<&str> = auth_message.split(AUTH_SEPARATOR).collect();
 
     let client_id = Uuid::try_from(*parts.first()?).ok()?;
-    let api_ident = parts.get(1)?.deref().into();
-    let hash = parts.get(2)?.deref().into();
+    let api_ident = *parts.get(1)?;
+    let hash = *parts.get(2)?;
 
     Some(InnerAuthInfo {
         client_id,
-        api_ident,
-        hash,
+        api_ident: api_ident.into(),
+        hash: hash.into(),
     })
 }
 

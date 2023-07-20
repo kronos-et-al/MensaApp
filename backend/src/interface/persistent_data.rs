@@ -18,33 +18,46 @@ pub enum DataError {
     #[error("the requested item could not be found in the database")]
     NoSuchItem,
     /// Error occurred during data request or an internal connection fault
-    #[error("internal error ocurred: {0}")]
+    #[error("internal error occurred: {0}")]
     InternalError(#[from] Box<dyn Error + Send + Sync>),
 }
 
 #[async_trait]
 /// An interface for checking relations and inserting data structures. The MealplanManagement component uses this interface for database access.
-pub trait MealplanManagementDataAccess {
-    /// Determines all canteens with a similar name.
-    async fn get_similar_canteens(&self, similar_name: String) -> Result<Vec<Canteen>>;
-    /// Determines all lines with a similar name.
-    async fn get_similar_lines(&self, similar_name: String) -> Result<Vec<Line>>;
-    /// Determines all meals with a similar name.
-    async fn get_similar_meals(&self, similar_name: String) -> Result<Vec<Meal>>;
-    /// Determines all sides with a similar name.
-    async fn get_similar_sides(&self, similar_name: String) -> Result<Vec<Side>>;
+pub trait MealplanManagementDataAccess: Send + Sync {
+    /// Removes all relations to the meal plan at the given date and the given canteen.
+    /// Without removing changes in the meal plan couldn't be updated.
+    async fn dissolve_relations(&self, canteen: Canteen, date: Date);
+    /// Determines the canteen with the most similar name.
+    async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Canteen>>;
+    /// Determines the line with the most similar name.
+    async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Line>>;
+    /// Determines the meal with the most similar name, identical allergens and identical additives.
+    async fn get_similar_meal(
+        &self,
+        similar_name: &str,
+        allergens: &[Allergen],
+        additives: &[Additive],
+    ) -> Result<Option<Meal>>;
+    /// Determines the side with the most similar name, identical allergens and identical additives.
+    async fn get_similar_side(
+        &self,
+        similar_name: &str,
+        allergens: &[Allergen],
+        additives: &[Additive],
+    ) -> Result<Option<Side>>;
 
     /// Updates an existing canteen entity in the database. Returns the entity.
-    async fn update_canteen(&self, uuid: Uuid, name: String) -> Result<Canteen>;
+    async fn update_canteen(&self, uuid: Uuid, name: &str) -> Result<Canteen>;
     /// Updates an existing line entity in the database. Returns the entity.
-    async fn update_line(&self, uuid: Uuid, name: String) -> Result<Line>;
+    async fn update_line(&self, uuid: Uuid, name: &str) -> Result<Line>;
     /// Updates an existing meal entity in the database. Returns the entity.
     async fn update_meal(
         &self,
         uuid: Uuid,
         line_id: Uuid,
         date: Date,
-        name: String,
+        name: &str,
         price: Price,
     ) -> Result<Meal>;
     /// Updates an existing side entity in the database. Returns the entity.
@@ -53,33 +66,33 @@ pub trait MealplanManagementDataAccess {
         uuid: Uuid,
         line_id: Uuid,
         date: Date,
-        name: String,
+        name: &str,
         price: Price,
     ) -> Result<Side>;
 
     /// Adds a new canteen entity to the database. Returns the new entity.
-    async fn insert_canteen(&self, name: String) -> Result<Canteen>;
+    async fn insert_canteen(&self, name: &str) -> Result<Canteen>;
     /// Adds a new line entity to the database. Returns the new entity.
-    async fn insert_line(&self, name: String) -> Result<Line>;
+    async fn insert_line(&self, name: &str) -> Result<Line>;
     /// Adds a new meal entity to the database. Returns the new entity.
     async fn insert_meal(
         &self,
-        name: String,
+        name: &str,
         meal_type: MealType,
         price: Price,
         next_served: Date,
-        allergens: Vec<Allergen>,
-        additives: Vec<Additive>,
+        allergens: &[Allergen],
+        additives: &[Additive],
     ) -> Result<Meal>;
     /// Adds a new side entity to the database. Returns the new entity.
     async fn insert_side(
         &self,
-        name: String,
+        name: &str,
         meal_type: MealType,
         price: Price,
         next_served: Date,
-        allergens: Vec<Allergen>,
-        additives: Vec<Additive>,
+        allergens: &[Allergen],
+        additives: &[Additive],
     ) -> Result<Side>;
 }
 
@@ -106,7 +119,7 @@ pub trait ImageReviewDataAccess: Send + Sync {
 
 #[async_trait]
 /// An interface for graphql mutation data manipulation. The Command component uses this interface for database access.
-pub trait CommandDataAccess {
+pub trait CommandDataAccess: Sync + Send {
     /// Returns the ImageInfo struct of image.
     async fn get_image_info(&self, image_id: Uuid) -> Result<ImageInfo>;
     /// Marks an image as hidden. Hidden images cant be seen by users.
