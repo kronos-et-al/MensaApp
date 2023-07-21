@@ -50,52 +50,44 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         additives: &[Additive],
     ) -> Result<Option<Side>>;
 
-    /// Updates an existing canteen entity in the database. Returns the entity.
+    /// Updates an existing canteen entity in the database. Returns the canteen uuid.
     async fn update_canteen(&self, uuid: Uuid, name: &str) -> Result<&str>;
     /// Updates an existing line entity in the database. Returns the line uuid.
     async fn update_line(&self, uuid: Uuid, name: &str) -> Result<&str>;
     /// Updates an existing meal entity in the database.
-    async fn update_meal(
-        &self,
-        uuid: Uuid,
-        line_id: Uuid,
-        date: Date,
-        name: &str,
-        price: Price,
-    ) -> Result<()>;
+    async fn update_meal(&self, uuid: Uuid, name: &str) -> Result<()>;
+    /// Adds a meal into the meal plan with the given params.
+    async fn add_meal_to_plan(&self, canteen_id: &str, date: Date, meal_id: &str, price: Price) -> Result<()>;
     /// Updates an existing side entity in the database.
-    async fn update_side(
-        &self,
-        uuid: Uuid,
-        line_id: Uuid,
-        date: Date,
-        name: &str,
-        price: Price,
-    ) -> Result<()>;
+    async fn update_side(&self, uuid: Uuid, name: &str) -> Result<()>;
+    /// Adds a side into the meal plan with the given params.
+    async fn add_side_to_plan(&self, canteen_id: &str, date: Date, side_id: &str, price: Price) -> Result<()>;
 
     /// Adds a new canteen entity to the database. Returns uuid of the new canteen.
     async fn insert_canteen(&self, name: &str) -> Result<&str>;
     /// Adds a new line entity to the database. Returns uuid of the new line.
     async fn insert_line(&self, name: &str) -> Result<&str>;
-    /// Adds a new meal entity to the database.
+    /// Adds a new meal entity to the database and creates a meal plan entry for the given day.
     async fn insert_meal(
         &self,
         name: &str,
         meal_type: MealType,
         price: Price,
-        next_served: Date,
         allergens: &[Allergen],
         additives: &[Additive],
+        canteen_id: &str,
+        next_served: Date
     ) -> Result<()>;
-    /// Adds a new side entity to the database.
+    /// Adds a new side entity to the database and creates a meal plan entry for the given day.
     async fn insert_side(
         &self,
         name: &str,
         meal_type: MealType,
         price: Price,
-        next_served: Date,
         allergens: &[Allergen],
         additives: &[Additive],
+        canteen_id: &str,
+        next_served: Date
     ) -> Result<()>;
 }
 
