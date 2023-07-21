@@ -298,6 +298,10 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   Future<void> activateFilter() async {
     await _doneInitialization;
 
+    if (_activeFilter) {
+      return;
+    }
+
     _activeFilter = true;
     notifyListeners();
   }
@@ -305,6 +309,10 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   @override
   Future<void> deactivateFilter() async {
     await _doneInitialization;
+
+    if (!_activeFilter) {
+      return;
+    }
 
     for (final mealPlan in _mealPlans) {
       if (mealPlan.isClosed && _mealPlans.length > 1) {
