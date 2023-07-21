@@ -1,0 +1,13 @@
+{
+  "reportImageTitle": "Bild melden",
+  "reportDescription": "Bitte gib an, warum das Bild entfernt werder sollte.",
+  "reportSelectReson": "Grund wählen",
+  "reportButton": "Bild melden",
+
+  "linkImageTitle": "Bild hochladen",
+  "linkDescription": "Bitte befolge die folgenden Schirtte, um ein Bild hinzufügen zu können.",
+  "linkTextFieldDescription": "Flickr Link zu Bild",
+  "linkSmallTextOwnImages": "Es dürfen nur eigene Bilder hochgeladen werden.",
+  "linkSmallTextDisplayed": "Die hochgeladenen Bilder werden anderen Nutzern angezeigt.",
+  "linkButton": "Hochladen"
+}

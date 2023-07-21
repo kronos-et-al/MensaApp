@@ -11,7 +11,10 @@ void main() {
       "snackbar",
       "settings",
       "priceCategory",
-      "mensaColorScheme"
+      "mensaColorScheme",
+      "filter",
+      "image",
+      "reportReason"
     ], useCountryCode: false, basePath: 'assets/locales', fallbackDir: 'de'),
     missingTranslationHandler: (key, locale) {
       if (kDebugMode) {
