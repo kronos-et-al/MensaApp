@@ -1,6 +1,11 @@
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
-use super::command::PersistentCommandData;
+use crate::interface::persistent_data::ImageReviewDataAccess;
+
+use super::{
+    command::PersistentCommandData, image_review::PersistentImageReviewData,
+    mealplan_management::PersistentMealplanManagementData, request::PersistentRequestData,
+};
 
 /// Structure containing all information necessary to connect to a database.
 pub struct DatabaseInfo {
@@ -30,6 +35,27 @@ impl DataAccessFactory {
     #[must_use]
     pub fn get_command_data_access(&self) -> PersistentCommandData {
         PersistentCommandData {
+            pool: self.pool.clone(),
+        }
+    }
+
+    #[must_use]
+    pub fn get_image_review_data_access(&self) -> PersistentImageReviewData {
+        PersistentImageReviewData {
+            pool: self.pool.clone(),
+        }
+    }
+
+    #[must_use]
+    pub fn get_mealplan_management_data_access(&self) -> PersistentMealplanManagementData {
+        PersistentMealplanManagementData {
+            pool: self.pool.clone(),
+        }
+    }
+
+    #[must_use]
+    pub fn get_request_data_access(&self) -> PersistentRequestData {
+        PersistentRequestData {
             pool: self.pool.clone(),
         }
     }
