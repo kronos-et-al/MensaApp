@@ -1,7 +1,7 @@
 use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
 use crate::interface::persistent_data::model::Line;
 use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
-use crate::util::Date;
+use crate::util::{Date, Uuid};
 use std::slice::Iter;
 use tracing::warn;
 
@@ -45,7 +45,7 @@ where
         Ok(())
     }
 
-    async fn resolve_line(&self, canteen_id: &str, date: Date, line: ParseLine) -> Result<(), DataError> {
+    async fn resolve_line(&self, canteen_id: Uuid, date: Date, line: ParseLine) -> Result<(), DataError> {
         let db_line = match self.db.get_similar_line(&line.name).await? {
             Some(similar_line) => self.db.update_line(similar_line, &line.name).await?,
             None => self.db.insert_line(&line.name).await?,
@@ -55,7 +55,7 @@ where
 
         for dish in line.dishes {
             let name = &dish.name.clone();
-            if (self.resolve_dish(canteen_id, date, db_line, dish, average).await).is_err() {
+            if (self.resolve_dish(canteen_id, date, dish, average).await).is_err() {
                 warn!("Skip dish '{}' as it could not be resolved", name);
             }
         }
@@ -63,8 +63,7 @@ where
     }
 
     async fn resolve_dish(
-        &self, canteen_id: &str, date: Date,
-        db_line: &str,
+        &self, canteen_id: Uuid, date: Date,
         dish: Dish,
         average: f64
     ) -> Result<(), DataError> {
@@ -244,7 +243,7 @@ mod test {
         }
         let line = get_line(dishes);
         assert!(resolver
-            .resolve_line(&Uuid::default().to_string(), Utc::now().date_naive(), line)
+            .resolve_line(Uuid::default(), Utc::now().date_naive(), line)
             .await
             .is_ok());
     }
