@@ -21,7 +21,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         sqlx::query!(
             "
             DELETE FROM food_plan
-            WHERE serve_date = $1 
+            WHERE serve_date = $1
             AND line_id IN (SELECT line_id FROM line WHERE canteen_id = $2)
             ",
             date,
@@ -66,7 +66,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         sqlx::query_as!(
             Canteen,
             "
-            UPDATE canteen 
+            UPDATE canteen
             SET name = $2
             WHERE canteen_id = $1
             RETURNING canteen_id as id, name
@@ -87,7 +87,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         sqlx::query_as!(
             Line,
             "
-            UPDATE line 
+            UPDATE line
             SET name = $2
             WHERE line_id = $1
             RETURNING line_id as id, name, canteen_id
@@ -124,7 +124,13 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         todo!()
     }
 
-    async fn add_meal_to_plan(&self, canteen_id: &str, date: Date, meal_id: &str, price: Price) -> Result<()> {
+    async fn add_meal_to_plan(
+        &self,
+        canteen_id: &str,
+        date: Date,
+        meal_id: &str,
+        price: Price,
+    ) -> Result<()> {
         todo!()
     }
 
@@ -150,7 +156,13 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         todo!()
     }
 
-    async fn add_side_to_plan(&self, canteen_id: &str, date: Date, side_id: &str, price: Price) -> Result<()> {
+    async fn add_side_to_plan(
+        &self,
+        canteen_id: &str,
+        date: Date,
+        side_id: &str,
+        price: Price,
+    ) -> Result<()> {
         todo!()
     }
 
@@ -159,8 +171,8 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         sqlx::query_as!(
             Canteen,
             "
-            INSERT INTO canteen (name) 
-            VALUES ($1) 
+            INSERT INTO canteen (name)
+            VALUES ($1)
             RETURNING canteen_id as id, name
             ",
             name
@@ -178,8 +190,8 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         sqlx::query_as!(
             Line,
             "
-            INSERT INTO line (name) 
-            VALUES ($1) 
+            INSERT INTO line (name)
+            VALUES ($1)
             RETURNING line_id as id, name, canteen_id
             ",
             name
@@ -200,7 +212,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         allergens: &[Allergen],
         additives: &[Additive],
         canteen_id: &str,
-        next_served: Date
+        next_served: Date,
     ) -> Result<()> {
         let record = sqlx::query!(
             "INSERT INTO food(name, food_type) VALUES ($1, $2) RETURNING food_id",
@@ -239,7 +251,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         allergens: &[Allergen],
         additives: &[Additive],
         canteen_id: &str,
-        next_served: Date
+        next_served: Date,
     ) -> Result<()> {
         // TODO => implement after interface update
         todo!()

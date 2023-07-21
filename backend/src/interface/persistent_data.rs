@@ -63,11 +63,23 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     /// Updates an existing meal entity in the database.
     async fn update_meal(&self, uuid: Uuid, name: &str) -> Result<()>;
     /// Adds a meal into the meal plan with the given params.
-    async fn add_meal_to_plan(&self, canteen_id: Uuid, date: Date, meal_id: Uuid, price: Price) -> Result<()>;
+    async fn add_meal_to_plan(
+        &self,
+        canteen_id: Uuid,
+        date: Date,
+        meal_id: Uuid,
+        price: Price,
+    ) -> Result<()>;
     /// Updates an existing side entity in the database.
     async fn update_side(&self, uuid: Uuid, name: &str) -> Result<()>;
     /// Adds a side into the meal plan with the given params.
-    async fn add_side_to_plan(&self, canteen_id: Uuid, date: Date, side_id: Uuid, price: Price) -> Result<()>;
+    async fn add_side_to_plan(
+        &self,
+        canteen_id: Uuid,
+        date: Date,
+        side_id: Uuid,
+        price: Price,
+    ) -> Result<()>;
 
     /// Adds a new canteen entity to the database.
     /// Returns uuid of the new canteen.
@@ -84,7 +96,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         allergens: &[Allergen],
         additives: &[Additive],
         canteen_id: Uuid,
-        next_served: Date
+        next_served: Date,
     ) -> Result<()>;
     /// Adds a new side entity to the database and creates a meal plan entry for the given day.
     async fn insert_side(
@@ -95,7 +107,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         allergens: &[Allergen],
         additives: &[Additive],
         canteen_id: Uuid,
-        next_served: Date
+        next_served: Date,
     ) -> Result<()>;
 }
 

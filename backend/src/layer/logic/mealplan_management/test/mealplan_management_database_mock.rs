@@ -123,7 +123,9 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
 
     /// Determines all canteens with a similar name.
     async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Uuid>> {
-        Ok(Option::from(get_canteens(similar_name, 10).pop().unwrap().id))
+        Ok(Option::from(
+            get_canteens(similar_name, 10).pop().unwrap().id,
+        ))
     }
     /// Determines all lines with a similar name.
     async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Uuid>> {
@@ -152,7 +154,10 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     /// Updates an existing canteen entity in the database. Returns the entity.
     async fn update_canteen(&self, uuid: Uuid, name: &str) -> Result<Uuid> {
         let s_name = name.to_string();
-        let canteen = Canteen { id: uuid, name: s_name };
+        let canteen = Canteen {
+            id: uuid,
+            name: s_name,
+        };
         Ok(canteen.id)
     }
     /// Updates an existing line entity in the database. Returns the entity.
@@ -169,32 +174,50 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         let meal = Meal {
             id: uuid,
             name: name.to_string(),
-            price: Price { price_student: 0, price_employee: 0, price_guest: 0, price_pupil: 0 },
+            price: Price {
+                price_student: 0,
+                price_employee: 0,
+                price_guest: 0,
+                price_pupil: 0,
+            },
             ..get_meal()
         };
         Ok(())
     }
 
-    async fn add_meal_to_plan(&self, canteen_id: Uuid, date: Date, meal_id: Uuid, price: Price) -> Result<()> {
+    async fn add_meal_to_plan(
+        &self,
+        canteen_id: Uuid,
+        date: Date,
+        meal_id: Uuid,
+        price: Price,
+    ) -> Result<()> {
         Ok(())
     }
 
     /// Updates an existing side entity in the database. Returns the entity.
-    async fn update_side(
-        &self,
-        uuid: Uuid,
-        name: &str
-    ) -> Result<()> {
+    async fn update_side(&self, uuid: Uuid, name: &str) -> Result<()> {
         let side = Side {
             id: uuid,
             name: name.to_string(),
-            price: Price { price_student: 0, price_employee: 0, price_guest: 0, price_pupil: 0 },
+            price: Price {
+                price_student: 0,
+                price_employee: 0,
+                price_guest: 0,
+                price_pupil: 0,
+            },
             ..get_side()
         };
         Ok(())
     }
 
-    async fn add_side_to_plan(&self, canteen_id: Uuid, date: Date, side_id: Uuid, price: Price) -> Result<()> {
+    async fn add_side_to_plan(
+        &self,
+        canteen_id: Uuid,
+        date: Date,
+        side_id: Uuid,
+        price: Price,
+    ) -> Result<()> {
         todo!()
     }
 

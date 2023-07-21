@@ -32,7 +32,11 @@ where
     /// Occurring errors get passed to the [`MealPlanManger`]
     pub async fn resolve(&self, canteen: ParseCanteen, date: Date) -> Result<(), DataError> {
         let db_canteen = match self.db.get_similar_canteen(&canteen.name).await? {
-            Some(similar_canteen) => self.db.update_canteen(similar_canteen, &canteen.name).await?,
+            Some(similar_canteen) => {
+                self.db
+                    .update_canteen(similar_canteen, &canteen.name)
+                    .await?
+            }
             None => self.db.insert_canteen(&canteen.name).await?,
         };
         self.db.dissolve_relations(db_canteen, date).await?;
@@ -45,7 +49,12 @@ where
         Ok(())
     }
 
-    async fn resolve_line(&self, canteen_id: Uuid, date: Date, line: ParseLine) -> Result<(), DataError> {
+    async fn resolve_line(
+        &self,
+        canteen_id: Uuid,
+        date: Date,
+        line: ParseLine,
+    ) -> Result<(), DataError> {
         let db_line = match self.db.get_similar_line(&line.name).await? {
             Some(similar_line) => self.db.update_line(similar_line, &line.name).await?,
             None => self.db.insert_line(&line.name).await?,
@@ -63,9 +72,11 @@ where
     }
 
     async fn resolve_dish(
-        &self, canteen_id: Uuid, date: Date,
+        &self,
+        canteen_id: Uuid,
+        date: Date,
         dish: Dish,
-        average: f64
+        average: f64,
     ) -> Result<(), DataError> {
         let similar_meal_result = self
             .db
@@ -79,14 +90,10 @@ where
         // Case 1.1: A similar side and meal could be found. Uncommon case.
         // Case 1.2: Or just a meal could be found.
         if let Some(similar_meal) = similar_meal_result {
-            self.db
-                .update_meal(similar_meal, &dish.name)
-                .await?;
+            self.db.update_meal(similar_meal, &dish.name).await?;
         // Case 2: A similar side could be found.
         } else if let Some(similar_side) = similar_side_result {
-            self.db
-                .update_side(similar_side, &dish.name)
-                .await?;
+            self.db.update_side(similar_side, &dish.name).await?;
         // Case 3: No similar meal could be found. Dish needs to be determined.
         } else if Self::is_side(dish.price.price_student, average, &dish.name) {
             self.db
