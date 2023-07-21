@@ -50,7 +50,8 @@ impl RequestDataAccess for RequestDatabaseMock {
         let line = Line {
             id: Uuid::parse_str("993cc4f4-8d32-491a-8e19-e9a7a6b6d31e").expect(INVALID_UUID),
             name: "dummy_getLine".to_string(),
-            canteen_id: Uuid::parse_str("87a75452-c553-4575-8136-508ca874897d").expect(INVALID_UUID),
+            canteen_id: Uuid::parse_str("87a75452-c553-4575-8136-508ca874897d")
+                .expect(INVALID_UUID),
         };
         Ok(Option::from(line))
     }
@@ -59,17 +60,20 @@ impl RequestDataAccess for RequestDatabaseMock {
         let line1 = Line {
             id: Uuid::parse_str("993cc4f4-8d32-491a-8e19-e9a7a6b6d31e").expect(INVALID_UUID),
             name: "dummy_line_1".to_string(),
-            canteen_id: Uuid::parse_str("87a75452-c553-4575-8136-508ca874897d").expect(INVALID_UUID),
+            canteen_id: Uuid::parse_str("87a75452-c553-4575-8136-508ca874897d")
+                .expect(INVALID_UUID),
         };
         let line2 = Line {
             id: Uuid::parse_str("45ade685-ee81-48d3-a07f-cacf96adff10").expect(INVALID_UUID),
             name: "dummy_line_2".to_string(),
-            canteen_id: Uuid::parse_str("87a75452-c553-4575-8136-508ca874897d").expect(INVALID_UUID),
+            canteen_id: Uuid::parse_str("87a75452-c553-4575-8136-508ca874897d")
+                .expect(INVALID_UUID),
         };
         let line3 = Line {
             id: Uuid::parse_str("2c9a73e7-9c35-4716-b8a7-963e148013f3").expect(INVALID_UUID),
             name: "dummy_line_3".to_string(),
-            canteen_id: Uuid::parse_str("b59630fe-b2f7-49d4-80d9-54600ae6fe88").expect(INVALID_UUID),
+            canteen_id: Uuid::parse_str("b59630fe-b2f7-49d4-80d9-54600ae6fe88")
+                .expect(INVALID_UUID),
         };
         Ok(vec![line1, line2, line3])
     }
