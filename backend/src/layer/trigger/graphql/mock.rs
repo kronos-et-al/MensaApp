@@ -16,29 +16,31 @@ use crate::{
     util::{Date, ReportReason},
 };
 
+const INVALID_UUID: &str = "invalid uuid:";
+
 pub struct RequestDatabaseMock;
 
 #[async_trait]
 impl RequestDataAccess for RequestDatabaseMock {
     async fn get_canteen(&self, _id: Uuid) -> DataResult<Option<Canteen>> {
         let canteen = Canteen {
-            id: Uuid::default(),
-            name: "dummy_getCanteen".to_string(),
+            id: Uuid::parse_str("87a75452-c553-4575-8136-508ca874897d").expect(INVALID_UUID),
+            name: "dummy_canteen_1".to_string(),
         };
         Ok(Option::from(canteen))
     }
 
     async fn get_canteens(&self) -> DataResult<Vec<Canteen>> {
         let canteen1 = Canteen {
-            id: Uuid::default(),
+            id: Uuid::parse_str("87a75452-c553-4575-8136-508ca874897d").expect(INVALID_UUID),
             name: "dummy_canteen_1".to_string(),
         };
         let canteen2 = Canteen {
-            id: Uuid::default(),
+            id: Uuid::parse_str("b59630fe-b2f7-49d4-80d9-54600ae6fe88").expect(INVALID_UUID),
             name: "dummy_canteen_2".to_string(),
         };
         let canteen3 = Canteen {
-            id: Uuid::default(),
+            id: Uuid::parse_str("0ce81fa1-003f-40f9-9019-8e9d1864f042").expect(INVALID_UUID),
             name: "dummy_canteen_3".to_string(),
         };
         Ok(vec![canteen1, canteen2, canteen3])
@@ -46,35 +48,35 @@ impl RequestDataAccess for RequestDatabaseMock {
 
     async fn get_line(&self, _id: crate::util::Uuid) -> DataResult<Option<Line>> {
         let line = Line {
-            id: Uuid::default(),
+            id: Uuid::parse_str("993cc4f4-8d32-491a-8e19-e9a7a6b6d31e").expect(INVALID_UUID),
             name: "dummy_getLine".to_string(),
-            canteen_id: Uuid::default(),
+            canteen_id: Uuid::parse_str("87a75452-c553-4575-8136-508ca874897d").expect(INVALID_UUID),
         };
         Ok(Option::from(line))
     }
 
     async fn get_lines(&self, _canteen_id: Uuid) -> DataResult<Vec<Line>> {
         let line1 = Line {
-            id: Uuid::default(),
+            id: Uuid::parse_str("993cc4f4-8d32-491a-8e19-e9a7a6b6d31e").expect(INVALID_UUID),
             name: "dummy_line_1".to_string(),
-            canteen_id: Uuid::default(),
+            canteen_id: Uuid::parse_str("87a75452-c553-4575-8136-508ca874897d").expect(INVALID_UUID),
         };
         let line2 = Line {
-            id: Uuid::default(),
+            id: Uuid::parse_str("45ade685-ee81-48d3-a07f-cacf96adff10").expect(INVALID_UUID),
             name: "dummy_line_2".to_string(),
-            canteen_id: Uuid::default(),
+            canteen_id: Uuid::parse_str("87a75452-c553-4575-8136-508ca874897d").expect(INVALID_UUID),
         };
         let line3 = Line {
-            id: Uuid::default(),
+            id: Uuid::parse_str("2c9a73e7-9c35-4716-b8a7-963e148013f3").expect(INVALID_UUID),
             name: "dummy_line_3".to_string(),
-            canteen_id: Uuid::default(),
+            canteen_id: Uuid::parse_str("b59630fe-b2f7-49d4-80d9-54600ae6fe88").expect(INVALID_UUID),
         };
         Ok(vec![line1, line2, line3])
     }
 
     async fn get_meal(&self, _id: Uuid, _line_id: Uuid, _date: Date) -> DataResult<Option<Meal>> {
         let meal = Meal {
-            id: Uuid::default(),
+            id: Uuid::parse_str("4ab922a0-1622-4813-98a7-954272f74b5c").expect(INVALID_UUID),
             name: "dummy_getMeal".to_string(),
             meal_type: MealType::Vegan,
             price: Price {
@@ -91,14 +93,14 @@ impl RequestDataAccess for RequestDatabaseMock {
             average_rating: 0.0,
             date: Date::from_ymd_opt(2023, 7, 4)
                 .expect("Date not could be created with these parameters."),
-            line_id: Uuid::default(),
+            line_id: Uuid::parse_str("993cc4f4-8d32-491a-8e19-e9a7a6b6d31e").expect(INVALID_UUID),
         };
         Ok(Option::from(meal))
     }
 
     async fn get_meals(&self, _line_id: Uuid, _date: Date) -> DataResult<Option<Vec<Meal>>> {
         let meal1 = Meal {
-            id: Uuid::default(),
+            id: Uuid::parse_str("4ab922a0-1622-4813-98a7-954272f74b5c").expect(INVALID_UUID),
             name: "dummy_meal_1".to_string(),
             meal_type: MealType::Vegan,
             price: Price {
@@ -115,10 +117,10 @@ impl RequestDataAccess for RequestDatabaseMock {
             average_rating: 1.2,
             date: Date::from_ymd_opt(2023, 7, 4)
                 .expect("Date not could be created with these parameters."),
-            line_id: Uuid::default(),
+            line_id: Uuid::parse_str("993cc4f4-8d32-491a-8e19-e9a7a6b6d31e").expect(INVALID_UUID),
         };
         let meal2 = Meal {
-            id: Uuid::default(),
+            id: Uuid::parse_str("5fa5b832-a685-4b11-b475-f63e9844d299").expect(INVALID_UUID),
             name: "dummy_meal_2".to_string(),
             meal_type: MealType::BeefAw,
             price: Price {
@@ -135,10 +137,10 @@ impl RequestDataAccess for RequestDatabaseMock {
             average_rating: 4.1,
             date: Date::from_ymd_opt(2022, 6, 5)
                 .expect("Date not could be created with these parameters."),
-            line_id: Uuid::default(),
+            line_id: Uuid::parse_str("993cc4f4-8d32-491a-8e19-e9a7a6b6d31e").expect(INVALID_UUID),
         };
         let meal3 = Meal {
-            id: Uuid::default(),
+            id: Uuid::parse_str("5035415d-869b-4a89-ad65-d812c781d287").expect(INVALID_UUID),
             name: "dummy_meal_3".to_string(),
             meal_type: MealType::Vegetarian,
             price: Price {
@@ -155,14 +157,14 @@ impl RequestDataAccess for RequestDatabaseMock {
             average_rating: 3.5,
             date: Date::from_ymd_opt(2022, 12, 12)
                 .expect("Date not could be created with these parameters."),
-            line_id: Uuid::default(),
+            line_id: Uuid::parse_str("45ade685-ee81-48d3-a07f-cacf96adff10").expect(INVALID_UUID),
         };
         Ok(Some(vec![meal1, meal2, meal3]))
     }
 
     async fn get_sides(&self, _line_id: Uuid, _date: Date) -> DataResult<Vec<Side>> {
         let side1 = Side {
-            id: Uuid::default(),
+            id: Uuid::parse_str("5ae5f6da-a9f8-4754-8e7a-e07dc79acf18").expect(INVALID_UUID),
             name: "dummy_side_1".to_string(),
             meal_type: MealType::Vegan,
             price: Price {
@@ -173,7 +175,7 @@ impl RequestDataAccess for RequestDatabaseMock {
             },
         };
         let side2 = Side {
-            id: Uuid::default(),
+            id: Uuid::parse_str("51496908-017d-4874-901b-95660abe5776").expect(INVALID_UUID),
             name: "dummy_side_2".to_string(),
             meal_type: MealType::Fish,
             price: Price {
@@ -184,7 +186,7 @@ impl RequestDataAccess for RequestDatabaseMock {
             },
         };
         let side3 = Side {
-            id: Uuid::default(),
+            id: Uuid::parse_str("b75340a4-4064-4417-a868-5e602f15a884").expect(INVALID_UUID),
             name: "dummy_side_3".to_string(),
             meal_type: MealType::Beef,
             price: Price {
@@ -203,7 +205,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         _client_id: Option<Uuid>,
     ) -> DataResult<Vec<Image>> {
         let d1 = Image {
-            id: Uuid::default(),
+            id: Uuid::parse_str("be7a7c58-1fd3-4432-9669-e87603629aeb").expect(INVALID_UUID),
             image_hoster_id: "dummy_image1_id".to_string(),
             url: String::new(),
             rank: 0.1,
@@ -211,7 +213,7 @@ impl RequestDataAccess for RequestDatabaseMock {
             downvotes: 20,
         };
         let d2 = Image {
-            id: Uuid::default(),
+            id: Uuid::parse_str("e4e1c2f5-881c-4e1f-8618-ca8f6f3bf1d2").expect(INVALID_UUID),
             image_hoster_id: "dummy_image2_id".to_string(),
             url: String::new(),
             rank: 0.4,
@@ -219,7 +221,7 @@ impl RequestDataAccess for RequestDatabaseMock {
             downvotes: 4,
         };
         let d3 = Image {
-            id: Uuid::default(),
+            id: Uuid::parse_str("9f0a4fb0-c233-4a16-8f3a-2bbbf735ef07").expect(INVALID_UUID),
             image_hoster_id: "dummy_image3_id".to_string(),
             url: String::new(),
             rank: 0.6,
