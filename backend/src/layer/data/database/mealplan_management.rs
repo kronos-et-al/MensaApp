@@ -206,7 +206,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         .await?;
 
         // todo allergens
-        // todo mealplan 
+        // todo mealplan
 
         todo!()
     }

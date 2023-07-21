@@ -104,12 +104,12 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 pub trait ImageReviewDataAccess {
     /// Returns the first n images sorted by rank which are related to an meal served at the given day.
     async fn get_n_images_by_rank_date(&self, n: u32, date: Date) -> Result<Vec<Image>>;
-    /// Returns the first n images sorted by rank which are related to an meal served in the next week or which were not validated last week.
+    /// Returns the first n images sorted by rank which are related to an meal served in the next week and which were not validated last week.
     async fn get_n_images_next_week_by_rank_not_checked_last_week(
         &self,
         n: u32,
     ) -> Result<Vec<Image>>;
-    /// Returns the first n images sorted by the date of the last check (desc) which were not validated in the last week.
+    /// Returns the first n images sorted by the date of the last validation (asc) which were not validated in the last week.
     async fn get_n_images_by_last_checked_not_checked_last_week(
         &self,
         n: u32,

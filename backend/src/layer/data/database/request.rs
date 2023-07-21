@@ -146,9 +146,9 @@ impl RequestDataAccess for PersistentRequestData {
         .await?
         .into_iter()
         .filter_map(|side| Some(Side {
-            id: side.food_id, 
-            meal_type: side.meal_type, 
-            name: side.name, 
+            id: side.food_id,
+            meal_type: side.meal_type,
+            name: side.name,
             price: side.price.try_into().ok()? // todo remove silent error, find better solution; maybe even panic as this should never occur and this we should notice?
         }))
         .collect();
@@ -268,7 +268,7 @@ mod tests {
 
         let canteen = request.get_canteens().await.unwrap();
         assert!(canteen.len() == 3);
-        assert!(canteen[0].name == "my favorite canteen");      //TODO: Canteen order
+        assert!(canteen[0].name == "my favorite canteen"); //TODO: Canteen order
         assert!(canteen[1].name == "second canteen");
         assert!(canteen[2].name == "bad canteen");
     }
@@ -278,7 +278,11 @@ mod tests {
         provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
-        let canteen_id_strs = ["10728cc4-1e07-4e18-a9d9-ca45b9782413", "8f10c56d-da9b-4f62-b4c1-16feb0f98c67", "f2885f67-fc95-4205-bc7d-b2fb78cee0a8"];
+        let canteen_id_strs = [
+            "10728cc4-1e07-4e18-a9d9-ca45b9782413",
+            "8f10c56d-da9b-4f62-b4c1-16feb0f98c67",
+            "f2885f67-fc95-4205-bc7d-b2fb78cee0a8",
+        ];
         let mut canteens = Vec::new();
         for canteen_id_str in canteen_id_strs {
             if let Ok(canteen_id) = Uuid::parse_str(canteen_id_str) {
@@ -288,7 +292,7 @@ mod tests {
             }
         }
         assert!(canteens.len() == 3);
-        assert!(canteens[0].name == "my favorite canteen");      //TODO: Canteen order
+        assert!(canteens[0].name == "my favorite canteen"); //TODO: Canteen order
         assert!(canteens[1].name == "second canteen");
         assert!(canteens[2].name == "bad canteen");
     }
@@ -313,7 +317,13 @@ mod tests {
         provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
-        let meals = request.get_meals(Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(), Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap()).await.unwrap();
+        let meals = request
+            .get_meals(
+                Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(),
+                Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap(),
+            )
+            .await
+            .unwrap();
         if let Some(meals) = meals {
             assert!(meals.len() == 2);
             assert!(meals[0].name == "Geflügel - Cevapcici, Ajvar, Djuvec Reis");
@@ -326,7 +336,13 @@ mod tests {
         provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
-        let sides = request.get_sides(Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(), Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap()).await.unwrap();
+        let sides = request
+            .get_sides(
+                Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(),
+                Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap(),
+            )
+            .await
+            .unwrap();
         assert!(sides.len() == 1);
         assert!(sides[0].name == "zu jedem Gericht reichen wir ein Dessert oder Salat");
     }
@@ -361,7 +377,7 @@ mod tests {
         ('1b5633c2-05c5-4444-90e5-2e475bae6463', 'Cordon bleu vom Schwein mit Bratensoße', 'PORK')")
             .execute(pool)
             .await
-            .expect(INSERT_FAILED);    
+            .expect(INSERT_FAILED);
 
         sqlx::query!("INSERT INTO food_plan(line_id, food_id, serve_date, prices)
         VALUES  ('3e8c11fa-906a-4c6a-bc71-28756c6b00ae', 'f7337122-b018-48ad-b420-6202dc3cb4ff', '2023-07-10', (320,420,460,355)),
@@ -372,14 +388,15 @@ mod tests {
                 .await
                 .expect(INSERT_FAILED);
 
-        sqlx::query!("INSERT INTO meal(food_id)
+        sqlx::query!(
+            "INSERT INTO meal(food_id)
         VALUES  ('f7337122-b018-48ad-b420-6202dc3cb4ff'),
                 ('25cb8c50-75a4-48a2-b4cf-8ab2566d8bec'),
                 ('0a850476-eda4-4fd8-9f93-579eb85b8c25'),
-                ('1b5633c2-05c5-4444-90e5-2e475bae6463')")
-                .execute(pool)
-                .await
-                .expect(INSERT_FAILED);
-
+                ('1b5633c2-05c5-4444-90e5-2e475bae6463')"
+        )
+        .execute(pool)
+        .await
+        .expect(INSERT_FAILED);
     }
 }
