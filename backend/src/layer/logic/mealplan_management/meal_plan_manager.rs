@@ -89,7 +89,6 @@ mod test {
 
     #[tokio::test]
     async fn valid_start_update_parsing() {
-        gen_random_uuid();
         let manager = MealPlanManager::new(MealplanManagementDatabaseMock, MealPlanParserMock);
         manager.start_update_parsing().await;
     }
