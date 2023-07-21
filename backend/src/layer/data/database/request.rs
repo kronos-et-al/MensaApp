@@ -262,14 +262,35 @@ mod tests {
     use sqlx::PgPool;
 
     #[sqlx::test]
-    async fn test_canteen(pool: PgPool) {
+    async fn test_canteens(pool: PgPool) {
         provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
         let canteen = request.get_canteens().await.unwrap();
         assert!(canteen.len() == 3);
-        assert!(canteen[0].name == "my favorite canteen");
-  
+        assert!(canteen[0].name == "my favorite canteen");      //TODO: Canteen order
+        assert!(canteen[1].name == "second canteen");
+        assert!(canteen[2].name == "bad canteen");
+    }
+
+    #[sqlx::test]
+    async fn test_canteen(pool: PgPool) {
+        provide_dummy_data(&pool).await;
+        let request = PersistentRequestData { pool };
+
+        let canteen_id_strs = ["10728cc4-1e07-4e18-a9d9-ca45b9782413", "8f10c56d-da9b-4f62-b4c1-16feb0f98c67", "f2885f67-fc95-4205-bc7d-b2fb78cee0a8"];
+        let mut canteens = Vec::new();
+        for canteen_id_str in canteen_id_strs {
+            if let Ok(canteen_id) = Uuid::parse_str(canteen_id_str) {
+                if let Ok(Some(canteen)) = request.get_canteen(canteen_id).await {
+                    canteens.push(canteen);
+                }
+            }
+        }
+        assert!(canteens.len() == 3);
+        assert!(canteens[0].name == "my favorite canteen");      //TODO: Canteen order
+        assert!(canteens[1].name == "second canteen");
+        assert!(canteens[2].name == "bad canteen");
     }
 
     #[sqlx::test]
@@ -280,6 +301,8 @@ mod tests {
         let lines = request.get_lines(Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap()).await.unwrap();
         assert!(lines.len() == 3);
         assert!(lines[0].name == "line 1");
+        assert!(lines[1].name == "line 2");
+        assert!(lines[2].name == "special line");
     }
 
     #[sqlx::test]
