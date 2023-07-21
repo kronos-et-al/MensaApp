@@ -76,4 +76,12 @@ abstract class IMealAccess with ChangeNotifier {
   /// This method checks if settings or favorites are changed since the last time the mealplan was displayed.
   /// If they were changed it corrects the displayed data if needed.
   Future<void> switchToMealPlanView();
+
+  /// This method activates the filter.
+  /// @return The result of the update
+  Future<void> activateFilter();
+
+  /// This method deactivates the filter.
+  /// @return The result of the update
+  Future<void> deactivateFilter();
 }
