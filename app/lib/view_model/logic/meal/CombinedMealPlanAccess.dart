@@ -22,10 +22,12 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
   late Canteen _activeCanteen;
   late DateTime _displayedDate;
-  late List<MealPlan> _mealPlans = [];
   late List<MealPlan> _filteredMealPlan;
   late FilterPreferences _filter;
-  late bool _noDataYet = false;
+  List<MealPlan> _mealPlans = [];
+  bool _noDataYet = false;
+  bool _activeFilter = true;
+
 
   late PriceCategory _priceCategory;
 
@@ -189,6 +191,10 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       return Future.value(Failure(ClosedCanteenException("canteen closed")));
     }
 
+    if (!_activeFilter) {
+      return Future.value(Success(_mealPlans));
+    }
+
     // everything is filtered
     if (_filteredMealPlan.isEmpty) {
       return Future.value(Failure(FilteredMealException("all filtered")));
@@ -270,6 +276,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
   @override
   Future<void> switchToMealPlanView() async {
+    await _doneInitialization;
+
     bool changed = await _updateFavorites();
     final category = await _preferences.getPriceCategory();
 
@@ -284,6 +292,28 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       await _filterMealPlans();
       notifyListeners();
     }
+  }
+
+  @override
+  Future<void> activateFilter() async {
+    await _doneInitialization;
+
+    _activeFilter = true;
+    notifyListeners();
+  }
+
+  @override
+  Future<void> deactivateFilter() async {
+    await _doneInitialization;
+
+    for (final mealPlan in _mealPlans) {
+      if (mealPlan.isClosed && _mealPlans.length > 1) {
+        _mealPlans.remove(mealPlan);
+      }
+    }
+
+    _activeFilter = false;
+    notifyListeners();
   }
 
   void _changeRatingOfMeal(Meal changedMeal, int rating) {
