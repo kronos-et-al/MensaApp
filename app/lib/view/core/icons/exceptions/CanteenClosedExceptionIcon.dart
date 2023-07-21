@@ -6,7 +6,7 @@ class CanteenClosedExceptionIcon extends StatelessWidget {
   final double _size;
   final Color? _color;
 
-  /// Creates an filter icon.
+  /// Creates a closed canteen icon.
   /// @param key The key to use for this widget.
   /// @param size The size of the icon.
   /// @param color The color of the icon.
