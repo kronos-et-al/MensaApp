@@ -32,11 +32,7 @@ where
     /// Occurring errors get passed to the [`MealPlanManger`]
     pub async fn resolve(&self, canteen: ParseCanteen, date: Date) -> Result<(), DataError> {
         let db_canteen = match self.db.get_similar_canteen(&canteen.name).await? {
-            Some(similar_canteen) => {
-                self.db
-                    .update_canteen(similar_canteen.id, &canteen.name)
-                    .await?
-            }
+            Some(similar_canteen) => self.db.update_canteen(similar_canteen.id, &canteen.name).await?,
             None => self.db.insert_canteen(&canteen.name).await?,
         };
         self.db.dissolve_relations(db_canteen, date).await?;
