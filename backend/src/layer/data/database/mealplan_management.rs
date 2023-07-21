@@ -16,7 +16,8 @@ pub struct PersistentMealplanManagementData {
 
 #[async_trait]
 impl MealplanManagementDataAccess for PersistentMealplanManagementData {
-    async fn dissolve_relations(&self, canteen: Canteen, date: Date) -> Result<()> {
+    async fn dissolve_relations(&self, canteen: &str, date: Date) -> Result<()> {
+        /*
         sqlx::query!(
             "
             DELETE FROM food_plan
@@ -29,13 +30,16 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         .execute(&self.pool)
         .await?;
         Ok(())
-    }
-
-    async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Canteen>> {
+        */
+        // TODO => implement after interface update
         todo!()
     }
 
-    async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Line>> {
+    async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<&str>> {
+        todo!()
+    }
+
+    async fn get_similar_line(&self, similar_name: &str) -> Result<Option<&str>> {
         todo!()
     }
 
@@ -44,7 +48,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         similar_name: &str,
         allergens: &[Allergen],
         additives: &[Additive],
-    ) -> Result<Option<Meal>> {
+    ) -> Result<Option<&str>> {
         todo!()
     }
 
@@ -53,11 +57,12 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         similar_name: &str,
         allergens: &[Allergen],
         additives: &[Additive],
-    ) -> Result<Option<Side>> {
+    ) -> Result<Option<&str>> {
         todo!()
     }
 
-    async fn update_canteen(&self, uuid: Uuid, name: &str) -> Result<Canteen> {
+    async fn update_canteen(&self, uuid: &str, name: &str) -> Result<&str> {
+        /*
         sqlx::query_as!(
             Canteen,
             "
@@ -72,9 +77,13 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         .fetch_one(&self.pool)
         .await
         .map_err(Into::into)
+        */
+        // TODO => implement after interface update
+        todo!()
     }
 
-    async fn update_line(&self, uuid: Uuid, name: &str) -> Result<Line> {
+    async fn update_line(&self, uuid: &str, name: &str) -> Result<&str> {
+        /*
         sqlx::query_as!(
             Line,
             "
@@ -89,16 +98,13 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         .fetch_one(&self.pool)
         .await
         .map_err(Into::into)
+        */
+        // TODO => implement after interface update
+        todo!()
     }
 
-    async fn update_meal(
-        &self,
-        uuid: Uuid,
-        line_id: Uuid,
-        date: Date,
-        name: &str,
-        price: Price,
-    ) -> Result<Meal> {
+    async fn update_meal(&self, uuid: &str, name: &str) -> Result<()> {
+        /*
         sqlx::query!("UPDATE food SET name = $2 WHERE food_id = $1", uuid, name)
             .execute(&self.pool)
             .await?;
@@ -112,19 +118,18 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         )
         .execute(&self.pool)
         .await?;
-
+        */
         // Todo is the complete meal really needed? not returning it would make things much more simpler
+        // TODO => implement after interface update
         todo!()
     }
 
-    async fn update_side(
-        &self,
-        uuid: Uuid,
-        line_id: Uuid,
-        date: Date,
-        name: &str,
-        price: Price,
-    ) -> Result<Side> {
+    async fn add_meal_to_plan(&self, canteen_id: &str, date: Date, meal_id: &str, price: Price) -> Result<()> {
+        todo!()
+    }
+
+    async fn update_side(&self, uuid: &str, name: &str) -> Result<()> {
+        /*
         // todo same as meal? combine?
         sqlx::query!("UPDATE food SET name = $2 WHERE food_id = $1", uuid, name)
             .execute(&self.pool)
@@ -139,12 +144,18 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         )
         .execute(&self.pool)
         .await?;
-
+        */
         // Todo is the complete meal really needed? not returning it would make things much more simpler
+        // TODO => implement after interface update
         todo!()
     }
 
-    async fn insert_canteen(&self, name: &str) -> Result<Canteen> {
+    async fn add_side_to_plan(&self, canteen_id: &str, date: Date, side_id: &str, price: Price) -> Result<()> {
+        todo!()
+    }
+
+    async fn insert_canteen(&self, name: &str) -> Result<&str> {
+        /*
         sqlx::query_as!(
             Canteen,
             "
@@ -157,9 +168,13 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         .fetch_one(&self.pool)
         .await
         .map_err(Into::into)
+        */
+        // TODO => implement after interface update
+        todo!()
     }
 
-    async fn insert_line(&self, name: &str) -> Result<Line> {
+    async fn insert_line(&self, name: &str) -> Result<&str> {
+        /*
         sqlx::query_as!(
             Line,
             "
@@ -172,6 +187,9 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         .fetch_one(&self.pool)
         .await
         .map_err(Into::into)
+        */
+        // TODO => implement after interface update
+        todo!()
     }
 
     async fn insert_meal(
@@ -179,10 +197,11 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         name: &str,
         meal_type: MealType,
         price: Price,
-        next_served: Date,
         allergens: &[Allergen],
         additives: &[Additive],
-    ) -> Result<Meal> {
+        canteen_id: &str,
+        next_served: Date
+    ) -> Result<()> {
         let record = sqlx::query!(
             "INSERT INTO food(name, food_type) VALUES ($1, $2) RETURNING food_id",
             name,
@@ -206,8 +225,9 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         .await?;
 
         // todo allergens
-        // todo mealplan 
+        // todo mealplan
 
+        // TODO => implement after interface update
         todo!()
     }
 
@@ -216,10 +236,12 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         name: &str,
         meal_type: MealType,
         price: Price,
-        next_served: Date,
         allergens: &[Allergen],
         additives: &[Additive],
-    ) -> Result<Side> {
+        canteen_id: &str,
+        next_served: Date
+    ) -> Result<()> {
+        // TODO => implement after interface update
         todo!()
     }
 }
