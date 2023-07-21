@@ -12,7 +12,6 @@ pub struct ApiRequest {
 struct Body {
     sizes: Sizes
 }
-
 #[derive(Debug, Deserialize)]
 struct Sizes {
     size: Vec<Size>
