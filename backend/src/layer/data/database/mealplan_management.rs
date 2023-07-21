@@ -126,9 +126,9 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
 
     async fn add_meal_to_plan(
         &self,
-        canteen_id: Uuid,
-        date: Date,
         meal_id: Uuid,
+        line_id: Uuid,
+        date: Date,
         price: Price,
     ) -> Result<()> {
         todo!()
@@ -158,9 +158,9 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
 
     async fn add_side_to_plan(
         &self,
-        canteen_id: Uuid,
-        date: Date,
         side_id: Uuid,
+        line_id: Uuid,
+        date: Date,
         price: Price,
     ) -> Result<()> {
         todo!()
@@ -208,12 +208,9 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         &self,
         name: &str,
         meal_type: MealType,
-        price: Price,
         allergens: &[Allergen],
         additives: &[Additive],
-        canteen_id: Uuid,
-        next_served: Date,
-    ) -> Result<()> {
+    ) -> Result<Uuid> {
         let record = sqlx::query!(
             "INSERT INTO food(name, food_type) VALUES ($1, $2) RETURNING food_id",
             name,
@@ -247,12 +244,9 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         &self,
         name: &str,
         meal_type: MealType,
-        price: Price,
         allergens: &[Allergen],
         additives: &[Additive],
-        canteen_id: Uuid,
-        next_served: Date,
-    ) -> Result<()> {
+    ) -> Result<Uuid> {
         // TODO => implement after interface update
         todo!()
     }

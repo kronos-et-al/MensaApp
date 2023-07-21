@@ -99,11 +99,8 @@ where
                 .insert_side(
                     &dish.name,
                     dish.meal_type,
-                    dish.price,
                     &dish.allergens,
-                    &dish.additives,
-                    canteen_id,
-                    date,
+                    &dish.additives
                 )
                 .await?;
         } else {
@@ -111,11 +108,8 @@ where
                 .insert_meal(
                     &dish.name,
                     dish.meal_type,
-                    dish.price,
                     &dish.allergens,
-                    &dish.additives,
-                    canteen_id,
-                    date,
+                    &dish.additives
                 )
                 .await?;
         };
