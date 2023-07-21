@@ -88,6 +88,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     /// Returns uuid of the new line.
     async fn insert_line(&self, name: &str) -> Result<Uuid>;
     /// Adds a new meal entity to the database and creates a meal plan entry for the given day.
+    #[allow(clippy::too_many_arguments)]
     async fn insert_meal(
         &self,
         name: &str,
@@ -99,6 +100,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         next_served: Date,
     ) -> Result<()>;
     /// Adds a new side entity to the database and creates a meal plan entry for the given day.
+    #[allow(clippy::too_many_arguments)]
     async fn insert_side(
         &self,
         name: &str,
