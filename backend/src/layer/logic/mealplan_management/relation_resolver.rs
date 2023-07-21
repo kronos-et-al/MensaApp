@@ -39,7 +39,7 @@ where
             }
             None => self.db.insert_canteen(&canteen.name).await?,
         };
-        self.db.dissolve_relations(db_canteen, date).await;
+        self.db.dissolve_relations(db_canteen, date).await?;
         for line in canteen.lines {
             let name = &line.name.clone();
             if (self.resolve_line(line, date).await).is_err() {
