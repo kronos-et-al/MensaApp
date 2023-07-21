@@ -3,6 +3,7 @@ use crate::interface::image_hoster::{ImageHoster, ImageHosterError};
 use crate::layer::data::flickr_api::api_request::ApiRequest;
 use crate::layer::data::flickr_api::xml_parser::XMLParser;
 use async_trait::async_trait;
+use std::ops::{Deref, Index};
 use std::time::Duration;
 
 #[derive(Debug, Clone)]
@@ -26,25 +27,11 @@ impl FlickrApiHandler {
     }
 
     fn determine_photo_id(url: &str) -> Result<&str, ImageHosterError> {
+        let splits: Vec<&str> = url.split('/').collect();
         if url.len() > 30 {
-            let splits = &url.split('/');
-            match splits[5] {
-                // TODO redo
-                None => Err(ImageHosterError::DecodeFailed(format!(
-                    "Couldn't detect photo id in url {}",
-                    &url
-                ))),
-                Some(s) => Ok(s),
-            }
+            Ok(splits.index(5)) // TODO match
         } else {
-            let splits = &url.split('/');
-            match splits.last() {
-                None => Err(ImageHosterError::DecodeFailed(format!(
-                    "Couldn't detect photo id in url {}",
-                    &url
-                ))),
-                Some(s) => Ok(s),
-            }
+            Ok(splits.last().copied().unwrap()) // TODO match
         }
     }
 
@@ -74,28 +61,21 @@ impl ImageHoster for FlickrApiHandler {
         let photo_id = FlickrApiHandler::determine_photo_id(url)?;
         let licence = self.parser.get_licence(
             self.request
-                .flickr_photos_licenses_get_license_history(&photo_id),
+                .flickr_photos_licenses_get_license_history(&photo_id)
+                .await?,
         );
-        self.parser.parse_to_image(
-            self.request.flickr_photos_get_sizes(&photo_id)?,
+        Ok(self.parser.parse_to_image(
+            self.request.flickr_photos_get_sizes(&photo_id).await?,
             photo_id,
             licence,
-        )?
+        )?)
     }
 
-    async fn check_existence(&self, photo_id: &str) -> bool {
-        match self.request.flickr_photos_get_sizes(photo_id) {
-            Ok(_) => true,
-            Err(_) => false,
-        }
+    async fn check_existence(&self, photo_id: &str) -> Result<bool, ImageHosterError> {
+        todo!()
     }
 
-    async fn check_licence(&self, photo_id: &str) -> bool {
-        FlickrApiHandler::check_licence(
-            self.parser.get_licence(
-                self.request
-                    .flickr_photos_licenses_get_license_history(photo_id)?,
-            )?,
-        )
+    async fn check_licence(&self, photo_id: &str) -> Result<bool, ImageHosterError> {
+        todo!()
     }
 }

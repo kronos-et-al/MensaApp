@@ -42,7 +42,13 @@ impl XMLParser {
         Self
     }
 
-    pub fn parse_to_image(&self, xml: String, photo_id: &str, licence: &str) -> ImageMetaData {
+    pub fn parse_to_image(
+        &self,
+        xml: String,
+        photo_id: &str,
+        licence: &str,
+    ) -> Result<ImageMetaData, ImageHosterError> {
+        /*
         let document = Html::parse_fragment(&xml);
         let preferred_size_tag = Selector::parse(SIZE_LABEL_SELECTOR)
             .map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
@@ -59,6 +65,7 @@ impl XMLParser {
             image_url,
             licence: String::from(licence),
         };
+        */
         todo!()
     }
 
