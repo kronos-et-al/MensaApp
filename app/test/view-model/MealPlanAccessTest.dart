@@ -381,6 +381,51 @@ void main() {
         expect(returnedMealPlan[1].meals[0].sides?.length, 4);
       });
 
+      test("deactivate", () async {
+        filter.onlyFavorite = true;
+        await mealPlanAccess.changeFilterPreferences(filter);
+
+        await mealPlanAccess.deactivateFilter();
+
+        final List<MealPlan> returnedMealPlan = switch (
+        await mealPlanAccess.getMealPlan()) {
+          Success(value: final value) => value,
+          Failure(exception: _) => []
+        };
+
+        expect(returnedMealPlan, mealplans);
+      });
+
+      test("activate", () async {
+        filter.onlyFavorite = true;
+        await mealPlanAccess.changeFilterPreferences(filter);
+
+        await mealPlanAccess.activateFilter();
+
+        final List<MealPlan> returnedMealPlan = switch (
+        await mealPlanAccess.getMealPlan()) {
+          Success(value: final value) => value,
+          Failure(exception: _) => []
+        };
+
+        // first meal plan
+        expect(returnedMealPlan[0].meals[0], meals[0]);
+        expect(returnedMealPlan[0].meals[1], meals[1]);
+        // sides first meal plan
+        expect(returnedMealPlan[0].meals[0].sides?.length, 1);
+        expect(returnedMealPlan[0].meals[1].sides?.length, 2);
+
+        // second meal plan of [mealplans]
+        // -> should be emplty
+        expect(returnedMealPlan.length, 2);
+
+        // third meal plan
+        expect(returnedMealPlan[1].meals.length, 1);
+        expect(returnedMealPlan[1].meals[0], meals[3]);
+        // sides third meal plan
+        expect(returnedMealPlan[1].meals[0].sides?.length, 4);
+      });
+
       test("all", () async {
         filter.onlyFavorite = false;
         await mealPlanAccess.changeFilterPreferences(filter);
@@ -558,7 +603,9 @@ void main() {
         expect(returnedMealPlan[0].meals[0].sides?[0], sides[3]);
       });
     });
+  });
 
+  group("reset", () {
     test("reset filter preferences", () async {
       filter = FilterPreferences();
       when(() => localStorage.setFilterPreferences(filter))
