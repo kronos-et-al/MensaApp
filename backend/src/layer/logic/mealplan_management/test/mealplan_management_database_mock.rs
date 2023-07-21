@@ -117,18 +117,17 @@ pub struct MealplanManagementDatabaseMock;
 
 #[async_trait]
 impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
-    async fn dissolve_relations(&self, _canteen: Canteen, _date: Date) -> Result<()> {
-        todo!()
+    async fn dissolve_relations(&self, _canteen: Uuid, _date: Date) -> Result<()> {
+        Ok(())
     }
-    //TODO update similar function mocks
 
     /// Determines all canteens with a similar name.
-    async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Canteen>> {
-        Ok(get_canteens(similar_name, 10).pop())
+    async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Uuid>> {
+        Ok(Option::from(get_canteens(similar_name, 10).pop().unwrap().id))
     }
     /// Determines all lines with a similar name.
-    async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Line>> {
-        Ok(get_lines(similar_name, 5).pop())
+    async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Uuid>> {
+        Ok(Option::from(get_lines(similar_name, 5).pop().unwrap().id))
     }
     /// Determines all meals with a similar name.
     async fn get_similar_meal(
@@ -136,8 +135,9 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         similar_name: &str,
         _allergens: &[Allergen],
         _additives: &[Additive],
-    ) -> Result<Option<Meal>> {
-        Ok(get_meals(similar_name, 2).pop())
+    ) -> Result<Option<Uuid>> {
+        let meal = get_meals(similar_name, 2).pop();
+        Ok(Option::from(meal.unwrap().id))
     }
     /// Determines all sides with a similar name.
     async fn get_similar_side(
@@ -145,75 +145,74 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         similar_name: &str,
         _allergens: &[Allergen],
         _additives: &[Additive],
-    ) -> Result<Option<Side>> {
-        Ok(get_sides(similar_name, 3).pop())
+    ) -> Result<Option<Uuid>> {
+        Ok(Option::from(get_sides(similar_name, 3).pop().unwrap().id))
     }
 
     /// Updates an existing canteen entity in the database. Returns the entity.
-    async fn update_canteen(&self, id: Uuid, name: &str) -> Result<Canteen> {
+    async fn update_canteen(&self, uuid: Uuid, name: &str) -> Result<Uuid> {
         let s_name = name.to_string();
-        let canteen = Canteen { id, name: s_name };
-        Ok(canteen)
+        let canteen = Canteen { id: uuid, name: s_name };
+        Ok(canteen.id)
     }
     /// Updates an existing line entity in the database. Returns the entity.
-    async fn update_line(&self, id: Uuid, name: &str) -> Result<Line> {
+    async fn update_line(&self, uuid: Uuid, name: &str) -> Result<Uuid> {
         let line = Line {
-            id,
+            id: uuid,
             name: name.to_string(),
             ..get_line()
         };
-        Ok(line)
+        Ok(line.id)
     }
     /// Updates an existing meal entity in the database. Returns the entity.
-    async fn update_meal(
-        &self,
-        id: Uuid,
-        _line_id: Uuid,
-        _date: Date,
-        name: &str,
-        price: Price,
-    ) -> Result<Meal> {
+    async fn update_meal(&self, uuid: Uuid, name: &str) -> Result<()> {
         let meal = Meal {
-            id,
+            id: uuid,
             name: name.to_string(),
-            price: get_price_by_reference(price),
+            price: Price { price_student: 0, price_employee: 0, price_guest: 0, price_pupil: 0 },
             ..get_meal()
         };
-        Ok(meal)
+        Ok(())
     }
+
+    async fn add_meal_to_plan(&self, canteen_id: Uuid, date: Date, meal_id: Uuid, price: Price) -> Result<()> {
+        Ok(())
+    }
+
     /// Updates an existing side entity in the database. Returns the entity.
     async fn update_side(
         &self,
-        id: Uuid,
-        _line_id: Uuid,
-        _date: Date,
-        name: &str,
-        price: Price,
-    ) -> Result<Side> {
+        uuid: Uuid,
+        name: &str
+    ) -> Result<()> {
         let side = Side {
-            id,
+            id: uuid,
             name: name.to_string(),
-            price: get_price_by_reference(price),
+            price: Price { price_student: 0, price_employee: 0, price_guest: 0, price_pupil: 0 },
             ..get_side()
         };
-        Ok(side)
+        Ok(())
+    }
+
+    async fn add_side_to_plan(&self, canteen_id: Uuid, date: Date, side_id: Uuid, price: Price) -> Result<()> {
+        todo!()
     }
 
     /// Adds a new canteen entity to the database. Returns the new entity.
-    async fn insert_canteen(&self, name: &str) -> Result<Canteen> {
+    async fn insert_canteen(&self, name: &str) -> Result<Uuid> {
         let canteen = Canteen {
             name: name.to_string(),
             ..get_canteen()
         };
-        Ok(canteen)
+        Ok(canteen.id)
     }
     /// Adds a new line entity to the database. Returns the new entity.
-    async fn insert_line(&self, name: &str) -> Result<Line> {
+    async fn insert_line(&self, name: &str) -> Result<Uuid> {
         let line = Line {
             name: name.to_string(),
             ..get_line()
         };
-        Ok(line)
+        Ok(line.id)
     }
     /// Adds a new meal entity to the database. Returns the new entity.
     async fn insert_meal(
@@ -221,10 +220,11 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         name: &str,
         meal_type: MealType,
         price: Price,
-        next_served: Date,
         _allergens: &[Allergen],
         _additives: &[Additive],
-    ) -> Result<Meal> {
+        _canteen_id: Uuid,
+        next_served: Date,
+    ) -> Result<()> {
         let meal = Meal {
             name: name.to_string(),
             meal_type,
@@ -232,7 +232,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
             next_served: Some(next_served),
             ..get_meal()
         };
-        Ok(meal)
+        Ok(())
     }
     /// Adds a new side entity to the database. Returns the new entity.
     async fn insert_side(
@@ -240,16 +240,17 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         name: &str,
         meal_type: MealType,
         price: Price,
-        _next_served: Date,
         _allergens: &[Allergen],
         _additives: &[Additive],
-    ) -> Result<Side> {
+        _canteen_id: Uuid,
+        _next_served: Date,
+    ) -> Result<()> {
         let side = Side {
             name: name.to_string(),
             meal_type,
             price: get_price_by_reference(price),
             ..get_side()
         };
-        Ok(side)
+        Ok(())
     }
 }
