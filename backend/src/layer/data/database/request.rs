@@ -192,20 +192,19 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_personal_rating(&self, meal_id: Uuid, client_id: Uuid) -> Result<Option<u32>> {
-        let res = sqlx::query!(
+        let res = sqlx::query_scalar!(
             "SELECT rating FROM meal_rating WHERE food_id = $1 AND user_id = $2",
             meal_id,
             client_id
         )
         .fetch_optional(&self.pool)
-        .await
-        .map_err(Into::<DataError>::into)?;
-        let res = res.map(|i| i.rating as u32);
+        .await?;
+        let res = res.map(|i| i as u32);
         Ok(res)
     }
 
     async fn get_personal_upvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool> {
-        sqlx::query!(
+        sqlx::query_scalar!(
             "SELECT rating FROM image_rating WHERE image_id = $1 AND user_id = $2 AND rating = 1",
             image_id,
             client_id
@@ -217,7 +216,7 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_personal_downvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool> {
-        sqlx::query!(
+        sqlx::query_scalar!(
             "SELECT rating FROM image_rating WHERE image_id = $1 AND user_id = $2 AND rating = -1",
             image_id,
             client_id
@@ -229,28 +228,22 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_additives(&self, food_id: Uuid) -> Result<Vec<Additive>> {
-        let res = sqlx::query!(
+        let res = sqlx::query_scalar!(
             r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1"#,
             food_id
         )
         .fetch_all(&self.pool)
-        .await?
-        .into_iter()
-        .map(|r| r.additive)
-        .collect();
+        .await?;
         Ok(res)
     }
 
     async fn get_allergens(&self, food_id: Uuid) -> Result<Vec<Allergen>> {
-        let res = sqlx::query!(
+        let res = sqlx::query_scalar!(
             r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1"#,
             food_id
         )
         .fetch_all(&self.pool)
-        .await?
-        .into_iter()
-        .map(|r| r.allergen)
-        .collect();
+        .await?;
         Ok(res)
     }
 }
