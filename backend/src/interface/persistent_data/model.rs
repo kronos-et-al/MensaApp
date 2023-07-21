@@ -92,7 +92,7 @@ pub struct Image {
     pub downvotes: u32,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ImageInfo {
     // todo merge with image??
     /// True if an administrator validated the image.

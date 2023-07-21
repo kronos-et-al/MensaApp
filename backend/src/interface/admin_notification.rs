@@ -6,9 +6,9 @@ use crate::util::{ReportReason, Uuid};
 
 /// Interface for notification of administrators.
 #[async_trait]
-pub trait AdminNotification {
+pub trait AdminNotification: Sync + Send {
     /// Notifies an administrator about a newly reported image and the response automatically taken.
-    async fn notify_admin_image_report(info: ImageReportInfo);
+    async fn notify_admin_image_report(&self, info: ImageReportInfo);
 }
 
 /// Structure containing all information about the reporting of an image.

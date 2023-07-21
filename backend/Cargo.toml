@@ -21,12 +21,15 @@ tokio = {version = "1.29.0", features = ["full"]}
 tracing = "0.1"
 tracing-subscriber = {version = "0.2.0", features = ["env-filter"]}
 base64 = "0.21.2"
+sha2 = "0.10.7"
+heck = "0.4.1"
 reqwest = "0.11"
 scraper = "0.17.1"
 regex = "1.9.1"
 futures = "0.3.28"
 tokio-cron-scheduler = "0.9.4"
 sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-native-tls", "postgres", "uuid", "chrono", "macros"] }
+lazy_static = "1.4.0"
 
 
 [dev-dependencies]
