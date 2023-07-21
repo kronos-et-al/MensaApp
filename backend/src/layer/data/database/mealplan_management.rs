@@ -183,6 +183,31 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Meal> {
+        let record = sqlx::query!(
+            "INSERT INTO food(name, food_type) VALUES ($1, $2) RETURNING food_id",
+            name,
+            meal_type as _
+        )
+        .fetch_one(&self.pool)
+        .await?;
+
+        sqlx::query!("INSERT INTO meal(food_id) VALUES ($1)", record.food_id)
+            .execute(&self.pool)
+            .await?;
+
+        let additives: Vec<String> = additives.iter().map(|a| "a".into()).collect(); // todo map to string manually?
+
+        sqlx::query!(
+            "INSERT INTO food_additive(food_id, additive) VALUES ($1, UNNEST($2::additive[]))",
+            record.food_id,
+            additives as _
+        )
+        .execute(&self.pool)
+        .await?;
+
+        // todo allergens
+        // todo mealplan 
+
         todo!()
     }
 
