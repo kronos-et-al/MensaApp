@@ -282,6 +282,29 @@ mod tests {
         assert!(lines[0].name == "line 1");
     }
 
+    #[sqlx::test]
+    async fn test_meals(pool: PgPool) {
+        provide_dummy_data(&pool).await;
+        let request = PersistentRequestData { pool };
+
+        let meals = request.get_meals(Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(), Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap()).await.unwrap();
+        if let Some(meals) = meals {
+            assert!(meals.len() == 2);
+            assert!(meals[0].name == "Geflügel - Cevapcici, Ajvar, Djuvec Reis");
+            assert!(meals[1].name == "2 Dampfnudeln mit Vanillesoße");
+        }
+    }
+
+    #[sqlx::test]
+    async fn test_sides(pool: PgPool) {
+        provide_dummy_data(&pool).await;
+        let request = PersistentRequestData { pool };
+
+        let sides = request.get_sides(Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(), Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap()).await.unwrap();
+        assert!(sides.len() == 1);
+        assert!(sides[0].name == "zu jedem Gericht reichen wir ein Dessert oder Salat");
+    }
+
     async fn provide_dummy_data(pool: &PgPool) {
         const INSERT_FAILED: &str = "failed to insert";
 
@@ -294,15 +317,42 @@ mod tests {
             .expect(INSERT_FAILED);
 
 
-        sqlx::query!("INSERT INTO line(canteen_id, name, position) VALUES 
-        ('10728cc4-1e07-4e18-a9d9-ca45b9782413', 'line 2', 2), 
-        ('10728cc4-1e07-4e18-a9d9-ca45b9782413', 'line 1', 1), 
-        ('10728cc4-1e07-4e18-a9d9-ca45b9782413', 'special line', 3),
-        ('8f10c56d-da9b-4f62-b4c1-16feb0f98c67', 'single line', 0)")
+        sqlx::query!("INSERT INTO line(line_id, canteen_id, name, position) VALUES 
+        ('61b27158-817c-4716-bd41-2a8901391ea4', '10728cc4-1e07-4e18-a9d9-ca45b9782413', 'line 2', 2), 
+        ('3e8c11fa-906a-4c6a-bc71-28756c6b00ae', '10728cc4-1e07-4e18-a9d9-ca45b9782413', 'line 1', 1), 
+        ('a4956171-a5fc-4c6b-a028-3cb2e5d2bedb', '10728cc4-1e07-4e18-a9d9-ca45b9782413', 'special line', 3),
+        ('119c55b7-e539-4849-bad1-984efff2aad6', '8f10c56d-da9b-4f62-b4c1-16feb0f98c67', 'single line', 0)")
             .execute(pool)
             .await
             .expect(INSERT_FAILED);
 
+        sqlx::query!("INSERT INTO food(food_id, name, food_type) 
+        VALUES ('f7337122-b018-48ad-b420-6202dc3cb4ff', 'Geflügel - Cevapcici, Ajvar, Djuvec Reis', 'UNKNOWN'),
+        ('73cf367b-a536-4b49-ad0c-cb984caa9a08', 'zu jedem Gericht reichen wir ein Dessert oder Salat', 'UNKNOWN'),
+        ('25cb8c50-75a4-48a2-b4cf-8ab2566d8bec', '2 Dampfnudeln mit Vanillesoße', 'VEGETARIAN'),
+        ('0a850476-eda4-4fd8-9f93-579eb85b8c25', 'Mediterraner Gemüsegulasch mit Räuchertofu, dazu Sommerweizen', 'VEGAN'),
+        ('1b5633c2-05c5-4444-90e5-2e475bae6463', 'Cordon bleu vom Schwein mit Bratensoße', 'PORK')")
+            .execute(pool)
+            .await
+            .expect(INSERT_FAILED);    
+
+        sqlx::query!("INSERT INTO food_plan(line_id, food_id, serve_date, prices)
+        VALUES  ('3e8c11fa-906a-4c6a-bc71-28756c6b00ae', 'f7337122-b018-48ad-b420-6202dc3cb4ff', '2023-07-10', (320,420,460,355)),
+                ('3e8c11fa-906a-4c6a-bc71-28756c6b00ae', '73cf367b-a536-4b49-ad0c-cb984caa9a08', '2023-07-10', (0,0,0,0)),
+                ('3e8c11fa-906a-4c6a-bc71-28756c6b00ae', '25cb8c50-75a4-48a2-b4cf-8ab2566d8bec', '2023-07-10', (320,420,460,355)),
+                ('61b27158-817c-4716-bd41-2a8901391ea4', '0a850476-eda4-4fd8-9f93-579eb85b8c25', '2023-07-10', (350,520,770,405))")
+                .execute(pool)
+                .await
+                .expect(INSERT_FAILED);
+
+        sqlx::query!("INSERT INTO meal(food_id)
+        VALUES  ('f7337122-b018-48ad-b420-6202dc3cb4ff'),
+                ('25cb8c50-75a4-48a2-b4cf-8ab2566d8bec'),
+                ('0a850476-eda4-4fd8-9f93-579eb85b8c25'),
+                ('1b5633c2-05c5-4444-90e5-2e475bae6463')")
+                .execute(pool)
+                .await
+                .expect(INSERT_FAILED);
 
     }
 }
