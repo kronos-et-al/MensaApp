@@ -1,5 +1,4 @@
 use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
-use crate::interface::persistent_data::model::Line;
 use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
 use crate::util::{Date, Uuid};
 use std::slice::Iter;
@@ -55,7 +54,7 @@ where
         date: Date,
         line: ParseLine,
     ) -> Result<(), DataError> {
-        let db_line = match self.db.get_similar_line(&line.name).await? {
+        match self.db.get_similar_line(&line.name).await? {
             Some(similar_line) => self.db.update_line(similar_line, &line.name).await?,
             None => self.db.insert_line(&line.name).await?,
         };
