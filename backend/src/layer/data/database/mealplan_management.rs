@@ -16,7 +16,7 @@ pub struct PersistentMealplanManagementData {
 
 #[async_trait]
 impl MealplanManagementDataAccess for PersistentMealplanManagementData {
-    async fn dissolve_relations(&self, canteen: &str, date: Date) -> Result<()> {
+    async fn dissolve_relations(&self, canteen: Uuid, date: Date) -> Result<()> {
         /*
         sqlx::query!(
             "
@@ -35,11 +35,11 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         todo!()
     }
 
-    async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<&str>> {
+    async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Uuid>> {
         todo!()
     }
 
-    async fn get_similar_line(&self, similar_name: &str) -> Result<Option<&str>> {
+    async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Uuid>> {
         todo!()
     }
 
@@ -48,7 +48,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         similar_name: &str,
         allergens: &[Allergen],
         additives: &[Additive],
-    ) -> Result<Option<&str>> {
+    ) -> Result<Option<Uuid>> {
         todo!()
     }
 
@@ -57,11 +57,11 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         similar_name: &str,
         allergens: &[Allergen],
         additives: &[Additive],
-    ) -> Result<Option<&str>> {
+    ) -> Result<Option<Uuid>> {
         todo!()
     }
 
-    async fn update_canteen(&self, uuid: &str, name: &str) -> Result<&str> {
+    async fn update_canteen(&self, uuid: Uuid, name: &str) -> Result<Uuid> {
         /*
         sqlx::query_as!(
             Canteen,
@@ -82,7 +82,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         todo!()
     }
 
-    async fn update_line(&self, uuid: &str, name: &str) -> Result<&str> {
+    async fn update_line(&self, uuid: Uuid, name: &str) -> Result<Uuid> {
         /*
         sqlx::query_as!(
             Line,
@@ -103,7 +103,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         todo!()
     }
 
-    async fn update_meal(&self, uuid: &str, name: &str) -> Result<()> {
+    async fn update_meal(&self, uuid: Uuid, name: &str) -> Result<()> {
         /*
         sqlx::query!("UPDATE food SET name = $2 WHERE food_id = $1", uuid, name)
             .execute(&self.pool)
@@ -126,15 +126,15 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
 
     async fn add_meal_to_plan(
         &self,
-        canteen_id: &str,
+        canteen_id: Uuid,
         date: Date,
-        meal_id: &str,
+        meal_id: Uuid,
         price: Price,
     ) -> Result<()> {
         todo!()
     }
 
-    async fn update_side(&self, uuid: &str, name: &str) -> Result<()> {
+    async fn update_side(&self, uuid: Uuid, name: &str) -> Result<()> {
         /*
         // todo same as meal? combine?
         sqlx::query!("UPDATE food SET name = $2 WHERE food_id = $1", uuid, name)
@@ -158,15 +158,15 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
 
     async fn add_side_to_plan(
         &self,
-        canteen_id: &str,
+        canteen_id: Uuid,
         date: Date,
-        side_id: &str,
+        side_id: Uuid,
         price: Price,
     ) -> Result<()> {
         todo!()
     }
 
-    async fn insert_canteen(&self, name: &str) -> Result<&str> {
+    async fn insert_canteen(&self, name: &str) -> Result<Uuid> {
         /*
         sqlx::query_as!(
             Canteen,
@@ -185,7 +185,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         todo!()
     }
 
-    async fn insert_line(&self, name: &str) -> Result<&str> {
+    async fn insert_line(&self, name: &str) -> Result<Uuid> {
         /*
         sqlx::query_as!(
             Line,
@@ -211,7 +211,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         price: Price,
         allergens: &[Allergen],
         additives: &[Additive],
-        canteen_id: &str,
+        canteen_id: Uuid,
         next_served: Date,
     ) -> Result<()> {
         let record = sqlx::query!(
@@ -250,7 +250,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         price: Price,
         allergens: &[Allergen],
         additives: &[Additive],
-        canteen_id: &str,
+        canteen_id: Uuid,
         next_served: Date,
     ) -> Result<()> {
         // TODO => implement after interface update
