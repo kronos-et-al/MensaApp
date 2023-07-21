@@ -1,7 +1,5 @@
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
-use crate::interface::persistent_data::ImageReviewDataAccess;
-
 use super::{
     command::PersistentCommandData, image_review::PersistentImageReviewData,
     mealplan_management::PersistentMealplanManagementData, request::PersistentRequestData,
@@ -32,6 +30,7 @@ impl DataAccessFactory {
         Self { pool }
     }
 
+    /// Returns a object for accessing database requests for api commands.
     #[must_use]
     pub fn get_command_data_access(&self) -> PersistentCommandData {
         PersistentCommandData {
@@ -39,6 +38,7 @@ impl DataAccessFactory {
         }
     }
 
+    /// Returns a object for accessing database requests for the image reviewing process.
     #[must_use]
     pub fn get_image_review_data_access(&self) -> PersistentImageReviewData {
         PersistentImageReviewData {
@@ -46,6 +46,7 @@ impl DataAccessFactory {
         }
     }
 
+    /// Returns a object for accessing database requests for the meal plan management.
     #[must_use]
     pub fn get_mealplan_management_data_access(&self) -> PersistentMealplanManagementData {
         PersistentMealplanManagementData {
@@ -53,6 +54,7 @@ impl DataAccessFactory {
         }
     }
 
+    /// Returns a object for accessing database requests for api requests.
     #[must_use]
     pub fn get_request_data_access(&self) -> PersistentRequestData {
         PersistentRequestData {
