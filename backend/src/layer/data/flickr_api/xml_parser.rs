@@ -30,7 +30,7 @@ pub struct XMLParser;
 // 	<err code="0" msg="Sorry, the Flickr API service is not currently available." />
 // </rsp>
 
-const SIZE_LABEL_SELECTOR: &str = r#"size label="Medium 800""#;
+const SIZE_LABEL_SELECTOR: &str = "size";
 const SELECTED_TAG: &str = "source";
 
 // TODO Define selectors for licence determination
@@ -48,24 +48,18 @@ impl XMLParser {
         photo_id: &str,
         licence: &str,
     ) -> Result<ImageMetaData, ImageHosterError> {
-        /*
+/*
         let document = Html::parse_fragment(&xml);
-        let preferred_size_tag = Selector::parse(SIZE_LABEL_SELECTOR)
-            .map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
-        let input = match document.select(&preferred_size_tag).next() {
-            None => Err(ImageHosterError::DecodeFailed(String::from(
-                "A selector could not be found",
-            ))),
-            _ => {}
-        };
-        let image_url = input.value().attr(SELECTED_TAG);
+        let preferred_size_tag = Selector::parse(SIZE_LABEL_SELECTOR).expect(" ");
+        let input = document.select(&preferred_size_tag).into_iter().filter(|node| node.value().attr("label") == "Medium 800");
+        //let image_url = input.value().attr(SELECTED_TAG);
 
         ImageMetaData {
             id: String::from(photo_id),
             image_url,
             licence: String::from(licence),
         };
-        */
+*/
         todo!()
     }
 

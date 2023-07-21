@@ -1,11 +1,25 @@
 use crate::interface::image_hoster::ImageHosterError;
 use reqwest::Client;
 use std::time::Duration;
+use serde::Deserialize;
 use tracing::log::debug;
 
 pub struct ApiRequest {
     api_key: String,
     client: Client,
+}
+#[derive(Debug, Deserialize)]
+struct Body {
+    sizes: Sizes
+}
+
+#[derive(Debug, Deserialize)]
+struct Sizes {
+    size: Vec<Size>
+}
+#[derive(Debug, Deserialize)]
+struct Size {
+    url: String
 }
 
 impl ApiRequest {
@@ -41,6 +55,7 @@ impl ApiRequest {
         client.map_err(|e| ImageHosterError::ClientBuilderFailed(e.to_string()))
     }
 
+
     async fn request(&self, url: String) -> Result<String, ImageHosterError> {
         let resp = self
             .client
@@ -50,11 +65,11 @@ impl ApiRequest {
             .map_err(|_| ImageHosterError::NotConnected)?;
         debug!("Url request finished: {:?}", resp);
         let res = resp
-            .text()
+            .json::<Body>()
             .await
             .map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
-        println!("{}", res); // TODO remove
-        Ok(res)
+        println!("{:?}", res); // TODO remove
+        Ok(String::from("asd"))
     }
 
     pub async fn flickr_photos_get_sizes(
@@ -62,12 +77,13 @@ impl ApiRequest {
         photo_id: &str,
     ) -> Result<String, ImageHosterError> {
         let url = format!(
-            "{BASE_URL}{GET_SIZES}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}",
+            "{BASE_URL}{GET_SIZES}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{JSON}",
             BASE_URL = Self::BASE_URL,
             GET_SIZES = Self::GET_SIZES,
             TAG_API_KEY = Self::TAG_API_KEY,
             api_key = self.api_key,
-            TAG_PHOTO_ID = Self::TAG_PHOTO_ID
+            TAG_PHOTO_ID = Self::TAG_PHOTO_ID,
+            JSON = Self::FORMAT
         );
         println!("{}", url); // TODO remove
         Ok(self.request(url).await?)
