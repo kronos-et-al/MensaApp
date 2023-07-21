@@ -1,7 +1,6 @@
 
 import '../data_classes/filter/FilterPreferences.dart';
-import '../data_classes/mealplan/Canteen.dart';
-import '../data_classes/settings/ColorScheme.dart';
+import '../data_classes/settings/MensaColorScheme.dart';
 import '../data_classes/settings/MealPlanFormat.dart';
 import '../data_classes/settings/PriceCategory.dart';
 
@@ -9,7 +8,7 @@ import '../data_classes/settings/PriceCategory.dart';
 abstract class ILocalStorage {
   /// The device identifier is returned.
   /// @return The device identifier.
-  Future<String> getClientIdentifier();
+  Future<String?> getClientIdentifier();
 
   /// The device identifier is set.
   /// @param identifier The new device identifier.
@@ -18,35 +17,35 @@ abstract class ILocalStorage {
 
   /// The saved FilterPreferences is returned.
   /// @return The saved FilterPreferences.
-  Future<FilterPreferences> getFilterPreferences();
+  Future<FilterPreferences?> getFilterPreferences();
 
   /// The committed FilterPreferences is set.
   /// @param filter The new FilterPreferences.
   /// @return The result of the update.
   Future<void> setFilterPreferences(FilterPreferences filter);
 
-  /// The saved Canteen is returned.
-  /// @return The saved Canteen.
-  Future<Canteen> getCanteen();
+  /// The saved canteen id is returned.
+  /// @return The saved canteen id.
+  Future<String?> getCanteen();
 
-  /// The committed Canteen is set.
-  /// @param canteen The new Canteen.
+  /// The committed id of the canteen is set.
+  /// @param canteen The id of the new canteen.
   /// @return The result of the update.
-  Future<void> setCanteen(Canteen canteen);
+  Future<void> setCanteen(String canteen);
 
   /// The saved ColorScheme is returned.
   /// @return The saved ColorScheme.
-  Future<ColorScheme> getColorScheme();
+  Future<MensaColorScheme?> getColorScheme();
 
   /// The committed ColorScheme is set.
   /// @param scheme The new ColorScheme.
   /// @return The result of the update.
-  Future<void> setColorScheme(ColorScheme scheme);
+  Future<void> setColorScheme(MensaColorScheme scheme);
 
   /// The saved PriceCategory is returned.
   /// @return The saved PriceCategory.
   /// @return The result of the update.
-  Future<PriceCategory> getPriceCategory();
+  Future<PriceCategory?> getPriceCategory();
 
   /// The committed PriceCategory is set.
   /// @param category The new PriceCategory.
@@ -55,7 +54,7 @@ abstract class ILocalStorage {
 
   /// The saved MealPlanFormat is returned.
   /// @return The saved MealPlanFormat.
-  Future<MealPlanFormat> getMealPlanFormat();
+  Future<MealPlanFormat?> getMealPlanFormat();
 
   /// The committed MealPlanFormat is set.
   /// @param format The new MealPlanFormat.

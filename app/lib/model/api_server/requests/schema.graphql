@@ -1,0 +1,471 @@
+schema {
+  query: QueryRoot
+  mutation: MutationRoot
+}
+
+# This enum lists every possible additive a meal can have.
+enum Additive {
+  # This meal contains colorants.
+  COLORANT
+
+  # This meal contains preserving agents.
+  PRESERVING_AGENTS
+
+  # This meal contains antioxidant agents.
+  ANTIOXIDANT_AGENTS
+
+  # This meal contains flavour enhancers.
+  FLAVOUR_ENHANCER
+
+  # This meal contains phosphate.
+  PHOSPHATE
+
+  # This meals surface is waxed.
+  SURFACE_WAXED
+
+  # This meals contains sulphir.
+  SULPHUR
+
+  # This meals contains artificially blackened olives.
+  ARTIFICIALLY_BLACKENED_OLIVES
+
+  # This meals contains sweetener.
+  SWEETENER
+
+  # This meals can be laxative if overused.
+  LAXATIVE_IF_OVERUSED
+
+  # This meals contains phenylalanine.
+  PHENYLALANINE
+
+  # This meals can contain alcohol.
+  ALCOHOL
+
+  # This meals contains pressed meet.
+  PRESSED_MEET
+
+  # This meals is glazed with cacao.
+  GLAZING_WITH_CACAO
+
+  # This meals contains pressed fish.
+  PRESSED_FISH
+}
+
+# This enum lists every possible allergen a meal can have.
+enum Allergen {
+  # This meal contains cashews.
+  CA
+
+  # This meal contains spelt and gluten.
+  DI
+
+  # This meal contains eggs.
+  EI
+
+  # This meal contains peanuts.
+  ER
+
+  # This meal contains fish.
+  FI
+
+  # This meal contains barley and barley gluten.
+  GE
+
+  # This meal contains oat and oat gluten.
+  HF
+
+  # This meal contains hazelnuts.
+  HA
+
+  # This meal contains kamut and kamut gluten.
+  KA
+
+  # This meal contains crustaceans.
+  KR
+
+  # This meal contains lupin.
+  LU
+
+  # This meal contains almonds.
+  MA
+
+  # This meal contains milk / lactose.
+  ML
+
+  # This meal contains brazil nuts.
+  PA
+
+  # This meal contains pecans.
+  PE
+
+  # This meal contains pistachios.
+  PI
+
+  # This meal contains macadamia nuts.
+  QU
+
+  # This meal contains rye and rye gluten.
+  RO
+
+  # This meal contains sesame.
+  SA
+
+  # This meal contains celery.
+  SE
+
+  # This meal contains sulphite.
+  SF
+
+  # This meal contains mustard.
+  SN
+
+  # This meal contains soya.
+  SO
+
+  # This meal contains walnuts.
+  WA
+
+  # This meal contains wheat and wheat gluten.
+  WE
+
+  # This meal contains molluscs.
+  WT
+
+  # This meal contains animal rennet.
+  LA
+
+  # This meal contains gelatin.
+  GL
+}
+
+# Information about the provided authentication information.
+type AuthInfo {
+  # My own user identifier.
+  clientId: UUID!
+
+  # The provided api key identifier (first 10 symbols only!).
+  apiIdent: String!
+
+  # The provided hash of a request.
+  hash: String!
+}
+
+type Canteen {
+  # The id of the canteen.
+  id: UUID!
+
+  # The name of the canteen.
+  name: String!
+
+  # Provides the lines of the canteen.
+  lines: [Line!]!
+}
+
+type Image {
+  # The id of the image.
+  id: UUID!
+
+  # The url of the image.
+  url: String!
+
+  # The rank of the image. Used for determining the order of images to be shown.
+  rank: Float!
+
+  # The amount of users, who upvoted the image.
+  upvotes: Int!
+
+  # The amount of users, who downvoted the image.
+  downvotes: Int!
+  personalUpvote: Boolean!
+
+  # This attribute specifies whether or not the user downvoted the image.
+  personalDownvote: Boolean!
+}
+
+type Line {
+  # The id of the line.
+  id: UUID!
+
+  # The name of the line.
+  name: String!
+
+  # Provides the canteen this line belongs to.
+  canteen: Canteen!
+
+  # Provides the meals offered at this line on a given day. Requires a date.
+  meals(date: NaiveDate!): [Meal!]
+}
+
+type Meal {
+  # The identifier of the main course.
+  id: UUID!
+
+  # The name of the main course.
+  name: String!
+
+  # Type of this meal.
+  # Here the type of meat which is contained in the meal, or whether it is vegetarian or vegan, is specified.
+  mealType: MealType!
+
+  # The ratings given by the users to the meal.
+  ratings: Ratings!
+
+  # The prices of the dish each for the four groups of people students, employees, pupils and guests.
+  price: Price!
+
+  # Some statistics for the meal.
+  statistics: MealStatistics!
+
+  # Provides the allergens of this meal.
+  allergens: [Allergen!]!
+
+  # Provides the additives of this meal
+  additives: [Additive!]!
+
+  # Provides the images belonging to this meal
+  images: [Image!]!
+
+  # Provides the sides belonging to this meal.
+  sides: [Side!]!
+
+  # Provides the line this meal is served at.
+  line: Line!
+}
+
+type MealStatistics {
+  # The date of the last time the meal was served.
+  lastServed: NaiveDate
+
+  # The date of the next time the meal will be served.
+  nextServed: NaiveDate
+
+  # Count how often meal was served in last three months.
+  frequency: Int!
+
+  # Whether this meal is new and was never served before.
+  new: Boolean!
+}
+
+# This enum lists all the types a meal can be of.
+enum MealType {
+  # This meal is vegan.
+  VEGAN
+
+  # This meal is vegetarian.
+  VEGETARIAN
+
+  # This meal contains beef.
+  BEEF
+
+  # This meal contains beef from regional appropriate animal husbandry.
+  BEEF_AW
+
+  # This meal contains pork.
+  PORK
+
+  # This meal contains pork from regional appropriate animal husbandry.
+  PORK_AW
+
+  # This meal contains fish.
+  FISH
+
+  # It is unknown whether this meal contains any meat or not.
+  UNKNOWN
+}
+
+type MutationRoot {
+  # This mutation adds an image to the specified main dish.
+  # The user has to be authenticated.
+  #
+  # `image_url` is a link to a Flickr image used to get information about it.
+  #
+  # If the meal does not exist, or the URL does not lead to Flickr
+  # or the image is not licenced under a [CC0](https://creativecommons.org/publicdomain/zero/1.0/) licence
+  # or another error occurred while adding the image an error message will be returned.
+  #
+  # If the image was added is successful, `true` is returned.
+  addImage(
+    # Id of the meal to link an image to.
+    mealId: UUID!
+
+    # Flickr url to the image.
+    imageUrl: String!
+  ): Boolean!
+
+  # This mutation either adds a rating to the specified main dish (if no such rating existed), or modifies an existing one.
+  # The user has to be authenticated.
+  # If the main dish does not exist, or any other error occurs in the process, an error message is returned.
+  # If the rating was successfully added or changed, 'true' is returned.
+  setRating(
+    # Id of the meal to rate to.
+    mealId: UUID!
+
+    # The new rating of the main dish.
+    rating: Int!
+  ): Boolean!
+
+  # This mutation adds an upvote to the specified image.
+  # The user has to be authenticated.
+  # If the image does not exist, or any other error occurs in the process, an error message is returned.
+  # If the upvote was successfully added, 'true' is returned.
+  addUpvote(
+    # Id of the image to add the upvote to.
+    imageId: UUID!
+  ): Boolean!
+
+  # This mutation removes the upvote from the specified image.
+  # The user has to be authenticated.
+  # If the image does not exist, or any other error occurs in the process, an error message is returned.
+  # If the upvote was successfully removed, 'true' is returned.
+  removeUpvote(
+    # Id of the image to remove the upvote from.
+    imageId: UUID!
+  ): Boolean!
+
+  # This mutation adds a downvote to the specified image.
+  # The user has to be authenticated.
+  # If the image does not exist, or any other error occurs in the process, an error message is returned.
+  # If the downvote was successfully added, 'true' is returned.
+  addDownvote(
+    # Id of the image to add the downvote to.
+    imageId: UUID!
+  ): Boolean!
+
+  # This mutation removes the downvote from the specified image.
+  # The user has to be authenticated.
+  # If the image does not exist, or any other error occurs in the process, an error message is returned.
+  # If the downvote was successfully removed, 'true' is returned.
+  removeDownvote(
+    # Id of the image to remove the downvote from.
+    imageId: UUID!
+  ): Boolean!
+
+  # This mutation adds a report to the specified image.
+  # The user has to be authenticated.
+  # If the image does not exist, or any other error occurs in the process, an error message is returned.
+  # If the report was successfully added, 'true' is returned.
+  reportImage(
+    # Id of the image to report.
+    imageId: UUID!
+
+    # The reason for reporting the image.
+    reason: ReportReason!
+  ): Boolean!
+}
+
+# ISO 8601 calendar date without timezone.
+# Format: %Y-%m-%d
+#
+# # Examples
+#
+# * `1994-11-13`
+# * `2000-02-24`
+scalar NaiveDate
+
+type Price {
+  # The price of the meal for students.
+  student: Int!
+
+  # The price of the meal for employees.
+  employee: Int!
+
+  # The price of the meal for guests.
+  guest: Int!
+
+  # The price of the meal for pupils.
+  pupil: Int!
+}
+
+type QueryRoot {
+  # This query returns a list of all available canteens.
+  getCanteens: [Canteen!]!
+
+  # This query returns the canteen identified by the specified ID.
+  # If there is no canteen with the specified ID, a null value is returned.
+  getCanteen(
+    # Id of the canteen to get.
+    canteenId: UUID!
+  ): Canteen
+
+  # This query returns the main dish (including its price and sides) identified by the specified ID, the line and the date.
+  # If the main dish does not exist, or is not served at the specified line on the specified day, a null value is returned.
+  getMeal(
+    # Id of the meal to get.
+    mealId: UUID!
+
+    # Id of the line at which the meal to get is to be offered.
+    lineId: UUID!
+
+    # Date of the day on which the meal to get is to be offered.
+    date: NaiveDate!
+  ): Meal
+
+  # This query returns the version of this API schema. It can also be used for health checks.
+  apiVersion: String!
+
+  # This query returns the in the `Authorization` request header provided authentication information.
+  # It is intended for debugging purposes to check whether these information got passed correctly.
+  getMyAuth: AuthInfo
+}
+
+type Ratings {
+  # The average rating of this meal.
+  averageRating: Float!
+
+  # The total number of ratings for this meal.
+  ratingsCount: Int!
+
+  # Provides this user's rating for the meal.
+  personalRating: Int
+}
+
+# This enum lists all the predetermined reasons a image can be reported for.
+enum ReportReason {
+  # This picture shows offensive content.
+  OFFENSIVE
+
+  # This picture is an advert.
+  ADVERT
+
+  # This picture does not show a meal.
+  NO_MEAL
+
+  # This picture shows the wrong meal.
+  WRONG_MEAL
+
+  # This picture violates my rights.
+  VIOLATES_RIGHTS
+
+  # This picture should be removed for some other reason.
+  OTHER
+}
+
+type Side {
+  # The id of the side
+  id: UUID!
+
+  # The name of the side
+  name: String!
+
+  # Here the type of meat which is contained in the side, or whether it is vegetarian or vegan, is specified.
+  mealType: MealType!
+
+  # The price of the side
+  price: Price!
+
+  # Provides the allergens of this side
+  allergens: [Allergen!]!
+
+  # Provides the additives of this side
+  additives: [Additive!]!
+}
+
+# A UUID is a unique 128-bit number, stored as 16 octets. UUIDs are parsed as
+# Strings within GraphQL. UUIDs are used to assign unique identifiers to
+# entities without requiring a central allocating authority.
+#
+# # References
+#
+# * [Wikipedia: Universally Unique Identifier](http://en.wikipedia.org/wiki/Universally_unique_identifier)
+# * [RFC4122: A Universally Unique IDentifier (UUID) URN Namespace](http://tools.ietf.org/html/rfc4122)
+scalar UUID
