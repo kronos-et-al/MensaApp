@@ -110,7 +110,7 @@ impl GraphQLServer {
         let join_handle = tokio::spawn(with_shutdown);
 
         let shutdown = async move {
-            shutdown_notify.notify_waiters();
+            shutdown_notify.notify_one();
             join_handle
                 .await
                 .expect("web server should not have panicked")
@@ -140,7 +140,7 @@ impl GraphQLServer {
 }
 
 /// Constructs the graphql schema with all its settings.
-pub fn construct_schema(
+pub(super) fn construct_schema(
     data_access: impl RequestDataAccess + Sync + Send + 'static,
     command: impl Command + Sync + Send + 'static,
 ) -> GraphQLSchema {
@@ -151,7 +151,6 @@ pub fn construct_schema(
         .data(data_access_box)
         .data(command_box)
         .extension(Tracing)
-        .limit_complexity(100)
         .finish()
 }
 

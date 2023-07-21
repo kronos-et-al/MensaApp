@@ -1,0 +1,1444 @@
+[
+    (
+        2023-07-10,
+        ParseCanteen {
+            name: "Dining Hall Moltke",
+            lines: [
+                ParseLine {
+                    name: "Wahlessen 1",
+                    dishes: [
+                        Dish {
+                            name: "Schnitzel Bar Puten und Schweineschnitzel je 100 g in Selbstbedienung",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ge,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Pork,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pommes",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 105,
+                                price_guest: 130,
+                                price_pupil: 105,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagessuppe",
+                            price: Price {
+                                price_student: 55,
+                                price_employee: 55,
+                                price_guest: 75,
+                                price_pupil: 55,
+                            },
+                            allergens: [
+                                ML,
+                                Se,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Wahlessen 2",
+                    dishes: [
+                        Dish {
+                            name: "Gemüse",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Kartoffel - Spinatgratin mit veganer Käsealternative in heller veganer Soja - Kräutersoße",
+                            price: Price {
+                                price_student: 350,
+                                price_employee: 520,
+                                price_guest: 770,
+                                price_pupil: 405,
+                            },
+                            allergens: [
+                                Se,
+                                So,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "Dessertauswahl Diverse Desserts ab 0,50 EUR bis",
+                            price: Price {
+                                price_student: 135,
+                                price_employee: 135,
+                                price_guest: 170,
+                                price_pupil: 135,
+                            },
+                            allergens: [
+                                Ha,
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Dessertauswahl Diverse Desserts ab 0,50 EUR bis",
+                            price: Price {
+                                price_student: 95,
+                                price_employee: 95,
+                                price_guest: 120,
+                                price_pupil: 95,
+                            },
+                            allergens: [
+                                Ha,
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Salat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [
+                                ML,
+                                Sf,
+                                Sn,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Aktionstheke",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Gut & Günstig",
+                    dishes: [
+                        Dish {
+                            name: "Geflügel - Cevapcici mit Ajvar, und Djuvec Reis",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 1,
+                        },
+                        Dish {
+                            name: "zu jedem Gericht reichen wir Salat oder Dessert",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "2 Dampfnudeln mit Vanillesoße",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 2,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Buffet",
+                    dishes: [
+                        Dish {
+                            name: "Salatbuffet überwiegend vegetarisch je 100g",
+                            price: Price {
+                                price_student: 100,
+                                price_employee: 138,
+                                price_guest: 200,
+                                price_pupil: 116,
+                            },
+                            allergens: [
+                                ML,
+                                Sf,
+                                Sn,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Schnitzelbar",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[Kœri]werk",
+                    dishes: [
+                        Dish {
+                            name: "Reine Kalbsbratwurst mit Currysauce",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Beef,
+                            env_score: 1,
+                        },
+                        Dish {
+                            name: "Vegane Tofu-Bratwurst mit Currysauce",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Ma,
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "koerifrites",
+                            price: Price {
+                                price_student: 130,
+                                price_employee: 130,
+                                price_guest: 130,
+                                price_pupil: 130,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Zu jeder Currywurst reichen wir frisches Baguette",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+            ],
+        },
+    ),
+    (
+        2023-07-11,
+        ParseCanteen {
+            name: "Dining Hall Moltke",
+            lines: [
+                ParseLine {
+                    name: "Wahlessen 1",
+                    dishes: [
+                        Dish {
+                            name: "Schnitzel Bar Puten und Schweineschnitzel je 100 g in Selbstbedienung",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ge,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Pork,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pommes",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 105,
+                                price_guest: 130,
+                                price_pupil: 105,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagessuppe",
+                            price: Price {
+                                price_student: 55,
+                                price_employee: 55,
+                                price_guest: 75,
+                                price_pupil: 55,
+                            },
+                            allergens: [
+                                ML,
+                                Se,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Wahlessen 2",
+                    dishes: [
+                        Dish {
+                            name: "Gemüse",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tomaten-Chili-Knoblauchspaghetti mit Tofu",
+                            price: Price {
+                                price_student: 350,
+                                price_employee: 520,
+                                price_guest: 770,
+                                price_pupil: 405,
+                            },
+                            allergens: [
+                                So,
+                                We,
+                            ],
+                            additives: [
+                                ArtificiallyBlackenedOlives,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "Dessertauswahl Diverse Desserts ab 0,50 EUR bis",
+                            price: Price {
+                                price_student: 95,
+                                price_employee: 95,
+                                price_guest: 120,
+                                price_pupil: 95,
+                            },
+                            allergens: [
+                                Ha,
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Salat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [
+                                ML,
+                                Sf,
+                                Sn,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Aktionstheke",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Gut & Günstig",
+                    dishes: [
+                        Dish {
+                            name: "Pasta Rilli in Tomatensoße mit Speck, Peperoncini und Reibekäse",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                PreservingAgents,
+                            ],
+                            meal_type: PorkAw,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "zu jedem Gericht einen Salat oder Dessert",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pasta in Tomaten - Broccolisoße auf Wunsch mit Reibekäse",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                ML,
+                                Se,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Buffet",
+                    dishes: [
+                        Dish {
+                            name: "Salatbuffet überwiegend vegetarisch je 100g",
+                            price: Price {
+                                price_student: 100,
+                                price_employee: 138,
+                                price_guest: 200,
+                                price_pupil: 116,
+                            },
+                            allergens: [
+                                ML,
+                                Sf,
+                                Sn,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Schnitzelbar",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[Kœri]werk",
+                    dishes: [
+                        Dish {
+                            name: "Reine Kalbsbratwurst mit Currysauce",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Beef,
+                            env_score: 1,
+                        },
+                        Dish {
+                            name: "Vegane Tofu-Bratwurst mit Currysoße",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Ma,
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "koerifrites",
+                            price: Price {
+                                price_student: 130,
+                                price_employee: 130,
+                                price_guest: 130,
+                                price_pupil: 130,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Zu jeder Currywurst reichen wir frisches Baguette",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+            ],
+        },
+    ),
+    (
+        2023-07-12,
+        ParseCanteen {
+            name: "Dining Hall Moltke",
+            lines: [
+                ParseLine {
+                    name: "Wahlessen 1",
+                    dishes: [
+                        Dish {
+                            name: "Schnitzel Bar Puten und Schweineschnitzel je 100 g in Selbstbedienung",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ge,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Pork,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pommes",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 105,
+                                price_guest: 130,
+                                price_pupil: 105,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagessuppe",
+                            price: Price {
+                                price_student: 55,
+                                price_employee: 55,
+                                price_guest: 75,
+                                price_pupil: 55,
+                            },
+                            allergens: [
+                                ML,
+                                Se,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Wahlessen 2",
+                    dishes: [
+                        Dish {
+                            name: "Gemüse",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Kichererbsen - Kokos - Korma mit Mandel - Duftreis",
+                            price: Price {
+                                price_student: 350,
+                                price_employee: 520,
+                                price_guest: 770,
+                                price_pupil: 405,
+                            },
+                            allergens: [
+                                Ma,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "Dessertauswahl Diverse Desserts ab 0,50 EUR bis",
+                            price: Price {
+                                price_student: 135,
+                                price_employee: 135,
+                                price_guest: 170,
+                                price_pupil: 135,
+                            },
+                            allergens: [
+                                Ha,
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Dessertauswahl Diverse Desserts ab 0,50 EUR bis",
+                            price: Price {
+                                price_student: 95,
+                                price_employee: 95,
+                                price_guest: 120,
+                                price_pupil: 95,
+                            },
+                            allergens: [
+                                Ha,
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Salat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [
+                                ML,
+                                Sf,
+                                Sn,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Aktionstheke",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Gut & Günstig",
+                    dishes: [
+                        Dish {
+                            name: "zu jedem Gericht ein Dessert oder Obst",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Linseneintopf mit 1 Paar Saiten und Baguettebrötchen",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                                AntioxidantAgents,
+                            ],
+                            meal_type: PorkAw,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Linseneintopf mit veganer Soja Wurst und Baguettebrötchen",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Buffet",
+                    dishes: [
+                        Dish {
+                            name: "Salatbuffet überwiegend vegetarisch je 100g",
+                            price: Price {
+                                price_student: 100,
+                                price_employee: 138,
+                                price_guest: 200,
+                                price_pupil: 116,
+                            },
+                            allergens: [
+                                ML,
+                                Sf,
+                                Sn,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Schnitzelbar",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[Kœri]werk",
+                    dishes: [
+                        Dish {
+                            name: "Reine Kalbsbratwurst mit Currysauce",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Beef,
+                            env_score: 1,
+                        },
+                        Dish {
+                            name: "Vegane Tofu-Bratwurst mit Currysoße",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Ma,
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "koerifrites",
+                            price: Price {
+                                price_student: 130,
+                                price_employee: 130,
+                                price_guest: 130,
+                                price_pupil: 130,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Zu jeder Currywurst reichen wir frisches Baguette",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+            ],
+        },
+    ),
+    (
+        2023-07-13,
+        ParseCanteen {
+            name: "Dining Hall Moltke",
+            lines: [
+                ParseLine {
+                    name: "Wahlessen 1",
+                    dishes: [
+                        Dish {
+                            name: "Schnitzel Bar Puten und Schweineschnitzel je 100 g in Selbstbedienung",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ge,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Pork,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pommes",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 105,
+                                price_guest: 130,
+                                price_pupil: 105,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagessuppe",
+                            price: Price {
+                                price_student: 55,
+                                price_employee: 55,
+                                price_guest: 75,
+                                price_pupil: 55,
+                            },
+                            allergens: [
+                                ML,
+                                Se,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Wahlessen 2",
+                    dishes: [
+                        Dish {
+                            name: "Gemüse",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Sellerieschnitzel Langkornreis in heller veganer Soja-Kräutersoße",
+                            price: Price {
+                                price_student: 350,
+                                price_employee: 520,
+                                price_guest: 770,
+                                price_pupil: 405,
+                            },
+                            allergens: [
+                                Se,
+                                So,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "Dessertauswahl Diverse Desserts ab 0,50 EUR bis",
+                            price: Price {
+                                price_student: 95,
+                                price_employee: 95,
+                                price_guest: 120,
+                                price_pupil: 95,
+                            },
+                            allergens: [
+                                Ha,
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Salat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [
+                                ML,
+                                Sf,
+                                Sn,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "Salat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [
+                                ML,
+                                Sf,
+                                Sn,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Aktionstheke",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Gut & Günstig",
+                    dishes: [
+                        Dish {
+                            name: "zu jedem Gericht einen Salat oder Dessert",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [
+                                ML,
+                                Sn,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pasta mit Broccoli - Schinkensoße und Reibekäse Broccoli - Schinkensoße, geriebener Gouda",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                ML,
+                                Se,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                PreservingAgents,
+                                AntioxidantAgents,
+                            ],
+                            meal_type: Pork,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pasta mit Rote Linsen - Bolognese und Reibekäse",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                ML,
+                                Se,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 2,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Buffet",
+                    dishes: [
+                        Dish {
+                            name: "Salatbuffet überwiegend vegetarisch je 100g",
+                            price: Price {
+                                price_student: 100,
+                                price_employee: 138,
+                                price_guest: 200,
+                                price_pupil: 116,
+                            },
+                            allergens: [
+                                ML,
+                                Sf,
+                                Sn,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Schnitzelbar",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[Kœri]werk",
+                    dishes: [
+                        Dish {
+                            name: "Reine Kalbsbratwurst mit Currysauce",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            meal_type: Beef,
+                            env_score: 1,
+                        },
+                        Dish {
+                            name: "Vegane Tofu-Bratwurst mit Currysoße",
+                            price: Price {
+                                price_student: 210,
+                                price_employee: 250,
+                                price_guest: 250,
+                                price_pupil: 250,
+                            },
+                            allergens: [
+                                Ma,
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "koerifrites",
+                            price: Price {
+                                price_student: 130,
+                                price_employee: 130,
+                                price_guest: 130,
+                                price_pupil: 130,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 2,
+                        },
+                        Dish {
+                            name: "Zu jeder Currywurst reichen wir frisches Baguette",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                    ],
+                },
+            ],
+        },
+    ),
+    (
+        2023-07-14,
+        ParseCanteen {
+            name: "Dining Hall Moltke",
+            lines: [
+                ParseLine {
+                    name: "Wahlessen 1",
+                    dishes: [
+                        Dish {
+                            name: "Schnitzel Bar Puten und Schweineschnitzel je 100 g in Selbstbedienung",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ge,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Pork,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Pommes",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 105,
+                                price_guest: 130,
+                                price_pupil: 105,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Vegan,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Tagessuppe",
+                            price: Price {
+                                price_student: 55,
+                                price_employee: 55,
+                                price_guest: 75,
+                                price_pupil: 55,
+                            },
+                            allergens: [
+                                ML,
+                                Se,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Wahlessen 2",
+                    dishes: [
+                        Dish {
+                            name: "Gemüse",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Vegane Grünkohl - Hanfburger mit veganem Kräuterdip und Petersilienkartoffeln",
+                            price: Price {
+                                price_student: 350,
+                                price_employee: 520,
+                                price_guest: 770,
+                                price_pupil: 405,
+                            },
+                            allergens: [
+                                Sn,
+                                So,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegan,
+                            env_score: 3,
+                        },
+                        Dish {
+                            name: "Dessertauswahl Diverse Desserts ab 0,50 EUR bis",
+                            price: Price {
+                                price_student: 95,
+                                price_employee: 95,
+                                price_guest: 120,
+                                price_pupil: 95,
+                            },
+                            allergens: [
+                                Ha,
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Salat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [
+                                ML,
+                                Sf,
+                                Sn,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 3,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Aktionstheke",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Gut & Günstig",
+                    dishes: [
+                        Dish {
+                            name: "zu jedem Gericht ein Dessert oder Obst",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Unknown,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Scharfe Sombrero - Reispfanne mit Hackfleisch, Gemüse und Tomatensoße",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                Se,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: BeefAw,
+                            env_score: 0,
+                        },
+                        Dish {
+                            name: "Scharfe Sombrero - Reispfanne mit knusprigen Gemüse Crossini und Tomatensoße",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                ML,
+                                Se,
+                                So,
+                                We,
+                            ],
+                            additives: [],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Buffet",
+                    dishes: [
+                        Dish {
+                            name: "Salatbuffet überwiegend vegetarisch je 100g",
+                            price: Price {
+                                price_student: 100,
+                                price_employee: 138,
+                                price_guest: 200,
+                                price_pupil: 116,
+                            },
+                            allergens: [
+                                ML,
+                                Sf,
+                                Sn,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            meal_type: Vegetarian,
+                            env_score: 0,
+                        },
+                    ],
+                },
+                ParseLine {
+                    name: "Schnitzelbar",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "[Kœri]werk",
+                    dishes: [],
+                },
+            ],
+        },
+    ),
+]

@@ -1,0 +1,82 @@
+[
+    (
+        2023-07-17,
+        ParseCanteen {
+            name: "Dining Hall Holzgartenstraẞe",
+            lines: [
+                ParseLine {
+                    name: "Wahlessen 1",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Wahlessen 2",
+                    dishes: [],
+                },
+            ],
+        },
+    ),
+    (
+        2023-07-18,
+        ParseCanteen {
+            name: "Dining Hall Holzgartenstraẞe",
+            lines: [
+                ParseLine {
+                    name: "Wahlessen 1",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Wahlessen 2",
+                    dishes: [],
+                },
+            ],
+        },
+    ),
+    (
+        2023-07-19,
+        ParseCanteen {
+            name: "Dining Hall Holzgartenstraẞe",
+            lines: [
+                ParseLine {
+                    name: "Wahlessen 1",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Wahlessen 2",
+                    dishes: [],
+                },
+            ],
+        },
+    ),
+    (
+        2023-07-20,
+        ParseCanteen {
+            name: "Dining Hall Holzgartenstraẞe",
+            lines: [
+                ParseLine {
+                    name: "Wahlessen 1",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Wahlessen 2",
+                    dishes: [],
+                },
+            ],
+        },
+    ),
+    (
+        2023-07-21,
+        ParseCanteen {
+            name: "Dining Hall Holzgartenstraẞe",
+            lines: [
+                ParseLine {
+                    name: "Wahlessen 1",
+                    dishes: [],
+                },
+                ParseLine {
+                    name: "Wahlessen 2",
+                    dishes: [],
+                },
+            ],
+        },
+    ),
+]
