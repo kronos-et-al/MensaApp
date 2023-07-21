@@ -1,0 +1,109 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT food_id, name, food_type as \"meal_type: MealType\", prices as \"price: DatabasePrice\"\n            FROM food JOIN food_plan USING (food_id)\n            WHERE line_id = $1 AND serve_date = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "food_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "meal_type: MealType",
+        "type_info": {
+          "Custom": {
+            "name": "meal_type",
+            "kind": {
+              "Enum": [
+                "VEGAN",
+                "VEGETARIAN",
+                "BEEF",
+                "BEEF_AW",
+                "PORK",
+                "PORK_AW",
+                "FISH",
+                "UNKNOWN"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "price: DatabasePrice",
+        "type_info": {
+          "Custom": {
+            "name": "prices",
+            "kind": {
+              "Composite": [
+                [
+                  "student",
+                  {
+                    "Custom": {
+                      "name": "price",
+                      "kind": {
+                        "Domain": "Int4"
+                      }
+                    }
+                  }
+                ],
+                [
+                  "employee",
+                  {
+                    "Custom": {
+                      "name": "price",
+                      "kind": {
+                        "Domain": "Int4"
+                      }
+                    }
+                  }
+                ],
+                [
+                  "guest",
+                  {
+                    "Custom": {
+                      "name": "price",
+                      "kind": {
+                        "Domain": "Int4"
+                      }
+                    }
+                  }
+                ],
+                [
+                  "pupil",
+                  {
+                    "Custom": {
+                      "name": "price",
+                      "kind": {
+                        "Domain": "Int4"
+                      }
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Date"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "93c16846b166fa3dc1e5314cdc90cd9af68a70e999df66590b914f3e9dcf3b8c"
+}

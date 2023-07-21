@@ -1,0 +1,158 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT food_id, name, food_type as \"meal_type: MealType\",\n                prices as \"price: DatabasePrice\", serve_date as date, line_id,\n                new, frequency, last_served, next_served, average_rating, rating_count\n            FROM meal_detail\n            WHERE food_id = $1 AND line_id = $2 AND serve_date = $3\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "food_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "meal_type: MealType",
+        "type_info": {
+          "Custom": {
+            "name": "meal_type",
+            "kind": {
+              "Enum": [
+                "VEGAN",
+                "VEGETARIAN",
+                "BEEF",
+                "BEEF_AW",
+                "PORK",
+                "PORK_AW",
+                "FISH",
+                "UNKNOWN"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "price: DatabasePrice",
+        "type_info": {
+          "Custom": {
+            "name": "prices",
+            "kind": {
+              "Composite": [
+                [
+                  "student",
+                  {
+                    "Custom": {
+                      "name": "price",
+                      "kind": {
+                        "Domain": "Int4"
+                      }
+                    }
+                  }
+                ],
+                [
+                  "employee",
+                  {
+                    "Custom": {
+                      "name": "price",
+                      "kind": {
+                        "Domain": "Int4"
+                      }
+                    }
+                  }
+                ],
+                [
+                  "guest",
+                  {
+                    "Custom": {
+                      "name": "price",
+                      "kind": {
+                        "Domain": "Int4"
+                      }
+                    }
+                  }
+                ],
+                [
+                  "pupil",
+                  {
+                    "Custom": {
+                      "name": "price",
+                      "kind": {
+                        "Domain": "Int4"
+                      }
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 5,
+        "name": "line_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 6,
+        "name": "new",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 7,
+        "name": "frequency",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 8,
+        "name": "last_served",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 9,
+        "name": "next_served",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 10,
+        "name": "average_rating",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 11,
+        "name": "rating_count",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Date"
+      ]
+    },
+    "nullable": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "f78f957af80916ad0c2234ee161b174f99dd9265c650eda4aad0a835e9e580b7"
+}

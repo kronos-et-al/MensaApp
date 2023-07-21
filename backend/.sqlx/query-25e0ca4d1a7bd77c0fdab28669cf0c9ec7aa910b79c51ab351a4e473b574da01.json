@@ -1,0 +1,53 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT image_id as id, id as image_hoster_id, url, rank, downvotes, upvotes FROM (\n                SELECT image_id \n                FROM image JOIN image_report r USING (image_id)\n                WHERE currently_visible AND food_id = $1\n                GROUP BY image_id\n                HAVING COUNT(*) FILTER (WHERE r.user_id = $2) = 0\n            ) not_reported JOIN image_detail USING (image_id)\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "image_hoster_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "rank",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 4,
+        "name": "downvotes",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "upvotes",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "25e0ca4d1a7bd77c0fdab28669cf0c9ec7aa910b79c51ab351a4e473b574da01"
+}
