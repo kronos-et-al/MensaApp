@@ -253,6 +253,26 @@ class GraphQlServerAccess implements IServerAccess {
     return _convertCanteen(canteen);
   }
 
+  @override
+  Future<List<Canteen>?> getCanteens() async {
+    final result = await _client
+        .query$GetDefaultCanteen(Options$Query$GetDefaultCanteen());
+
+    final exception = result.exception;
+    if (exception != null) {
+      return null;
+    }
+
+    var canteen = result.parsedData?.getCanteens.first;
+
+    if (canteen == null) {
+      return null;
+    }
+    return result.parsedData?.getCanteens
+        .map((e) => _convertCanteen(e))
+        .toList();
+  }
+
   // --------------- auth ---------------
   static const int apiKeyIdentifierPrefixLength = 10;
   static const String authenticationScheme = "Mensa";
