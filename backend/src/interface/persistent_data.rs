@@ -26,77 +26,95 @@ pub enum DataError {
 }
 
 #[async_trait]
-/// An interface for checking relations and inserting data structures. The MealplanManagement component uses this interface for database access.
+/// An interface for checking relations and inserting data structures. The MealPlanManagement component uses this interface for database access.
 pub trait MealplanManagementDataAccess: Send + Sync {
     /// Removes all relations to the meal plan at the given date and the given canteen.
     /// Without removing changes in the meal plan couldn't be updated.
-    async fn dissolve_relations(&self, canteen: Canteen, date: Date) -> Result<()>;
+    async fn dissolve_relations(&self, canteen_id: Uuid, date: Date) -> Result<()>;
+
     /// Determines the canteen with the most similar name.
-    async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Canteen>>;
+    /// Returns the UUID to the similar canteen.
+    async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Uuid>>;
+
     /// Determines the line with the most similar name.
-    async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Line>>;
+    /// Returns the UUID to the similar line.
+    async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Uuid>>;
+
     /// Determines the meal with the most similar name, identical allergens and identical additives.
+    /// Returns the UUID to the similar meal.
     async fn get_similar_meal(
         &self,
         similar_name: &str,
         allergens: &[Allergen],
         additives: &[Additive],
-    ) -> Result<Option<Meal>>;
+    ) -> Result<Option<Uuid>>;
+
     /// Determines the side with the most similar name, identical allergens and identical additives.
+    /// Returns the UUID to the similar canteen.
     async fn get_similar_side(
         &self,
         similar_name: &str,
         allergens: &[Allergen],
         additives: &[Additive],
-    ) -> Result<Option<Side>>;
+    ) -> Result<Option<Uuid>>;
 
-    /// Updates an existing canteen entity in the database. Returns the entity.
-    async fn update_canteen(&self, uuid: Uuid, name: &str) -> Result<Canteen>;
-    /// Updates an existing line entity in the database. Returns the entity.
-    async fn update_line(&self, uuid: Uuid, name: &str) -> Result<Line>;
-    /// Updates an existing meal entity in the database. Returns the entity.
-    async fn update_meal(
-        &self,
-        uuid: Uuid,
-        line_id: Uuid,
-        date: Date,
-        name: &str,
-        price: Price,
-    ) -> Result<Meal>;
-    /// Updates an existing side entity in the database. Returns the entity.
-    async fn update_side(
-        &self,
-        uuid: Uuid,
-        line_id: Uuid,
-        date: Date,
-        name: &str,
-        price: Price,
-    ) -> Result<Side>;
+    /// Updates an existing canteen entity in the database.
+    /// Returns the canteen's UUID.
+    async fn update_canteen(&self, uuid: Uuid, name: &str) -> Result<Uuid>;
 
-    /// Adds a new canteen entity to the database. Returns the new entity.
-    async fn insert_canteen(&self, name: &str) -> Result<Canteen>;
-    /// Adds a new line entity to the database. Returns the new entity.
-    async fn insert_line(&self, name: &str) -> Result<Line>;
-    /// Adds a new meal entity to the database. Returns the new entity.
+    /// Updates an existing line entity in the database.
+    /// Returns the line UUID.
+    async fn update_line(&self, uuid: Uuid, name: &str) -> Result<Uuid>;
+
+    /// Updates an existing meal entity in the database.
+    async fn update_meal(&self, uuid: Uuid, name: &str) -> Result<()>;
+
+    /// Updates an existing side entity in the database.
+    async fn update_side(&self, uuid: Uuid, name: &str) -> Result<()>;
+
+    /// Adds a new canteen entity to the database.
+    /// Returns UUID of the new canteen.
+    async fn insert_canteen(&self, name: &str) -> Result<Uuid>;
+
+    /// Adds a new line entity to the database.
+    /// Returns uuid of the new line.
+    async fn insert_line(&self, name: &str) -> Result<Uuid>;
+
+    /// Adds a new meal entity to the database. Returns the UUID of the created meal.
     async fn insert_meal(
         &self,
         name: &str,
         meal_type: MealType,
-        price: Price,
-        next_served: Date,
         allergens: &[Allergen],
         additives: &[Additive],
-    ) -> Result<Meal>;
-    /// Adds a new side entity to the database. Returns the new entity.
+    ) -> Result<Uuid>;
+
+    /// Adds a new side entity to the database. Returns the UUID of the created meal.
     async fn insert_side(
         &self,
         name: &str,
         meal_type: MealType,
-        price: Price,
-        next_served: Date,
         allergens: &[Allergen],
         additives: &[Additive],
-    ) -> Result<Side>;
+    ) -> Result<Uuid>;
+
+    /// Adds a meal into the meal plan with the given params.
+    async fn add_meal_to_plan(
+        &self,
+        meal_id: Uuid,
+        line_id: Uuid,
+        date: Date,
+        price: Price,
+    ) -> Result<()>;
+
+    /// Adds a side into the meal plan with the given params.
+    async fn add_side_to_plan(
+        &self,
+        side_id: Uuid,
+        line_id: Uuid,
+        date: Date,
+        price: Price,
+    ) -> Result<()>;
 }
 
 #[async_trait]
