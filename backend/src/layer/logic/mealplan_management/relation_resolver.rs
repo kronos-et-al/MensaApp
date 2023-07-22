@@ -135,7 +135,7 @@ mod test {
     use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
     use crate::layer::logic::mealplan_management::relation_resolver::RelationResolver;
     use crate::layer::logic::mealplan_management::test::mealplan_management_database_mock::MealplanManagementDatabaseMock;
-    use crate::util::{MealType, Price, Uuid};
+    use crate::util::{MealType, Price};
     use chrono::Utc;
     use rand::{self, Rng};
 
