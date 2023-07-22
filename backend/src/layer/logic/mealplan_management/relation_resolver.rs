@@ -41,20 +41,15 @@ where
         self.db.dissolve_relations(db_canteen, date).await?;
         for line in canteen.lines {
             let name = &line.name.clone();
-            if (self.resolve_line(db_canteen, date, line).await).is_err() {
+            if (self.resolve_line(date, line).await).is_err() {
                 warn!("Skip line '{}' as it could not be resolved", name);
             }
         }
         Ok(())
     }
 
-    async fn resolve_line(
-        &self,
-        canteen_id: Uuid,
-        date: Date,
-        line: ParseLine,
-    ) -> Result<(), DataError> {
-        match self.db.get_similar_line(&line.name).await? {
+    async fn resolve_line(&self, date: Date, line: ParseLine) -> Result<(), DataError> {
+        let line_id = match self.db.get_similar_line(&line.name).await? {
             Some(similar_line) => self.db.update_line(similar_line, &line.name).await?,
             None => self.db.insert_line(&line.name).await?,
         };
@@ -63,7 +58,7 @@ where
 
         for dish in line.dishes {
             let name = &dish.name.clone();
-            if (self.resolve_dish(canteen_id, date, dish, average).await).is_err() {
+            if (self.resolve_dish(line_id, date, dish, average).await).is_err() {
                 warn!("Skip dish '{}' as it could not be resolved", name);
             }
         }
@@ -72,7 +67,7 @@ where
 
     async fn resolve_dish(
         &self,
-        canteen_id: Uuid,
+        line_id: Uuid,
         date: Date,
         dish: Dish,
         average: f64,
@@ -90,27 +85,31 @@ where
         // Case 1.2: Or just a meal could be found.
         if let Some(similar_meal) = similar_meal_result {
             self.db.update_meal(similar_meal, &dish.name).await?;
+            self.db
+                .add_meal_to_plan(similar_meal, line_id, date, dish.price)
+                .await?;
         // Case 2: A similar side could be found.
         } else if let Some(similar_side) = similar_side_result {
             self.db.update_side(similar_side, &dish.name).await?;
+            self.db
+                .add_side_to_plan(similar_side, line_id, date, dish.price)
+                .await?;
         // Case 3: No similar meal could be found. Dish needs to be determined.
         } else if Self::is_side(dish.price.price_student, average, &dish.name) {
+            let side_id = self
+                .db
+                .insert_side(&dish.name, dish.meal_type, &dish.allergens, &dish.additives)
+                .await?;
             self.db
-                .insert_side(
-                    &dish.name,
-                    dish.meal_type,
-                    &dish.allergens,
-                    &dish.additives
-                )
+                .add_side_to_plan(side_id, line_id, date, dish.price)
                 .await?;
         } else {
+            let meal_id = self
+                .db
+                .insert_meal(&dish.name, dish.meal_type, &dish.allergens, &dish.additives)
+                .await?;
             self.db
-                .insert_meal(
-                    &dish.name,
-                    dish.meal_type,
-                    &dish.allergens,
-                    &dish.additives
-                )
+                .add_meal_to_plan(meal_id, line_id, date, dish.price)
                 .await?;
         };
         Ok(())
@@ -243,7 +242,7 @@ mod test {
         }
         let line = get_line(dishes);
         assert!(resolver
-            .resolve_line(Uuid::default(), Utc::now().date_naive(), line)
+            .resolve_line(Utc::now().date_naive(), line)
             .await
             .is_ok());
     }

@@ -98,7 +98,6 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         additives: &[Additive],
     ) -> Result<Uuid>;
 
-    
     /// Adds a meal into the meal plan with the given params.
     async fn add_meal_to_plan(
         &self,
@@ -107,7 +106,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         date: Date,
         price: Price,
     ) -> Result<()>;
-    
+
     /// Adds a side into the meal plan with the given params.
     async fn add_side_to_plan(
         &self,

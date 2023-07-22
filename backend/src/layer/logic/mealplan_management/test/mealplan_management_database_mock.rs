@@ -55,27 +55,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         Ok(())
     }
 
-    async fn add_meal_to_plan(
-        &self,
-        _meal_id: Uuid,
-        _line_id: Uuid,
-        _date: Date,
-        _price: Price,
-    ) -> Result<()> {
-        Ok(())
-    }
-
     async fn update_side(&self, _uuid: Uuid, _name: &str) -> Result<()> {
-        Ok(())
-    }
-
-    async fn add_side_to_plan(
-        &self,
-        _side_id: Uuid,
-        _line_id: Uuid,
-        _date: Date,
-        _price: Price,
-    ) -> Result<()> {
         Ok(())
     }
 
@@ -92,7 +72,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         _name: &str,
         _meal_type: MealType,
         _allergens: &[Allergen],
-        _additives: &[Additive]
+        _additives: &[Additive],
     ) -> Result<Uuid> {
         Ok(gen_random_uuid())
     }
@@ -105,5 +85,25 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         _additives: &[Additive],
     ) -> Result<Uuid> {
         Ok(gen_random_uuid())
+    }
+
+    async fn add_meal_to_plan(
+        &self,
+        _meal_id: Uuid,
+        _line_id: Uuid,
+        _date: Date,
+        _price: Price,
+    ) -> Result<()> {
+        Ok(())
+    }
+
+    async fn add_side_to_plan(
+        &self,
+        _side_id: Uuid,
+        _line_id: Uuid,
+        _date: Date,
+        _price: Price,
+    ) -> Result<()> {
+        Ok(())
     }
 }
