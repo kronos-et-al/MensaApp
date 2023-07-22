@@ -14,7 +14,9 @@ void main() {
       "mensaColorScheme",
       "filter",
       "image",
-      "reportReason"
+      "reportReason",
+      "additive",
+      "allergen"
     ], useCountryCode: false, basePath: 'assets/locales', fallbackDir: 'de'),
     missingTranslationHandler: (key, locale) {
       if (kDebugMode) {
