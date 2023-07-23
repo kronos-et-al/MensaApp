@@ -19,7 +19,7 @@ pub trait ImageHoster: Sync + Send {
 }
 
 /// Enum describing the possible ways, a image hoster request can fail.
-#[derive(Debug, Error)]
+#[derive(Debug, Error, PartialEq)]
 pub enum ImageHosterError {
     /// Photo not found error
     #[error("the photo id passed was not a valid photo id")]
@@ -42,7 +42,7 @@ pub enum ImageHosterError {
     #[error("the html reqwest client creation failed")]
     ClientBuilderFailed(String),
     #[error("some html code couldn't be decoded")]
-    DecodeFailed(String),
+    DecodeFailed,
     #[error("some undefined image hoster error occurred")]
     SomethingWentWrong(String),
 }

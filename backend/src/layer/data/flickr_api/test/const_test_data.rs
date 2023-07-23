@@ -1,6 +1,7 @@
 use std::time::Duration;
 use std::{env, fs};
 use dotenvy::dotenv;
+use reqwest::Client;
 
 /// For all valid tests this image 'll be used: https://www.flickr.com/photos/gerdavs/52310534489/
 
@@ -10,6 +11,14 @@ pub fn get_expected_get_size_result() -> String {
 
 pub fn get_expected_get_licence_result() -> String {
     fs::read_to_string("./src/layer/data/flickr_api/test_data/valid_licence_response.txt").unwrap()
+}
+
+pub fn get_sizes_url(photo_id: String) -> String {
+    format!("https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key={key}&photo_id={photo_id}&format=json&nojsoncallback=1", key = get_api_key())
+}
+
+pub fn get_licenses_url(photo_id: String) -> String {
+    format!("https://api.flickr.com/services/rest/?method=flickr.photos.licenses.getLicenseHistory&api_key={key}&photo_id={photo_id}&format=json&nojsoncallback=1", key = get_api_key())
 }
 
 #[must_use]
@@ -28,9 +37,15 @@ pub fn get_client_user_agent() -> String {
 }
 
 #[must_use]
+pub fn get_client() -> Client {
+    Client::builder()
+        .timeout(get_client_timeout())
+        .user_agent(get_client_user_agent())
+        .build().unwrap()
+}
+
+#[must_use]
 pub fn get_api_key() -> String {
-    // TODO get from .env. For now this is a public accessible example key from the internet.
     dotenv().ok();
-    env::var("FLICKR_PUBLIC_KEY").unwrap()
-    //String::from("ca370d51a054836007519a00ff4ce59e")
+    env::var("FLICKR_PUBLIC_KEY").expect("FLICKR_PUBLIC_KEY should be set in the .env!")
 }
