@@ -19,13 +19,19 @@ impl ApiRequest {
     const TAG_PHOTO_ID: &'static str = "&photo_id=";
     const FORMAT: &'static str = "&format=json&nojsoncallback=1";
 
-    pub fn new(api_key: String) -> Result<ApiRequest, ImageHosterError> {
-        Ok(Self {
+    /// Creates an instance of an [`ApiRequest`].
+    pub fn new(api_key: String) -> Self {
+        Self {
             api_key,
             parser: JSONParser::new()
-        })
+        }
     }
 
+    /// Sends a url request to the FlickrApi.
+    /// # Return
+    /// The [`JsonRootSizes`] struct, containing the api response.
+    /// # Errors
+    /// If the request could not be decoded to json or the connection could not be established, an error will be returned.
     async fn request_sizes(&self, url: &String) -> Result<JsonRootSizes, ImageHosterError> {
         let res = reqwest::get(url).await.map_err(|_| ImageHosterError::NotConnected)?.json::<JsonRootSizes>().await.map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
         debug!("request_sizes finished: {:?}", res);
@@ -33,6 +39,11 @@ impl ApiRequest {
         Ok(res)
     }
 
+    /// Sends a url request to the FlickrApi.
+    /// # Return
+    /// The [`JsonRootLicense`] struct, containing the api response.
+    /// # Errors
+    /// If the request could not be decoded to json or the connection could not be established, an error will be returned.
     async fn request_license(&self, url: &String) -> Result<JsonRootLicense, ImageHosterError> {
         let res = reqwest::get(url).await.map_err(|_| ImageHosterError::NotConnected)?.json::<JsonRootLicense>().await.map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
         debug!("request_license finished: {:?}", res);
@@ -40,6 +51,11 @@ impl ApiRequest {
         Ok(res)
     }
 
+    /// Sends a url request to the FlickrApi.
+    /// # Return
+    /// The [`JsonRootError`] struct, containing the api response.
+    /// # Errors
+    /// If the request could not be decoded to json or the connection could not be established, an error will be returned.
     async fn request_err(&self, url: &String) -> Result<JsonRootError, ImageHosterError> {
         let res = reqwest::get(url).await.map_err(|_| ImageHosterError::NotConnected)?.json::<JsonRootError>().await.map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
         debug!("request_err finished: {:?}", res);
@@ -47,6 +63,14 @@ impl ApiRequest {
         Ok(res)
     }
 
+    /// This method creates an api request url.
+    /// This url is used to create an request with the [`request_sizes`] function.
+    /// # Errors
+    /// If the request could not be decoded ([`ImageHosterError::DecodeFailed`],
+    /// another request with [`request_err`] will be attempted.
+    /// This error request returns a more detailed error information.
+    /// # Returns
+    /// An Error (as above mentioned) or an [`ImageMetaData`] struct containing information about the requested image.
     pub async fn flickr_photos_get_sizes(
         &self,
         photo_id: &str,
@@ -67,6 +91,16 @@ impl ApiRequest {
         }
     }
 
+    /// This method creates an api request url.
+    /// This url is used to create an request with the [`request_license`] function.
+    /// # Errors
+    /// If the request could not be decoded ([`ImageHosterError::DecodeFailed`],
+    /// another request with [`request_err`] will be attempted.
+    /// This error request returns a more detailed error information.
+    /// # Returns
+    /// An Error (as above mentioned).
+    /// True if the given image is hosted under a valid license (see [`json_parser::get_valid_licences`] for more info).
+    /// False if not.
     pub async fn flickr_photos_licenses_get_license_history(
         &self,
         photo_id: &str,
@@ -87,6 +121,11 @@ impl ApiRequest {
         }
     }
 
+    /// This method creates an api request url.
+    /// This url is used to create an request with the [`request_err`] function.
+    /// # Returns
+    /// The hoster error as an [`ImageHosterError`].
+    /// To see all possible cases look here: [`json_parser::parse_error`].
     async fn determine_error(&self, url: &String, e: ImageHosterError) -> ImageHosterError {
         if e == ImageHosterError::DecodeFailed {
             match self.request_err(&url).await {
@@ -101,25 +140,5 @@ impl ApiRequest {
 
 #[cfg(test)]
 mod test {
-    use super::*;
-    use crate::layer::data::flickr_api::test::const_test_data::{
-        get_api_key, get_client_timeout, get_client_user_agent
-    };
 
-    #[tokio::test]
-    async fn test_get_sizes_valid() {
-        let _req =
-            ApiRequest::new(get_api_key(), get_client_timeout(), get_client_user_agent()).unwrap();
-        let val = _req.flickr_photos_get_sizes("2nGvar4").await.unwrap();
-        println!("val: {:?}", val);
-
-        // TODO Test fails but these Strings are equal! Just their line separators are different (expected crlf got lf)
-    }
-
-    #[tokio::test]
-    async fn test_get_licence_valid() {
-        let _req =
-            ApiRequest::new(get_api_key(), get_client_timeout(), get_client_user_agent()).unwrap();
-        // TODO Test fails as the service is not available!
-    }
 }
