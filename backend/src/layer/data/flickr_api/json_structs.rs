@@ -22,7 +22,7 @@ pub struct JsonRootSizes {
 pub struct Sizes {
     pub size: Vec<Size>
 }
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Size {
     pub label: String,
     pub width: u32, // TODO not needed for now
@@ -44,7 +44,7 @@ pub struct JsonRootLicense {
 pub struct LicenseRsp {
     pub license_history: Vec<LicenceHistory>
 }
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct LicenceHistory {
     pub date_change: u64,
     pub old_license: String, // TODO not needed for now

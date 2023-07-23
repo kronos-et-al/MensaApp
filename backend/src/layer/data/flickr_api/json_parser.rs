@@ -1,7 +1,6 @@
-use serde_json::Value::String;
 use crate::interface::image_hoster::model::ImageMetaData;
 use crate::interface::image_hoster::ImageHosterError;
-use crate::layer::data::flickr_api::json_structs::{JsonRoot, JsonRootError, JsonRootLicense, JsonRootSizes};
+use crate::layer::data::flickr_api::json_structs::*;
 
 pub struct JSONParser;
 
@@ -18,13 +17,9 @@ impl JSONParser {
     /// The [`ImageMetaData`] struct containing all necessary information for the image.
     /// If the preferred size cannot be obtained a fallback to a smaller size 'll be done.
     /// If even this fallback size is not available the url will be empty. No url 'll be provided.
-    pub async fn parse_get_sizes(
-        &self,
-        root: JsonRootSizes,
-        photo_id: &str
-    ) -> Result<ImageMetaData, ImageHosterError> {
+    pub fn parse_get_sizes(&self, root: JsonRootSizes, photo_id: &str) -> ImageMetaData {
         let mut url = String::new();
-        for size in root.sizes.size {
+        for size in root.sizes.size.clone() {
             if size.label == get_selected_size() {
                 url = size.source;
                 break;
@@ -38,10 +33,10 @@ impl JSONParser {
                 }
             }
         }
-        Ok(ImageMetaData {
+        ImageMetaData {
             id: String::from(photo_id),
             image_url: url,
-        })
+        }
     }
 
     /// Obtains and validates the license by the information from the [`JsonRootLicense`] struct.
@@ -50,7 +45,7 @@ impl JSONParser {
     /// If the image has no license or no license history, the image isn't restricted by any license and true 'll be returned.
     pub fn check_license(&self, root: JsonRootLicense) -> bool {
         let mut last_date: u64 = 0;
-        for entry in root.rsp.license_history.into_iter() {
+        for entry in root.rsp.license_history.clone() {
             if last_date < entry.date_change {
                 last_date = entry.date_change;
             }
@@ -63,27 +58,27 @@ impl JSONParser {
         }
         for valid_license in self.get_valid_licences(){
             if valid_license == license {
-                true
+                return true;
             }
         }
-        false
+        return false;
     }
 
     /// Obtains and determines an error by his error code and message provided by the [`JsonRootError`] struct.
     /// # Return
     /// An [`ImageHosterError`] that fittest be with the Flickr-Error types.
     pub fn parse_error(&self, err_info: JsonRootError) -> ImageHosterError {
-        let err_code = err_info.rsp.err.code;
-        let err_msg = err_info.rsp.err.msg;
+        let err_code = &err_info.rsp.err.code;
+        let err_msg = &err_info.rsp.err.msg;
         match err_code {
             1 => ImageHosterError::PhotoNotFound,
             2 => ImageHosterError::PermissionDenied,
             100 => ImageHosterError::InvalidApiKey,
             0 => ImageHosterError::ServiceUnavailable,
             105 => ImageHosterError::ServiceUnavailable,
-            111 => ImageHosterError::FormatNotFound(err_msg),
-            112 => ImageHosterError::FormatNotFound(err_msg),
-            _ => ImageHosterError::SomethingWentWrong(err_msg),
+            111 => ImageHosterError::FormatNotFound(err_msg.clone()),
+            112 => ImageHosterError::FormatNotFound(err_msg.clone()),
+            _ => ImageHosterError::SomethingWentWrong(err_msg.clone()),
         }
     }
 
@@ -101,9 +96,141 @@ impl JSONParser {
 
 #[cfg(test)]
 mod test {
+    use crate::interface::image_hoster::ImageHosterError;
+    use crate::interface::image_hoster::model::ImageMetaData;
+    use crate::layer::data::flickr_api::json_parser::JSONParser;
+    use crate::layer::data::flickr_api::json_structs::*;
 
-    #[tokio::test]
-    pub async fn test_parse_to_image() {
+    #[test]
+    fn valid_get_size() {
+        let valid_sizes = JsonRootSizes {
+            sizes: Sizes {
+                size: vec![
+                    Size {
+                        label: String::from("Medium"),
+                        width: 800,
+                        height: 600,
+                        source: String::from("url:medium")
+                    },
+                    Size {
+                        label: String::from("Large"),
+                        width: 1000,
+                        height: 800,
+                        source: String::from("url:large")
+                    }
+                ],
+            }
+        };
+        let dummy_id = "42";
+        let res = JSONParser::new().parse_get_sizes(valid_sizes, dummy_id);
+        let expect = ImageMetaData {
+            id: String::from(dummy_id),
+            image_url: String::from("url:large"),
+        };
+        assert_eq!(res.id, expect.id);
+        assert_eq!(res.image_url, expect.image_url);
+    }
 
+    #[test]
+    fn fallback_get_size() {
+        let fallback_sizes = JsonRootSizes {
+            sizes: Sizes {
+                size: vec![
+                    Size {
+                        label: String::from("Medium"),
+                        width: 800,
+                        height: 600,
+                        source: String::from("url:medium")
+                    },
+                    Size {
+                        label: String::from("Small"),
+                        width: 400,
+                        height: 200,
+                        source: String::from("url:small")
+                    }
+                ],
+            }
+        };
+        let dummy_id = "42";
+        let res = JSONParser::new().parse_get_sizes(fallback_sizes, dummy_id);
+        let expect = ImageMetaData {
+            id: String::from(dummy_id),
+            image_url: String::from("url:medium"),
+        };
+        assert_eq!(res.id, expect.id);
+        assert_eq!(res.image_url, expect.image_url);
+    }
+
+    #[test]
+    fn invalid_get_size() {
+        let invalid_sizes = JsonRootSizes {
+            sizes: Sizes {
+                size: vec![
+                    Size {
+                        label: String::from("Small"),
+                        width: 400,
+                        height: 200,
+                        source: String::from("url:small")
+                    }
+                ],
+            }
+        };
+        let dummy_id = "42";
+        let res = JSONParser::new().parse_get_sizes(invalid_sizes, dummy_id);
+        let expect = ImageMetaData {
+            id: String::from(dummy_id),
+            image_url: String::new(),
+        };
+        assert_eq!(res.id, expect.id);
+        assert_eq!(res.image_url, expect.image_url);
+    }
+
+    #[test]
+    fn valid_check_license()  {
+        let valid_licenses = JsonRootLicense {
+            rsp: LicenseRsp {
+                license_history: vec![
+                    LicenceHistory {
+                        date_change: 1295918034,
+                        old_license: String::from("All Rights Reserved"),
+                        new_license: String::from("Attribution License"),
+                    },
+                    LicenceHistory {
+                        date_change: 1598990519,
+                        old_license: String::from("Attribution License"),
+                        new_license: String::from("All Rights Reserved"),
+                    }
+                ],
+            },
+        };
+        assert!(JSONParser::new().check_license(valid_licenses))
+    }
+
+    #[test]
+    fn valid_parse_error() {
+        let valid_error = JsonRootError {
+            rsp: ErrRsp {
+                err: Err {
+                    code: 0,
+                    msg: String::from("Sorry, the Flickr API service is not currently available."),
+                }
+            },
+        };
+        let res = JSONParser::new().parse_error(valid_error);
+        assert_eq!(res, ImageHosterError::ServiceUnavailable)
+    }
+
+    #[test]
+    fn invalid_parse_error() {
+        let invalid_error = JsonRootError {
+            rsp: ErrRsp {
+                err: Err {
+                    code: 42,
+                    msg: String::from("HELP!"),
+                }
+            },
+        };
+        let res = JSONParser::new().parse_error(invalid_error);
+        assert_eq!(res, ImageHosterError::SomethingWentWrong(String::from("HELP!")))
     }
 }
