@@ -1,4 +1,3 @@
-use std::future::Future;
 use crate::interface::image_hoster::ImageHosterError;
 use tracing::log::debug;
 use crate::interface::image_hoster::model::ImageMetaData;
@@ -33,7 +32,7 @@ impl ApiRequest {
     /// # Errors
     /// If the request could not be decoded to json or the connection could not be established, an error will be returned.
     async fn request_sizes(&self, url: &String) -> Result<JsonRootSizes, ImageHosterError> {
-        let res = reqwest::get(url).await.map_err(|_| ImageHosterError::NotConnected)?.json::<JsonRootSizes>().await.map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
+        let res = reqwest::get(url).await.map_err(|_| ImageHosterError::NotConnected)?.json::<JsonRootSizes>().await.map_err(|_| ImageHosterError::DecodeFailed)?;
         debug!("request_sizes finished: {:?}", res);
         println!("PRINT VALUE: {:?}", res); // TODO remove
         Ok(res)
@@ -45,7 +44,7 @@ impl ApiRequest {
     /// # Errors
     /// If the request could not be decoded to json or the connection could not be established, an error will be returned.
     async fn request_license(&self, url: &String) -> Result<JsonRootLicense, ImageHosterError> {
-        let res = reqwest::get(url).await.map_err(|_| ImageHosterError::NotConnected)?.json::<JsonRootLicense>().await.map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
+        let res = reqwest::get(url).await.map_err(|_| ImageHosterError::NotConnected)?.json::<JsonRootLicense>().await.map_err(|_| ImageHosterError::DecodeFailed)?;
         debug!("request_license finished: {:?}", res);
         println!("PRINT VALUE: {:?}", res); //TODO remove
         Ok(res)
@@ -57,7 +56,7 @@ impl ApiRequest {
     /// # Errors
     /// If the request could not be decoded to json or the connection could not be established, an error will be returned.
     async fn request_err(&self, url: &String) -> Result<JsonRootError, ImageHosterError> {
-        let res = reqwest::get(url).await.map_err(|_| ImageHosterError::NotConnected)?.json::<JsonRootError>().await.map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
+        let res = reqwest::get(url).await.map_err(|_| ImageHosterError::NotConnected)?.json::<JsonRootError>().await.map_err(|_| ImageHosterError::DecodeFailed)?;
         debug!("request_err finished: {:?}", res);
         println!("PRINT VALUE: {:?}", res);
         Ok(res)
@@ -87,7 +86,7 @@ impl ApiRequest {
         println!("flickr.photos.getSizes URL: {}", url); // TODO remove
         match self.request_sizes(&url).await {
             Ok(sizes) => Ok(self.parser.parse_get_sizes(sizes, photo_id)),
-            Err(e) => Err(self.determine_error(url, e))
+            Err(e) => Err(self.determine_error(url, e).await)
         }
     }
 
@@ -117,7 +116,7 @@ impl ApiRequest {
         println!("flickr.photos.licenses.getLicenseHistory URL: {}", url); // TODO remove
         match self.request_license(&url).await {
             Ok(licenses) => Ok(self.parser.check_license(licenses)),
-            Err(e) => Err(self.determine_error(url, e))
+            Err(e) => Err(self.determine_error(url, e).await)
         }
     }
 
@@ -140,5 +139,77 @@ impl ApiRequest {
 
 #[cfg(test)]
 mod test {
+    use crate::interface::image_hoster::ImageHosterError;
+    use crate::layer::data::flickr_api::api_request::ApiRequest;
+    use crate::layer::data::flickr_api::json_parser::JSONParser;
+    use crate::layer::data::flickr_api::json_structs::*;
+    use crate::layer::data::flickr_api::test::const_test_data::{get_api_key, get_licenses_url, get_sizes_url};
 
+    fn get_api_request() -> ApiRequest {
+        ApiRequest {
+            api_key: get_api_key(),
+            parser: JSONParser::new(),
+        }
+    }
+
+    #[tokio::test]
+    async fn valid_request_sizes() {
+        let expected = JsonRootSizes {
+            sizes: Sizes {
+                size: vec![
+                    Size {
+                        label: "Square".to_string(),
+                        width: 75,
+                        height: 75,
+                        source: "https://live.staticflickr.com/65535/52310534489_41350164c9_s.jpg".to_string(),
+                    }
+                ],
+            },
+        };
+        let res = get_api_request().request_sizes(&get_sizes_url(String::from("52310534489"))).await.unwrap();
+        assert_eq!(expected.sizes.size.first().unwrap().label, res.sizes.size.first().unwrap().label);
+        assert_eq!(expected.sizes.size.first().unwrap().source, res.sizes.size.first().unwrap().source);
+    }
+
+    #[tokio::test]
+    async fn invalid_request_sizes() {
+        let expected = ImageHosterError::NotConnected;
+        let res = get_api_request().request_sizes(&String::from("If it is it, it is it; if it is it is it, it is")).await;
+        assert_eq!(expected, res.err().unwrap());
+    }
+
+    #[tokio::test]
+    async fn error_request_license() {
+        let expected = ImageHosterError::PhotoNotFound;
+        let res = get_api_request().request_license(&get_licenses_url(String::from("42"))).await;
+        let err = res.err().unwrap();
+        assert!(expected == err || ImageHosterError::ServiceUnavailable == err);
+    }
+
+    #[tokio::test]
+    async fn invalid_photo_id_request() {
+        let expected = ImageHosterError::PhotoNotFound;
+        let res = get_api_request().request_err(&get_licenses_url(String::from("42"))).await;
+        assert_eq!(expected, res.err().unwrap())
+    }
+
+    #[tokio::test]
+    async fn valid_check_license_request() {
+        let expected = JsonRootLicense {
+            rsp: LicenseRsp {
+                license_history: vec![
+                    LicenceHistory {
+                        date_change: 1661436555,
+                        old_license: "All Rights Reserved".to_string(),
+                        new_license: "".to_string(),
+                    }
+                ]
+            },
+        };
+        let res = get_api_request().request_license(&get_licenses_url(String::from("52310534489"))).await;
+        let license_history = res.unwrap().rsp.license_history.first().unwrap().clone();
+        assert_eq!(expected.rsp.license_history.first().unwrap().old_license, license_history.old_license);
+        assert_eq!(expected.rsp.license_history.first().unwrap().date_change, license_history.date_change);
+        assert_eq!(expected.rsp.license_history.first().unwrap().new_license, license_history.new_license);
+    }
 }
