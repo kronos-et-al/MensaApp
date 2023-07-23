@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-/// Example for a valid get_size response structure:
+/// Example for a valid `get_size` response structure:
 //<sizes canblog="1" canprint="1" candownload="1">
 //  <size label="Square" width="75" height="75" source="http://farm2.staticflickr.com/1103/567229075_2cf8456f01_s.jpg" url="http://www.flickr.com/photos/stewart/567229075/sizes/sq/" media="photo" />
 //  <size label="Large Square" width="150" height="150" source="http://farm2.staticflickr.com/1103/567229075_2cf8456f01_q.jpg" url="http://www.flickr.com/photos/stewart/567229075/sizes/q/" media="photo" />
@@ -30,7 +30,7 @@ pub struct Size {
     pub source: String
 }
 
-/// Example for a valid get_license response structure:
+/// Example for a valid `get_license` response structure:
 //<rsp stat="ok">
 //  <license_history date_change="1295918034" old_license="All Rights Reserved" old_license_url="" new_license="Attribution License" new_license_url="https://creativecommons.org/licenses/by/2.0/" />
 //  <license_history date_change="1598990519" old_license="Attribution License" old_license_url="https://creativecommons.org/licenses/by/2.0/" new_license="All Rights Reserved" new_license_url="" />

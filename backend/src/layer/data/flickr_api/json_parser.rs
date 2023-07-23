@@ -56,7 +56,7 @@ impl JSONParser {
                 license = entry.new_license;
             }
         }
-        for valid_license in self.get_valid_licences(){
+        for valid_license in Self::get_valid_licences(){
             if valid_license == license {
                 return true;
             }
@@ -74,16 +74,14 @@ impl JSONParser {
             1 => ImageHosterError::PhotoNotFound,
             2 => ImageHosterError::PermissionDenied,
             100 => ImageHosterError::InvalidApiKey,
-            0 => ImageHosterError::ServiceUnavailable,
-            105 => ImageHosterError::ServiceUnavailable,
-            111 => ImageHosterError::FormatNotFound(err_msg.clone()),
-            112 => ImageHosterError::FormatNotFound(err_msg.clone()),
+            0 | 105 => ImageHosterError::ServiceUnavailable,
+            111 | 112 => ImageHosterError::FormatNotFound(err_msg.clone()),
             _ => ImageHosterError::SomethingWentWrong(err_msg.clone()),
         }
     }
 
     /// See https://www.flickr.com/services/api/flickr.photos.licenses.getInfo.html for all possible licenses.
-    fn get_valid_licences(&self) -> Vec<String> {
+    fn get_valid_licences() -> Vec<String> {
         vec![
             String::from("All Rights Reserved"),
             String::from("No known copyright restrictions"),
