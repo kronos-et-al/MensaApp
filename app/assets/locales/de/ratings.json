@@ -1,4 +1,7 @@
 {
   "titleRatings": "Bewertungen",
+  "usersRating": "Deine Bewertung",
+  "editRating": "Bewertung bearbeiten",
+  "saveRating": "Bewertung speichern",
   "labelRatingsCount": "Bewertungen"
 }
