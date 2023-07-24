@@ -197,7 +197,7 @@ impl RequestDataAccess for PersistentRequestData {
         .into_iter()
         .filter_map(|r| {
             Some(Image {
-                id: r.id,
+                id: r.id?,
                 url: r.url?,
                 rank: r.rank?,
                 image_hoster_id: r.image_hoster_id?,
