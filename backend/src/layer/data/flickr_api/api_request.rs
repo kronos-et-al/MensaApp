@@ -28,10 +28,8 @@ impl ApiRequest {
     }
 
     async fn request_url(&self, url: &String) -> Result<Response, ImageHosterError> {
-        println!("PRINT URL: {:?}", url); // TODO remove
         let res = reqwest::get(url).await.map_err(|_| ImageHosterError::NotConnected)?;
         debug!("request_url finished with response: {:?}", res);
-        //println!("PRINT RESPONSE: {:?}", res); // TODO remove
         Ok(res)
     }
 
@@ -43,7 +41,6 @@ impl ApiRequest {
     async fn request_sizes(&self, url: &String) -> Result<JsonRootSizes, ImageHosterError> {
         let root = self.request_url(url).await?.json::<JsonRootSizes>().await.map_err(|_| ImageHosterError::DecodeFailed)?;
         debug!("request_sizes finished: {:?}", root);
-        //println!("PRINT request_sizes VALUE: {:?}", root); // TODO remove
         Ok(root)
     }
 
@@ -55,7 +52,6 @@ impl ApiRequest {
     async fn request_license(&self, url: &String) -> Result<JsonRootLicense, ImageHosterError> {
         let root = self.request_url(url).await?.json::<JsonRootLicense>().await.map_err(|_| ImageHosterError::DecodeFailed)?;
         debug!("request_license finished: {:?}", root);
-        //println!("PRINT request_license VALUE: {:?}", root); //TODO remove
         Ok(root)
     }
 
@@ -67,7 +63,6 @@ impl ApiRequest {
     async fn request_err(&self, url: &String) -> Result<JsonRootError, ImageHosterError> {
         let root = self.request_url(url).await?.json::<JsonRootError>().await.map_err(|_| ImageHosterError::DecodeFailed)?;
         debug!("request_err finished: {:?}", root);
-        println!("PRINT request_err VALUE: {:?}", root); //TODO remove
         Ok(root)
     }
 
@@ -92,7 +87,6 @@ impl ApiRequest {
             TAG_PHOTO_ID = Self::TAG_PHOTO_ID,
             JSON = Self::FORMAT
         );
-        println!("flickr.photos.getSizes URL: {}", url); // TODO remove
         match self.request_sizes(&url).await {
             Ok(sizes) => Ok(self.parser.parse_get_sizes(sizes, photo_id)),
             Err(e) => Err(self.determine_error(url, e).await)
@@ -122,7 +116,6 @@ impl ApiRequest {
             TAG_PHOTO_ID = Self::TAG_PHOTO_ID,
             JSON = Self::FORMAT
         );
-        println!("flickr.photos.licenses.getLicenseHistory URL: {}", url); // TODO remove
         match self.request_license(&url).await {
             Ok(licenses) => Ok(self.parser.check_license(licenses)),
             Err(e) => Err(self.determine_error(url, e).await)
