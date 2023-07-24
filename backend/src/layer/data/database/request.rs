@@ -252,10 +252,38 @@ impl RequestDataAccess for PersistentRequestData {
 mod tests {
     #![allow(clippy::unwrap_used)]
     use super::*;
+    use futures::future;
     use sqlx::PgPool;
 
     #[sqlx::test]
-    async fn test_canteens(pool: PgPool) {
+    async fn test_get_canteen(pool: PgPool) {
+        provide_dummy_data(&pool).await;
+        let request = PersistentRequestData { pool };
+
+        let canteen_id_strs = [
+            "10728cc4-1e07-4e18-a9d9-ca45b9782413",
+            "8f10c56d-da9b-4f62-b4c1-16feb0f98c67",
+            "f2885f67-fc95-4205-bc7d-b2fb78cee0a8",
+        ];
+
+        let canteen_ids = canteen_id_strs
+            .into_iter()
+            .filter_map(|canteen_id_str| Uuid::parse_str(canteen_id_str).ok());
+        let canteens: Vec<Canteen> =
+            future::join_all(canteen_ids.map(|canteen_id| request.get_canteen(canteen_id)))
+                .await
+                .into_iter()
+                .flatten()
+                .flatten()
+                .collect();
+        assert!(canteens.len() == 3);
+        assert!(canteens[0].name == "my favorite canteen"); //TODO: Canteen order
+        assert!(canteens[1].name == "second canteen");
+        assert!(canteens[2].name == "bad canteen");
+    }
+
+    #[sqlx::test]
+    async fn test_get_canteens(pool: PgPool) {
         provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
@@ -267,31 +295,7 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn test_canteen(pool: PgPool) {
-        provide_dummy_data(&pool).await;
-        let request = PersistentRequestData { pool };
-
-        let canteen_id_strs = [
-            "10728cc4-1e07-4e18-a9d9-ca45b9782413",
-            "8f10c56d-da9b-4f62-b4c1-16feb0f98c67",
-            "f2885f67-fc95-4205-bc7d-b2fb78cee0a8",
-        ];
-        let mut canteens = Vec::new();
-        for canteen_id_str in canteen_id_strs {
-            if let Ok(canteen_id) = Uuid::parse_str(canteen_id_str) {
-                if let Ok(Some(canteen)) = request.get_canteen(canteen_id).await {
-                    canteens.push(canteen);
-                }
-            }
-        }
-        assert!(canteens.len() == 3);
-        assert!(canteens[0].name == "my favorite canteen"); //TODO: Canteen order
-        assert!(canteens[1].name == "second canteen");
-        assert!(canteens[2].name == "bad canteen");
-    }
-
-    #[sqlx::test]
-    async fn test_line(pool: PgPool) {
+    async fn test_get_line(pool: PgPool) {
         provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
@@ -306,7 +310,55 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn test_meals(pool: PgPool) {
+    async fn test_get_lines(pool: PgPool) {
+        provide_dummy_data(&pool).await;
+        let request = PersistentRequestData { pool };
+
+        let line_id_strs = [
+            "3e8c11fa-906a-4c6a-bc71-28756c6b00ae",
+            "61b27158-817c-4716-bd41-2a8901391ea4",
+            "a4956171-a5fc-4c6b-a028-3cb2e5d2bedb",
+        ];
+        let mut lines = Vec::new();
+        for line_id_str in line_id_strs {
+            if let Ok(line_id) = Uuid::parse_str(line_id_str) {
+                if let Ok(Some(line)) = request.get_line(line_id).await {
+                    lines.push(line);
+                }
+            }
+        }
+        assert!(lines.len() == 3);
+        assert!(lines[0].name == "line 1");
+        assert!(lines[1].name == "line 2");
+        assert!(lines[2].name == "special line");
+    }
+
+    #[sqlx::test]
+    async fn test_get_meal(pool: PgPool) {
+        provide_dummy_data(&pool).await;
+        let request = PersistentRequestData { pool };
+
+        let meal_id_strs = [
+            "73cf367b-a536-4b49-ad0c-cb984caa9a08",
+            "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
+        ];
+        let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
+        let date = Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap();
+        let mut meals = Vec::new();
+        for meal_id_str in meal_id_strs {
+            if let Ok(meal_id) = Uuid::parse_str(meal_id_str) {
+                if let Ok(Some(meal)) = request.get_meal(meal_id, line_id, date).await {
+                    meals.push(meal);
+                }
+            }
+        }
+        assert!(meals.len() == 2);
+        assert!(meals[0].name == "Geflügel - Cevapcici, Ajvar, Djuvec Reis");
+        assert!(meals[1].name == "2 Dampfnudeln mit Vanillesoße");
+    }
+
+    #[sqlx::test]
+    async fn test_get_meals(pool: PgPool) {
         provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
@@ -325,7 +377,7 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn test_sides(pool: PgPool) {
+    async fn test_get_sides(pool: PgPool) {
         provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
@@ -339,6 +391,8 @@ mod tests {
         assert!(sides.len() == 1);
         assert!(sides[0].name == "zu jedem Gericht reichen wir ein Dessert oder Salat");
     }
+
+
 
     async fn provide_dummy_data(pool: &PgPool) {
         const INSERT_FAILED: &str = "failed to insert";
@@ -391,5 +445,18 @@ mod tests {
         .execute(pool)
         .await
         .expect(INSERT_FAILED);
+
+        sqlx::query!(
+            "INSERT INTO users(user_id)
+            VALUES  ('c51d2d81-3547-4f07-af58-ed613c6ece67'),
+                    ('00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf'),
+                    ('7466e3f6-d063-4582-8a58-47a99c86b858'),
+                    ('22154ec0-aee5-4a35-b8b4-e29a5d8336d6')"
+        )
+        .execute(pool)
+        .await
+        .expect(INSERT_FAILED);
+
+        
     }
 }
