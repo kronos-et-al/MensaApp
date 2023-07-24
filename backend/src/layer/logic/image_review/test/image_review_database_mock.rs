@@ -91,7 +91,7 @@ impl ImageReviewDataAccess for ImageReviewDatabaseMock {
             .expect("failed to lock mutex for `delete_image_calls` counter") += 1;
         if id == ID_TO_THROW_ERROR_ON_DELETE {
             Err(DataError::NoSuchItem)
-        } else  {
+        } else {
             Ok(id != ID_TO_FAIL_DELETE)
         }
     }
