@@ -45,13 +45,13 @@ impl JSONParser {
     /// If the image has no license or no license history, the image isn't restricted by any license and true 'll be returned.
     pub fn check_license(&self, root: JsonRootLicense) -> bool {
         let mut last_date: u64 = 0;
-        for entry in root.rsp.license_history.clone() {
+        for entry in root.license_history.clone() {
             if last_date < entry.date_change {
                 last_date = entry.date_change;
             }
         }
         let mut license: String = String::new();
-        for entry in root.rsp.license_history {
+        for entry in root.license_history {
             if entry.date_change == last_date {
                 license = entry.new_license;
             }
@@ -68,8 +68,8 @@ impl JSONParser {
     /// # Return
     /// An [`ImageHosterError`] that fittest be with the Flickr-Error types.
     pub fn parse_error(&self, err_info: JsonRootError) -> ImageHosterError {
-        let err_code = &err_info.rsp.err.code;
-        let err_msg = &err_info.rsp.err.msg;
+        let err_code = &err_info.code;
+        let err_msg = &err_info.message;
         match err_code {
             1 => ImageHosterError::PhotoNotFound,
             2 => ImageHosterError::PermissionDenied,
@@ -186,7 +186,6 @@ mod test {
     #[test]
     fn valid_check_license()  {
         let valid_licenses = JsonRootLicense {
-            rsp: LicenseRsp {
                 license_history: vec![
                     LicenceHistory {
                         date_change: 1295918034,
@@ -199,7 +198,6 @@ mod test {
                         new_license: String::from("All Rights Reserved"),
                     }
                 ],
-            },
         };
         assert!(JSONParser::new().check_license(valid_licenses))
     }
@@ -207,12 +205,9 @@ mod test {
     #[test]
     fn valid_parse_error() {
         let valid_error = JsonRootError {
-            rsp: ErrRsp {
-                err: Err {
-                    code: 0,
-                    msg: String::from("Sorry, the Flickr API service is not currently available."),
-                }
-            },
+            stat: String::new(),
+            code: 0,
+            message: String::from("Sorry, the Flickr API service is not currently available."),
         };
         let res = JSONParser::new().parse_error(valid_error);
         assert_eq!(res, ImageHosterError::ServiceUnavailable)
@@ -221,12 +216,9 @@ mod test {
     #[test]
     fn invalid_parse_error() {
         let invalid_error = JsonRootError {
-            rsp: ErrRsp {
-                err: Err {
-                    code: 42,
-                    msg: String::from("HELP!"),
-                }
-            },
+            stat: String::new(),
+            code: 42,
+            message: String::from("HELP!"),
         };
         let res = JSONParser::new().parse_error(invalid_error);
         assert_eq!(res, ImageHosterError::SomethingWentWrong(String::from("HELP!")))
