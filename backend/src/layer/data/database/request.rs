@@ -66,7 +66,7 @@ impl RequestDataAccess for PersistentRequestData {
             SELECT food_id, name, food_type as "meal_type: MealType",
                 prices as "price: DatabasePrice", serve_date as date, line_id,
                 new, frequency, last_served, next_served, average_rating, rating_count
-            FROM meal_detail
+            FROM meal_detail JOIN food_plan USING (food_id)
             WHERE food_id = $1 AND line_id = $2 AND serve_date = $3
             "#,
             id,
@@ -78,11 +78,11 @@ impl RequestDataAccess for PersistentRequestData {
         .and_then(|m| {
             Some(Meal {
                 id: m.food_id?,
-                line_id: m.line_id?,
-                date: m.date?,
+                line_id: m.line_id,
+                date: m.date,
                 name: m.name?,
                 meal_type: m.meal_type?,
-                price: m.price?.try_into().ok()?,
+                price: m.price.try_into().ok()?,
                 frequency: m.frequency? as u32,
                 new: m.new?,
                 last_served: m.last_served,
@@ -102,7 +102,7 @@ impl RequestDataAccess for PersistentRequestData {
             SELECT food_id, name, food_type as "meal_type: MealType",
                 prices as "price: DatabasePrice", serve_date as date, line_id,
                 new, frequency, last_served, next_served, average_rating, rating_count
-            FROM meal_detail
+            FROM meal_detail JOIN food_plan USING (food_id)
             WHERE line_id = $1 AND serve_date = $2
             "#,
             line_id,
@@ -114,11 +114,11 @@ impl RequestDataAccess for PersistentRequestData {
         .filter_map(|m| {
             Some(Meal {
                 id: m.food_id?,
-                line_id: m.line_id?,
-                date: m.date?,
+                line_id: m.line_id,
+                date: m.date,
                 name: m.name?,
                 meal_type: m.meal_type?,
-                price: m.price?.try_into().ok()?,
+                price: m.price.try_into().ok()?,
                 frequency: m.frequency? as u32,
                 new: m.new?,
                 last_served: m.last_served,
