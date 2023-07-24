@@ -148,7 +148,7 @@ impl RequestDataAccess for PersistentRequestData {
             SELECT food_id, name, food_type as "meal_type: MealType", 
             price_student, price_employee, price_guest, price_pupil
             FROM food JOIN food_plan USING (food_id)
-            WHERE line_id = $1 AND serve_date = $2
+            WHERE line_id = $1 AND serve_date = $2 AND food_id NOT IN (SELECT food_id FROM meal)
             "#,
             line_id,
             date
@@ -156,8 +156,8 @@ impl RequestDataAccess for PersistentRequestData {
         .fetch_all(&self.pool)
         .await?
         .into_iter()
-        .filter_map(|side| {
-            Some(Side {
+        .map(|side| {
+            Side {
                 id: side.food_id,
                 meal_type: side.meal_type,
                 name: side.name,
@@ -167,7 +167,7 @@ impl RequestDataAccess for PersistentRequestData {
                     price_guest: side.price_guest as u32,
                     price_pupil: side.price_pupil as u32,
                 }, // todo remove silent error, find better solution; maybe even panic as this should never occur and this we should notice?
-            })
+            }
         })
         .collect();
 
@@ -411,8 +411,6 @@ mod tests {
         assert!(sides[0].name == "zu jedem Gericht reichen wir ein Dessert oder Salat");
     }
 
-
-
     async fn provide_dummy_data(pool: &PgPool) {
         const INSERT_FAILED: &str = "failed to insert";
 
@@ -475,7 +473,5 @@ mod tests {
         .execute(pool)
         .await
         .expect(INSERT_FAILED);
-
-        
     }
 }
