@@ -235,11 +235,14 @@ impl PersistentMealplanManagementData {
     ) -> Result<()> {
         let price: DatabasePrice = price.try_into()?;
         sqlx::query!(
-            "INSERT INTO food_plan (line_id, food_id, serve_date, prices) VALUES ($1, $2, $3, $4)",
+            "INSERT INTO food_plan (line_id, food_id, serve_date, price_student, price_employee, price_guest, price_pupil) VALUES ($1, $2, $3, $4, $5, $6, $7)",
             line_id,
             food_id,
             date,
-            price as _
+            price.student as _,
+            price.employee as _,
+            price.guest as _,
+            price.pupil as _,
         )
         .execute(&self.pool)
         .await?;
