@@ -70,6 +70,7 @@ pub struct Side {
     pub price: Price,
 }
 
+#[derive(Default)]
 /// This structure is used for database operations. This image structure is based on the database entity 'image'.
 pub struct Image {
     /// Database-identification of the image.
