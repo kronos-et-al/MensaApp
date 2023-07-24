@@ -13,6 +13,9 @@ pub struct FlickrApiHandler {
     request: ApiRequest
 }
 
+const LONG_URL_REGEX: &'static str = r"(https://www.flickr.com/photos/)(\w+)/(\d+)([/]{0,1})";
+const SHORT_URL_REGEX: &'static str = r"(https://flic.kr/p/)([\d\w]+)";
+
 impl FlickrApiHandler {
     pub fn new(info: HosterInfo) -> Self {
         Self {
@@ -20,15 +23,15 @@ impl FlickrApiHandler {
         }
     }
 
-    const URL_REGEX: &'static str = r"^((http[s]?|ftp):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$";
-
     // URL TYPE 1: https://www.flickr.com/photos/gerdavs/52310534489/ <- remove last '/'
-    // URL TYPE 2: https://flic.kr/p/2nGvar4
+    // URL TYPE 2: https://flic.kr/p/2oRguN3
     // Both cases: Split with '/' and get last member (= photo_id).
     fn determine_photo_id<'a>(&'a self, mut url: &'a str) -> Result<&str, ImageHosterError> {
-        let regex = Regex::new(URL_REGEX).expect("regex creation failed");
-        // TODO regex match
-
+        let short = Regex::new(SHORT_URL_REGEX).expect("regex creation failed");
+        let long = Regex::new(LONG_URL_REGEX).expect("regex creation failed");
+        if !short.is_match(url) && !long.is_match(url) {
+            return Err(ImageHosterError::FormatNotFound(format!("this url format is not supported: '{}'", url)));
+        }
         if url.ends_with("/") {
             // remove last '/'
             let mut chars = url.chars();
@@ -104,10 +107,10 @@ mod test {
 
     #[test]
     fn valid_determine_photo_id() {
-        let valid_url = "https://www.flickr.com/photos/gerdavs/52310534489/";
+        let valid_url = "https://flic.kr/p/2oRguN3";
         let handler = get_handler();
         let res = handler.determine_photo_id(valid_url).unwrap();
-        assert_eq!(res, "52310534489");
+        assert_eq!(res, "2oRguN3");
     }
 
     #[test]
@@ -120,7 +123,7 @@ mod test {
 
     #[test]
     fn invalid_determine_photo_id() {
-        let valid_url = "";
+        let valid_url = "https://flic.kr/p/";
         let handler = get_handler();
         let res = handler.determine_photo_id(valid_url).err().unwrap();
         assert_eq!(res, ImageHosterError::FormatNotFound(format!("this url format is not supported: '{}'", valid_url)));
