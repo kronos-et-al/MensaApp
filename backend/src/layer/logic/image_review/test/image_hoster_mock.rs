@@ -4,9 +4,9 @@ use async_trait::async_trait;
 
 use crate::interface::image_hoster::{model::ImageMetaData, ImageHoster, ImageHosterError, Result};
 
-pub const PHOTO_ID_TO_FAIL_CHECK_EXISTENCE: &str =
+pub const IMAGE_ID_TO_FAIL_CHECK_EXISTENCE: &str =
     "this image should throw an error, when checked for existence";
-pub const PHOTO_ID_THAT_DOES_NOT_EXIST: &str = "this image should not exist";
+pub const IMAGE_ID_THAT_DOES_NOT_EXIST: &str = "this image should not exist";
 
 #[derive(Default)]
 pub struct ImageHosterMock {
@@ -39,9 +39,9 @@ impl ImageHoster for ImageHosterMock {
             .existence_calls
             .lock()
             .expect("failed to lock mutex for `existence_calls` counter") += 1;
-        if photo_id == PHOTO_ID_TO_FAIL_CHECK_EXISTENCE {
+        if photo_id == IMAGE_ID_TO_FAIL_CHECK_EXISTENCE {
             Err(ImageHosterError::PhotoNotFound)
-        } else if photo_id == PHOTO_ID_THAT_DOES_NOT_EXIST {
+        } else if photo_id == IMAGE_ID_THAT_DOES_NOT_EXIST {
             Ok(false)
         } else {
             Ok(true)

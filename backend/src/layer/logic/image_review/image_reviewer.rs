@@ -120,7 +120,7 @@ mod test {
             image_reviewer::ImageReviewer,
             test::{
                 image_hoster_mock::{
-                    ImageHosterMock, PHOTO_ID_THAT_DOES_NOT_EXIST, PHOTO_ID_TO_FAIL_CHECK_EXISTENCE,
+                    ImageHosterMock, IMAGE_ID_THAT_DOES_NOT_EXIST, IMAGE_ID_TO_FAIL_CHECK_EXISTENCE,
                 },
                 image_review_database_mock::{
                     ImageReviewDatabaseMock, ID_TO_FAIL_DELETE, ID_TO_THROW_ERROR_ON_DELETE,
@@ -143,7 +143,7 @@ mod test {
     #[tokio::test]
     async fn test_review_image_throws_error_when_checked() {
         let image = Image {
-            image_hoster_id: PHOTO_ID_TO_FAIL_CHECK_EXISTENCE.to_string(),
+            image_hoster_id: IMAGE_ID_TO_FAIL_CHECK_EXISTENCE.to_string(),
             ..get_default_image()
         };
         let image_reviewer = get_image_reviewer();
@@ -154,7 +154,7 @@ mod test {
     #[tokio::test]
     async fn test_review_nonexistent_image() {
         let image = Image {
-            image_hoster_id: PHOTO_ID_THAT_DOES_NOT_EXIST.to_string(),
+            image_hoster_id: IMAGE_ID_THAT_DOES_NOT_EXIST.to_string(),
             ..get_default_image()
         };
         let image_reviewer = get_image_reviewer();
@@ -166,7 +166,7 @@ mod test {
     async fn test_review_nonexistent_image_delete_error() {
         let image = Image {
             id: ID_TO_THROW_ERROR_ON_DELETE,
-            image_hoster_id: PHOTO_ID_THAT_DOES_NOT_EXIST.to_string(),
+            image_hoster_id: IMAGE_ID_THAT_DOES_NOT_EXIST.to_string(),
             ..get_default_image()
         };
         let image_reviewer = get_image_reviewer();
@@ -178,7 +178,7 @@ mod test {
     async fn test_review_nonexistent_image_not_deleted() {
         let image = Image {
             id: ID_TO_FAIL_DELETE,
-            image_hoster_id: PHOTO_ID_THAT_DOES_NOT_EXIST.to_string(),
+            image_hoster_id: IMAGE_ID_THAT_DOES_NOT_EXIST.to_string(),
             ..get_default_image()
         };
         let image_reviewer = get_image_reviewer();
