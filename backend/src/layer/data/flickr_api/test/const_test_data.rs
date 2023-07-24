@@ -3,7 +3,7 @@ use std::{env, fs};
 use dotenvy::dotenv;
 use reqwest::Client;
 
-/// For all valid tests this image 'll be used: https://www.flickr.com/photos/gerdavs/52310534489/
+/// For all valid tests this image 'll be used: https://flic.kr/p/2oRguN3
 
 pub fn get_expected_get_size_result() -> String {
     fs::read_to_string("./src/layer/data/flickr_api/test_data/valid_sizes_response.txt").unwrap()
@@ -23,7 +23,7 @@ pub fn get_licenses_url(photo_id: String) -> String {
 
 #[must_use]
 pub fn get_valid_photo_id() -> &'static str {
-    "2nGvar4" // "2nGvar4" or "52310534489"
+    "2oRguN3"
 }
 
 #[must_use]

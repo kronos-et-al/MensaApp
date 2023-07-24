@@ -163,12 +163,12 @@ mod test {
                         label: "Square".to_string(),
                         width: 75,
                         height: 75,
-                        source: "https://live.staticflickr.com/65535/52310534489_41350164c9_s.jpg".to_string(),
+                        source: "https://live.staticflickr.com/65535/53066073286_9fcebfc95f_s.jpg".to_string(),
                     }
                 ],
             },
         };
-        let res = get_api_request().request_sizes(&get_sizes_url(String::from("52310534489"))).await.unwrap();
+        let res = get_api_request().request_sizes(&get_sizes_url(String::from("2oRguN3"))).await.unwrap();
         assert_eq!(expected.sizes.size.first().unwrap().label, res.sizes.size.first().unwrap().label);
         assert_eq!(expected.sizes.size.first().unwrap().source, res.sizes.size.first().unwrap().source);
     }
