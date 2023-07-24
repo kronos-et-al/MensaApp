@@ -22,7 +22,7 @@ use tracing::{info, warn};
 
 pub type MailResult<T> = std::result::Result<T, MailError>;
 
-const REPORT_TEMPLATE_FILE: &str = "--censored--/template.txt";
+const REPORT_TEMPLATE_FILE: &str = "./template.txt";
 
 /// Enum describing the possible ways, the mail notification can fail.
 #[derive(Debug, Error)]
@@ -128,18 +128,20 @@ mod test {
         interface::admin_notification::ImageReportInfo, layer::data::mail::mail_sender::MailSender,
         startup::config::mail_info::MailInfo, util::Uuid,
     };
+    use dotenv::dotenv;
+    use std::env::{self, VarError};
+
+    const SMTP_SERVER_ENV_NAME: &str = "SMTP_SERVER";
+    const SMTP_PORT_ENV_NAME: &str = "SMTP_PORT";
+    const SMTP_USERNAME_ENV_NAME: &str = "SMTP_USERNAME";
+    const SMTP_PASSWORD_ENV_NAME: &str = "SMTP_PASSWORD";
+    const ADMIN_EMAIL_ENV_NAME: &str = "ADMIN_EMAIL";
 
     #[tokio::test]
     async fn test_notify_admin_image_report() {
-        let mail_info = MailInfo {
-            smtp_server: String::from("--censored--"),
-            smtp_port: 465,
-            username: String::from("--censored--"),
-            password: String::from("--censored--"),
-            admin_email_address: String::from("--censored--"),
-        };
-
+        let mail_info = get_mail_info().unwrap();
         let mail_sender = MailSender::new(mail_info).unwrap();
+        assert!(mail_sender.mailer.test_connection().unwrap());
         let report_info = ImageReportInfo {
             reason: crate::util::ReportReason::Advert,
             image_got_hidden: true,
@@ -154,5 +156,16 @@ mod test {
             println!("{error}");
             panic!();
         }
+    }
+
+    fn get_mail_info() -> Result<MailInfo, VarError> {
+        dotenv().ok();
+        Ok(MailInfo {
+            smtp_server: env::var(SMTP_SERVER_ENV_NAME)?,
+            smtp_port: env::var(SMTP_PORT_ENV_NAME)?.parse().unwrap(),
+            username: env::var(SMTP_USERNAME_ENV_NAME)?,
+            password: env::var(SMTP_PASSWORD_ENV_NAME)?,
+            admin_email_address: env::var(ADMIN_EMAIL_ENV_NAME)?,
+        })
     }
 }
