@@ -8,7 +8,6 @@ use crate::{
 };
 
 pub const ID_TO_THROW_ERROR_ON_DELETE: Uuid = Uuid::from_u128(7u128);
-pub const ID_TO_FAIL_DELETE: Uuid = Uuid::from_u128(24u128);
 
 #[derive(Default)]
 pub struct ImageReviewDatabaseMock {
@@ -84,7 +83,7 @@ impl ImageReviewDataAccess for ImageReviewDatabaseMock {
         Ok((0..n).map(|_| Image::default()).collect())
     }
 
-    async fn delete_image(&self, id: Uuid) -> Result<bool> {
+    async fn delete_image(&self, id: Uuid) -> Result<()> {
         *self
             .delete_image_calls
             .lock()
@@ -92,7 +91,7 @@ impl ImageReviewDataAccess for ImageReviewDatabaseMock {
         if id == ID_TO_THROW_ERROR_ON_DELETE {
             Err(DataError::NoSuchItem)
         } else {
-            Ok(id != ID_TO_FAIL_DELETE)
+            Ok(())
         }
     }
 

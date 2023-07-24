@@ -112,7 +112,7 @@ pub trait ImageReviewDataAccess: Send + Sync {
         n: u32,
     ) -> Result<Vec<Image>>;
     /// Removes an image with all relations from the database.
-    async fn delete_image(&self, id: Uuid) -> Result<bool>;
+    async fn delete_image(&self, id: Uuid) -> Result<()>;
     /// Marks all images identified by the given uuids as checked.
     async fn mark_as_checked(&self, id: Uuid) -> Result<()>;
 }

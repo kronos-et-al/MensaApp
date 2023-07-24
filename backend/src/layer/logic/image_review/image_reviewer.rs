@@ -4,13 +4,10 @@ use futures::future::join_all;
 use thiserror::Error;
 use tracing::log::warn;
 
-use crate::{
-    interface::{
-        image_hoster::{ImageHoster, ImageHosterError},
-        image_review::ImageReviewScheduling,
-        persistent_data::{model::Image, DataError, ImageReviewDataAccess},
-    },
-    util::Uuid,
+use crate::interface::{
+    image_hoster::{ImageHoster, ImageHosterError},
+    image_review::ImageReviewScheduling,
+    persistent_data::{model::Image, DataError, ImageReviewDataAccess},
 };
 
 pub type ReviewerResult<T> = std::result::Result<T, ReviewerError>;
@@ -22,8 +19,6 @@ pub enum ReviewerError {
     ImageHandlingError(#[from] DataError),
     #[error("an error occurred while checking an image for its existence: {0}")]
     CheckError(#[from] ImageHosterError),
-    #[error("an error occurred while deleting the image with the id: {0}")]
-    DeleteError(Uuid),
 }
 
 const NUMBER_OF_IMAGES_TO_CHECK: u32 = 500;
@@ -101,13 +96,11 @@ where
             .image_hoster
             .check_existence(&image.image_hoster_id)
             .await?;
-        if !exists {
-            let deleted = self.data_access.delete_image(image.id).await?;
-            if !deleted {
-                return Err(ReviewerError::DeleteError(image.id));
-            }
+        if exists {
+            self.data_access.mark_as_checked(image.id).await?;
+        } else {
+            self.data_access.delete_image(image.id).await?;
         }
-        self.data_access.mark_as_checked(image.id).await?;
         Ok(())
     }
 }
@@ -123,7 +116,7 @@ mod test {
                     ImageHosterMock, IMAGE_ID_THAT_DOES_NOT_EXIST, IMAGE_ID_TO_FAIL_CHECK_EXISTENCE,
                 },
                 image_review_database_mock::{
-                    ImageReviewDatabaseMock, ID_TO_FAIL_DELETE, ID_TO_THROW_ERROR_ON_DELETE,
+                    ImageReviewDatabaseMock, ID_TO_THROW_ERROR_ON_DELETE,
                 },
             },
         },
@@ -166,18 +159,6 @@ mod test {
     async fn test_review_nonexistent_image_delete_error() {
         let image = Image {
             id: ID_TO_THROW_ERROR_ON_DELETE,
-            image_hoster_id: IMAGE_ID_THAT_DOES_NOT_EXIST.to_string(),
-            ..get_default_image()
-        };
-        let image_reviewer = get_image_reviewer();
-        assert!(image_reviewer.review_image(image).await.is_err());
-        check_correct_call_number(&image_reviewer, 1, 1, 0);
-    }
-
-    #[tokio::test]
-    async fn test_review_nonexistent_image_not_deleted() {
-        let image = Image {
-            id: ID_TO_FAIL_DELETE,
             image_hoster_id: IMAGE_ID_THAT_DOES_NOT_EXIST.to_string(),
             ..get_default_image()
         };
