@@ -1,30 +1,29 @@
 use async_trait::async_trait;
 use chrono::Local;
+use futures::future::join_all;
 use thiserror::Error;
 use tracing::log::warn;
 
 use crate::{
     interface::{
-        image_hoster::ImageHoster,
+        image_hoster::{ImageHoster, ImageHosterError},
         image_review::ImageReviewScheduling,
-        persistent_data::{model::Image, ImageReviewDataAccess, Result},
+        persistent_data::{model::Image, DataError, ImageReviewDataAccess},
     },
     util::Uuid,
 };
 
 pub type ReviewerResult<T> = std::result::Result<T, ReviewerError>;
 
-/// Enum describing the possible ways, the mail notification can fail.
-#[derive(Debug, Error, PartialEq, Eq)]
+/// Enum describing the possible ways, the image review can fail.
+#[derive(Debug, Error)]
 pub enum ReviewerError {
-    #[error("an error occurred while getting the images")]
-    ImageGetError,
-    #[error("an error occurred while deleting the non-existent image {0:#?}")]
+    #[error("an error occurred while handling an image: {0}")]
+    ImageHandlingError(#[from] DataError),
+    #[error("an error occurred while checking an image for its existence: {0}")]
+    CheckError(#[from] ImageHosterError),
+    #[error("an error occurred while deleting the image with the id: {0}")]
     DeleteError(Uuid),
-    #[error("an error occurred while checking the image with id {0:#?} for its existence")]
-    CheckError(Uuid),
-    #[error("an error occurred while marking the image with id {0:#?} as checked")]
-    MarkError(Uuid),
 }
 
 const NUMBER_OF_IMAGES_TO_CHECK: u32 = 500;
@@ -45,25 +44,9 @@ where
     H: ImageHoster,
 {
     async fn start_image_review(&self) {
-        let today = Local::now().date_naive();
-        self.review_images(
-            self.data_access
-                .get_n_images_by_rank_date(NUMBER_OF_IMAGES_TO_CHECK, today)
-                .await,
-        )
-        .await;
-        self.review_images(
-            self.data_access
-                .get_n_images_next_week_by_rank_not_checked_last_week(NUMBER_OF_IMAGES_TO_CHECK)
-                .await,
-        )
-        .await;
-        self.review_images(
-            self.data_access
-                .get_n_images_by_last_checked_not_checked_last_week(NUMBER_OF_IMAGES_TO_CHECK)
-                .await,
-        )
-        .await;
+        if let Err(error) = self.try_start_image_review().await {
+            warn!("{error}");
+        }
     }
 }
 
@@ -80,49 +63,61 @@ where
         }
     }
 
-    async fn review_images(&self, images: Result<Vec<Image>>) {
-        if let Err(error) = self.try_review_images(images).await {
-            warn!("{error:#?}");
-        }
-    }
+    async fn try_start_image_review(&self) -> ReviewerResult<()> {
+        let today = Local::now().date_naive();
 
-    async fn try_review_images(&self, images: Result<Vec<Image>>) -> ReviewerResult<()> {
-        let images = images.map_err(|_e| ReviewerError::ImageGetError)?;
-        for image in images {
-            self.review_image(&image).await?;
-        }
+        let images_by_rank_date = self
+            .data_access
+            .get_n_images_by_rank_date(NUMBER_OF_IMAGES_TO_CHECK, today)
+            .await?;
+        self.review_images(images_by_rank_date).await;
+
+        let images_next_week_by_rank_not_checked_last_week = self
+            .data_access
+            .get_n_images_next_week_by_rank_not_checked_last_week(NUMBER_OF_IMAGES_TO_CHECK)
+            .await?;
+        self.review_images(images_next_week_by_rank_not_checked_last_week)
+            .await;
+
+        let images_by_last_checked_not_checked_last_week = self
+            .data_access
+            .get_n_images_by_last_checked_not_checked_last_week(NUMBER_OF_IMAGES_TO_CHECK)
+            .await?;
+        self.review_images(images_by_last_checked_not_checked_last_week)
+            .await;
         Ok(())
     }
 
-    async fn review_image(&self, image: &Image) -> ReviewerResult<()> {
+    async fn review_images(&self, images: Vec<Image>) {
+        let images = join_all(images.into_iter().map(|image| self.review_image(image))).await;
+        images
+            .into_iter()
+            .filter_map(std::result::Result::err)
+            .for_each(|error| warn!("{error}"));
+    }
+
+    async fn review_image(&self, image: Image) -> ReviewerResult<()> {
         let exists = self
             .image_hoster
             .check_existence(&image.image_hoster_id)
-            .await
-            .map_err(|_e| ReviewerError::CheckError(image.id))?;
+            .await?;
         if !exists {
-            let deleted = self
-                .data_access
-                .delete_image(image.id)
-                .await
-                .map_err(|_e| ReviewerError::DeleteError(image.id))?;
+            let deleted = self.data_access.delete_image(image.id).await?;
             if !deleted {
                 return Err(ReviewerError::DeleteError(image.id));
             }
         }
-        self.data_access
-            .mark_as_checked(image.id)
-            .await
-            .map_err(|_e| ReviewerError::MarkError(image.id))
+        self.data_access.mark_as_checked(image.id).await?;
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod test {
     use crate::{
-        interface::persistent_data::{model::Image, DataError},
+        interface::persistent_data::model::Image,
         layer::logic::image_review::{
-            image_reviewer::{ImageReviewer, ReviewerError},
+            image_reviewer::ImageReviewer,
             test::{
                 image_hoster_mock::{
                     ImageHosterMock, PHOTO_ID_THAT_DOES_NOT_EXIST, PHOTO_ID_TO_FAIL_CHECK_EXISTENCE,
@@ -136,19 +131,10 @@ mod test {
     };
 
     #[tokio::test]
-    async fn test_review_images_warning_on_err() {
-        let image_reviewer = get_image_reviewer();
-        image_reviewer
-            .review_images(Err(DataError::NoSuchItem))
-            .await;
-        check_correct_call_number(&image_reviewer, 0, 0, 0);
-    }
-
-    #[tokio::test]
     async fn test_review_image_ok() {
         let image_reviewer = get_image_reviewer();
         assert!(image_reviewer
-            .review_image(&get_default_image())
+            .review_image(get_default_image())
             .await
             .is_ok());
         check_correct_call_number(&image_reviewer, 1, 0, 1);
@@ -161,10 +147,7 @@ mod test {
             ..get_default_image()
         };
         let image_reviewer = get_image_reviewer();
-        assert_eq!(
-            image_reviewer.review_image(&image).await,
-            Err(ReviewerError::CheckError(image.id))
-        );
+        assert!(image_reviewer.review_image(image).await.is_err());
         check_correct_call_number(&image_reviewer, 1, 0, 0);
     }
 
@@ -175,7 +158,7 @@ mod test {
             ..get_default_image()
         };
         let image_reviewer = get_image_reviewer();
-        assert!(image_reviewer.review_image(&image).await.is_ok());
+        assert!(image_reviewer.review_image(image).await.is_ok());
         check_correct_call_number(&image_reviewer, 1, 1, 1);
     }
 
@@ -187,10 +170,7 @@ mod test {
             ..get_default_image()
         };
         let image_reviewer = get_image_reviewer();
-        assert_eq!(
-            image_reviewer.review_image(&image).await,
-            Err(ReviewerError::DeleteError(image.id))
-        );
+        assert!(image_reviewer.review_image(image).await.is_err());
         check_correct_call_number(&image_reviewer, 1, 1, 0);
     }
 
@@ -202,10 +182,7 @@ mod test {
             ..get_default_image()
         };
         let image_reviewer = get_image_reviewer();
-        assert_eq!(
-            image_reviewer.review_image(&image).await,
-            Err(ReviewerError::DeleteError(image.id))
-        );
+        assert!(image_reviewer.review_image(image).await.is_err());
         check_correct_call_number(&image_reviewer, 1, 1, 0);
     }
 
