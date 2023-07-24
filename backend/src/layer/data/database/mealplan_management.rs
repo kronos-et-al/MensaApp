@@ -33,11 +33,23 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     }
 
     async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Uuid>> {
-        todo!()
+        sqlx::query_scalar!(
+            "SELECT canteen_id FROM canteen WHERE name % $1 ORDER BY similarity(name, $1) DESC",
+            similar_name
+        )
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(Into::into)
     }
 
     async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Uuid>> {
-        todo!()
+        sqlx::query_scalar!(
+            "SELECT line_id FROM line WHERE name % $1 ORDER BY similarity(name, $1) DESC",
+            similar_name
+        )
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(Into::into)
     }
 
     async fn get_similar_meal(
@@ -46,7 +58,22 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>> {
-        todo!()
+        sqlx::query_scalar!( // the `<@` operator checks whether each element in the left array is also present in the right
+            "SELECT food_id 
+            FROM food JOIN meal USING (food_id) JOIN food_additive USING (food_id) 
+                JOIN food_allergen USING (food_id)
+            WHERE name % $1
+            GROUP BY food_id
+            HAVING array_agg(allergen) <@ $2 AND array_agg(allergen) @> $2
+                AND array_agg(additive) <@ $3 AND array_agg(additive) @> $3
+            ORDER BY similarity(name, $1) DESC",
+            similar_name,
+            allergens.iter().copied().map(Allergen::to_db_string).collect::<Vec<_>>() as _,
+            additives.iter().copied().map(Additive::to_db_string).collect::<Vec<_>>() as _
+        )
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(Into::into)
     }
 
     async fn get_similar_side(
@@ -55,7 +82,22 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>> {
-        todo!()
+        sqlx::query_scalar!( // the `<@` operator checks whether each element in the left array is also present in the right
+            "SELECT food_id 
+            FROM food JOIN food_additive USING (food_id) 
+                JOIN food_allergen USING (food_id)
+            WHERE food_id NOT IN (SELECT food_id FROM meal) AND name % $1
+            GROUP BY food_id
+            HAVING array_agg(allergen) <@ $2 AND array_agg(allergen) @> $2
+                AND array_agg(additive) <@ $3 AND array_agg(additive) @> $3
+            ORDER BY similarity(name, $1) DESC",
+            similar_name,
+            allergens.iter().copied().map(Allergen::to_db_string).collect::<Vec<_>>() as _,
+            additives.iter().copied().map(Additive::to_db_string).collect::<Vec<_>>() as _
+        )
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(Into::into)
     }
 
     async fn update_canteen(&self, uuid: Uuid, name: &str) -> Result<Uuid> {
