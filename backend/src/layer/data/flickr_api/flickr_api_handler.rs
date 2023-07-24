@@ -2,6 +2,7 @@ use crate::interface::image_hoster::model::ImageMetaData;
 use crate::interface::image_hoster::{ImageHoster, ImageHosterError};
 use crate::layer::data::flickr_api::api_request::ApiRequest;
 use async_trait::async_trait;
+use regex::Regex;
 
 #[derive(Debug, Clone)]
 pub struct HosterInfo {
@@ -19,10 +20,15 @@ impl FlickrApiHandler {
         }
     }
 
+    const URL_REGEX: &'static str = r"^((http[s]?|ftp):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$";
+
     // URL TYPE 1: https://www.flickr.com/photos/gerdavs/52310534489/ <- remove last '/'
     // URL TYPE 2: https://flic.kr/p/2nGvar4
     // Both cases: Split with '/' and get last member (= photo_id).
-    fn determine_photo_id(&self, mut url: &str) -> Result<&str, ImageHosterError> {
+    fn determine_photo_id<'a>(&'a self, mut url: &'a str) -> Result<&str, ImageHosterError> {
+        let regex = Regex::new(URL_REGEX).expect("regex creation failed");
+        // TODO regex match
+
         if url.ends_with("/") {
             // remove last '/'
             let mut chars = url.chars();
@@ -80,5 +86,43 @@ impl ImageHoster for FlickrApiHandler {
     /// If any error occurs, it 'll be returned.
     async fn check_licence(&self, photo_id: &str) -> Result<bool, ImageHosterError> {
         self.request.flickr_photos_licenses_get_license_history(photo_id).await
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::interface::image_hoster::ImageHosterError;
+    use crate::layer::data::flickr_api::flickr_api_handler::{FlickrApiHandler, HosterInfo};
+
+    fn get_handler() -> FlickrApiHandler {
+        FlickrApiHandler::new(
+            HosterInfo {
+                api_key: String::new(),
+            }
+        )
+    }
+
+    #[test]
+    fn valid_determine_photo_id() {
+        let valid_url = "https://www.flickr.com/photos/gerdavs/52310534489/";
+        let handler = get_handler();
+        let res = handler.determine_photo_id(valid_url).unwrap();
+        assert_eq!(res, "52310534489");
+    }
+
+    #[test]
+    fn empty_determine_photo_id() {
+        let valid_url = "";
+        let handler = get_handler();
+        let res = handler.determine_photo_id(valid_url).err().unwrap();
+        assert_eq!(res, ImageHosterError::FormatNotFound(format!("this url format is not supported: '{}'", valid_url)));
+    }
+
+    #[test]
+    fn invalid_determine_photo_id() {
+        let valid_url = "";
+        let handler = get_handler();
+        let res = handler.determine_photo_id(valid_url).err().unwrap();
+        assert_eq!(res, ImageHosterError::FormatNotFound(format!("this url format is not supported: '{}'", valid_url)));
     }
 }
