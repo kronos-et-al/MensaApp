@@ -1,6 +1,8 @@
 use std::num::TryFromIntError;
 
-use crate::util::Price;
+use heck::AsSnakeCase;
+
+use crate::util::{Allergen, Price, Additive};
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "prices")]
@@ -38,5 +40,17 @@ impl TryFrom<Price> for DatabasePrice {
             guest: value.price_guest.try_into()?,
             pupil: value.price_pupil.try_into()?,
         })
+    }
+}
+
+impl Allergen {
+    pub fn to_db_string(self) -> String {
+        format!("{}", AsSnakeCase(format!("{self:?}")))
+    }
+}
+
+impl Additive {
+    pub fn to_db_string(self) -> String {
+        format!("{}", AsSnakeCase(format!("{self:?}")))
     }
 }

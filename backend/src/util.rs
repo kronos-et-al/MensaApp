@@ -151,12 +151,6 @@ pub enum ReportReason {
     Other,
 }
 
-impl Display for ReportReason {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", AsShoutySnakeCase(format!("{self:?}")))
-    }
-}
-
 /// This struct contains all price classes. All prices are listed in euro.
 #[derive(Debug, Copy, Clone)]
 pub struct Price {
