@@ -34,21 +34,21 @@ impl ImageHoster for ImageHosterMock {
         })
     }
     /// Checks if an image still exists at the hoster website.
-    async fn check_existence(&self, photo_id: &str) -> Result<bool> {
+    async fn check_existence(&self, image_id: &str) -> Result<bool> {
         *self
             .existence_calls
             .lock()
             .expect("failed to lock mutex for `existence_calls` counter") += 1;
-        if photo_id == IMAGE_ID_TO_FAIL_CHECK_EXISTENCE {
+        if image_id == IMAGE_ID_TO_FAIL_CHECK_EXISTENCE {
             Err(ImageHosterError::PhotoNotFound)
-        } else if photo_id == IMAGE_ID_THAT_DOES_NOT_EXIST {
+        } else if image_id == IMAGE_ID_THAT_DOES_NOT_EXIST {
             Ok(false)
         } else {
             Ok(true)
         }
     }
     /// Checks whether the licence is acceptable for our purposes.
-    async fn check_licence(&self, _photo_id: &str) -> Result<bool> {
+    async fn check_licence(&self, _image_id: &str) -> Result<bool> {
         Ok(true)
     }
 }
