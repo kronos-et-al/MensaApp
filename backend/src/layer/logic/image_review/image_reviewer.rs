@@ -124,6 +124,25 @@ mod test {
     };
 
     #[tokio::test]
+    async fn test_full_review() {
+        let image_reviewer = get_image_reviewer();
+        assert!(image_reviewer.try_start_image_review().await.is_ok());
+        assert!(image_reviewer.data_access.get_n_images_by_rank_date_calls() == 1);
+        assert!(
+            image_reviewer
+                .data_access
+                .get_n_images_next_week_by_rank_not_checked_last_week_calls()
+                == 1
+        );
+        assert!(
+            image_reviewer
+                .data_access
+                .get_n_images_by_last_checked_not_checked_last_week_calls()
+                == 1
+        );
+    }
+
+    #[tokio::test]
     async fn test_review_image_ok() {
         let image_reviewer = get_image_reviewer();
         assert!(image_reviewer
@@ -152,7 +171,7 @@ mod test {
         };
         let image_reviewer = get_image_reviewer();
         assert!(image_reviewer.review_image(image).await.is_ok());
-        check_correct_call_number(&image_reviewer, 1, 1, 1);
+        check_correct_call_number(&image_reviewer, 1, 1, 0);
     }
 
     #[tokio::test]
