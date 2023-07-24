@@ -4,8 +4,8 @@ use async_trait::async_trait;
 use thiserror::Error;
 
 use lettre::{
-    message::Mailbox, transport::smtp::authentication::Credentials, Message, SmtpTransport,
-    Transport,
+    address::AddressError, message::Mailbox, transport::smtp::authentication::Credentials, Message,
+    SmtpTransport, Transport,
 };
 use uuid::fmt::Simple;
 
@@ -22,21 +22,19 @@ use tracing::{info, warn};
 
 pub type MailResult<T> = std::result::Result<T, MailError>;
 
-const REPORT_TEMPLATE_FILE: &str = "template.txt";
+const REPORT_TEMPLATE_FILE: &str = "--censored--/template.txt";
 
 /// Enum describing the possible ways, the mail notification can fail.
 #[derive(Debug, Error)]
 pub enum MailError {
-    #[error("The sender could not be created")]
-    SenderError,
-    #[error("The reciever could not be created")]
-    RecieverError,
-    #[error("The template file could not be read")]
-    TemplateError,
-    #[error("The email could not be created")]
-    MailParseError,
-    #[error("Could not send email")]
-    MailSendError,
+    #[error("an error occurred while parsing the addresses: {0}")]
+    AddressError(#[from] AddressError),
+    #[error("an error occurred while reading the template: {0}")]
+    TemplateError(#[from] std::io::Error),
+    #[error("an error occurred while parsing the mail: {0}")]
+    MailParseError(#[from] lettre::error::Error),
+    #[error("an error occurred while sending the mail: {0}")]
+    MailSendError(#[from] lettre::transport::smtp::Error),
 }
 
 pub struct MailSender {
@@ -79,11 +77,8 @@ impl MailSender {
             .from(sender)
             .to(reciever)
             .subject("An image was reported for reviewing")
-            .body(report)
-            .map_err(|_e| MailError::MailParseError)?;
-        self.mailer
-            .send(&email)
-            .map_err(|_e| MailError::MailSendError)?;
+            .body(report)?;
+        self.mailer.send(&email)?;
         info!("Email sent successfully!");
         Ok(())
     }
@@ -91,18 +86,18 @@ impl MailSender {
     fn get_sender(&self) -> MailResult<Mailbox> {
         format!("app <{}>", self.config.username.clone())
             .parse()
-            .map_err(|_e| MailError::SenderError)
+            .map_err(MailError::AddressError)
     }
 
     fn get_reciever(&self) -> MailResult<Mailbox> {
         format!("admin <{}>", self.config.admin_email_address)
             .parse()
-            .map_err(|_e| MailError::RecieverError)
+            .map_err(MailError::AddressError)
     }
 
     fn get_report(info: &ImageReportInfo) -> MailResult<String> {
         let template_file_contents =
-            fs::read_to_string(REPORT_TEMPLATE_FILE).map_err(|_e| MailError::TemplateError)?;
+            fs::read_to_string(REPORT_TEMPLATE_FILE).map_err(MailError::TemplateError)?;
         let template = Template::new(&template_file_contents);
         let mut args = HashMap::new();
         let image_link: &str = &info.image_link;
@@ -130,20 +125,18 @@ impl MailSender {
 mod test {
     #![allow(clippy::unwrap_used)]
     use crate::{
-        interface::admin_notification::{AdminNotification, ImageReportInfo},
-        layer::data::mail::mail_sender::MailSender,
-        startup::config::mail_info::MailInfo,
-        util::Uuid,
+        interface::admin_notification::ImageReportInfo, layer::data::mail::mail_sender::MailSender,
+        startup::config::mail_info::MailInfo, util::Uuid,
     };
 
     #[tokio::test]
     async fn test_notify_admin_image_report() {
         let mail_info = MailInfo {
-            smtp_server: String::from(" "),
+            smtp_server: String::from("--censored--"),
             smtp_port: 465,
-            username: String::from(" "),
-            password: String::from(" "),
-            admin_email_address: String::from(" "),
+            username: String::from("--censored--"),
+            password: String::from("--censored--"),
+            admin_email_address: String::from("--censored--"),
         };
 
         let mail_sender = MailSender::new(mail_info).unwrap();
@@ -157,6 +150,9 @@ mod test {
             negative_rating_count: 20,
             get_image_rank: 1.0,
         };
-        mail_sender.notify_admin_image_report(report_info).await;
+        if let Err(error) = mail_sender.try_notify_admin_image_report(&report_info) {
+            println!("{error}");
+            panic!();
+        }
     }
 }
