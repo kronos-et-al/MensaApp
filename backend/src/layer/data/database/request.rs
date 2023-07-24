@@ -387,11 +387,12 @@ mod tests {
             )
             .await
             .unwrap();
-        if let Some(meals) = meals {
-            assert!(meals.len() == 2);
-            assert!(meals[0].name == "Geflügel - Cevapcici, Ajvar, Djuvec Reis");
-            assert!(meals[1].name == "2 Dampfnudeln mit Vanillesoße");
-        }
+        assert!(meals.is_some(), "data should ba available");
+        let meals = meals.unwrap();
+        let meal_names: Vec<&str> = meals.iter().map(|m| m.name.as_str()).collect();
+        assert!(meals.len() == 2);
+        assert!(meal_names.contains(&"Geflügel - Cevapcici, Ajvar, Djuvec Reis"));
+        assert!(meal_names.contains(&"2 Dampfnudeln mit Vanillesoße"));
     }
 
     #[sqlx::test]
