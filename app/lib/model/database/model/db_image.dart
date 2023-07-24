@@ -44,7 +44,7 @@ class DBImage implements DatabaseModel {
   /// The string to create a table for an image.
   static String initTable() {
     return '''
-    CREATE TABLE $tableName(
+    CREATE TABLE $tableName (
       $columnImageID TEXT PRIMARY KEY,
       $columnMealID TEXT NOT NULL,
       $columnUrl TEXT NOT NULL,

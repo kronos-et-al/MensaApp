@@ -1,19 +1,14 @@
-import 'package:app/view/core/selection_components/MensaDropdown.dart';
-import 'package:app/view/core/selection_components/MensaDropdownEntry.dart';
-import 'package:app/view_model/logic/meal/IMealAccess.dart';
-import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class MensaAppBar extends StatelessWidget implements PreferredSizeWidget {
   final PreferredSizeWidget? _bottom;
   final Widget _child;
-  final double? _appBarHeight;
+  final double _appBarHeight;
 
   MensaAppBar(
       {super.key,
       PreferredSizeWidget? bottom,
-      double? appBarHeight,
+      double appBarHeight = kToolbarHeight,
       required Widget child})
       : _appBarHeight = appBarHeight,
         _bottom = bottom,
@@ -38,8 +33,8 @@ class MensaAppBar extends StatelessWidget implements PreferredSizeWidget {
 class _PreferredAppBarSize extends Size {
   _PreferredAppBarSize(this.appBarHeight, this.bottomHeight)
       : super.fromHeight(
-            (appBarHeight ?? kToolbarHeight) + (bottomHeight ?? 0));
+            appBarHeight + (bottomHeight ?? 0));
 
-  final double? appBarHeight;
+  final double appBarHeight;
   final double? bottomHeight;
 }

@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
+
 import '../../repository/data_classes/settings/MensaColorScheme.dart';
 import '../../repository/data_classes/settings/MealPlanFormat.dart';
 import '../../repository/data_classes/settings/PriceCategory.dart';
 
 /// This is an interface for accessing the preferences.
-abstract class IPreferenceAccess {
+abstract class IPreferenceAccess with ChangeNotifier {
   /// The client identifier is returned.
   /// @return The client identifier.
   Future<String> getClientIdentifier();

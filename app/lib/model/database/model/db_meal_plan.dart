@@ -34,7 +34,7 @@ class DBMealPlan implements DatabaseModel {
   /// The string to create a table for a meal plan.
   static String initTable() {
     return '''
-    CREATE TABLE $tableName(
+    CREATE TABLE $tableName (
       $columnMealPlanID TEXT NOT NULL,
       $columnLineID TEXT NOT NULL,
       $columnDate TEXT,

@@ -1,13 +1,12 @@
-import 'package:app/model/database/SQLiteDatabaseAccess.dart';
 import 'package:app/model/database/model/db_canteen.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
+import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/meal/Price.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
-import 'package:app/view_model/repository/data_classes/mealplan/Mealplan.dart';
+import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 
 import '../../../view_model/repository/data_classes/meal/Additive.dart';
-import '../../../view_model/repository/data_classes/meal/Image.dart';
 import '../../../view_model/repository/data_classes/meal/Side.dart';
 import '../../../view_model/repository/data_classes/mealplan/Line.dart';
 import 'db_image.dart';
@@ -15,10 +14,6 @@ import 'db_line.dart';
 import 'db_meal.dart';
 import 'db_meal_plan.dart';
 import 'db_side.dart';
-import 'db_side_additive.dart';
-import 'db_side_allergen.dart';
-import 'db_meal_additive.dart';
-import 'db_meal_allergen.dart';
 
 abstract class DatabaseModel {
   Map<String, dynamic> toMap();
@@ -75,8 +70,8 @@ class DatabaseTransformer {
     );
   }
 
-  static Image fromDBImage(DBImage image) {
-    return Image(
+  static ImageData fromDBImage(DBImage image) {
+    return ImageData(
         id: image.imageID,
         url: image.url,
         imageRank: image.imageRank,
@@ -102,8 +97,8 @@ class DatabaseTransformer {
     );
   }
 
-  static Mealplan fromDBMealPlan(DBMealPlan plan, DBLine line, DBCanteen canteen, List<Meal> meals) {
-    return Mealplan(
+  static MealPlan fromDBMealPlan(DBMealPlan plan, DBLine line, DBCanteen canteen, List<Meal> meals) {
+    return MealPlan(
         date: DateTime.tryParse(plan.date)!,
         line: DatabaseTransformer.fromDBLine(line, canteen),
         isClosed: plan.isClosed,
