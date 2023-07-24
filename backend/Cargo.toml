@@ -30,6 +30,7 @@ futures = "0.3.28"
 tokio-cron-scheduler = "0.9.4"
 lettre = "0.10.4"
 string_template = "0.2.1"
+lazy_static = "1.4.0"
 
 
 [dev-dependencies]

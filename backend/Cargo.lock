@@ -1182,6 +1182,7 @@ dependencies = [
  "futures",
  "heck",
  "lettre",
+ "lazy_static",
  "rand",
  "regex",
  "reqwest",

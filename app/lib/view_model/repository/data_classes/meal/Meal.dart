@@ -2,27 +2,47 @@ import '../filter/Frequency.dart';
 import 'Additive.dart';
 import 'Allergen.dart';
 import 'FoodType.dart';
-import 'Image.dart';
+import 'ImageData.dart';
 import 'Price.dart';
 import 'Side.dart';
 
+/// This class represents a meal.
 class Meal {
   final String _id;
   final String _name;
   final FoodType _foodType;
   final Price _price;
+
   final List<Allergen>? _allergens;
   final List<Additive>? _additives;
   final List<Side>? _sides;
+
   final int? _individualRating;
   final int? _numberOfRatings;
-  final int? _averageRating;
+  final double? _averageRating;
   final DateTime? _lastServed;
   final DateTime? _nextServed;
   final Frequency? _relativeFrequency;
-  final List<Image>? _images;
+  final List<ImageData>? _images;
   bool? _isFavorite;
 
+  /// This constructor creates a meal with the committed values.
+  /// @param id The id of the meal
+  /// @param name The name of the meal
+  /// @param foodType The food type of the meal
+  /// @param price The price of the meal
+  /// @param allergens The allergens of the meal
+  /// @param additives The additives of the meal
+  /// @param sides The sides of the meal
+  /// @param individualRating The individual rating of the meal
+  /// @param numberOfRatings The number of ratings of the meal
+  /// @param averageRating The average rating of the meal
+  /// @param lastServed The date when the meal was last served
+  /// @param nextServed The date when the meal will be served next
+  /// @param relativeFrequency The relative frequency of the meal
+  /// @param images The images of the meal
+  /// @param isFavorite The favorite status of the meal
+  /// @return A meal with the committed values
   Meal({
     required String id,
     required String name,
@@ -33,11 +53,11 @@ class Meal {
     List<Side>? sides,
     int? individualRating,
     int? numberOfRatings,
-    int? averageRating,
+    double? averageRating,
     DateTime? lastServed,
     DateTime? nextServed,
     Frequency? relativeFrequency,
-    List<Image>? images,
+    List<ImageData>? images,
     bool? isFavorite,
   })
       : _id = id,
@@ -111,7 +131,7 @@ class Meal {
 
   int? get numberOfRatings => _numberOfRatings;
 
-  int? get averageRating => _averageRating;
+  double? get averageRating => _averageRating;
 
   DateTime? get lastServed => _lastServed;
 
@@ -119,7 +139,7 @@ class Meal {
 
   Frequency? get relativeFrequency => _relativeFrequency;
 
-  List<Image>? get images => _images;
+  List<ImageData>? get images => _images;
 
-  bool? get isFavorite => _isFavorite;
+  bool get isFavorite => _isFavorite ?? false;
 }

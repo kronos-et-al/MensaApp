@@ -90,39 +90,46 @@ use crate::interface::mensa_parser::{
     ParseError,
 };
 use crate::util::{Additive, Allergen, Date, MealType, Price};
+use lazy_static::lazy_static;
 use regex::Regex;
 use scraper::element_ref::Text;
 use scraper::{ElementRef, Html, Selector};
 
-const ROOT_NODE_CLASS_SELECTOR: &str = "div.main-content";
-const CANTEEN_NAME_NODE_CLASS_SELECTOR: &str = "h1.mensa_fullname";
+lazy_static! {
+    static ref ROOT_NODE_CLASS_SELECTOR: Selector = Selector::parse("div.main-content").expect(SELECTOR_PARSE_E_MSG);
+    static ref CANTEEN_NAME_NODE_CLASS_SELECTOR: Selector = Selector::parse("h1.mensa_fullname").expect(SELECTOR_PARSE_E_MSG);
 
-const DATE_SUPER_NODE_CLASS_SELECTOR: &str = "ul.canteen-day-nav";
-const DATE_NODE_CLASS_SELECTOR: &str = "a";
+    static ref DATE_SUPER_NODE_CLASS_SELECTOR: Selector = Selector::parse("ul.canteen-day-nav").expect(SELECTOR_PARSE_E_MSG);
+    static ref DATE_NODE_CLASS_SELECTOR: Selector = Selector::parse("a").expect(SELECTOR_PARSE_E_MSG);
+    static ref DAY_NODE_CLASS_SELECTOR: Selector = Selector::parse("div.canteen-day").expect(SELECTOR_PARSE_E_MSG);
+
+    static ref LINE_NODE_CLASS_SELECTOR: Selector = Selector::parse("tr.mensatype_rows").expect(SELECTOR_PARSE_E_MSG);
+    static ref LINE_NAME_NODE_CLASS_SELECTOR: Selector = Selector::parse("td.mensatype").expect(SELECTOR_PARSE_E_MSG);
+
+    static ref DISH_TYPE_NODE_CLASS_SELECTOR: Selector = Selector::parse("img.mealicon_2").expect(SELECTOR_PARSE_E_MSG);
+    static ref DISH_NAME_NODE_CLASS_SELECTOR: Selector = Selector::parse("span.bg").expect(SELECTOR_PARSE_E_MSG);
+    static ref DISH_INFO_NODE_CLASS_SELECTOR: Selector = Selector::parse("sup").expect(SELECTOR_PARSE_E_MSG);
+    static ref ENV_SCORE_NODE_CLASS_SELECTOR: Selector = Selector::parse("div.enviroment_score.average").expect(SELECTOR_PARSE_E_MSG);
+
+    /// A Regex for getting prices in euros. A price consists of 1 or more digits, followed by a comma and then exactly two digits.
+    static ref PRICE_REGEX: Regex = Regex::new(r"([0-9]*),([0-9]{2})").expect(REGEX_PARSE_E_MSG);
+    /// A Regex for getting allergens. An allergen consists of a single Uppercase letter followed by one or more upper- or lowercase letters (indicated by \w+).
+    static ref ALLERGEN_REGEX: Regex = Regex::new(r"[A-Z]\w+").expect(REGEX_PARSE_E_MSG);
+    /// A regex for getting additives. An additive consists of one or two digits.
+    static ref ADDITIVE_REGEX: Regex = Regex::new(r"[0-9]{1,2}").expect(REGEX_PARSE_E_MSG);
+}
+
+const DISH_NODE_CLASS_SELECTOR_PREFIX: &str = "tr.mt-";
+const DISH_PRICE_NODE_CLASS_SELECTOR_PREFIX: &str = "span.bgp.price_";
+
 const DATE_ATTRIBUTE_NAME: &str = "rel";
-const DAY_NODE_CLASS_SELECTOR: &str = "div.canteen-day";
-
-const LINE_NODE_CLASS_SELECTOR: &str = "tr.mensatype_rows";
-const LINE_NAME_NODE_CLASS_SELECTOR: &str = "td.mensatype";
-
-const DISH_NODE_CLASS_SELECTOR: &str = "tr.mt-";
-const DISH_TYPE_NODE_CLASS_SELECTOR: &str = "img.mealicon_2";
 const DISH_TYPE_ATTRIBUTE_NAME: &str = "title";
-const DISH_NAME_NODE_CLASS_SELECTOR: &str = "span.bg";
-const DISH_INFO_NODE_CLASS_SELECTOR: &str = "sup";
-const DISH_PRICE_NODE_CLASS_SELECTOR: &str = "span.bgp.price_";
-const ENV_SCORE_NODE_CLASS_SELECTOR: &str = "div.enviroment_score.average";
 const ENV_SCORE_ATTRIBUTE_NAME: &str = "data-rating";
 
 const DATE_FORMAT: &str = "%Y-%m-%d";
-/// A Regex for getting prices in euros. A price consists of 1 or more digits, followed by a comma and then exactly two digits
-const PRICE_REGEX: &str = r"([0-9]*),([0-9]{2})";
-/// A Regex for getting allergens. An allergen consists of a single Uppercase letter followed by one or more upper- or lowercase letters (indicated by \w+)
-const ALLERGEN_REGEX: &str = r"[A-Z]\w+";
-/// A regex for getting additives. An additive consists of one or two digits
-const ADDITIVE_REGEX: &str = r"[0-9]{1,2}";
 
 const NUMBER_OF_MEAL_TYPES: usize = 8;
+const PRICE_TYPE_COUNT: usize = 4;
 
 const SELECTOR_PARSE_E_MSG: &str = "Error while parsing Selector string";
 const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
@@ -173,11 +180,12 @@ impl HTMLParser {
     }
 
     fn get_root_node(document: &Html) -> Result<ElementRef, ParseError> {
-        let selector = Selector::parse(ROOT_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
         document
-            .select(&selector)
+            .select(&ROOT_NODE_CLASS_SELECTOR)
             .next()
-            .ok_or_else(|| ParseError::InvalidHtmlDocument(String::from(ROOT_NODE_CLASS_SELECTOR)))
+            .ok_or_else(|| {
+                ParseError::InvalidHtmlDocument(format!("{:?}", *ROOT_NODE_CLASS_SELECTOR))
+            })
     }
 
     fn get_dates(root_node: &ElementRef) -> Option<Vec<Date>> {
@@ -193,13 +201,11 @@ impl HTMLParser {
     }
 
     fn get_date_super_node<'a>(root_node: &'a ElementRef<'a>) -> Option<ElementRef<'a>> {
-        let selector = Selector::parse(DATE_SUPER_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        root_node.select(&selector).next()
+        root_node.select(&DATE_SUPER_NODE_CLASS_SELECTOR).next()
     }
 
     fn get_date_nodes<'a>(date_super_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
-        let selector = Selector::parse(DATE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        date_super_node.select(&selector).collect()
+        date_super_node.select(&DATE_NODE_CLASS_SELECTOR).collect()
     }
 
     fn get_canteen_for_all_days(root_node: &ElementRef) -> Vec<ParseCanteen> {
@@ -210,8 +216,7 @@ impl HTMLParser {
     }
 
     fn get_day_nodes<'a>(root_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
-        let selector = Selector::parse(DAY_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        root_node.select(&selector).collect()
+        root_node.select(&DAY_NODE_CLASS_SELECTOR).collect()
     }
 
     fn get_canteen_for_single_day(
@@ -225,9 +230,7 @@ impl HTMLParser {
     }
 
     fn get_canteen_name(root_node: &ElementRef) -> Option<String> {
-        let selector =
-            Selector::parse(CANTEEN_NAME_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        let canteen_node = root_node.select(&selector).next()?;
+        let canteen_node = root_node.select(&CANTEEN_NAME_NODE_CLASS_SELECTOR).next()?;
         Some(canteen_node.inner_html())
     }
 
@@ -239,8 +242,7 @@ impl HTMLParser {
     }
 
     fn get_line_nodes<'a>(day_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
-        let selector = Selector::parse(LINE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        day_node.select(&selector).collect()
+        day_node.select(&LINE_NODE_CLASS_SELECTOR).collect()
     }
 
     fn get_line(line_node: &ElementRef) -> Option<ParseLine> {
@@ -251,8 +253,7 @@ impl HTMLParser {
     }
 
     fn get_line_name(line_node: &ElementRef) -> Option<String> {
-        let selector = Selector::parse(LINE_NAME_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        let line_name_node = line_node.select(&selector).next()?;
+        let line_name_node = line_node.select(&LINE_NAME_NODE_CLASS_SELECTOR).next()?;
         Some(Self::remove_unnecessary_html(line_name_node.text()))
     }
 
@@ -269,7 +270,7 @@ impl HTMLParser {
 
     fn get_dish_nodes<'a>(line_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
         (0..NUMBER_OF_MEAL_TYPES)
-            .filter_map(|i| Selector::parse(&format!("{DISH_NODE_CLASS_SELECTOR}{i}")).ok())
+            .filter_map(|i| Selector::parse(&format!("{DISH_NODE_CLASS_SELECTOR_PREFIX}{i}")).ok())
             .flat_map(|selector| line_node.select(&selector).collect::<Vec<_>>())
             .collect()
     }
@@ -286,8 +287,7 @@ impl HTMLParser {
     }
 
     fn get_dish_name(dish_node: &ElementRef) -> Option<String> {
-        let selector = Selector::parse(DISH_NAME_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        let dish_name_node = dish_node.select(&selector).next()?;
+        let dish_name_node = dish_node.select(&DISH_NAME_NODE_CLASS_SELECTOR).next()?;
         Some(Self::remove_multiple_whitespaces(
             &dish_name_node.text().collect::<String>(),
         ))
@@ -303,8 +303,10 @@ impl HTMLParser {
     }
 
     fn get_dish_price(dish_node: &ElementRef) -> Price {
-        let mut prices = (1..5)
-            .filter_map(|i| Selector::parse(&format!("{DISH_PRICE_NODE_CLASS_SELECTOR}{i}")).ok())
+        let mut prices = (1..=PRICE_TYPE_COUNT)
+            .filter_map(|i| {
+                Selector::parse(&format!("{DISH_PRICE_NODE_CLASS_SELECTOR_PREFIX}{i}")).ok()
+            })
             .filter_map(|selector| dish_node.select(&selector).next())
             .filter_map(|price_node| Self::get_price_through_regex(&price_node.inner_html()));
         Price {
@@ -316,48 +318,42 @@ impl HTMLParser {
     }
 
     fn get_price_through_regex(string: &str) -> Option<u32> {
-        let regex = Regex::new(PRICE_REGEX).expect(REGEX_PARSE_E_MSG);
-        let capture = regex.captures(string)?;
+        let capture = PRICE_REGEX.captures(string)?;
         let euros = capture.get(1)?.as_str();
         let cents = capture.get(2)?.as_str();
         format!("{euros}{cents}").parse().ok()
     }
 
     fn get_dish_allergens(dish_node: &ElementRef) -> Option<Vec<Allergen>> {
-        let selector = Selector::parse(DISH_INFO_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        let allergens_node = dish_node.select(&selector).next()?;
+        let allergens_node = dish_node.select(&DISH_INFO_NODE_CLASS_SELECTOR).next()?;
         Some(Self::get_allergens_through_regex(
             &allergens_node.inner_html(),
         ))
     }
 
     fn get_allergens_through_regex(string: &str) -> Vec<Allergen> {
-        Regex::new(ALLERGEN_REGEX)
-            .expect(REGEX_PARSE_E_MSG)
+        ALLERGEN_REGEX
             .find_iter(string)
             .filter_map(|a| Allergen::parse(a.as_str()))
             .collect()
     }
 
     fn get_dish_additives(dish_node: &ElementRef) -> Option<Vec<Additive>> {
-        let selector = Selector::parse(DISH_INFO_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        let additives_node = dish_node.select(&selector).next()?;
+        let additives_node = dish_node.select(&DISH_INFO_NODE_CLASS_SELECTOR).next()?;
         Some(Self::get_additives_through_regex(
             &additives_node.inner_html(),
         ))
     }
 
     fn get_additives_through_regex(string: &str) -> Vec<Additive> {
-        Regex::new(ADDITIVE_REGEX)
-            .expect(REGEX_PARSE_E_MSG)
+        ADDITIVE_REGEX
             .find_iter(string)
             .filter_map(|a| Additive::parse(a.as_str()))
             .collect()
     }
 
     fn get_dish_type(dish_node: &ElementRef) -> Option<MealType> {
-        let selector = Selector::parse(DISH_TYPE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        let dish_type_node = dish_node.select(&selector).next()?;
+        let dish_type_node = dish_node.select(&DISH_TYPE_NODE_CLASS_SELECTOR).next()?;
         dish_type_node
             .value()
             .attr(DISH_TYPE_ATTRIBUTE_NAME)
@@ -365,8 +361,7 @@ impl HTMLParser {
     }
 
     fn get_dish_env_score(dish_node: &ElementRef) -> Option<u32> {
-        let selector = Selector::parse(ENV_SCORE_NODE_CLASS_SELECTOR).expect(SELECTOR_PARSE_E_MSG);
-        let env_score_node = dish_node.select(&selector).next()?;
+        let env_score_node = dish_node.select(&ENV_SCORE_NODE_CLASS_SELECTOR).next()?;
         env_score_node
             .value()
             .attr(ENV_SCORE_ATTRIBUTE_NAME)?
