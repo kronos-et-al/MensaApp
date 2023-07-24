@@ -1,0 +1,53 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes\n            FROM image_detail \n            WHERE food_id in (SELECT food_id from food_plan WHERE serve_date = $1)\n            ORDER BY rank DESC\n            LIMIT $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "image_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "rank",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 2,
+        "name": "hoster_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "upvotes",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "downvotes",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "6dab4d6bd1095f9180d5d29ec5a693608f8fcf7a74805ed9b9567165bae2a003"
+}

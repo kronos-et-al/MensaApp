@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE image SET last_verified_date = CURRENT_DATE WHERE image_id = ANY ($1)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "UuidArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a34e5b1c7f3d4f25dd4a88fa44464ee31a78e6174f0a24bfd2f5120494b58644"
+}

@@ -1,0 +1,96 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT food_id \n            FROM food JOIN meal USING (food_id) JOIN food_additive USING (food_id) \n                JOIN food_allergen USING (food_id)\n            WHERE name % $1\n            GROUP BY food_id\n            HAVING array_agg(allergen) <@ $2 AND array_agg(allergen) @> $2\n                AND array_agg(additive) <@ $3 AND array_agg(additive) @> $3\n            ORDER BY similarity(name, $1) DESC",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "food_id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        {
+          "Custom": {
+            "name": "_allergen",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "allergen",
+                  "kind": {
+                    "Enum": [
+                      "CA",
+                      "DI",
+                      "EI",
+                      "ER",
+                      "FI",
+                      "GE",
+                      "HF",
+                      "HA",
+                      "KA",
+                      "KR",
+                      "LU",
+                      "MA",
+                      "ML",
+                      "PA",
+                      "PE",
+                      "PI",
+                      "QU",
+                      "RO",
+                      "SA",
+                      "SF",
+                      "SN",
+                      "SO",
+                      "WA",
+                      "WE",
+                      "WT",
+                      "LA",
+                      "GL"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "_additive",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "additive",
+                  "kind": {
+                    "Enum": [
+                      "COLORANT",
+                      "PRESERVING_AGENTS",
+                      "ANTIOXIDANT_AGENTS",
+                      "FLAVOUR_ENHANCER",
+                      "PHOSPHATE",
+                      "SURFACE_WAXED",
+                      "SULPHUR",
+                      "ARTIFICALLY_BLACKENED_OLIVES",
+                      "SWEETENER",
+                      "LAXATIVE_IF_OVERUSED",
+                      "PHENYLALANINE",
+                      "ALCOHOL",
+                      "PRESSED_MEAT",
+                      "GLAZING_WITH_CACAO",
+                      "PRESSED_FISH"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "86975b67808b41883dc81a383296fd5cc202026ced7dca34ea46bfcffa1cf401"
+}

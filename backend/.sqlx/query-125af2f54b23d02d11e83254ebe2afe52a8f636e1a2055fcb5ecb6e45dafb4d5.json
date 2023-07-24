@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE canteen\n            SET name = $2\n            WHERE canteen_id = $1\n            RETURNING canteen_id\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "canteen_id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "125af2f54b23d02d11e83254ebe2afe52a8f636e1a2055fcb5ecb6e45dafb4d5"
+}

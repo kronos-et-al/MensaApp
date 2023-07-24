@@ -1,7 +1,7 @@
 -- Add up migration script here
 
 CREATE TABLE image (
-  image_id uuid PRIMARY KEY,
+  image_id uuid DEFAULT gen_random_uuid()  PRIMARY KEY,
   user_id uuid NOT NULL REFERENCES users(user_id),
   food_id uuid NOT NULL REFERENCES meal(food_id),
   id text NOT NULL,

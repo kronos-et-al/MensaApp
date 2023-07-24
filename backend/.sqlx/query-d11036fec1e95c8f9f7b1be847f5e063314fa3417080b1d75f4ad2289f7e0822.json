@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes\n            FROM image_detail\n            WHERE last_verified_date < CURRENT_DATE - 7\n            ORDER BY last_verified_date\n            LIMIT $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "image_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "rank",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 2,
+        "name": "hoster_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "upvotes",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "downvotes",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "d11036fec1e95c8f9f7b1be847f5e063314fa3417080b1d75f4ad2289f7e0822"
+}
