@@ -5,11 +5,19 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   final FlutterI18nDelegate delegate = FlutterI18nDelegate(
-    translationLoader: NamespaceFileTranslationLoader(
-        namespaces: ["common", "ratings", "mealplanException", "snackbar"],
-        useCountryCode: false,
-        basePath: 'assets/locales',
-        fallbackDir: 'de'),
+    translationLoader: NamespaceFileTranslationLoader(namespaces: [
+      "common",
+      "ratings",
+      "snackbar",
+      "settings",
+      "priceCategory",
+      "mensaColorScheme",
+      "filter",
+      "image",
+      "reportReason",
+      "additive",
+      "allergen"
+    ], useCountryCode: false, basePath: 'assets/locales', fallbackDir: 'de'),
     missingTranslationHandler: (key, locale) {
       if (kDebugMode) {
         print("--- Missing Key: $key, languageCode: ${locale!.languageCode}");
