@@ -67,11 +67,11 @@ class DBMeal implements DatabaseModel {
   static String initTable() {
     /// The string to create a table for a meal.
     return '''
-    CREATE TABLE $tableName(
+    CREATE TABLE $tableName (
       $columnMealID TEXT PRIMARY KEY,
       $columnMealPlanID TEXT NOT NULL,
       $columnName TEXT NOT NULL,
-      $columnFoodType TEXT NOT NULL CHECK($columnFoodType IN (${FoodType.values.map((type) => "'$type'").join(', ')})),
+      $columnFoodType TEXT NOT NULL,
       $columnPriceStudent INTEGER NOT NULL CHECK($columnPriceStudent >= 0),
       $columnPriceEmployee INTEGER NOT NULL CHECK($columnPriceEmployee >= 0),
       $columnPricePupil INTEGER NOT NULL CHECK($columnPricePupil >= 0),
@@ -81,7 +81,7 @@ class DBMeal implements DatabaseModel {
       $columnAverageRating DECIMAL(1,1),
       $columnLastServed TEXT NOT NULL,
       $columnNextServed TEXT,
-      $columnRelativeFrequency TEXT CHECK IN (${Frequency.values.map((frequency) => "'$frequency'").join(', ')}),
+      $columnRelativeFrequency TEXT,
       FOREIGN KEY($columnMealPlanID) REFERENCES ${DBMealPlan.tableName}(${DBMealPlan.columnMealPlanID})
     )
   ''';

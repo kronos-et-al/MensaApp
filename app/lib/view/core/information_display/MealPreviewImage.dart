@@ -41,7 +41,7 @@ class MealPreviewImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (_meal.images == null || _meal.images!.isEmpty) {
+    if (_meal.images == null || _meal.images!.isEmpty || _meal.images!.first.url.isEmpty) {
       return Container(
           width: _width,
           height: _height,

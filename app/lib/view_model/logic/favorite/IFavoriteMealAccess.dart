@@ -1,8 +1,10 @@
 
+import 'package:flutter/material.dart';
+
 import '../../repository/data_classes/meal/Meal.dart';
 
 /// This class is the interface for the access to the favorite meals data.
-abstract class IFavoriteMealAccess {
+abstract class IFavoriteMealAccess with ChangeNotifier {
 
   /// This method adds the committed meal to the favorite meals in the database.
   /// @param meal The meal that should be added

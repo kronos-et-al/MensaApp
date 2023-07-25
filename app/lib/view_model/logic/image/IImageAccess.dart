@@ -1,11 +1,12 @@
 
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
+import 'package:flutter/material.dart';
 
 import '../../repository/data_classes/meal/Meal.dart';
 
 /// This class is the interface for the access to the image data.
-abstract class IImageAccess {
+abstract class IImageAccess with ChangeNotifier {
   /// This method links the committed url to the committed meal on the server.
   /// It returns a string that should be displayed in a temporal message.
   /// @param url The url of the image

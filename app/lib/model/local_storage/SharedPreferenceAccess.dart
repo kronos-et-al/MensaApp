@@ -87,8 +87,8 @@ class SharedPreferenceAccess implements ILocalStorage {
 
   @override
   Future<PriceCategory?> getPriceCategory() async {
-    final priceCategory = _pref.getString('priceCategory');
-    return Future.value(PriceCategory.values.firstWhere((e) => e.toString() == priceCategory));
+    final String? priceCategory = _pref.getString('priceCategory');
+    return Future.value(PriceCategory.values.firstWhere((e) => e.toString() == priceCategory, orElse: () => PriceCategory.student));
   }
 
   @override

@@ -54,13 +54,12 @@ class MealGridEntry extends StatelessWidget {
                         borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(8),
                             topRight: Radius.circular(8))),
-                    Padding(
-                        padding: EdgeInsets.symmetric(vertical: 4),
-                        child: MealMainEntry(meal: _meal)),
+                    SizedBox(height: 4),
+                    MealMainEntry(meal: _meal),
                     Padding(
                         padding: EdgeInsets.symmetric(horizontal: 4),
                         child: Row(children: [
-                          SizedBox(width: 36),
+                          SizedBox(width: 32),
                           MensaRatingInput(
                             disabled: true,
                             onChanged: (v) {},
