@@ -44,7 +44,7 @@ pub enum ImageHosterError {
     JsonDecodeFailed(String),
     /// The image is too small to be used error
     #[error("the provided photo_id links to an image that is too small")]
-    ImageIsToSmall,
+    ImageIsTooSmall,
     /// If an error doesn't match with any error above
     #[error("some undefined image hoster error occurred: {0}")]
     SomethingWentWrong(String),

@@ -42,7 +42,7 @@ impl JsonParser {
                 .map(|s| s.source.clone());
         }
 
-        url.map_or(Err(ImageHosterError::ImageIsToSmall), |url| {
+        url.map_or(Err(ImageHosterError::ImageIsTooSmall), |url| {
             Ok(ImageMetaData {
                 id: String::from(photo_id),
                 image_url: url,
