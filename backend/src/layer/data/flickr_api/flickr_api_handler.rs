@@ -4,7 +4,7 @@ use crate::layer::data::flickr_api::api_request::ApiRequest;
 use async_trait::async_trait;
 use regex::Regex;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct HosterInfo {
     api_key: String
 }
@@ -13,36 +13,33 @@ pub struct FlickrApiHandler {
     request: ApiRequest
 }
 
-const LONG_URL_REGEX: &'static str = r"(https://www.flickr.com/photos/)(\w+)/(\d+)([/]{0,1})";
-const SHORT_URL_REGEX: &'static str = r"(https://flic.kr/p/)([\d\w]+)";
+const LONG_URL_REGEX: &str = r"(https://www.flickr.com/photos/)(\w+)/(\d+)([/]{0,1})";
+const SHORT_URL_REGEX: &str = r"(https://flic.kr/p/)([\d\w]+)";
 
 impl FlickrApiHandler {
-    pub fn new(info: HosterInfo) -> Self {
+    pub fn new(info: &HosterInfo) -> Self {
         Self {
-            request: ApiRequest::new(info.api_key),
+            request: ApiRequest::new(info.api_key.clone()),
         }
     }
 
     // URL TYPE 1: https://www.flickr.com/photos/gerdavs/52310534489/ <- remove last '/'
     // URL TYPE 2: https://flic.kr/p/2oRguN3
     // Both cases: Split with '/' and get last member (= photo_id).
-    fn determine_photo_id<'a>(&'a self, mut url: &'a str) -> Result<&str, ImageHosterError> {
+    fn determine_photo_id(mut url: &str) -> Result<&str, ImageHosterError> {
         let short = Regex::new(SHORT_URL_REGEX).expect("regex creation failed");
         let long = Regex::new(LONG_URL_REGEX).expect("regex creation failed");
         if !short.is_match(url) && !long.is_match(url) {
-            return Err(ImageHosterError::FormatNotFound(format!("this url format is not supported: '{}'", url)));
+            return Err(ImageHosterError::FormatNotFound(format!("this url format is not supported: '{url}'")));
         }
-        if url.ends_with("/") {
+        if url.ends_with('/') {
             // remove last '/'
             let mut chars = url.chars();
             chars.next_back();
             url = chars.as_str();
         }
         let splits= url.split('/');
-        match splits.last() {
-            None => Err(ImageHosterError::FormatNotFound(format!("this url format is not supported: '{}'", url))),
-            Some(last) => Ok(last)
-        }
+        splits.last().map_or_else(|| Err(ImageHosterError::FormatNotFound(format!("this url format is not supported: '{url}'"))), Ok)
     }
 }
 
@@ -58,7 +55,7 @@ impl ImageHoster for FlickrApiHandler {
     /// # Return
     /// If the image exists, the [`ImageMetaData`] struct 'll be returned.
     async fn validate_url(&self, url: &str) -> Result<ImageMetaData, ImageHosterError> {
-        let photo_id = self.determine_photo_id(url)?;
+        let photo_id = Self::determine_photo_id(url)?;
         self.request.flickr_photos_get_sizes(photo_id).await
     }
 
@@ -72,7 +69,7 @@ impl ImageHoster for FlickrApiHandler {
         if res.is_ok() {
             Ok(true)
         } else {
-            let error = res.err().expect("res isn't ok, so it's an error");
+            let error = res.expect_err("res isn't ok, so it's an error");
             if error == ImageHosterError::PhotoNotFound {
                 Ok(false)
             } else {
@@ -95,37 +92,26 @@ impl ImageHoster for FlickrApiHandler {
 #[cfg(test)]
 mod test {
     use crate::interface::image_hoster::ImageHosterError;
-    use crate::layer::data::flickr_api::flickr_api_handler::{FlickrApiHandler, HosterInfo};
-
-    fn get_handler() -> FlickrApiHandler {
-        FlickrApiHandler::new(
-            HosterInfo {
-                api_key: String::new(),
-            }
-        )
-    }
+    use crate::layer::data::flickr_api::flickr_api_handler::FlickrApiHandler;
 
     #[test]
     fn valid_determine_photo_id() {
         let valid_url = "https://flic.kr/p/2oRguN3";
-        let handler = get_handler();
-        let res = handler.determine_photo_id(valid_url).unwrap();
+        let res = FlickrApiHandler::determine_photo_id(valid_url).unwrap();
         assert_eq!(res, "2oRguN3");
     }
 
     #[test]
     fn empty_determine_photo_id() {
         let valid_url = "";
-        let handler = get_handler();
-        let res = handler.determine_photo_id(valid_url).err().unwrap();
-        assert_eq!(res, ImageHosterError::FormatNotFound(format!("this url format is not supported: '{}'", valid_url)));
+        let res = FlickrApiHandler::determine_photo_id(valid_url).err().unwrap();
+        assert_eq!(res, ImageHosterError::FormatNotFound(format!("this url format is not supported: '{valid_url}'")));
     }
 
     #[test]
     fn invalid_determine_photo_id() {
         let valid_url = "https://flic.kr/p/";
-        let handler = get_handler();
-        let res = handler.determine_photo_id(valid_url).err().unwrap();
-        assert_eq!(res, ImageHosterError::FormatNotFound(format!("this url format is not supported: '{}'", valid_url)));
+        let res = FlickrApiHandler::determine_photo_id(valid_url).err().unwrap();
+        assert_eq!(res, ImageHosterError::FormatNotFound(format!("this url format is not supported: '{valid_url}'")));
     }
 }
