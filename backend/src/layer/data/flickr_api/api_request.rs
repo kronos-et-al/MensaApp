@@ -32,8 +32,7 @@ impl ApiRequest {
         Ok(res)
     }
 
-    /// This method creates an url for an api `get_sizes` request.
-    /// This url is used to create an rest request.
+    /// This method is used to request image information for the given `photo_id` from the flickr api.
     /// # Errors
     /// If the request could not be decoded ([`ImageHosterError::DecodeFailed`],
     /// Another request, which expects an error will be attempted.
@@ -60,8 +59,7 @@ impl ApiRequest {
         }
     }
 
-    /// This method concat several strings as for an api `get_licenses` request.
-    /// This url is used to create an rest request.
+    /// This method is used to request image license information for the given `photo_id` from the flickr api.
     /// # Errors
     /// If the request could not be decoded ([`ImageHosterError::DecodeFailed`],
     /// Another request, which expects an error will be attempted.
