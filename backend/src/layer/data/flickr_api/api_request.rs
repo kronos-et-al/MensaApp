@@ -19,7 +19,7 @@ const FORMAT: &str = "&format=json&nojsoncallback=1";
 
 impl ApiRequest {
     /// Creates an instance of an [`ApiRequest`].
-    pub const fn new(api_key: String) -> Self {
+    #[must_use] pub const fn new(api_key: String) -> Self {
         Self { api_key }
     }
 

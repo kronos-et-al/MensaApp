@@ -17,7 +17,7 @@ const LONG_URL_REGEX: &str = r"(https://www.flickr.com/photos/)(\w+)/(\d+)([/]{0
 const SHORT_URL_REGEX: &str = r"(https://flic.kr/p/)([\d\w]+)";
 
 impl FlickrApiHandler {
-    pub fn new(info: &HosterInfo) -> Self {
+    #[must_use] pub fn new(info: &HosterInfo) -> Self {
         Self {
             request: ApiRequest::new(info.api_key.clone()),
         }
