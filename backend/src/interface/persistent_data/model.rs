@@ -90,23 +90,10 @@ pub struct Image {
     pub upvotes: u32,
     /// Amount of downvotes for the image.
     pub downvotes: u32,
-}
-
-#[derive(Debug, Clone)]
-pub struct ImageInfo {
-    // todo merge with image??
     /// True if an administrator validated the image.
     pub approved: bool,
     /// Upload date of the image.
     pub upload_date: Date,
     /// Amount of open report request related to that image.
     pub report_count: u32,
-    /// Direct link to the image on the image hoster website.
-    pub image_url: String,
-    /// Amount of upvotes for the image.
-    pub positive_rating_count: u32,
-    /// Amount of downvotes for the image.
-    pub negative_rating_count: u32,
-    /// Rank of the image. Used for sorting und prioritizing an image.
-    pub image_rank: f32,
 }

@@ -2,7 +2,7 @@
 pub mod model;
 
 use crate::interface::persistent_data::model::{
-    ApiKey, Canteen, Image, ImageInfo, Line, Meal, Side,
+    ApiKey, Canteen, Image, Line, Meal, Side,
 };
 use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason, Uuid};
 use async_trait::async_trait;
@@ -142,7 +142,7 @@ pub trait ImageReviewDataAccess {
 /// An interface for graphql mutation data manipulation. The Command component uses this interface for database access.
 pub trait CommandDataAccess: Sync + Send {
     /// Returns the ImageInfo struct of image.
-    async fn get_image_info(&self, image_id: Uuid) -> Result<ImageInfo>;
+    async fn get_image_info(&self, image_id: Uuid) -> Result<Image>;
     /// Marks an image as hidden. Hidden images cant be seen by users.
     async fn hide_image(&self, image_id: Uuid) -> Result<()>;
     /// Saves an image report

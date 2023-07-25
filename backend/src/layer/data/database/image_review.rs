@@ -15,7 +15,8 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
     async fn get_n_images_by_rank_date(&self, n: u32, date: Date) -> Result<Vec<Image>> {
         let images = sqlx::query!(
             "
-            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes
+            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
+                approved, report_count, link_date
             FROM image_detail 
             WHERE food_id in (SELECT food_id from food_plan WHERE serve_date = $1)
             ORDER BY rank DESC
@@ -35,6 +36,9 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
                 downvotes: r.downvotes? as _,
                 upvotes: r.upvotes? as _,
                 rank: r.rank?,
+                approved: r.approved?,
+                report_count: r.report_count? as _,
+                upload_date: r.link_date?,
             })
         })
         .collect();
@@ -48,7 +52,8 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
     ) -> Result<Vec<Image>> {
         let images = sqlx::query!(
             "
-            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes
+            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
+                approved, report_count, link_date
             FROM image_detail 
             WHERE food_id in (SELECT food_id from food_plan WHERE serve_date >= CURRENT_DATE AND serve_date < CURRENT_DATE + 7)
             AND last_verified_date < CURRENT_DATE - 7
@@ -68,6 +73,9 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
                 downvotes: r.downvotes? as _,
                 upvotes: r.upvotes? as _,
                 rank: r.rank?,
+                approved: r.approved?,
+                report_count: r.report_count? as _,
+                upload_date: r.link_date?,
             })
         })
         .collect();
@@ -81,7 +89,8 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
     ) -> Result<Vec<Image>> {
         let images = sqlx::query!(
             "
-            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes
+            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
+                approved, report_count, link_date
             FROM image_detail
             WHERE last_verified_date < CURRENT_DATE - 7
             ORDER BY last_verified_date
@@ -100,6 +109,9 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
                 downvotes: r.downvotes? as _,
                 upvotes: r.upvotes? as _,
                 rank: r.rank?,
+                approved: r.approved?,
+                report_count: r.report_count? as _,
+                upload_date: r.link_date?,
             })
         })
         .collect();

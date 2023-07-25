@@ -188,7 +188,9 @@ impl RequestDataAccess for PersistentRequestData {
     ) -> Result<Vec<Image>> {
         let images = sqlx::query!(
             "
-            SELECT image_id as id, id as image_hoster_id, url, rank, downvotes, upvotes FROM (
+            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
+                approved, report_count, link_date 
+            FROM (
                 SELECT image_id 
                 FROM image JOIN image_report r USING (image_id)
                 WHERE currently_visible AND food_id = $1
@@ -204,12 +206,15 @@ impl RequestDataAccess for PersistentRequestData {
         .into_iter()
         .filter_map(|r| {
             Some(Image {
-                id: r.id?,
+                id: r.image_id?,
                 url: r.url?,
                 rank: r.rank?,
-                image_hoster_id: r.image_hoster_id?,
+                image_hoster_id: r.hoster_id?,
                 downvotes: r.downvotes? as u32,
                 upvotes: r.upvotes? as u32,
+                approved: r.approved?,
+                report_count: r.report_count? as _,
+                upload_date: r.link_date?,
             })
         })
         .collect();
@@ -422,10 +427,10 @@ mod tests {
         const INSERT_FAILED: &str = "failed to insert";
 
         sqlx::query!(
-            "INSERT INTO canteen(canteen_id, name) VALUES 
-        ('10728cc4-1e07-4e18-a9d9-ca45b9782413', 'my favorite canteen'), 
-        ('8f10c56d-da9b-4f62-b4c1-16feb0f98c67', 'second canteen'), 
-        ('f2885f67-fc95-4205-bc7d-b2fb78cee0a8', 'bad canteen')"
+            "INSERT INTO canteen(canteen_id, name, position) VALUES 
+        ('10728cc4-1e07-4e18-a9d9-ca45b9782413', 'my favorite canteen', 2), 
+        ('8f10c56d-da9b-4f62-b4c1-16feb0f98c67', 'second canteen', 1), 
+        ('f2885f67-fc95-4205-bc7d-b2fb78cee0a8', 'bad canteen', 3)"
         )
         .execute(pool)
         .await

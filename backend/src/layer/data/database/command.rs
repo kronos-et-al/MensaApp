@@ -3,7 +3,7 @@ use sqlx::{Pool, Postgres};
 
 use crate::{
     interface::persistent_data::{
-        model::{ApiKey, ImageInfo},
+        model::{ApiKey, Image},
         CommandDataAccess, DataError, Result,
     },
     util::{ReportReason, Uuid},
@@ -16,12 +16,11 @@ pub struct PersistentCommandData {
 
 #[async_trait]
 impl CommandDataAccess for PersistentCommandData {
-    async fn get_image_info(&self, image_id: Uuid) -> Result<ImageInfo> {
-        let recort = sqlx::query!(
+    async fn get_image_info(&self, image_id: Uuid) -> Result<Image> {
+        let record = sqlx::query!(
             r#"
-            SELECT approved, link_date as upload_date, report_count, url as image_url,
-            upvotes as positive_rating_count, downvotes as negative_rating_count,
-            rank as image_rank
+            SELECT approved, link_date as upload_date, report_count, url,
+            upvotes, downvotes, id as image_hoster_id, image_id, rank
             FROM image_detail
             WHERE image_id = $1
             "#,
@@ -31,14 +30,16 @@ impl CommandDataAccess for PersistentCommandData {
         .await?;
 
         (|| {
-            Some(ImageInfo {
-                approved: recort.approved?,
-                image_url: recort.image_url?,
-                image_rank: recort.image_rank?,
-                report_count: recort.report_count? as u32,
-                upload_date: recort.upload_date?,
-                negative_rating_count: recort.negative_rating_count? as u32,
-                positive_rating_count: recort.positive_rating_count? as u32,
+            Some(Image {
+                approved: record.approved?,
+                url: record.url?,
+                rank: record.rank?,
+                report_count: record.report_count? as u32,
+                upload_date: record.upload_date?,
+                downvotes: record.downvotes? as u32,
+                upvotes: record.upvotes? as u32,
+                id: record.image_id?,
+                image_hoster_id: record.image_hoster_id?,
             })
         })()
         .ok_or(DataError::NoSuchItem)

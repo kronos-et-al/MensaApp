@@ -209,6 +209,9 @@ impl RequestDataAccess for RequestDatabaseMock {
             rank: 0.1,
             upvotes: 220,
             downvotes: 20,
+            report_count: 0,
+            approved: false,
+            upload_date: Date::default(),
         };
         let d2 = Image {
             id: Uuid::default(),
@@ -217,6 +220,9 @@ impl RequestDataAccess for RequestDatabaseMock {
             rank: 0.4,
             upvotes: 11,
             downvotes: 4,
+            report_count: 0,
+            approved: false,
+            upload_date: Date::default(),
         };
         let d3 = Image {
             id: Uuid::default(),
@@ -225,6 +231,9 @@ impl RequestDataAccess for RequestDatabaseMock {
             rank: 0.6,
             upvotes: 20,
             downvotes: 45,
+            report_count: 0,
+            approved: false,
+            upload_date: Date::default(),
         };
         Ok(vec![d1, d2, d3])
     }
