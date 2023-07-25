@@ -29,7 +29,6 @@ serde = "1.0.171"
 scraper = "0.17.1"
 regex = "1.9.1"
 futures = "0.3.28"
-lazy_static = "1.4.0"
 tokio-cron-scheduler = "0.9.4"
 lazy_static = "1.4.0"
 
