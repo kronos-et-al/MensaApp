@@ -12,36 +12,40 @@ const VALID_LICENSES: Vec<&str> = vec![
     "No known copyright restrictions",
     "Public Domain Dedication (CC0)",
     "Public Domain Mark",
-    // Case: Image has no license
-    ""
 ];
 
 impl JsonParser {
-
     /// Obtains the preferred image information from the [`JsonRootSizes`] struct.
     /// # Return
     /// The [`ImageMetaData`] struct containing all necessary information for the image.
     /// If the preferred size cannot be obtained a fallback to a smaller size 'll be done.
     /// If even this fallback size is not available the url 'll be empty. No url 'll be provided.
-    pub fn parse_get_sizes(root: JsonRootSizes, photo_id: &str) -> Result<ImageMetaData, ImageHosterError> {
-        let mut url = root.sizes.size.iter()
+    pub fn parse_get_sizes(
+        root: JsonRootSizes,
+        photo_id: &str,
+    ) -> Result<ImageMetaData, ImageHosterError> {
+        let mut url = root
+            .sizes
+            .size
+            .iter()
             .find(|s| s.label == PREFERRED_SIZE)
             .map(|s| s.source.clone());
 
         if url.is_none() {
-            url = root.sizes.size.iter()
+            url = root
+                .sizes
+                .size
+                .iter()
                 .find(|s| s.label == FALLBACK_SIZE)
                 .map(|s| s.source.clone());
         }
 
         match url {
             None => return Err(ImageHosterError::ImageIsToSmall),
-            Some(url) => {
-                Ok(ImageMetaData {
-                    id: String::from(photo_id),
-                    image_url: url,
-                })
-            }
+            Some(url) => Ok(ImageMetaData {
+                id: String::from(photo_id),
+                image_url: url,
+            }),
         }
     }
 
@@ -50,8 +54,12 @@ impl JsonParser {
     /// A boolean if the image has an valid license or not.
     /// If the image has no license or no license history, the image isn't restricted by any license and true 'll be returned.
     pub fn check_license(root: JsonRootLicense) -> bool {
-        let last_date: u64 = root.license_history.iter().map(|entry| entry.date_change).max();
-        let license: String = root.license_history.iter().map(|entry| entry.date_change).max_by_key(|l| l.date_change).unwrap_or_default();
+        let license = root
+            .license_history
+            .iter()
+            .max_by_key(|l| l.date_change)
+            .map(|entry| entry.new_license)
+            .unwrap_or_default();
         VALID_LICENSES.contains(&&*license)
     }
 
@@ -74,8 +82,8 @@ impl JsonParser {
 
 #[cfg(test)]
 mod test {
-    use crate::interface::image_hoster::ImageHosterError;
     use crate::interface::image_hoster::model::ImageMetaData;
+    use crate::interface::image_hoster::ImageHosterError;
     use crate::layer::data::flickr_api::json_parser::JsonParser;
     use crate::layer::data::flickr_api::json_structs::*;
 
@@ -88,16 +96,16 @@ mod test {
                         label: String::from("Medium"),
                         width: 800,
                         height: 600,
-                        source: String::from("url:medium")
+                        source: String::from("url:medium"),
                     },
                     Size {
                         label: String::from("Large"),
                         width: 1000,
                         height: 800,
-                        source: String::from("url:large")
-                    }
+                        source: String::from("url:large"),
+                    },
                 ],
-            }
+            },
         };
         let dummy_id = "42";
         let res = JsonParser::parse_get_sizes(valid_sizes, dummy_id).unwrap();
@@ -118,16 +126,16 @@ mod test {
                         label: String::from("Medium"),
                         width: 800,
                         height: 600,
-                        source: String::from("url:medium")
+                        source: String::from("url:medium"),
                     },
                     Size {
                         label: String::from("Small"),
                         width: 400,
                         height: 200,
-                        source: String::from("url:small")
-                    }
+                        source: String::from("url:small"),
+                    },
                 ],
-            }
+            },
         };
         let dummy_id = "42";
         let res = JsonParser::parse_get_sizes(fallback_sizes, dummy_id).unwrap();
@@ -143,15 +151,13 @@ mod test {
     fn invalid_get_size() {
         let invalid_sizes = JsonRootSizes {
             sizes: Sizes {
-                size: vec![
-                    Size {
-                        label: String::from("Small"),
-                        width: 400,
-                        height: 200,
-                        source: String::from("url:small")
-                    }
-                ],
-            }
+                size: vec![Size {
+                    label: String::from("Small"),
+                    width: 400,
+                    height: 200,
+                    source: String::from("url:small"),
+                }],
+            },
         };
         let dummy_id = "42";
         let res = JsonParser::parse_get_sizes(invalid_sizes, dummy_id).unwrap();
@@ -164,20 +170,20 @@ mod test {
     }
 
     #[test]
-    fn valid_check_license()  {
+    fn valid_check_license() {
         let valid_licenses = JsonRootLicense {
-                license_history: vec![
-                    LicenceHistory {
-                        date_change: 1_295_918_034,
-                        old_license: String::from("All Rights Reserved"),
-                        new_license: String::from("Attribution License"),
-                    },
-                    LicenceHistory {
-                        date_change: 1_598_990_519,
-                        old_license: String::from("Attribution License"),
-                        new_license: String::from("All Rights Reserved"),
-                    }
-                ],
+            license_history: vec![
+                LicenceHistory {
+                    date_change: 1_295_918_034,
+                    old_license: String::from("All Rights Reserved"),
+                    new_license: String::from("Attribution License"),
+                },
+                LicenceHistory {
+                    date_change: 1_598_990_519,
+                    old_license: String::from("Attribution License"),
+                    new_license: String::from("All Rights Reserved"),
+                },
+            ],
         };
         assert!(JsonParser::check_license(valid_licenses))
     }
@@ -201,6 +207,9 @@ mod test {
             message: String::from("HELP!"),
         };
         let res = JsonParser::parse_error(&invalid_error);
-        assert_eq!(res, ImageHosterError::SomethingWentWrong(String::from("HELP!")))
+        assert_eq!(
+            res,
+            ImageHosterError::SomethingWentWrong(String::from("HELP!"))
+        )
     }
 }

@@ -1,5 +1,5 @@
-use std::env;
 use dotenvy::dotenv;
+use std::env;
 
 /// For all valid tests this image 'll be used: https://flic.kr/p/2oRguN3
 

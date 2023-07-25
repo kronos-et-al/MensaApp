@@ -42,7 +42,7 @@ pub enum ImageHosterError {
     #[error("the html reqwest client creation failed: {0}")]
     ClientBuilderFailed(String),
     #[error("some html code couldn't be decoded")]
-    DecodeFailed,
+    DecodeFailed, // split with next push
     #[error("some undefined image hoster error occurred: {0}")]
     SomethingWentWrong(String),
     #[error("the provided photo_id links to an image that is too small")]

@@ -149,7 +149,7 @@ impl ImageHoster for CommandImageHosterMock {
         } else {
             Ok(ImageMetaData {
                 id: String::new(),
-                image_url: url.to_string()
+                image_url: url.to_string(),
             })
         }
     }

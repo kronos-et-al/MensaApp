@@ -34,14 +34,14 @@ pub struct JsonRootSizes {
 }
 #[derive(Debug, Deserialize)]
 pub struct Sizes {
-    pub size: Vec<Size>
+    pub size: Vec<Size>,
 }
 #[derive(Debug, Deserialize, Clone)]
 pub struct Size {
     pub label: String,
     pub(super) width: u32,
     pub(super) height: u32,
-    pub source: String
+    pub source: String,
 }
 
 /// Example for a valid `get_license` response structure:
@@ -60,13 +60,13 @@ pub struct Size {
 
 #[derive(Debug, Deserialize)]
 pub struct JsonRootLicense {
-    pub license_history: Vec<LicenceHistory>
+    pub license_history: Vec<LicenceHistory>,
 }
 #[derive(Debug, Deserialize, Clone)]
 pub struct LicenceHistory {
     pub date_change: u64,
     pub(super) old_license: String,
-    pub new_license: String
+    pub new_license: String,
 }
 
 /// Example for an error response structure:
@@ -80,6 +80,5 @@ pub struct LicenceHistory {
 pub struct JsonRootError {
     pub stat: String,
     pub code: u32,
-    pub message: String
-
+    pub message: String,
 }
