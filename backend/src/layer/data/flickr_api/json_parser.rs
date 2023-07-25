@@ -13,16 +13,14 @@ impl JSONParser {
     /// # Return
     /// The [`ImageMetaData`] struct containing all necessary information for the image.
     /// If the preferred size cannot be obtained a fallback to a smaller size 'll be done.
-    /// If even this fallback size is not available the url will be empty. No url 'll be provided.
+    /// If even this fallback size is not available the url 'll be empty. No url 'll be provided.
     pub fn parse_get_sizes(root: JsonRootSizes, photo_id: &str) -> ImageMetaData {
-        let mut url = String::new();
-        for size in root.sizes.size.clone() {
-            if size.label == get_selected_size() {
-                url = size.source;
-                break;
-            }
-        }
-        if url == String::new() {
+        let mut url = root.sizes.size.iter()
+            .find(|s| s.label == get_selected_size())
+            .map(|s| s.source)
+            .unwrap_or_default();
+
+        if url.is_empty() {
             for size in root.sizes.size {
                 if size.label == get_selected_size_fallback() {
                     url = size.source;
@@ -53,34 +51,28 @@ impl JSONParser {
                 license = entry.new_license;
             }
         }
-        for valid_license in Self::get_valid_licences(){
-            if valid_license == license {
-                return true;
-            }
-        }
-        return false;
+        Self::get_valid_licences().contains(&license)
     }
 
-    /// Obtains and determines an error by his error code and message provided by the [`JsonRootError`] struct.
+    /// Obtains and determines an error by its error code and message provided by the [`JsonRootError`] struct.
     /// # Return
     /// An [`ImageHosterError`] that fittest be with the Flickr-Error types.
     pub fn parse_error(err_info: JsonRootError) -> ImageHosterError {
-        let err_code = &err_info.code;
-        let err_msg = &err_info.message;
+        let err_code = err_info.code;
+        let err_msg = err_info.message.clone();
         match err_code {
             1 => ImageHosterError::PhotoNotFound,
             2 => ImageHosterError::PermissionDenied,
             100 => ImageHosterError::InvalidApiKey,
             0 | 105 => ImageHosterError::ServiceUnavailable,
-            111 | 112 => ImageHosterError::FormatNotFound(err_msg.clone()),
-            _ => ImageHosterError::SomethingWentWrong(err_msg.clone()),
+            111 | 112 => ImageHosterError::FormatNotFound(err_msg),
+            _ => ImageHosterError::SomethingWentWrong(err_msg),
         }
     }
 
     /// See https://www.flickr.com/services/api/flickr.photos.licenses.getInfo.html for all possible licenses.
     fn get_valid_licences() -> Vec<String> {
         vec![
-            String::from("All Rights Reserved"),
             String::from("No known copyright restrictions"),
             String::from("Public Domain Dedication (CC0)"),
             String::from("Public Domain Mark"),

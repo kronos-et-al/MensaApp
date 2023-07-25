@@ -6,24 +6,23 @@ use crate::layer::data::flickr_api::json_parser::JSONParser;
 use crate::layer::data::flickr_api::json_structs::{JsonRootError, JsonRootLicense, JsonRootSizes};
 
 pub struct ApiRequest {
-    api_key: String,
-    parser: JSONParser
+    api_key: String
 }
 
+const BASE_URL: &str = "https://api.flickr.com/services/rest/?method=";
+const GET_SIZES: &str = "flickr.photos.getSizes";
+const GET_LICENCE_HISTORY: &str = "flickr.photos.licenses.getLicenseHistory";
+
+const TAG_API_KEY: &str = "&api_key=";
+const TAG_PHOTO_ID: &str = "&photo_id=";
+const FORMAT: &str = "&format=json&nojsoncallback=1";
+
+
 impl ApiRequest {
-    const BASE_URL: &'static str = "https://api.flickr.com/services/rest/?method=";
-    const GET_SIZES: &'static str = "flickr.photos.getSizes";
-    const GET_LICENCE_HISTORY: &'static str = "flickr.photos.licenses.getLicenseHistory";
-
-    const TAG_API_KEY: &'static str = "&api_key=";
-    const TAG_PHOTO_ID: &'static str = "&photo_id=";
-    const FORMAT: &'static str = "&format=json&nojsoncallback=1";
-
     /// Creates an instance of an [`ApiRequest`].
     pub const fn new(api_key: String) -> Self {
         Self {
-            api_key,
-            parser: JSONParser::new()
+            api_key
         }
     }
 
@@ -33,7 +32,6 @@ impl ApiRequest {
         Ok(res)
     }
 
-    /// Sends a url request to the [`FlickrApi`].
     /// # Return
     /// The [`JsonRootSizes`] struct, containing the api response.
     /// # Errors
@@ -44,7 +42,6 @@ impl ApiRequest {
         Ok(root)
     }
 
-    /// Sends a url request to the [`FlickrApi`].
     /// # Return
     /// The [`JsonRootLicense`] struct, containing the api response.
     /// # Errors
@@ -55,7 +52,6 @@ impl ApiRequest {
         Ok(root)
     }
 
-    /// Sends a url request to the [`FlickrApi`].
     /// # Return
     /// The [`JsonRootError`] struct, containing the api response.
     /// # Errors
@@ -66,11 +62,11 @@ impl ApiRequest {
         Ok(root)
     }
 
-    /// This method creates an api request url.
-    /// This url is used to create an request with the [`request_sizes`] function.
+    /// This method creates an url for an api get_sizes request.
+    /// This url is used to create an rest request.
     /// # Errors
     /// If the request could not be decoded ([`ImageHosterError::DecodeFailed`],
-    /// another request with [`request_err`] will be attempted.
+    /// Another request, which expects an error 'll be attempted.
     /// This error request returns a more detailed error information.
     /// # Returns
     /// An Error (as above mentioned) or an [`ImageMetaData`] struct containing information about the requested image.
@@ -79,58 +75,47 @@ impl ApiRequest {
         photo_id: &str,
     ) -> Result<ImageMetaData, ImageHosterError> {
         let url = &format!(
-            "{BASE_URL}{GET_SIZES}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{JSON}",
-            BASE_URL = Self::BASE_URL,
-            GET_SIZES = Self::GET_SIZES,
-            TAG_API_KEY = Self::TAG_API_KEY,
+            "{BASE_URL}{GET_SIZES}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{FORMAT}",
             api_key = self.api_key,
-            TAG_PHOTO_ID = Self::TAG_PHOTO_ID,
-            JSON = Self::FORMAT
         );
         match self.request_sizes(url).await {
-            Ok(sizes) => Ok(self.parser.parse_get_sizes(sizes, photo_id)),
+            Ok(sizes) => Ok(JSONParser::parse_get_sizes(sizes, photo_id)),
             Err(e) => Err(self.determine_error(url, e).await)
         }
     }
 
-    /// This method creates an api request url.
-    /// This url is used to create an request with the [`request_license`] function.
+    /// This method creates an url for an api get_licenses request.
+    /// This url is used to create an rest request.
     /// # Errors
     /// If the request could not be decoded ([`ImageHosterError::DecodeFailed`],
-    /// another request with [`request_err`] will be attempted.
+    /// Another request, which expects an error 'll be attempted.
     /// This error request returns a more detailed error information.
     /// # Returns
     /// An Error (as above mentioned).
-    /// True if the given image is hosted under a valid license (see [`json_parser::get_valid_licences`] for more info).
+    /// True if the given image is hosted under a valid license.
     /// False if not.
     pub async fn flickr_photos_licenses_get_license_history(
         &self,
         photo_id: &str,
     ) -> Result<bool, ImageHosterError> {
         let url = &format!(
-            "{BASE_URL}{GET_LICENCE_HISTORY}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{JSON}",
-            BASE_URL = Self::BASE_URL,
-            GET_LICENCE_HISTORY = Self::GET_LICENCE_HISTORY,
-            TAG_API_KEY = Self::TAG_API_KEY,
-            api_key = self.api_key,
-            TAG_PHOTO_ID = Self::TAG_PHOTO_ID,
-            JSON = Self::FORMAT
+            "{BASE_URL}{GET_LICENCE_HISTORY}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{FORMAT}",
+            api_key = self.api_key
         );
         match self.request_license(url).await {
-            Ok(licenses) => Ok(self.parser.check_license(licenses)),
+            Ok(licenses) => Ok(JSONParser::check_license(licenses)),
             Err(e) => Err(self.determine_error(url, e).await)
         }
     }
 
-    /// This method creates an api request url.
-    /// This url is used to create an request with the [`request_err`] function.
+    /// This method requests the flickr api and expects an error response.
     /// # Returns
     /// The hoster error as an [`ImageHosterError`].
     /// To see all possible cases look here: [`json_parser::parse_error`].
     async fn determine_error(&self, url: &String, e: ImageHosterError) -> ImageHosterError {
         if e == ImageHosterError::DecodeFailed {
             match self.request_err(url).await {
-                Ok(json_error) => self.parser.parse_error(json_error),
+                Ok(json_error) => JSONParser::parse_error(json_error),
                 Err(e) => e
             }
         } else {
@@ -143,14 +128,12 @@ impl ApiRequest {
 mod test {
     use crate::interface::image_hoster::ImageHosterError;
     use crate::layer::data::flickr_api::api_request::ApiRequest;
-    use crate::layer::data::flickr_api::json_parser::JSONParser;
     use crate::layer::data::flickr_api::json_structs::*;
     use crate::layer::data::flickr_api::test::const_test_data::{get_api_key, get_licenses_url, get_sizes_url};
 
     fn get_api_request() -> ApiRequest {
         ApiRequest {
-            api_key: get_api_key(),
-            parser: JSONParser::new(),
+            api_key: get_api_key()
         }
     }
 

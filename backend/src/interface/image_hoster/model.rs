@@ -6,7 +6,5 @@ pub struct ImageMetaData {
     /// The image hoster image identification.
     pub id: String,
     /// The url which short links to the image. Different to the url provided by an user.
-    pub image_url: String,
-    ///// The licence of the image.
-    //pub licence: String,
+    pub image_url: String
 }
