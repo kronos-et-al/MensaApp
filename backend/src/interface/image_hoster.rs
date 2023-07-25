@@ -19,7 +19,7 @@ pub trait ImageHoster: Sync + Send {
 }
 
 /// Enum describing the possible ways, a image hoster request can fail.
-#[derive(Debug, Error, PartialEq)]
+#[derive(Debug, Error, PartialEq, Eq)]
 pub enum ImageHosterError {
     /// Photo not found error
     #[error("the photo id passed was not a valid photo id")]
@@ -37,14 +37,15 @@ pub enum ImageHosterError {
     #[error("the requested response format was not found: {0}")]
     FormatNotFound(String),
     /// The connection failed to establish error
-    #[error("no connection could be established")]
-    NotConnected,
-    #[error("the html reqwest client creation failed: {0}")]
-    ClientBuilderFailed(String),
-    #[error("some html code couldn't be decoded")]
-    DecodeFailed, // split with next push
-    #[error("some undefined image hoster error occurred: {0}")]
-    SomethingWentWrong(String),
+    #[error("no connection could be established: {0}")]
+    NotConnected(String),
+    /// The reqwest json parser failed
+    #[error("some json response couldn't be decoded: {0}")]
+    JsonDecodeFailed(String),
+    /// The image is too small to be used error
     #[error("the provided photo_id links to an image that is too small")]
     ImageIsToSmall,
+    /// If an error doesn't match with any error above
+    #[error("some undefined image hoster error occurred: {0}")]
+    SomethingWentWrong(String),
 }

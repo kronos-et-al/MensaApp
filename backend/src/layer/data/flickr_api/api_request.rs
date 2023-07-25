@@ -26,12 +26,12 @@ impl ApiRequest {
     async fn request_url(&self, url: &String) -> Result<Response, ImageHosterError> {
         let res = reqwest::get(url)
             .await
-            .map_err(|_| ImageHosterError::NotConnected)?;
+            .map_err(|e| ImageHosterError::NotConnected(e.to_string()))?;
         debug!("request_url finished with response: {:?}", res);
         Ok(res)
     }
 
-    /// This method creates an url for an api get_sizes request.
+    /// This method creates an url for an api `get_sizes` request.
     /// This url is used to create an rest request.
     /// # Errors
     /// If the request could not be decoded ([`ImageHosterError::DecodeFailed`],
@@ -50,16 +50,16 @@ impl ApiRequest {
         match self
             .request_url(url)
             .await?
-            .json::<JsonRootLicense>()
+            .json::<JsonRootSizes>()
             .await
-            .map_err(|_| ImageHosterError::DecodeFailed)?
+            .map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))
         {
-            Ok(sizes) => Ok(JsonParser::parse_get_sizes(sizes, photo_id)?),
+            Ok(root) => Ok(JsonParser::parse_get_sizes(&root, photo_id)?),
             Err(e) => Err(self.determine_error(url, e).await),
         }
     }
 
-    /// This method creates an url for an api get_licenses request.
+    /// This method creates an url for an api `get_licenses` request.
     /// This url is used to create an rest request.
     /// # Errors
     /// If the request could not be decoded ([`ImageHosterError::DecodeFailed`],
@@ -77,21 +77,21 @@ impl ApiRequest {
             "{BASE_URL}{GET_LICENCE_HISTORY}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{FORMAT}",
             api_key = self.api_key
         );
-        match self
-            .request_url(url)
-            .await?
+        let resp = self.request_url(url).await?;
+        match resp
             .json::<JsonRootLicense>()
             .await
-            .map_err(|_| ImageHosterError::DecodeFailed)?
+            .map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))
         {
-            Ok(licenses) => Ok(JsonParser::check_license(licenses)),
+            Ok(licenses) => Ok(JsonParser::check_license(&licenses)),
             Err(e) => Err(self.determine_error(url, e).await),
         }
     }
 
     async fn determine_error(&self, url: &String, e: ImageHosterError) -> ImageHosterError {
-        // TODO .map
-        if e != ImageHosterError::DecodeFailed {
+        if std::mem::discriminant(&e)
+            != std::mem::discriminant(&ImageHosterError::JsonDecodeFailed(String::new()))
+        {
             return e;
         }
         match self.request_url(url).await {
@@ -99,26 +99,30 @@ impl ApiRequest {
                 let error_root = match res
                     .json::<JsonRootError>()
                     .await
-                    .map_err(|_| ImageHosterError::DecodeFailed)
+                    .map_err(|err| ImageHosterError::JsonDecodeFailed(err.to_string()))
                 {
                     Ok(root) => root,
-                    Err(e) => return e,
+                    Err(err) => return err,
                 };
                 JsonParser::parse_error(&error_root)
             }
-            Err(e) => return e,
+            Err(err) => err,
         }
     }
 }
 
 #[cfg(test)]
 mod test {
+    #![allow(clippy::unwrap_used)]
     use crate::interface::image_hoster::ImageHosterError;
     use crate::layer::data::flickr_api::api_request::ApiRequest;
-    use crate::layer::data::flickr_api::json_structs::*;
-    use crate::layer::data::flickr_api::test::const_test_data::{
-        get_api_key, get_licenses_url, get_sizes_url,
-    };
+    use dotenvy::dotenv;
+    use std::env;
+
+    fn get_api_key() -> String {
+        dotenv().ok();
+        env::var("FLICKR_PUBLIC_KEY").expect("FLICKR_PUBLIC_KEY should be set in the .env!")
+    }
 
     fn get_api_request() -> ApiRequest {
         ApiRequest {
@@ -128,99 +132,44 @@ mod test {
 
     #[tokio::test]
     async fn valid_request_sizes() {
-        let expected = JsonRootSizes {
-            sizes: Sizes {
-                size: vec![Size {
-                    label: "Square".to_string(),
-                    width: 75,
-                    height: 75,
-                    source: "https://live.staticflickr.com/65535/53066073286_9fcebfc95f_s.jpg"
-                        .to_string(),
-                }],
-            },
-        };
+        let expected = "https://live.staticflickr.com/65535/53066073286_9fcebfc95f_b.jpg";
         let res = get_api_request()
-            .request_sizes(&get_sizes_url(String::from("2oRguN3")))
+            .flickr_photos_get_sizes("2oRguN3")
             .await
             .unwrap();
-        assert_eq!(
-            expected.sizes.size.first().unwrap().label,
-            res.sizes.size.first().unwrap().label
-        );
-        assert_eq!(
-            expected.sizes.size.first().unwrap().source,
-            res.sizes.size.first().unwrap().source
-        );
+        assert_eq!(expected, res.image_url);
     }
 
     #[tokio::test]
     async fn invalid_request_sizes() {
-        let expected = ImageHosterError::NotConnected;
         let res = get_api_request()
-            .request_sizes(&String::from(
-                "If it is it, it is it; if it is it is it, it is",
-            ))
+            .flickr_photos_get_sizes("If it is it, it is it; if it is it is it, it is")
             .await;
-        assert_eq!(
-            expected,
-            res.expect_err("invalid_request_sizes test failed as res isn't an error")
-        );
+        assert!(res.is_err());
     }
 
     #[tokio::test]
     async fn valid_error_request() {
-        let expected = JsonRootError {
-            stat: String::from("fail"),
-            code: 1,
-            message: String::from("Photo not found"),
-        };
-        let res = get_api_request()
-            .request_err(&get_sizes_url(String::from("42")))
-            .await
-            .unwrap();
-        assert_eq!(expected.code, res.code);
-        assert_eq!(expected.message, res.message);
+        let expected = ImageHosterError::PhotoNotFound;
+        let res = get_api_request().flickr_photos_get_sizes("42").await;
+        assert_eq!(expected, res.unwrap_err());
     }
 
     #[tokio::test]
     async fn invalid_license_request() {
-        let expected = ImageHosterError::NotConnected;
         let res = get_api_request()
-            .request_license(&String::from(
-                "If it is it, it is it; if it is it is it, it is",
-            ))
+            .flickr_photos_license_check("If it is it, it is it; if it is it is it, it is")
             .await;
-        assert_eq!(
-            expected,
-            res.expect_err("invalid_license_request test failed as res isn't an error")
-        );
+        assert!(res.is_err());
     }
 
     #[tokio::test]
     async fn valid_check_license_request() {
-        let expected = JsonRootLicense {
-            license_history: vec![LicenceHistory {
-                date_change: 1_661_436_555,
-                old_license: "All Rights Reserved".to_string(),
-                new_license: String::new(),
-            }],
-        };
         let res = get_api_request()
-            .request_license(&get_licenses_url(String::from("52310534489")))
-            .await;
-        let license_history = res.unwrap().license_history.first().unwrap().clone();
-        assert_eq!(
-            expected.license_history.first().unwrap().old_license,
-            license_history.old_license
-        );
-        assert_eq!(
-            expected.license_history.first().unwrap().date_change,
-            license_history.date_change
-        );
-        assert_eq!(
-            expected.license_history.first().unwrap().new_license,
-            license_history.new_license
-        );
+            .flickr_photos_license_check("52310534489")
+            .await
+            .unwrap();
+        assert!(!res);
     }
 
     #[tokio::test]

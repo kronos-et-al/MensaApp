@@ -1,7 +1,7 @@
 use serde::Deserialize;
 
 /// Example for a valid `get_size` response structure:
-///{
+///`{
 ///     "sizes": {
 ///         "canblog": 0,
 ///         "canprint": 0,
@@ -26,7 +26,7 @@ use serde::Deserialize;
 ///         ]
 ///     },
 ///     "stat": "ok"
-///}
+///}`
 
 #[derive(Debug, Deserialize)]
 pub struct JsonRootSizes {
@@ -39,13 +39,11 @@ pub struct Sizes {
 #[derive(Debug, Deserialize, Clone)]
 pub struct Size {
     pub label: String,
-    pub(super) width: u32,
-    pub(super) height: u32,
     pub source: String,
 }
 
 /// Example for a valid `get_license` response structure:
-///{
+///`{
 ///     "license_history": [
 ///         {
 ///             "date_change": 1661436555,
@@ -56,7 +54,7 @@ pub struct Size {
 ///         }
 ///     ],
 ///     "stat": "ok"
-/// }
+/// }`
 
 #[derive(Debug, Deserialize)]
 pub struct JsonRootLicense {
@@ -65,16 +63,15 @@ pub struct JsonRootLicense {
 #[derive(Debug, Deserialize, Clone)]
 pub struct LicenceHistory {
     pub date_change: u64,
-    pub(super) old_license: String,
     pub new_license: String,
 }
 
 /// Example for an error response structure:
-///{
+///`{
 ///     "stat": "fail",
 ///     "code": 0,
 ///     "message": "Sorry, the Flickr API service is not currently available."
-/// }
+///}`
 
 #[derive(Debug, Deserialize)]
 pub struct JsonRootError {

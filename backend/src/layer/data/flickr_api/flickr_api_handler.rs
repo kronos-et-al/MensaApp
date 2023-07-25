@@ -100,6 +100,7 @@ impl ImageHoster for FlickrApiHandler {
 
 #[cfg(test)]
 mod test {
+    #![allow(clippy::unwrap_used)]
     use crate::interface::image_hoster::ImageHosterError;
     use crate::layer::data::flickr_api::flickr_api_handler::FlickrApiHandler;
 

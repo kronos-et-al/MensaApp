@@ -8,7 +8,7 @@ const PREFERRED_SIZE: &str = "Large";
 const FALLBACK_SIZE: &str = "Medium";
 
 // See https://www.flickr.com/services/api/flickr.photos.licenses.getInfo.html for all possible licenses.
-const VALID_LICENSES: Vec<&str> = vec![
+const VALID_LICENSES: [&str; 3] = [
     "No known copyright restrictions",
     "Public Domain Dedication (CC0)",
     "Public Domain Mark",
@@ -21,7 +21,7 @@ impl JsonParser {
     /// If the preferred size cannot be obtained a fallback to a smaller size 'll be done.
     /// If even this fallback size is not available the url 'll be empty. No url 'll be provided.
     pub fn parse_get_sizes(
-        root: JsonRootSizes,
+        root: &JsonRootSizes,
         photo_id: &str,
     ) -> Result<ImageMetaData, ImageHosterError> {
         let mut url = root
@@ -40,25 +40,24 @@ impl JsonParser {
                 .map(|s| s.source.clone());
         }
 
-        match url {
-            None => return Err(ImageHosterError::ImageIsToSmall),
-            Some(url) => Ok(ImageMetaData {
+        url.map_or(Err(ImageHosterError::ImageIsToSmall), |url| {
+            Ok(ImageMetaData {
                 id: String::from(photo_id),
                 image_url: url,
-            }),
-        }
+            })
+        })
     }
 
     /// Obtains and validates the license by the information from the [`JsonRootLicense`] struct.
     /// # Return
     /// A boolean if the image has an valid license or not.
     /// If the image has no license or no license history, the image isn't restricted by any license and true 'll be returned.
-    pub fn check_license(root: JsonRootLicense) -> bool {
+    pub fn check_license(root: &JsonRootLicense) -> bool {
         let license = root
             .license_history
             .iter()
             .max_by_key(|l| l.date_change)
-            .map(|entry| entry.new_license)
+            .map(|entry| entry.new_license.clone())
             .unwrap_or_default();
         VALID_LICENSES.contains(&&*license)
     }
@@ -82,6 +81,7 @@ impl JsonParser {
 
 #[cfg(test)]
 mod test {
+    #![allow(clippy::unwrap_used)]
     use crate::interface::image_hoster::model::ImageMetaData;
     use crate::interface::image_hoster::ImageHosterError;
     use crate::layer::data::flickr_api::json_parser::JsonParser;
@@ -94,21 +94,17 @@ mod test {
                 size: vec![
                     Size {
                         label: String::from("Medium"),
-                        width: 800,
-                        height: 600,
                         source: String::from("url:medium"),
                     },
                     Size {
                         label: String::from("Large"),
-                        width: 1000,
-                        height: 800,
                         source: String::from("url:large"),
                     },
                 ],
             },
         };
         let dummy_id = "42";
-        let res = JsonParser::parse_get_sizes(valid_sizes, dummy_id).unwrap();
+        let res = JsonParser::parse_get_sizes(&valid_sizes, dummy_id).unwrap();
         let expect = ImageMetaData {
             id: String::from(dummy_id),
             image_url: String::from("url:large"),
@@ -124,21 +120,17 @@ mod test {
                 size: vec![
                     Size {
                         label: String::from("Medium"),
-                        width: 800,
-                        height: 600,
                         source: String::from("url:medium"),
                     },
                     Size {
                         label: String::from("Small"),
-                        width: 400,
-                        height: 200,
                         source: String::from("url:small"),
                     },
                 ],
             },
         };
         let dummy_id = "42";
-        let res = JsonParser::parse_get_sizes(fallback_sizes, dummy_id).unwrap();
+        let res = JsonParser::parse_get_sizes(&fallback_sizes, dummy_id).unwrap();
         let expect = ImageMetaData {
             id: String::from(dummy_id),
             image_url: String::from("url:medium"),
@@ -153,20 +145,14 @@ mod test {
             sizes: Sizes {
                 size: vec![Size {
                     label: String::from("Small"),
-                    width: 400,
-                    height: 200,
                     source: String::from("url:small"),
                 }],
             },
         };
         let dummy_id = "42";
-        let res = JsonParser::parse_get_sizes(invalid_sizes, dummy_id).unwrap();
-        let expect = ImageMetaData {
-            id: String::from(dummy_id),
-            image_url: String::new(),
-        };
-        assert_eq!(res.id, expect.id);
-        assert_eq!(res.image_url, expect.image_url);
+        let res = JsonParser::parse_get_sizes(&invalid_sizes, dummy_id);
+        let expect = ImageHosterError::ImageIsToSmall;
+        assert_eq!(expect, res.unwrap_err());
     }
 
     #[test]
@@ -175,17 +161,15 @@ mod test {
             license_history: vec![
                 LicenceHistory {
                     date_change: 1_295_918_034,
-                    old_license: String::from("All Rights Reserved"),
                     new_license: String::from("Attribution License"),
                 },
                 LicenceHistory {
                     date_change: 1_598_990_519,
-                    old_license: String::from("Attribution License"),
-                    new_license: String::from("All Rights Reserved"),
+                    new_license: String::from("Public Domain Mark"),
                 },
             ],
         };
-        assert!(JsonParser::check_license(valid_licenses))
+        assert!(JsonParser::check_license(&valid_licenses));
     }
 
     #[test]
@@ -196,7 +180,7 @@ mod test {
             message: String::from("Sorry, the Flickr API service is not currently available."),
         };
         let res = JsonParser::parse_error(&valid_error);
-        assert_eq!(res, ImageHosterError::ServiceUnavailable)
+        assert_eq!(res, ImageHosterError::ServiceUnavailable);
     }
 
     #[test]
@@ -210,6 +194,6 @@ mod test {
         assert_eq!(
             res,
             ImageHosterError::SomethingWentWrong(String::from("HELP!"))
-        )
+        );
     }
 }
