@@ -285,9 +285,8 @@ mod tests {
     use futures::future;
     use sqlx::PgPool;
 
-    #[sqlx::test]
+    #[sqlx::test(fixtures("canteen"))]
     async fn test_get_canteen(pool: PgPool) {
-        provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
         let canteen_id_strs = [
@@ -307,26 +306,24 @@ mod tests {
                 .flatten()
                 .collect();
         assert!(canteens.len() == 3);
-        assert!(canteens[0].name == "my favorite canteen"); //TODO: Canteen order
-        assert!(canteens[1].name == "second canteen");
-        assert!(canteens[2].name == "bad canteen");
+        assert_eq!(canteens[0].name, "my favorite canteen"); //TODO: Canteen order
+        assert_eq!(canteens[1].name, "second canteen");
+        assert_eq!(canteens[2].name, "bad canteen");
     }
 
-    #[sqlx::test]
+    #[sqlx::test(fixtures("canteen"))]
     async fn test_get_canteens(pool: PgPool) {
-        provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
         let canteen = request.get_canteens().await.unwrap();
         assert!(canteen.len() == 3);
-        assert!(canteen[0].name == "my favorite canteen"); //TODO: Canteen order
-        assert!(canteen[1].name == "second canteen");
-        assert!(canteen[2].name == "bad canteen");
+        assert_eq!(canteen[0].name, "my favorite canteen"); //TODO: Canteen order
+        assert_eq!(canteen[1].name, "second canteen");
+        assert_eq!(canteen[2].name, "bad canteen");
     }
 
-    #[sqlx::test]
+    #[sqlx::test(fixtures("canteen", "line"))]
     async fn test_get_line(pool: PgPool) {
-        provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
         let lines = request
@@ -334,14 +331,13 @@ mod tests {
             .await
             .unwrap();
         assert!(lines.len() == 3);
-        assert!(lines[0].name == "line 1");
-        assert!(lines[1].name == "line 2");
-        assert!(lines[2].name == "special line");
+        assert_eq!(lines[0].name, "line 1");
+        assert_eq!(lines[1].name, "line 2");
+        assert_eq!(lines[2].name, "special line");
     }
 
-    #[sqlx::test]
+    #[sqlx::test(fixtures("canteen", "line"))]
     async fn test_get_lines(pool: PgPool) {
-        provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
         let line_id_strs = [
@@ -363,9 +359,8 @@ mod tests {
         assert!(lines[2].name == "special line");
     }
 
-    #[sqlx::test]
+    #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_get_meal(pool: PgPool) {
-        provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
         let meal_id_strs = [
@@ -387,9 +382,8 @@ mod tests {
         assert!(meals[1].name == "2 Dampfnudeln mit Vanillesoße");
     }
 
-    #[sqlx::test]
+    #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_get_meals(pool: PgPool) {
-        provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
         let meals = request
@@ -407,9 +401,8 @@ mod tests {
         assert!(meal_names.contains(&"2 Dampfnudeln mit Vanillesoße"));
     }
 
-    #[sqlx::test]
+    #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_get_sides(pool: PgPool) {
-        provide_dummy_data(&pool).await;
         let request = PersistentRequestData { pool };
 
         let sides = request
@@ -421,69 +414,5 @@ mod tests {
             .unwrap();
         assert!(sides.len() == 1);
         assert!(sides[0].name == "zu jedem Gericht reichen wir ein Dessert oder Salat");
-    }
-
-    async fn provide_dummy_data(pool: &PgPool) {
-        const INSERT_FAILED: &str = "failed to insert";
-
-        sqlx::query!(
-            "INSERT INTO canteen(canteen_id, name, position) VALUES 
-        ('10728cc4-1e07-4e18-a9d9-ca45b9782413', 'my favorite canteen', 2), 
-        ('8f10c56d-da9b-4f62-b4c1-16feb0f98c67', 'second canteen', 1), 
-        ('f2885f67-fc95-4205-bc7d-b2fb78cee0a8', 'bad canteen', 3)"
-        )
-        .execute(pool)
-        .await
-        .expect(INSERT_FAILED);
-
-        sqlx::query!("INSERT INTO line(line_id, canteen_id, name, position) VALUES 
-        ('61b27158-817c-4716-bd41-2a8901391ea4', '10728cc4-1e07-4e18-a9d9-ca45b9782413', 'line 2', 2), 
-        ('3e8c11fa-906a-4c6a-bc71-28756c6b00ae', '10728cc4-1e07-4e18-a9d9-ca45b9782413', 'line 1', 1), 
-        ('a4956171-a5fc-4c6b-a028-3cb2e5d2bedb', '10728cc4-1e07-4e18-a9d9-ca45b9782413', 'special line', 3),
-        ('119c55b7-e539-4849-bad1-984efff2aad6', '8f10c56d-da9b-4f62-b4c1-16feb0f98c67', 'single line', 0)")
-            .execute(pool)
-            .await
-            .expect(INSERT_FAILED);
-
-        sqlx::query!("INSERT INTO food(food_id, name, food_type) 
-        VALUES ('f7337122-b018-48ad-b420-6202dc3cb4ff', 'Geflügel - Cevapcici, Ajvar, Djuvec Reis', 'UNKNOWN'),
-        ('73cf367b-a536-4b49-ad0c-cb984caa9a08', 'zu jedem Gericht reichen wir ein Dessert oder Salat', 'UNKNOWN'),
-        ('25cb8c50-75a4-48a2-b4cf-8ab2566d8bec', '2 Dampfnudeln mit Vanillesoße', 'VEGETARIAN'),
-        ('0a850476-eda4-4fd8-9f93-579eb85b8c25', 'Mediterraner Gemüsegulasch mit Räuchertofu, dazu Sommerweizen', 'VEGAN'),
-        ('1b5633c2-05c5-4444-90e5-2e475bae6463', 'Cordon bleu vom Schwein mit Bratensoße', 'PORK')")
-            .execute(pool)
-            .await
-            .expect(INSERT_FAILED);
-
-        sqlx::query!("INSERT INTO food_plan(line_id, food_id, serve_date, price_student, price_employee, price_guest, price_pupil)
-        VALUES  ('3e8c11fa-906a-4c6a-bc71-28756c6b00ae', 'f7337122-b018-48ad-b420-6202dc3cb4ff', '2023-07-10', 320,420,460,355),
-                ('3e8c11fa-906a-4c6a-bc71-28756c6b00ae', '73cf367b-a536-4b49-ad0c-cb984caa9a08', '2023-07-10', 0,0,0,0),
-                ('3e8c11fa-906a-4c6a-bc71-28756c6b00ae', '25cb8c50-75a4-48a2-b4cf-8ab2566d8bec', '2023-07-10', 320,420,460,355),
-                ('61b27158-817c-4716-bd41-2a8901391ea4', '0a850476-eda4-4fd8-9f93-579eb85b8c25', '2023-07-10', 350,520,770,405)")
-                .execute(pool)
-                .await
-                .expect(INSERT_FAILED);
-
-        sqlx::query!(
-            "INSERT INTO meal(food_id)
-        VALUES  ('f7337122-b018-48ad-b420-6202dc3cb4ff'),
-                ('25cb8c50-75a4-48a2-b4cf-8ab2566d8bec'),
-                ('0a850476-eda4-4fd8-9f93-579eb85b8c25'),
-                ('1b5633c2-05c5-4444-90e5-2e475bae6463')"
-        )
-        .execute(pool)
-        .await
-        .expect(INSERT_FAILED);
-
-        sqlx::query!(
-            "INSERT INTO users(user_id)
-            VALUES  ('c51d2d81-3547-4f07-af58-ed613c6ece67'),
-                    ('00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf'),
-                    ('7466e3f6-d063-4582-8a58-47a99c86b858'),
-                    ('22154ec0-aee5-4a35-b8b4-e29a5d8336d6')"
-        )
-        .execute(pool)
-        .await
-        .expect(INSERT_FAILED);
     }
 }
