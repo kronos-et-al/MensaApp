@@ -5,4 +5,3 @@ mod api_request;
 mod flickr_api_handler;
 mod json_parser;
 mod json_structs;
-mod test;
