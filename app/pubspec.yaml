@@ -44,6 +44,8 @@ dependencies:
     sdk: flutter
 
   flutter_svg: ^2.0.7
+  sqflite: ^2.2.8+4
+  path: ^1.8.3
   shared_preferences: ^2.2.0
 
   provider: ^6.0.5
@@ -81,6 +83,8 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/icons/allergens/
+    - assets/icons/exceptions/
+    - assets/icons/navigation/
     - assets/locales/en/
     - assets/locales/de/
   # To add assets to your application, add an assets section, like this:

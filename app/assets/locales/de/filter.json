@@ -1,0 +1,24 @@
+{
+  "filterTitle": "Filter",
+  "foodType": "Gerichtstyp",
+  "foodTypeSectionAll": "Alles",
+  "foodTypeSectionVegetarian": "Vegetarisch",
+  "foodTypeSectionVegan": "Vegan",
+  "foodTypeSelectionUnknown": "Keine Angabe",
+  "foodTypeSelectionPork": "Schweinefleisch",
+  "foodTypeSelectionCow": "Rindfleisch",
+  "foodTypeSelectionFisch": "Fisch",
+
+  "allergensTitle": "Allergene",
+  "priceTitle": "Preis",
+  "ratingTitle": "Bewertung",
+  "favoritesOnlyTitle": "Nur Favoriten anzeigen",
+  "sortByTitle": "Sortiert nach",
+
+  "frequencyTitle": "Häufigkeit",
+  "frequencySectionAll": "Alles",
+  "frequencySectionRare": "Selten",
+  "frequencySectionNew": "Neu",
+
+  "storeButton": "Übernehmen"
+}
