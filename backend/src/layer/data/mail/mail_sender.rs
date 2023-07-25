@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs};
+use std::collections::HashMap;
 
 use async_trait::async_trait;
 use thiserror::Error;
@@ -19,7 +19,7 @@ use tracing::{info, warn};
 
 pub type MailResult<T> = std::result::Result<T, MailError>;
 
-const REPORT_TEMPLATE_FILE: &str = "./template.txt";
+const REPORT_TEMPLATE: &str = include_str!("./template.txt");
 
 /// Enum describing the possible ways, the mail notification can fail.
 #[derive(Debug, Error)]
@@ -66,33 +66,34 @@ impl MailSender {
     fn try_notify_admin_image_report(&self, info: &ImageReportInfo) -> MailResult<()> {
         let sender = self.get_sender()?;
         let reciever = self.get_reciever()?;
-        let report = Self::get_report(info)?;
+        let report = Self::get_report(info);
         let email = Message::builder()
             .from(sender)
             .to(reciever)
-            .subject("An image was reported for reviewing")
+            .subject("An image was reported and requires your review")
             .body(report)?;
         self.mailer.send(&email)?;
-        info!("Email sent successfully!");
+        info!(
+            "Email sent successfully for image with id {} at {}",
+            info.image_id, info.image_link
+        );
         Ok(())
     }
 
     fn get_sender(&self) -> MailResult<Mailbox> {
-        format!("app <{}>", self.config.username.clone())
+        format!("MensaKa <{}>", self.config.username.clone())
             .parse()
             .map_err(MailError::AddressError)
     }
 
     fn get_reciever(&self) -> MailResult<Mailbox> {
-        format!("admin <{}>", self.config.admin_email_address)
+        format!("Administrator <{}>", self.config.admin_email_address)
             .parse()
             .map_err(MailError::AddressError)
     }
 
-    fn get_report(info: &ImageReportInfo) -> MailResult<String> {
-        let template_file_contents =
-            fs::read_to_string(REPORT_TEMPLATE_FILE).map_err(MailError::TemplateError)?;
-        let template = Template::new(&template_file_contents);
+    fn get_report(info: &ImageReportInfo) -> String {
+        let template = Template::new(REPORT_TEMPLATE);
         let mut args = HashMap::new();
         let image_link: &str = &info.image_link;
         args.insert("image_link", image_link);
@@ -110,8 +111,7 @@ impl MailSender {
         args.insert("negative_rating_count", negative_rating_count);
         let get_image_rank: &str = &info.get_image_rank.to_string();
         args.insert("get_image_rank", get_image_rank);
-
-        Ok(template.render(&args))
+        template.render(&args)
     }
 }
 
