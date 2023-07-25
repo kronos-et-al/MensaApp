@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT canteen_id as id, name FROM canteen",
+  "query": "SELECT canteen_id as id, name FROM canteen ORDER BY position",
   "describe": {
     "columns": [
       {
@@ -22,5 +22,5 @@
       false
     ]
   },
-  "hash": "14be78b2b2041e23a240b8be55cd93e08fbb7b9e2bd08897dd7c56866bf53878"
+  "hash": "164d75d8691b220632494aab6d8c2e7ae4e4664dceeb6e9e5cd3315e0b9ee0e6"
 }

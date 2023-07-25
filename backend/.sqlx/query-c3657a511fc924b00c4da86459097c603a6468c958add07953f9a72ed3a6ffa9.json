@@ -1,0 +1,75 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT food_id, name, food_type as \"meal_type: MealType\", \n            price_student, price_employee, price_guest, price_pupil\n            FROM food JOIN food_plan USING (food_id)\n            WHERE line_id = $1 AND serve_date = $2 AND food_id NOT IN (SELECT food_id FROM meal)\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "food_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "meal_type: MealType",
+        "type_info": {
+          "Custom": {
+            "name": "meal_type",
+            "kind": {
+              "Enum": [
+                "VEGAN",
+                "VEGETARIAN",
+                "BEEF",
+                "BEEF_AW",
+                "PORK",
+                "PORK_AW",
+                "FISH",
+                "UNKNOWN"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "price_student",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "price_employee",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "price_guest",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "price_pupil",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Date"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "c3657a511fc924b00c4da86459097c603a6468c958add07953f9a72ed3a6ffa9"
+}

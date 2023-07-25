@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            INSERT INTO canteen (name)\n            VALUES ($1)\n            RETURNING canteen_id\n            ",
+  "query": "\n            INSERT INTO canteen (name, position)\n            VALUES ($1, $2)\n            RETURNING canteen_id\n            ",
   "describe": {
     "columns": [
       {
@@ -11,12 +11,13 @@
     ],
     "parameters": {
       "Left": [
-        "Text"
+        "Text",
+        "Int4"
       ]
     },
     "nullable": [
       false
     ]
   },
-  "hash": "3d722457f7f9928cfadf7b5e108fdfe62d0ae2387b5ae0f29ec91d8e124ee75e"
+  "hash": "5a95bf60735b3f869bea2a39e5a83b71587b1e9160d2f0a6d14de353c8ae18e6"
 }

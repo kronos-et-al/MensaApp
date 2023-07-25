@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            UPDATE line\n            SET name = $2\n            WHERE line_id = $1\n            RETURNING line_id\n            ",
+  "query": "\n            INSERT INTO line (name, position)\n            VALUES ($1, $2)\n            RETURNING line_id\n            ",
   "describe": {
     "columns": [
       {
@@ -11,13 +11,13 @@
     ],
     "parameters": {
       "Left": [
-        "Uuid",
-        "Text"
+        "Text",
+        "Int4"
       ]
     },
     "nullable": [
       false
     ]
   },
-  "hash": "c50e6c5b94efecf8439c760d0d8447608c86e15c611d1d8aec5f4e0a9cc8a1c0"
+  "hash": "c1d888def3880ce29eafe3625aa2df254741deb2a566a946715d89fb3d42f605"
 }

@@ -1,9 +1,7 @@
 //! The interfaces specified here allow access to data stored in a persistent datastore like a database.
 pub mod model;
 
-use crate::interface::persistent_data::model::{
-    ApiKey, Canteen, Image, Line, Meal, Side,
-};
+use crate::interface::persistent_data::model::{ApiKey, Canteen, Image, Line, Meal, Side};
 use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason, Uuid};
 use async_trait::async_trait;
 use std::num::TryFromIntError;

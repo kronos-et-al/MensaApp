@@ -1,0 +1,71 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, \n                approved, report_count, link_date \n            FROM (\n                SELECT image_id \n                FROM image JOIN image_report r USING (image_id)\n                WHERE currently_visible AND food_id = $1\n                GROUP BY image_id\n                HAVING COUNT(*) FILTER (WHERE r.user_id = $2) = 0\n            ) not_reported JOIN image_detail USING (image_id)\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "image_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "rank",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 2,
+        "name": "hoster_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "upvotes",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "downvotes",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "approved",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 7,
+        "name": "report_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "link_date",
+        "type_info": "Date"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "8eee30e40473b23dff105e62dceef6c7074b6b789229dfee83bbff4f0e0ee9d7"
+}
