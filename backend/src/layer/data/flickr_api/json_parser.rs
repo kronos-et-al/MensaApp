@@ -18,8 +18,8 @@ impl JsonParser {
     /// Obtains the preferred image information from the [`JsonRootSizes`] struct.
     /// # Return
     /// The [`ImageMetaData`] struct containing all necessary information for the image.
-    /// If the preferred size cannot be obtained a fallback to a smaller size 'll be done.
-    /// If even this fallback size is not available the url 'll be empty. No url 'll be provided.
+    /// If the preferred size cannot be obtained a fallback to a smaller size will be done.
+    /// If even this fallback size is not available the url will be empty. No url will be provided.
     /// # Errors
     /// Returns [`ImageHosterError::ImageIsToSmall`] if the image is too small.
     pub fn parse_get_sizes(
@@ -53,8 +53,9 @@ impl JsonParser {
     /// Obtains and validates the license by the information from the [`JsonRootLicense`] struct.
     /// # Return
     /// A boolean if the image has an valid license or not.
-    /// If the image has no license or no license history, the image isn't restricted by any license and true 'll be returned.
-    #[must_use] pub fn check_license(root: &JsonRootLicense) -> bool {
+    /// If the image has no license or no license history, the image isn't restricted by any license and true will be returned.
+    #[must_use]
+    pub fn check_license(root: &JsonRootLicense) -> bool {
         let license = root
             .license_history
             .iter()
@@ -67,7 +68,8 @@ impl JsonParser {
     /// Obtains and determines an error by its error code and message provided by the [`JsonRootError`] struct.
     /// # Return
     /// An [`ImageHosterError`] that fittest be with the Flickr-Error types.
-    #[must_use] pub fn parse_error(err_info: &JsonRootError) -> ImageHosterError {
+    #[must_use]
+    pub fn parse_error(err_info: &JsonRootError) -> ImageHosterError {
         let err_code = err_info.code;
         let err_msg = err_info.message.clone();
         match err_code {

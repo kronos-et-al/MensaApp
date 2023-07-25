@@ -19,7 +19,8 @@ const FORMAT: &str = "&format=json&nojsoncallback=1";
 
 impl ApiRequest {
     /// Creates an instance of an [`ApiRequest`].
-    #[must_use] pub const fn new(api_key: String) -> Self {
+    #[must_use]
+    pub const fn new(api_key: String) -> Self {
         Self { api_key }
     }
 
@@ -35,7 +36,7 @@ impl ApiRequest {
     /// This url is used to create an rest request.
     /// # Errors
     /// If the request could not be decoded ([`ImageHosterError::DecodeFailed`],
-    /// Another request, which expects an error 'll be attempted.
+    /// Another request, which expects an error will be attempted.
     /// This error request returns a more detailed error information.
     /// # Returns
     /// An Error (as above mentioned) or an [`ImageMetaData`] struct containing information about the requested image.
@@ -59,11 +60,11 @@ impl ApiRequest {
         }
     }
 
-    /// This method creates an url for an api `get_licenses` request.
+    /// This method concat several strings as for an api `get_licenses` request.
     /// This url is used to create an rest request.
     /// # Errors
     /// If the request could not be decoded ([`ImageHosterError::DecodeFailed`],
-    /// Another request, which expects an error 'll be attempted.
+    /// Another request, which expects an error will be attempted.
     /// This error request returns a more detailed error information.
     /// # Returns
     /// An Error (as above mentioned).

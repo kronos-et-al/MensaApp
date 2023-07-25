@@ -1122,6 +1122,7 @@ dependencies = [
  "dotenvy",
  "futures",
  "heck",
+ "lazy_static",
  "rand",
  "regex",
  "reqwest",
