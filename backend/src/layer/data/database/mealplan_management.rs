@@ -100,32 +100,34 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         .map_err(Into::into)
     }
 
-    async fn update_canteen(&self, uuid: Uuid, name: &str) -> Result<Uuid> {
+    async fn update_canteen(&self, uuid: Uuid, name: &str, position: u32) -> Result<Uuid> {
         sqlx::query_scalar!(
             "
             UPDATE canteen
-            SET name = $2
+            SET name = $2, position = $3
             WHERE canteen_id = $1
             RETURNING canteen_id
             ",
             uuid,
-            name
+            name,
+            i32::try_from(position)?
         )
         .fetch_one(&self.pool)
         .await
         .map_err(Into::into)
     }
 
-    async fn update_line(&self, uuid: Uuid, name: &str) -> Result<Uuid> {
+    async fn update_line(&self, uuid: Uuid, name: &str, position: u32) -> Result<Uuid> {
         sqlx::query_scalar!(
             "
             UPDATE line
-            SET name = $2
+            SET name = $2, position = $3
             WHERE line_id = $1
             RETURNING line_id
             ",
             uuid,
-            name
+            name,
+            i32::try_from(position)?
         )
         .fetch_one(&self.pool)
         .await
@@ -160,30 +162,32 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         self.add_to_plan(side_id, line_id, date, price).await
     }
 
-    async fn insert_canteen(&self, name: &str) -> Result<Uuid> {
+    async fn insert_canteen(&self, name: &str, position: u32) -> Result<Uuid> {
         sqlx::query_scalar!(
             // TODO canteen psoition
             "
-            INSERT INTO canteen (name)
-            VALUES ($1)
+            INSERT INTO canteen (name, position)
+            VALUES ($1, $2)
             RETURNING canteen_id
             ",
-            name
+            name,
+            i32::try_from(position)?
         )
         .fetch_one(&self.pool)
         .await
         .map_err(Into::into)
     }
 
-    async fn insert_line(&self, name: &str) -> Result<Uuid> {
+    async fn insert_line(&self, name: &str, position: u32) -> Result<Uuid> {
         sqlx::query_scalar!(
             // TODO line position
             "
-            INSERT INTO line (name)
-            VALUES ($1)
+            INSERT INTO line (name, position)
+            VALUES ($1, $2)
             RETURNING line_id
             ",
-            name
+            name,
+            i32::try_from(position)?
         )
         .fetch_one(&self.pool)
         .await

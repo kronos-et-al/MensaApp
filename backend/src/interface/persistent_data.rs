@@ -60,11 +60,11 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 
     /// Updates an existing canteen entity in the database.
     /// Returns the canteen's UUID.
-    async fn update_canteen(&self, uuid: Uuid, name: &str) -> Result<Uuid>;
+    async fn update_canteen(&self, uuid: Uuid, name: &str, position: u32) -> Result<Uuid>;
 
     /// Updates an existing line entity in the database.
     /// Returns the line UUID.
-    async fn update_line(&self, uuid: Uuid, name: &str) -> Result<Uuid>;
+    async fn update_line(&self, uuid: Uuid, name: &str, position: u32) -> Result<Uuid>;
 
     /// Updates an existing meal entity in the database.
     async fn update_meal(&self, uuid: Uuid, name: &str) -> Result<()>;
@@ -74,11 +74,11 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 
     /// Adds a new canteen entity to the database.
     /// Returns UUID of the new canteen.
-    async fn insert_canteen(&self, name: &str) -> Result<Uuid>;
+    async fn insert_canteen(&self, name: &str, position: u32) -> Result<Uuid>;
 
     /// Adds a new line entity to the database.
     /// Returns uuid of the new line.
-    async fn insert_line(&self, name: &str) -> Result<Uuid>;
+    async fn insert_line(&self, name: &str, position: u32) -> Result<Uuid>;
 
     /// Adds a new meal entity to the database. Returns the UUID of the created meal.
     async fn insert_meal(
