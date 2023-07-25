@@ -2,35 +2,46 @@ use crate::interface::image_hoster::model::ImageMetaData;
 use crate::interface::image_hoster::ImageHosterError;
 use crate::layer::data::flickr_api::json_structs::{JsonRootError, JsonRootLicense, JsonRootSizes};
 
-pub struct JSONParser;
+pub struct JsonParser;
 
-fn get_selected_size_fallback() -> String { String::from("Medium") }
-fn get_selected_size() -> String { String::from("Large") }
+const PREFERRED_SIZE: &str = "Large";
+const FALLBACK_SIZE: &str = "Medium";
 
-impl JSONParser {
+// See https://www.flickr.com/services/api/flickr.photos.licenses.getInfo.html for all possible licenses.
+const VALID_LICENSES: Vec<&str> = vec![
+    "No known copyright restrictions",
+    "Public Domain Dedication (CC0)",
+    "Public Domain Mark",
+    // Case: Image has no license
+    ""
+];
+
+impl JsonParser {
 
     /// Obtains the preferred image information from the [`JsonRootSizes`] struct.
     /// # Return
     /// The [`ImageMetaData`] struct containing all necessary information for the image.
     /// If the preferred size cannot be obtained a fallback to a smaller size 'll be done.
     /// If even this fallback size is not available the url 'll be empty. No url 'll be provided.
-    pub fn parse_get_sizes(root: JsonRootSizes, photo_id: &str) -> ImageMetaData {
+    pub fn parse_get_sizes(root: JsonRootSizes, photo_id: &str) -> Result<ImageMetaData, ImageHosterError> {
         let mut url = root.sizes.size.iter()
-            .find(|s| s.label == get_selected_size())
-            .map(|s| s.source)
-            .unwrap_or_default();
+            .find(|s| s.label == PREFERRED_SIZE)
+            .map(|s| s.source.clone());
 
-        if url.is_empty() {
-            for size in root.sizes.size {
-                if size.label == get_selected_size_fallback() {
-                    url = size.source;
-                    break;
-                }
-            }
+        if url.is_none() {
+            url = root.sizes.size.iter()
+                .find(|s| s.label == FALLBACK_SIZE)
+                .map(|s| s.source.clone());
         }
-        ImageMetaData {
-            id: String::from(photo_id),
-            image_url: url,
+
+        match url {
+            None => return Err(ImageHosterError::ImageIsToSmall),
+            Some(url) => {
+                Ok(ImageMetaData {
+                    id: String::from(photo_id),
+                    image_url: url,
+                })
+            }
         }
     }
 
@@ -39,25 +50,15 @@ impl JSONParser {
     /// A boolean if the image has an valid license or not.
     /// If the image has no license or no license history, the image isn't restricted by any license and true 'll be returned.
     pub fn check_license(root: JsonRootLicense) -> bool {
-        let mut last_date: u64 = 0;
-        for entry in root.license_history.clone() {
-            if last_date < entry.date_change {
-                last_date = entry.date_change;
-            }
-        }
-        let mut license: String = String::new();
-        for entry in root.license_history {
-            if entry.date_change == last_date {
-                license = entry.new_license;
-            }
-        }
-        Self::get_valid_licences().contains(&license)
+        let last_date: u64 = root.license_history.iter().map(|entry| entry.date_change).max();
+        let license: String = root.license_history.iter().map(|entry| entry.date_change).max_by_key(|l| l.date_change).unwrap_or_default();
+        VALID_LICENSES.contains(&&*license)
     }
 
     /// Obtains and determines an error by its error code and message provided by the [`JsonRootError`] struct.
     /// # Return
     /// An [`ImageHosterError`] that fittest be with the Flickr-Error types.
-    pub fn parse_error(err_info: JsonRootError) -> ImageHosterError {
+    pub fn parse_error(err_info: &JsonRootError) -> ImageHosterError {
         let err_code = err_info.code;
         let err_msg = err_info.message.clone();
         match err_code {
@@ -69,23 +70,13 @@ impl JSONParser {
             _ => ImageHosterError::SomethingWentWrong(err_msg),
         }
     }
-
-    /// See https://www.flickr.com/services/api/flickr.photos.licenses.getInfo.html for all possible licenses.
-    fn get_valid_licences() -> Vec<String> {
-        vec![
-            String::from("No known copyright restrictions"),
-            String::from("Public Domain Dedication (CC0)"),
-            String::from("Public Domain Mark"),
-            String::new()
-        ]
-    }
 }
 
 #[cfg(test)]
 mod test {
     use crate::interface::image_hoster::ImageHosterError;
     use crate::interface::image_hoster::model::ImageMetaData;
-    use crate::layer::data::flickr_api::json_parser::JSONParser;
+    use crate::layer::data::flickr_api::json_parser::JsonParser;
     use crate::layer::data::flickr_api::json_structs::*;
 
     #[test]
@@ -109,7 +100,7 @@ mod test {
             }
         };
         let dummy_id = "42";
-        let res = JSONParser::parse_get_sizes(valid_sizes, dummy_id);
+        let res = JsonParser::parse_get_sizes(valid_sizes, dummy_id).unwrap();
         let expect = ImageMetaData {
             id: String::from(dummy_id),
             image_url: String::from("url:large"),
@@ -139,7 +130,7 @@ mod test {
             }
         };
         let dummy_id = "42";
-        let res = JSONParser::parse_get_sizes(fallback_sizes, dummy_id);
+        let res = JsonParser::parse_get_sizes(fallback_sizes, dummy_id).unwrap();
         let expect = ImageMetaData {
             id: String::from(dummy_id),
             image_url: String::from("url:medium"),
@@ -163,7 +154,7 @@ mod test {
             }
         };
         let dummy_id = "42";
-        let res = JSONParser::parse_get_sizes(invalid_sizes, dummy_id);
+        let res = JsonParser::parse_get_sizes(invalid_sizes, dummy_id).unwrap();
         let expect = ImageMetaData {
             id: String::from(dummy_id),
             image_url: String::new(),
@@ -188,7 +179,7 @@ mod test {
                     }
                 ],
         };
-        assert!(JSONParser::check_license(valid_licenses))
+        assert!(JsonParser::check_license(valid_licenses))
     }
 
     #[test]
@@ -198,7 +189,7 @@ mod test {
             code: 0,
             message: String::from("Sorry, the Flickr API service is not currently available."),
         };
-        let res = JSONParser::parse_error(valid_error);
+        let res = JsonParser::parse_error(&valid_error);
         assert_eq!(res, ImageHosterError::ServiceUnavailable)
     }
 
@@ -209,7 +200,7 @@ mod test {
             code: 42,
             message: String::from("HELP!"),
         };
-        let res = JSONParser::parse_error(invalid_error);
+        let res = JsonParser::parse_error(&invalid_error);
         assert_eq!(res, ImageHosterError::SomethingWentWrong(String::from("HELP!")))
     }
 }

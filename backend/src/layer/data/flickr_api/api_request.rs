@@ -2,7 +2,7 @@ use reqwest::Response;
 use crate::interface::image_hoster::ImageHosterError;
 use tracing::log::debug;
 use crate::interface::image_hoster::model::ImageMetaData;
-use crate::layer::data::flickr_api::json_parser::JSONParser;
+use crate::layer::data::flickr_api::json_parser::JsonParser;
 use crate::layer::data::flickr_api::json_structs::{JsonRootError, JsonRootLicense, JsonRootSizes};
 
 pub struct ApiRequest {
@@ -79,7 +79,7 @@ impl ApiRequest {
             api_key = self.api_key,
         );
         match self.request_sizes(url).await {
-            Ok(sizes) => Ok(JSONParser::parse_get_sizes(sizes, photo_id)),
+            Ok(sizes) => Ok(JsonParser::parse_get_sizes(sizes, photo_id)?),
             Err(e) => Err(self.determine_error(url, e).await)
         }
     }
@@ -103,7 +103,7 @@ impl ApiRequest {
             api_key = self.api_key
         );
         match self.request_license(url).await {
-            Ok(licenses) => Ok(JSONParser::check_license(licenses)),
+            Ok(licenses) => Ok(JsonParser::check_license(licenses)),
             Err(e) => Err(self.determine_error(url, e).await)
         }
     }
@@ -111,15 +111,21 @@ impl ApiRequest {
     /// This method requests the flickr api and expects an error response.
     /// # Returns
     /// The hoster error as an [`ImageHosterError`].
-    /// To see all possible cases look here: [`json_parser::parse_error`].
     async fn determine_error(&self, url: &String, e: ImageHosterError) -> ImageHosterError {
-        if e == ImageHosterError::DecodeFailed {
-            match self.request_err(url).await {
-                Ok(json_error) => JSONParser::parse_error(json_error),
+        // TODO .map
+        if e != ImageHosterError::DecodeFailed {
+            return e;
+        }
+
+        match self.request_url(url).await {
+                Ok(res) => {
+                    let error_root = match res.json::<JsonRootError>().await.map_err(|_| ImageHosterError::DecodeFailed) {
+                        Ok(root) => root,
+                        Err(e) => return e
+                    };
+                    JsonParser::parse_error(&error_root)
+                }
                 Err(e) => e
-            }
-        } else {
-            e
         }
     }
 }
@@ -207,7 +213,7 @@ mod test {
         // See: https://www.flickr.com/services/api/flickr.photos.licenses.getLicenseHistory.html
         // To let this test pass, we use ImageHosterError::ServiceUnavailable even if ImageHosterError::PhotoNotFound is the right one.
         let expected = ImageHosterError::ServiceUnavailable;
-        let res = get_api_request().flickr_photos_licenses_get_license_history("42").await;
+        let res = get_api_request().flickr_photos_license_check("42").await;
         let err = res.expect_err("error_check_license_invalid_photo test failed as res isn't an error");
         assert_eq!(expected, err);
     }

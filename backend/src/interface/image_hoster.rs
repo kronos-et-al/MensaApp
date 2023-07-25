@@ -34,7 +34,7 @@ pub enum ImageHosterError {
     #[error("the requested service is temporarily unavailable")]
     ServiceUnavailable,
     /// Format "xxx" not found error
-    #[error("the requested response format was not found. {0}")]
+    #[error("the requested response format was not found: {0}")]
     FormatNotFound(String),
     /// The connection failed to establish error
     #[error("no connection could be established")]
@@ -45,4 +45,6 @@ pub enum ImageHosterError {
     DecodeFailed,
     #[error("some undefined image hoster error occurred: {0}")]
     SomethingWentWrong(String),
+    #[error("the provided photo_id links to an image that is too small")]
+    ImageIsToSmall,
 }
