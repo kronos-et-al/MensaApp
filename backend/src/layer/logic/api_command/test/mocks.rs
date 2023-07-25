@@ -154,11 +154,11 @@ impl ImageHoster for CommandImageHosterMock {
         }
     }
     /// Checks if an image still exists at the hoster website.
-    async fn check_existence(&self, _photo_id: &str) -> ImageResult<bool> {
+    async fn check_existence(&self, _image_id: &str) -> ImageResult<bool> {
         Ok(true)
     }
     /// Checks whether the licence is acceptable for our purposes.
-    async fn check_licence(&self, _photo_id: &str) -> ImageResult<bool> {
+    async fn check_licence(&self, _image_id: &str) -> ImageResult<bool> {
         Ok(true)
     }
 }
