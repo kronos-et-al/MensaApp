@@ -152,7 +152,7 @@ mod test {
     }
 
     fn get_mail_info() -> Result<MailInfo, VarError> {
-        dotenvy::dotenv().unwrap();
+        dotenvy::dotenv().ok();
         Ok(MailInfo {
             smtp_server: env::var(SMTP_SERVER_ENV_NAME)?,
             smtp_port: env::var(SMTP_PORT_ENV_NAME)?.parse().unwrap(),
