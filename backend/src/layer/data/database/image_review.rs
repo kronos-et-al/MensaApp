@@ -119,7 +119,7 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
         Ok(images)
     }
 
-    async fn delete_image(&self, id: Uuid) -> Result<bool> {
+    async fn delete_image(&self, id: Uuid) -> Result<()> {
         // Todo on delete cascade?
         let num_deleted = sqlx::query!(
             "DELETE FROM image WHERE image_id = $1 RETURNING image_id",
@@ -129,13 +129,13 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
         .await?
         .len();
 
-        Ok(num_deleted > 0)
+        Ok(())
     }
 
-    async fn mark_as_checked(&self, ids: Vec<Uuid>) -> Result<()> {
+    async fn mark_as_checked(&self, id: Uuid) -> Result<()> {
         sqlx::query!(
-            "UPDATE image SET last_verified_date = CURRENT_DATE WHERE image_id = ANY ($1)",
-            &ids[..]
+            "UPDATE image SET last_verified_date = CURRENT_DATE WHERE image_id = $1",
+            id
         )
         .execute(&self.pool)
         .await?;
