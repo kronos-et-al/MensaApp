@@ -129,16 +129,7 @@ mod test {
 
     #[tokio::test]
     async fn test_get_report() {
-        let info = ImageReportInfo {
-            reason: crate::util::ReportReason::Advert,
-            image_got_hidden: true,
-            image_id: Uuid::default(),
-            image_link: String::from("www.test.com"),
-            report_count: 1,
-            positive_rating_count: 10,
-            negative_rating_count: 20,
-            get_image_rank: 1.0,
-        };
+        let info = get_report_info();
         let report = MailSender::get_report(&info).replace("\r\n", "\n");
         let expected = format!("The image at the url {}\nwith the id {}\nwas reported {} times.\nReason: {}\nImage automatically hidden: {}\n\nAdditional Data:\nPositive ratings: {}\nNegative ratings: {}\nRank: {}",
             info.image_link,
@@ -158,8 +149,16 @@ mod test {
         let mail_info = get_mail_info().unwrap();
         let mail_sender = MailSender::new(mail_info).unwrap();
         assert!(mail_sender.mailer.test_connection().unwrap());
+        let report_info = get_report_info();
 
-        let report_info = ImageReportInfo {
+        if let Err(error) = mail_sender.try_notify_admin_image_report(&report_info) {
+            println!("{error}");
+            panic!();
+        }
+    }
+
+    fn get_report_info() -> ImageReportInfo {
+        ImageReportInfo {
             reason: crate::util::ReportReason::Advert,
             image_got_hidden: true,
             image_id: Uuid::default(),
@@ -168,10 +167,6 @@ mod test {
             positive_rating_count: 10,
             negative_rating_count: 20,
             get_image_rank: 1.0,
-        };
-        if let Err(error) = mail_sender.try_notify_admin_image_report(&report_info) {
-            println!("{error}");
-            panic!();
         }
     }
 
