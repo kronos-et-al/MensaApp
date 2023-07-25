@@ -32,10 +32,13 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_canteens(&self) -> Result<Vec<Canteen>> {
-        sqlx::query_as!(Canteen, "SELECT canteen_id as id, name FROM canteen ORDER BY position")
-            .fetch_all(&self.pool)
-            .await
-            .map_err(Into::into)
+        sqlx::query_as!(
+            Canteen,
+            "SELECT canteen_id as id, name FROM canteen ORDER BY position"
+        )
+        .fetch_all(&self.pool)
+        .await
+        .map_err(Into::into)
     }
 
     async fn get_line(&self, id: Uuid) -> Result<Option<Line>> {
@@ -101,7 +104,7 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_meals(&self, line_id: Uuid, date: Date) -> Result<Option<Vec<Meal>>> {
-        // If date too far into the future, return `None`. 
+        // If date too far into the future, return `None`.
         // This should probably be inside the logic layer which currently does not exists for request.
         let today = Local::now().date_naive();
         let age = today - date;
@@ -371,12 +374,12 @@ mod tests {
         let date = Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap();
         let mut meals = Vec::new();
         for meal_id_str in meal_id_strs {
-            if let Ok(meal_id) = Uuid::parse_str(meal_id_str) {
-                if let Ok(Some(meal)) = request.get_meal(meal_id, line_id, date).await {
-                    meals.push(meal);
-                }
+            let meal_id = Uuid::parse_str(meal_id_str).unwrap();
+            if let Ok(Some(meal)) = request.get_meal(meal_id, line_id, date).await {
+                meals.push(meal);
             }
         }
+        dbg!(&meals);
         assert!(meals.len() == 2);
         assert!(meals[0].name == "Geflügel - Cevapcici, Ajvar, Djuvec Reis");
         assert!(meals[1].name == "2 Dampfnudeln mit Vanillesoße");
