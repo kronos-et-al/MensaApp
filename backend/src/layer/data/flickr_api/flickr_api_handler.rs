@@ -85,7 +85,7 @@ impl ImageHoster for FlickrApiHandler {
     /// # Errors
     /// If any error occurs, it 'll be returned.
     async fn check_licence(&self, photo_id: &str) -> Result<bool, ImageHosterError> {
-        self.request.flickr_photos_licenses_get_license_history(photo_id).await
+        self.request.flickr_photos_license_check(photo_id).await
     }
 }
 

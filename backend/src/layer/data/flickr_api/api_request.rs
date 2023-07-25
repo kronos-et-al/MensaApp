@@ -94,7 +94,7 @@ impl ApiRequest {
     /// An Error (as above mentioned).
     /// True if the given image is hosted under a valid license.
     /// False if not.
-    pub async fn flickr_photos_licenses_get_license_history(
+    pub async fn flickr_photos_license_check(
         &self,
         photo_id: &str,
     ) -> Result<bool, ImageHosterError> {
