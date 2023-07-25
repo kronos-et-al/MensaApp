@@ -155,7 +155,7 @@ mod test {
         };
         let dummy_id = "42";
         let res = JsonParser::parse_get_sizes(&invalid_sizes, dummy_id);
-        let expect = ImageHosterError::ImageIsToSmall;
+        let expect = ImageHosterError::ImageIsTooSmall;
         assert_eq!(expect, res.unwrap_err());
     }
 
