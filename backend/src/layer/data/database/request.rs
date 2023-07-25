@@ -9,14 +9,11 @@ use crate::{
     util::{Additive, Allergen, Date, MealType, Price, Uuid},
 };
 
-use super::types::DatabasePrice;
 /// Class implementing all database requests arising from graphql manipulations.
 #[derive(Debug)]
 pub struct PersistentRequestData {
     pub(super) pool: Pool<Postgres>,
 }
-
-const DEFAULT_RATING: f32 = 5. / 2.;
 
 #[async_trait]
 impl RequestDataAccess for PersistentRequestData {
@@ -92,7 +89,7 @@ impl RequestDataAccess for PersistentRequestData {
                 new: m.new?,
                 last_served: m.last_served,
                 next_served: m.next_served,
-                average_rating: m.average_rating.unwrap_or(DEFAULT_RATING),
+                average_rating: m.average_rating?,
                 rating_count: m.rating_count? as u32,
             })
         });
@@ -133,7 +130,7 @@ impl RequestDataAccess for PersistentRequestData {
                 new: m.new?,
                 last_served: m.last_served,
                 next_served: m.next_served,
-                average_rating: m.average_rating.unwrap_or(DEFAULT_RATING),
+                average_rating: m.average_rating?,
                 rating_count: m.rating_count? as u32,
             })
         })

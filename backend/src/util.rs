@@ -2,10 +2,7 @@
 //!
 //! For a complete list and explanations you can see [here](https://www.sw-ka.de/media/?file=4458listeallergesetzlichausweisungspflichtigenzusatzstoffeundallergenefuerwebsite160218.pdf&download).
 
-use std::fmt::Display;
-
 use async_graphql::Enum;
-use heck::AsShoutySnakeCase;
 
 /// Date type used in multiple places.
 pub type Date = chrono::NaiveDate;

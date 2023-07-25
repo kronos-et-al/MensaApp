@@ -406,9 +406,9 @@ mod test {
     async fn get_handler() -> Result<
         CommandHandler<CommandDatabaseMock, CommandAdminNotificationMock, CommandImageHosterMock>,
     > {
-        let command_data = CommandDatabaseMock::default();
-        let admin_notification = CommandAdminNotificationMock::default();
-        let image_hoster = CommandImageHosterMock::default();
+        let command_data = CommandDatabaseMock;
+        let admin_notification = CommandAdminNotificationMock;
+        let image_hoster = CommandImageHosterMock;
         CommandHandler::new(command_data, admin_notification, image_hoster).await
     }
 }

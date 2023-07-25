@@ -1,13 +1,9 @@
-use async_graphql::Data;
 use async_trait::async_trait;
-use sqlx::{Database, Pool, Postgres};
+use sqlx::{Pool, Postgres};
 
 use super::types::DatabasePrice;
 use crate::{
-    interface::persistent_data::{
-        model::{Canteen, Line, Meal, Side},
-        MealplanManagementDataAccess, Result,
-    },
+    interface::persistent_data::{MealplanManagementDataAccess, Result},
     util::{Additive, Allergen, Date, MealType, Price, Uuid},
 };
 
@@ -58,7 +54,8 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>> {
-        sqlx::query_scalar!( // the `<@` operator checks whether each element in the left array is also present in the right
+        sqlx::query_scalar!(
+            // the `<@` operator checks whether each element in the left array is also present in the right
             "SELECT food_id 
             FROM food JOIN meal USING (food_id) JOIN food_additive USING (food_id) 
                 JOIN food_allergen USING (food_id)
@@ -68,8 +65,16 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
                 AND array_agg(additive) <@ $3 AND array_agg(additive) @> $3
             ORDER BY similarity(name, $1) DESC",
             similar_name,
-            allergens.iter().copied().map(Allergen::to_db_string).collect::<Vec<_>>() as _,
-            additives.iter().copied().map(Additive::to_db_string).collect::<Vec<_>>() as _
+            allergens
+                .iter()
+                .copied()
+                .map(Allergen::to_db_string)
+                .collect::<Vec<_>>() as _,
+            additives
+                .iter()
+                .copied()
+                .map(Additive::to_db_string)
+                .collect::<Vec<_>>() as _
         )
         .fetch_optional(&self.pool)
         .await
@@ -82,7 +87,8 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>> {
-        sqlx::query_scalar!( // the `<@` operator checks whether each element in the left array is also present in the right
+        sqlx::query_scalar!(
+            // the `<@` operator checks whether each element in the left array is also present in the right
             "SELECT food_id 
             FROM food JOIN food_additive USING (food_id) 
                 JOIN food_allergen USING (food_id)
@@ -92,8 +98,16 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
                 AND array_agg(additive) <@ $3 AND array_agg(additive) @> $3
             ORDER BY similarity(name, $1) DESC",
             similar_name,
-            allergens.iter().copied().map(Allergen::to_db_string).collect::<Vec<_>>() as _,
-            additives.iter().copied().map(Additive::to_db_string).collect::<Vec<_>>() as _
+            allergens
+                .iter()
+                .copied()
+                .map(Allergen::to_db_string)
+                .collect::<Vec<_>>() as _,
+            additives
+                .iter()
+                .copied()
+                .map(Additive::to_db_string)
+                .collect::<Vec<_>>() as _
         )
         .fetch_optional(&self.pool)
         .await

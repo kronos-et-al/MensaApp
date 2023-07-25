@@ -50,7 +50,11 @@ where
 
     async fn resolve_line(&self, date: Date, line: ParseLine) -> Result<(), DataError> {
         let line_id = match self.db.get_similar_line(&line.name).await? {
-            Some(similar_line) => self.db.update_line(similar_line, &line.name, todo!()).await?,
+            Some(similar_line) => {
+                self.db
+                    .update_line(similar_line, &line.name, todo!())
+                    .await?
+            }
             None => self.db.insert_line(&line.name, todo!()).await?,
         };
 
