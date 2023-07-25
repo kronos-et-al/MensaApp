@@ -6,7 +6,7 @@ use regex::Regex;
 
 #[derive(Debug)]
 pub struct HosterInfo {
-    api_key: String,
+    pub api_key: String,
 }
 
 pub struct FlickrApiHandler {
