@@ -10,10 +10,7 @@ use lettre::{
 use uuid::fmt::Simple;
 
 use crate::{
-    interface::{
-        admin_notification::{AdminNotification, ImageReportInfo},
-        persistent_data::{DataError, Result},
-    },
+    interface::admin_notification::{AdminNotification, ImageReportInfo},
     startup::config::mail_info::MailInfo,
 };
 
@@ -56,17 +53,14 @@ impl MailSender {
     ///
     /// # Errors
     /// Returns an error, if the connection could not be established to the smtp server
-    pub fn new(config: MailInfo) -> Result<Self> {
+    pub fn new(config: MailInfo) -> MailResult<Self> {
         let creds = Credentials::new(config.username.clone(), config.password.clone());
-        if let Ok(transport_builder) = SmtpTransport::relay(&config.smtp_server) {
-            let mailer = transport_builder
-                .port(config.smtp_port)
-                .credentials(creds)
-                .build();
-            Ok(Self { config, mailer })
-        } else {
-            Err(DataError::NoSuchItem)
-        }
+        let transport_builder = SmtpTransport::relay(&config.smtp_server)?;
+        let mailer = transport_builder
+            .port(config.smtp_port)
+            .credentials(creds)
+            .build();
+        Ok(Self { config, mailer })
     }
 
     fn try_notify_admin_image_report(&self, info: &ImageReportInfo) -> MailResult<()> {
