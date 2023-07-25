@@ -2,8 +2,8 @@ use async_trait::async_trait;
 use thiserror::Error;
 
 use lettre::{
-    address::AddressError, message::Mailbox, transport::smtp::authentication::Credentials, Message,
-    SmtpTransport, Transport, Address,
+    address::AddressError, message::Mailbox, transport::smtp::authentication::Credentials, Address,
+    Message, SmtpTransport, Transport,
 };
 
 use crate::{
@@ -19,6 +19,7 @@ pub type MailResult<T> = std::result::Result<T, MailError>;
 const REPORT_TEMPLATE: &str = include_str!("./template.txt");
 const SENDER_NAME: &str = "MensaKa";
 const RECEIVER_NAME: &str = "Administrator";
+const MAIL_SUBJECT: &str = "An image was reported and requires your review";
 
 /// Enum describing the possible ways, the mail notification can fail.
 #[derive(Debug, Error)]
@@ -69,7 +70,7 @@ impl MailSender {
         let email = Message::builder()
             .from(sender)
             .to(reciever)
-            .subject("An image was reported and requires your review")
+            .subject(MAIL_SUBJECT)
             .body(report)?;
         self.mailer.send(&email)?;
         info!(
@@ -90,7 +91,7 @@ impl MailSender {
     }
 
     fn get_report(info: &ImageReportInfo) -> String {
-        let a: [(&str, &dyn ToString); 8] = [
+        let info_array_map: [(&str, &dyn ToString); 8] = [
             ("image_link", &info.image_link),
             ("image_id", &info.image_id),
             ("report_count", &info.report_count),
@@ -101,13 +102,13 @@ impl MailSender {
             ("get_image_rank", &info.get_image_rank),
         ];
 
-        let map = a
+        let info_map = info_array_map
             .into_iter()
-            .map(|(a, b)| (a, b.to_string()))
+            .map(|(k, v)| (k, v.to_string()))
             .collect::<Vec<_>>();
-        let map = map.iter().map(|(a, b)| (*a, b.as_str())).collect();
+        let info_map = info_map.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        Template::new(REPORT_TEMPLATE).render(&map)
+        Template::new(REPORT_TEMPLATE).render(&info_map)
     }
 }
 
@@ -151,7 +152,9 @@ mod test {
         assert!(mail_sender.mailer.test_connection().unwrap());
         let report_info = get_report_info();
 
-        assert!(mail_sender.try_notify_admin_image_report(&report_info).is_ok());
+        assert!(mail_sender
+            .try_notify_admin_image_report(&report_info)
+            .is_ok());
     }
 
     fn get_report_info() -> ImageReportInfo {
