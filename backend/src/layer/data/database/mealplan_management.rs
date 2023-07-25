@@ -178,7 +178,6 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
 
     async fn insert_canteen(&self, name: &str, position: u32) -> Result<Uuid> {
         sqlx::query_scalar!(
-            // TODO canteen psoition
             "
             INSERT INTO canteen (name, position)
             VALUES ($1, $2)
@@ -194,7 +193,6 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
 
     async fn insert_line(&self, name: &str, position: u32) -> Result<Uuid> {
         sqlx::query_scalar!(
-            // TODO line position
             "
             INSERT INTO line (name, position)
             VALUES ($1, $2)

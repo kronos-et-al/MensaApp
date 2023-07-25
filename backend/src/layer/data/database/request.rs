@@ -32,7 +32,7 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_canteens(&self) -> Result<Vec<Canteen>> {
-        sqlx::query_as!(Canteen, "SELECT canteen_id as id, name FROM canteen") // TODO canteen order
+        sqlx::query_as!(Canteen, "SELECT canteen_id as id, name FROM canteen ORDER BY position")
             .fetch_all(&self.pool)
             .await
             .map_err(Into::into)
