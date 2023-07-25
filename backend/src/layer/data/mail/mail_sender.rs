@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use async_trait::async_trait;
 use thiserror::Error;
 
@@ -92,24 +90,24 @@ impl MailSender {
     }
 
     fn get_report(info: &ImageReportInfo) -> String {
-        let template = Template::new(REPORT_TEMPLATE);
-        let mut args = HashMap::new();
-        args.insert("image_link", info.image_link.as_str());
-        let image_id = info.image_id.to_string();
-        args.insert("image_id", image_id.as_str());
-        let report_count: &str = &info.report_count.to_string();
-        args.insert("report_count", report_count);
-        let reason: &str = &info.reason.to_string();
-        args.insert("reason", reason);
-        let image_got_hidden: &str = &info.image_got_hidden.to_string();
-        args.insert("image_got_hidden", image_got_hidden);
-        let positive_rating_count: &str = &info.positive_rating_count.to_string();
-        args.insert("positive_rating_count", positive_rating_count);
-        let negative_rating_count: &str = &info.negative_rating_count.to_string();
-        args.insert("negative_rating_count", negative_rating_count);
-        let get_image_rank: &str = &info.get_image_rank.to_string();
-        args.insert("get_image_rank", get_image_rank);
-        template.render(&args)
+        let a: [(&str, &dyn ToString); 8] = [
+            ("image_link", &info.image_link),
+            ("image_id", &info.image_id),
+            ("report_count", &info.report_count),
+            ("reason", &info.reason),
+            ("image_got_hidden", &info.image_got_hidden),
+            ("positive_rating_count", &info.positive_rating_count),
+            ("negative_rating_count", &info.negative_rating_count),
+            ("get_image_rank", &info.get_image_rank),
+        ];
+
+        let map = a
+            .into_iter()
+            .map(|(a, b)| (a, b.to_string()))
+            .collect::<Vec<_>>();
+        let map = map.iter().map(|(a, b)| (*a, b.as_str())).collect();
+
+        Template::new(REPORT_TEMPLATE).render(&map)
     }
 }
 
