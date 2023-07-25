@@ -30,7 +30,6 @@ impl ImageHoster for ImageHosterMock {
         Ok(ImageMetaData {
             id: String::default(),
             image_url: String::default(),
-            licence: String::default(),
         })
     }
     /// Checks if an image still exists at the hoster website.
