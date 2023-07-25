@@ -128,7 +128,7 @@ mod test {
         interface::admin_notification::ImageReportInfo, layer::data::mail::mail_sender::MailSender,
         startup::config::mail_info::MailInfo, util::Uuid,
     };
-    use dotenv::dotenv;
+    use dotenvy;
     use std::env::{self, VarError};
 
     const SMTP_SERVER_ENV_NAME: &str = "SMTP_SERVER";
@@ -159,7 +159,7 @@ mod test {
     }
 
     fn get_mail_info() -> Result<MailInfo, VarError> {
-        dotenv().ok();
+        dotenvy::dotenv().unwrap();
         Ok(MailInfo {
             smtp_server: env::var(SMTP_SERVER_ENV_NAME)?,
             smtp_port: env::var(SMTP_PORT_ENV_NAME)?.parse().unwrap(),
