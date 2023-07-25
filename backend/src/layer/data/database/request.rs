@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use chrono::{DateTime, Local};
 use sqlx::{Pool, Postgres};
 
 use crate::{
@@ -8,6 +9,8 @@ use crate::{
     },
     util::{Additive, Allergen, Date, MealType, Price, Uuid},
 };
+
+const MAX_WEEKS_DATA: i64 = 4;
 
 /// Class implementing all database requests arising from graphql manipulations.
 #[derive(Debug)]
@@ -98,7 +101,14 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_meals(&self, line_id: Uuid, date: Date) -> Result<Option<Vec<Meal>>> {
-        // todo return none when no data exists (to far in future)
+        // If date too far into the future, return `None`. 
+        // This should probably be inside the logic layer which currently does not exists for request.
+        let today = Local::now().date_naive();
+        let age = today - date;
+        if age.num_weeks() > MAX_WEEKS_DATA {
+            return Ok(None);
+        }
+
         let meal = sqlx::query!(
             r#"
             SELECT food_id, name, food_type as "meal_type: MealType",
