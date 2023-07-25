@@ -7,11 +7,10 @@ use lettre::{
     address::AddressError, message::Mailbox, transport::smtp::authentication::Credentials, Message,
     SmtpTransport, Transport,
 };
-use uuid::fmt::Simple;
 
 use crate::{
     interface::admin_notification::{AdminNotification, ImageReportInfo},
-    startup::config::mail_info::MailInfo,
+    layer::data::mail::mail_info::MailInfo,
 };
 
 use string_template::Template;
@@ -95,10 +94,9 @@ impl MailSender {
     fn get_report(info: &ImageReportInfo) -> String {
         let template = Template::new(REPORT_TEMPLATE);
         let mut args = HashMap::new();
-        let image_link: &str = &info.image_link;
-        args.insert("image_link", image_link);
-        let image_id: &str = &Simple::from_uuid(info.image_id).to_string();
-        args.insert("image_id", image_id);
+        args.insert("image_link", info.image_link.as_str());
+        let image_id = info.image_id.to_string();
+        args.insert("image_id", image_id.as_str());
         let report_count: &str = &info.report_count.to_string();
         args.insert("report_count", report_count);
         let reason: &str = &info.reason.to_string();
@@ -119,8 +117,8 @@ impl MailSender {
 mod test {
     #![allow(clippy::unwrap_used)]
     use crate::{
-        interface::admin_notification::ImageReportInfo, layer::data::mail::mail_sender::MailSender,
-        startup::config::mail_info::MailInfo, util::Uuid,
+        interface::admin_notification::ImageReportInfo, layer::data::mail::mail_info::MailInfo,
+        layer::data::mail::mail_sender::MailSender, util::Uuid,
     };
     use dotenvy;
     use std::env::{self, VarError};
@@ -136,6 +134,7 @@ mod test {
         let mail_info = get_mail_info().unwrap();
         let mail_sender = MailSender::new(mail_info).unwrap();
         assert!(mail_sender.mailer.test_connection().unwrap());
+
         let report_info = ImageReportInfo {
             reason: crate::util::ReportReason::Advert,
             image_got_hidden: true,
