@@ -3,7 +3,7 @@ use thiserror::Error;
 
 use lettre::{
     address::AddressError, message::Mailbox, transport::smtp::authentication::Credentials, Message,
-    SmtpTransport, Transport,
+    SmtpTransport, Transport, Address,
 };
 
 use crate::{
@@ -17,6 +17,8 @@ use tracing::{info, warn};
 pub type MailResult<T> = std::result::Result<T, MailError>;
 
 const REPORT_TEMPLATE: &str = include_str!("./template.txt");
+const SENDER_NAME: &str = "MensaKa";
+const RECEIVER_NAME: &str = "Administrator";
 
 /// Enum describing the possible ways, the mail notification can fail.
 #[derive(Debug, Error)]
@@ -62,7 +64,7 @@ impl MailSender {
 
     fn try_notify_admin_image_report(&self, info: &ImageReportInfo) -> MailResult<()> {
         let sender = self.get_sender()?;
-        let reciever = self.get_reciever()?;
+        let reciever = self.get_receiver()?;
         let report = Self::get_report(info);
         let email = Message::builder()
             .from(sender)
@@ -78,15 +80,13 @@ impl MailSender {
     }
 
     fn get_sender(&self) -> MailResult<Mailbox> {
-        format!("MensaKa <{}>", self.config.username.clone())
-            .parse()
-            .map_err(MailError::AddressError)
+        let address = self.config.username.parse::<Address>()?;
+        Ok(Mailbox::new(Some(SENDER_NAME.to_string()), address))
     }
 
-    fn get_reciever(&self) -> MailResult<Mailbox> {
-        format!("Administrator <{}>", self.config.admin_email_address)
-            .parse()
-            .map_err(MailError::AddressError)
+    fn get_receiver(&self) -> MailResult<Mailbox> {
+        let address = self.config.admin_email_address.parse::<Address>()?;
+        Ok(Mailbox::new(Some(RECEIVER_NAME.to_string()), address))
     }
 
     fn get_report(info: &ImageReportInfo) -> String {
@@ -151,10 +151,7 @@ mod test {
         assert!(mail_sender.mailer.test_connection().unwrap());
         let report_info = get_report_info();
 
-        if let Err(error) = mail_sender.try_notify_admin_image_report(&report_info) {
-            println!("{error}");
-            panic!();
-        }
+        assert!(mail_sender.try_notify_admin_image_report(&report_info).is_ok());
     }
 
     fn get_report_info() -> ImageReportInfo {
