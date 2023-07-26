@@ -162,7 +162,11 @@ impl HTMLParser {
     /// Will return a [`ParseError`], when either one of the following cases occurs (in order of appearance):
     ///     1. If there is no node in the document, that has a class called [`ROOT_NODE_CLASS_SELECTOR`]. This indicates that a wrong html file was passed.
     ///     2. If the number of dates does not match the number of days for which data exists. This case is more for completeness and should never occur
-    pub fn transform(&self, html: &str, position: u32) -> Result<Vec<(Date, ParseCanteen)>, ParseError> {
+    pub fn transform(
+        &self,
+        html: &str,
+        position: u32,
+    ) -> Result<Vec<(Date, ParseCanteen)>, ParseError> {
         let document = Html::parse_document(html);
         let root_node = Self::get_root_node(&document)?;
         let dates = Self::get_dates(&root_node).unwrap_or_default();
@@ -222,12 +226,12 @@ impl HTMLParser {
     fn get_canteen_for_single_day(
         root_node: &ElementRef,
         day_node: &ElementRef,
-        position: u32
+        position: u32,
     ) -> Option<ParseCanteen> {
         Some(ParseCanteen {
             name: Self::get_canteen_name(root_node)?,
             lines: Self::get_lines(day_node),
-            pos: position
+            pos: position,
         })
     }
 
@@ -252,7 +256,7 @@ impl HTMLParser {
         Some(ParseLine {
             name: Self::get_line_name(line_node)?,
             dishes: Self::get_dishes(line_node),
-            pos: u32::try_from(pos).expect("u32 could not be casted from usize")
+            pos: u32::try_from(pos).expect("u32 could not be casted from usize"),
         })
     }
 

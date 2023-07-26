@@ -46,8 +46,17 @@ impl SwKaParseManager {
     ) -> Result<HashMap<Date, Vec<ParseCanteen>>, ParseError> {
         let mut map: HashMap<Date, Vec<ParseCanteen>> = HashMap::new();
 
-        for (position, html) in self.request.get_html_strings(urls).await?.iter().enumerate() {
-            for (date, canteen) in self.html_parser.transform(html, u32::try_from(position).expect("u32 could not be casted from usize"))? {
+        for (position, html) in self
+            .request
+            .get_html_strings(urls)
+            .await?
+            .iter()
+            .enumerate()
+        {
+            for (date, canteen) in self.html_parser.transform(
+                html,
+                u32::try_from(position).expect("u32 could not be casted from usize"),
+            )? {
                 map.entry(date).or_default().push(canteen);
             }
         }
