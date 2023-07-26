@@ -192,12 +192,14 @@ impl RequestDataAccess for PersistentRequestData {
             SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
                 approved, report_count, link_date 
             FROM (
+                --- not reported by user
                 SELECT image_id 
-                FROM image JOIN image_report r USING (image_id)
-                WHERE currently_visible AND food_id = $1
+                FROM image LEFT JOIN image_report r USING (image_id)
                 GROUP BY image_id
                 HAVING COUNT(*) FILTER (WHERE r.user_id = $2) = 0
             ) not_reported JOIN image_detail USING (image_id)
+            WHERE currently_visible AND food_id = $1
+            ORDER BY rank DESC
             ",
             meal_id,
             client_id
@@ -207,7 +209,7 @@ impl RequestDataAccess for PersistentRequestData {
         .into_iter()
         .map(|r| {
             Ok(Image {
-                id: null_error!(r.image_id),
+                id: r.image_id,
                 url: null_error!(r.url),
                 rank: null_error!(r.rank),
                 image_hoster_id: null_error!(r.hoster_id),
@@ -372,7 +374,7 @@ mod tests {
             "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
         ];
         let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
-        let date = Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap();
+        let date = Local::now().date_naive();
         let mut meals = Vec::new();
         for meal_id_str in meal_id_strs {
             let meal_id = Uuid::parse_str(meal_id_str).unwrap();
@@ -398,7 +400,7 @@ mod tests {
             .get_meal(
                 meal_id,
                 line_id,
-                Date::parse_from_str("2023-07-30", "%Y-%m-%d").unwrap()
+                Date::default()
             )
             .await
             .unwrap()
@@ -412,7 +414,7 @@ mod tests {
         let meals = request
             .get_meals(
                 Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(),
-                Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap(),
+                Local::now().date_naive(),
             )
             .await
             .unwrap();
@@ -424,7 +426,7 @@ mod tests {
     #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_get_sides(pool: PgPool) {
         let request = PersistentRequestData { pool };
-        let date = Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap();
+        let date = Local::now().date_naive();
         let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
 
         let sides = request.get_sides(line_id, date).await.unwrap();
@@ -434,7 +436,7 @@ mod tests {
             request
                 .get_sides(
                     line_id,
-                    Date::parse_from_str("2023-07-30", "%Y-%m-%d").unwrap()
+                    Date::default()
                 )
                 .await
                 .unwrap(),
@@ -472,11 +474,11 @@ mod tests {
             id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
             image_hoster_id: "test".to_string(),
             url: "www.test.com".to_string(),
-            rank: 0.0,
+            rank: 0.5,
             downvotes: 0,
             upvotes: 0,
             approved: false,
-            upload_date: Date::parse_from_str("2023-07-26", "%Y-%m-%d").unwrap(),
+            upload_date: Local::now().date_naive(),
             report_count: 0,
         };
         let image2 = Image {
@@ -620,13 +622,13 @@ mod tests {
                 price_guest: 460,
                 price_pupil: 355,
             },
-            last_served: Some(Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap()),
+            last_served: Some(Local::now().date_naive()),
             next_served: None,
             frequency: 1,
             new: true,
             rating_count: 0,
             average_rating: 2.5,
-            date: Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap(),
+            date: Local::now().date_naive(),
             line_id: Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(),
         };
         let meal2 = Meal {
