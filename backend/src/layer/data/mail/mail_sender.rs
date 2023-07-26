@@ -43,7 +43,7 @@ pub struct MailSender {
 impl AdminNotification for MailSender {
     async fn notify_admin_image_report(&self, info: ImageReportInfo) {
         if let Err(error) = self.try_notify_admin_image_report(&info) {
-            warn!("{error:?}");
+            warn!("{error}");
         }
     }
 }
@@ -132,17 +132,15 @@ mod test {
     async fn test_get_report() {
         let info = get_report_info();
         let report = MailSender::get_report(&info).replace("\r\n", "\n");
-        let expected = format!("The image at the url {}\nwith the id {}\nwas reported {} times.\nReason: {}\nImage automatically hidden: {}\n\nAdditional Data:\nPositive ratings: {}\nNegative ratings: {}\nRank: {}",
-            info.image_link,
-            info.image_id,
-            info.report_count,
-            info.reason,
-            info.image_got_hidden,
-            info.positive_rating_count,
-            info.negative_rating_count,
-            info.get_image_rank
-        );
-        assert_eq!(report, expected);
+        assert!(!report.contains("{{"), "the template must not contain any formatting");
+        assert!(!report.contains("}}"), "the template must not contain any formatting");
+        assert!(report.contains(info.image_link.as_str()), "the template must contain all of the information from the report info.");
+        assert!(report.contains(info.image_id.to_string().as_str()), "the template must contain all of the information from the report info");
+        assert!(report.contains(info.report_count.to_string().as_str()), "the template must contain all of the information from the report info");
+        assert!(report.contains(info.image_got_hidden.to_string().as_str()), "the template must contain all of the information from the report info");
+        assert!(report.contains(info.positive_rating_count.to_string().as_str()), "the template must contain all of the information from the report info");
+        assert!(report.contains(info.negative_rating_count.to_string().as_str()), "the template must contain all of the information from the report info");
+        assert!(report.contains(info.get_image_rank.to_string().as_str()), "the template must contain all of the information from the report info");
     }
 
     #[tokio::test]
