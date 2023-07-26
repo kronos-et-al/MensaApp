@@ -17,7 +17,7 @@ abstract class IPreferenceAccess with ChangeNotifier {
 
   /// The saved ColorScheme is returned.
   /// @return The saved ColorScheme.
-  Future<MensaColorScheme> getColorScheme();
+  MensaColorScheme getColorScheme();
 
   /// The committed ColorScheme is set.
   /// @param scheme The new ColorScheme.
