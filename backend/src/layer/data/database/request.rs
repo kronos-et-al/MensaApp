@@ -283,6 +283,8 @@ mod tests {
     use futures::future;
     use sqlx::PgPool;
 
+    const WRONG_UUID: Uuid = Uuid::from_u128(7u128);
+
     #[sqlx::test(fixtures("canteen"))]
     async fn test_get_canteen(pool: PgPool) {
         let request = PersistentRequestData { pool };
@@ -307,11 +309,7 @@ mod tests {
         assert_eq!(canteens[0].name, "my favorite canteen"); //TODO: Canteen order
         assert_eq!(canteens[1].name, "second canteen");
         assert_eq!(canteens[2].name, "bad canteen");
-        assert!(request
-            .get_canteen(Uuid::from_u128(7u128))
-            .await
-            .unwrap()
-            .is_none());
+        assert!(request.get_canteen(WRONG_UUID).await.unwrap().is_none());
     }
 
     #[sqlx::test(fixtures("canteen"))]
@@ -337,11 +335,7 @@ mod tests {
         assert_eq!(lines[0].name, "line 1");
         assert_eq!(lines[1].name, "line 2");
         assert_eq!(lines[2].name, "special line");
-        assert!(request
-            .get_line(Uuid::from_u128(7u128))
-            .await
-            .unwrap()
-            .is_none());
+        assert!(request.get_line(WRONG_UUID).await.unwrap().is_none());
     }
 
     #[sqlx::test(fixtures("canteen", "line"))]
@@ -389,12 +383,12 @@ mod tests {
 
         let meal_id: uuid::Uuid = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         assert!(request
-            .get_meal(Uuid::from_u128(7u128), line_id, date)
+            .get_meal(WRONG_UUID, line_id, date)
             .await
             .unwrap()
             .is_none());
         assert!(request
-            .get_meal(meal_id, Uuid::from_u128(7u128), date)
+            .get_meal(meal_id, WRONG_UUID, date)
             .await
             .unwrap()
             .is_none());
@@ -433,13 +427,7 @@ mod tests {
 
         let sides = request.get_sides(line_id, date).await.unwrap();
         assert_eq!(sides, provide_dummy_sides());
-        assert_eq!(
-            request
-                .get_sides(Uuid::from_u128(7u128), date)
-                .await
-                .unwrap(),
-            vec![]
-        );
+        assert_eq!(request.get_sides(WRONG_UUID, date).await.unwrap(), vec![]);
         assert_eq!(
             request
                 .get_sides(
@@ -466,7 +454,7 @@ mod tests {
 
         assert_eq!(
             request
-                .get_visible_images(Uuid::from_u128(7u128), Some(client_id))
+                .get_visible_images(WRONG_UUID, Some(client_id))
                 .await
                 .unwrap(),
             vec![]
@@ -497,6 +485,20 @@ mod tests {
             ..image1
         };
         vec![image1, image2]
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image", "rating"))]
+    async fn test_get_personal_rating(pool: PgPool) {
+        let request = PersistentRequestData { pool };
+        let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
+        let client_id = Uuid::parse_str("c51d2d81-3547-4f07-af58-ed613c6ece67").unwrap();
+
+        let personal_rating = request.get_personal_rating(meal_id, client_id).await.unwrap();
+        assert_eq!(personal_rating, Some(5));
+        let personal_rating = request.get_personal_rating(WRONG_UUID, client_id).await.unwrap();
+        assert_eq!(personal_rating, None);
+        let personal_rating = request.get_personal_rating(meal_id, WRONG_UUID).await.unwrap();
+        assert_eq!(personal_rating, None);
     }
 
     #[sqlx::test(fixtures("meal", "additive"))]
