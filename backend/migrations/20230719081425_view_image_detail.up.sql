@@ -21,7 +21,7 @@ RETURNS NULL ON NULL INPUT;
 CREATE VIEW image_detail AS ( 
     SELECT image.*, COALESCE(upvotes::integer, 0) as upvotes, COALESCE(downvotes::integer, 0) as downvotes,
     COALESCE(report_count::integer, 0) as report_count,
-    image_rank(link_date, upvotes, downvotes, report_count, approved) as rank
+    image_rank(link_date, COALESCE(upvotes, 0), COALESCE(downvotes, 0), COALESCE(report_count, 0), approved) as rank
     FROM (
         -- image
         SELECT * FROM image

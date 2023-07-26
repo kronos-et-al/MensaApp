@@ -192,12 +192,14 @@ impl RequestDataAccess for PersistentRequestData {
             SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
                 approved, report_count, link_date 
             FROM (
+                --- not reported by user
                 SELECT image_id 
-                FROM image JOIN image_report r USING (image_id)
-                WHERE currently_visible AND food_id = $1
+                FROM image LEFT JOIN image_report r USING (image_id)
                 GROUP BY image_id
                 HAVING COUNT(*) FILTER (WHERE r.user_id = $2) = 0
             ) not_reported JOIN image_detail USING (image_id)
+            WHERE currently_visible AND food_id = $1
+            ORDER BY rank DESC
             ",
             meal_id,
             client_id
@@ -207,7 +209,7 @@ impl RequestDataAccess for PersistentRequestData {
         .into_iter()
         .map(|r| {
             Ok(Image {
-                id: null_error!(r.image_id),
+                id: r.image_id,
                 url: null_error!(r.url),
                 rank: null_error!(r.rank),
                 image_hoster_id: null_error!(r.hoster_id),
