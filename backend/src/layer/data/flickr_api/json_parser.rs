@@ -60,9 +60,9 @@ impl JsonParser {
             .license_history
             .iter()
             .max_by_key(|l| l.date_change)
-            .map(|entry| entry.new_license.clone())
-            .unwrap_or_default();
-        VALID_LICENSES.contains(&&*license)
+            .map(|entry| &entry.new_license);
+
+        license.is_some_and(|l| VALID_LICENSES.contains(&l.as_str()))
     }
 
     /// Obtains and determines an error by its error code and message provided by the [`JsonRootError`] struct.
