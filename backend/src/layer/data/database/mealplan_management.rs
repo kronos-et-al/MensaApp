@@ -350,6 +350,7 @@ impl PersistentMealplanManagementData {
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
+    #![allow(clippy::cast_sign_loss)]
 
     use super::*;
     use crate::util::Allergen::{Ei, Se, So, We, ML};
