@@ -3,24 +3,27 @@ use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess}
 use crate::util::{Date, Uuid};
 use std::collections::HashMap;
 use std::slice::Iter;
+use lazy_static::lazy_static;
 use tracing::warn;
 
-const CANTEEN_POSITIONS: HashMap<&str, u32> = HashMap::from([
-    ("Mensa am Adenauerring", 10),
-    ("chicco di caffè Karlsruhe", 20),
-    ("Cafeteria Engesserstraẞe", 30),
-    ("Chicco di Caffè", 40),
-    ("Menseria  Schloss Gottesaue", 50),
-    ("Mensa Moltke", 60),
-    ("Cafébar Moltke", 70),
-    ("Menseria  Schloss Gottesaue", 80),
-    ("Menseria Moltkestraẞe 30", 90),
-    ("Menseria Erzbergerstraẞe", 100),
-    ("Mensa Tiefenbronnerstraẞe", 110),
-    ("Cafeteria Tiefenbronner Straẞe", 120),
-    ("chicco di caffè Pforzheim", 130),
-    ("Menseria Holzgartenstraẞe", 140),
-]);
+lazy_static! {
+    static ref CANTEEN_POSITIONS: HashMap<&'static str, u32> = HashMap::from([
+        ("Mensa am Adenauerring", 10),
+        ("chicco di caffè Karlsruhe", 20),
+        ("Cafeteria Engesserstraẞe", 30),
+        ("Chicco di Caffè", 40),
+        ("Menseria  Schloss Gottesaue", 50),
+        ("Mensa Moltke", 60),
+        ("Cafébar Moltke", 70),
+        ("Menseria  Schloss Gottesaue", 80),
+        ("Menseria Moltkestraẞe 30", 90),
+        ("Menseria Erzbergerstraẞe", 100),
+        ("Mensa Tiefenbronnerstraẞe", 110),
+        ("Cafeteria Tiefenbronner Straẞe", 120),
+        ("chicco di caffè Pforzheim", 130),
+        ("Menseria Holzgartenstraẞe", 140),
+    ]);
+}
 
 const DEFAULT_POSITION: u32 = 1000_u32;
 
@@ -67,11 +70,11 @@ where
             }
         };
         self.db.dissolve_relations(db_canteen, date).await?;
-        let mut position: isize = 0;
+        let mut position: u32 = 0;
         for line in canteen.lines {
             position = position + 1;
             let name = &line.name.clone();
-            if (self.resolve_line(date, line, u32::from(position)).await).is_err() {
+            if (self.resolve_line(date, line, position).await).is_err() {
                 warn!("Skip line '{}' as it could not be resolved", name);
             }
         }
@@ -97,7 +100,7 @@ where
 
     fn get_position(canteen_name: &String) -> u32 {
         CANTEEN_POSITIONS
-            .get(canteen_name)
+            .get(&*canteen_name.clone())
             .unwrap_or(&DEFAULT_POSITION)
             .clone()
     }
