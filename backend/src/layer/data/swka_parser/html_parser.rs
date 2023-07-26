@@ -154,7 +154,7 @@ impl HTMLParser {
     ///
     /// ```
     /// use crate::mensa_app_backend::layer::data::swka_parser::html_parser::HTMLParser;
-    /// let canteen_data = HTMLParser::new().transform(include_str!("./test_data/test_normal.html")).unwrap();
+    /// let canteen_data = HTMLParser::new().transform(include_str!("./test_data/test_normal.html"), 42_u32).unwrap();
     /// ```
     ///
     /// # Errors
@@ -162,11 +162,11 @@ impl HTMLParser {
     /// Will return a [`ParseError`], when either one of the following cases occurs (in order of appearance):
     ///     1. If there is no node in the document, that has a class called [`ROOT_NODE_CLASS_SELECTOR`]. This indicates that a wrong html file was passed.
     ///     2. If the number of dates does not match the number of days for which data exists. This case is more for completeness and should never occur
-    pub fn transform(&self, html: &str) -> Result<Vec<(Date, ParseCanteen)>, ParseError> {
+    pub fn transform(&self, html: &str, position: u32) -> Result<Vec<(Date, ParseCanteen)>, ParseError> {
         let document = Html::parse_document(html);
         let root_node = Self::get_root_node(&document)?;
         let dates = Self::get_dates(&root_node).unwrap_or_default();
-        let canteen_for_all_days = Self::get_canteen_for_all_days(&root_node);
+        let canteen_for_all_days = Self::get_canteen_for_all_days(&root_node, position);
         if dates.len() != canteen_for_all_days.len() {
             return Err(ParseError::InvalidHtmlDocument(String::from(
                 "provided non equal amount of dates for canteens",
@@ -208,10 +208,10 @@ impl HTMLParser {
         date_super_node.select(&DATE_NODE_CLASS_SELECTOR).collect()
     }
 
-    fn get_canteen_for_all_days(root_node: &ElementRef) -> Vec<ParseCanteen> {
+    fn get_canteen_for_all_days(root_node: &ElementRef, position: u32) -> Vec<ParseCanteen> {
         Self::get_day_nodes(root_node)
             .into_iter()
-            .filter_map(|day_node| Self::get_canteen_for_single_day(root_node, &day_node))
+            .filter_map(|day_node| Self::get_canteen_for_single_day(root_node, &day_node, position))
             .collect()
     }
 
@@ -222,10 +222,12 @@ impl HTMLParser {
     fn get_canteen_for_single_day(
         root_node: &ElementRef,
         day_node: &ElementRef,
+        position: u32
     ) -> Option<ParseCanteen> {
         Some(ParseCanteen {
             name: Self::get_canteen_name(root_node)?,
             lines: Self::get_lines(day_node),
+            pos: position
         })
     }
 
@@ -237,7 +239,8 @@ impl HTMLParser {
     fn get_lines(day_node: &ElementRef) -> Vec<ParseLine> {
         Self::get_line_nodes(day_node)
             .into_iter()
-            .filter_map(|line_node| Self::get_line(&line_node))
+            .enumerate()
+            .filter_map(|(pos, line_node)| Self::get_line(&line_node, pos))
             .collect()
     }
 
@@ -245,10 +248,11 @@ impl HTMLParser {
         day_node.select(&LINE_NODE_CLASS_SELECTOR).collect()
     }
 
-    fn get_line(line_node: &ElementRef) -> Option<ParseLine> {
+    fn get_line(line_node: &ElementRef, pos: usize) -> Option<ParseLine> {
         Some(ParseLine {
             name: Self::get_line_name(line_node)?,
             dishes: Self::get_dishes(line_node),
+            pos: u32::try_from(pos).expect("u32 could not be casted from usize")
         })
     }
 
@@ -433,13 +437,13 @@ mod tests {
     async fn test_invalid() {
         let path = "src/layer/data/swka_parser/test_data/test_invalid.html";
         let file_contents = read_from_file(path).unwrap();
-        let canteen_data = HTMLParser::new().transform(&file_contents);
+        let canteen_data = HTMLParser::new().transform(&file_contents, 42_u32);
         assert!(canteen_data.is_err());
     }
 
     fn test_html(path: &str) {
         let file_contents = read_from_file(path).unwrap();
-        let canteen_data = HTMLParser::new().transform(&file_contents).unwrap();
+        let canteen_data = HTMLParser::new().transform(&file_contents, 42_u32).unwrap();
 
         //write_output_to_file(path, &canteen_data);
         let expected = read_from_file(&path.replace(".html", ".txt"))
