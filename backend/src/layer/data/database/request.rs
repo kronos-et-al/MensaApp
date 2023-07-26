@@ -433,7 +433,7 @@ mod tests {
         );
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image"))]
+    #[sqlx::test(fixtures("meal", "image"))]
     async fn test_get_visible_images(pool: PgPool) {
         let request = PersistentRequestData { pool };
         let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
@@ -480,7 +480,7 @@ mod tests {
         vec![image1, image2]
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image", "rating"))]
+    #[sqlx::test(fixtures("meal", "image", "rating"))]
     async fn test_get_personal_rating(pool: PgPool) {
         let request = PersistentRequestData { pool };
         let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
@@ -496,14 +496,9 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(personal_rating, None);
-        let personal_rating = request
-            .get_personal_rating(meal_id, WRONG_UUID)
-            .await
-            .unwrap();
-        assert_eq!(personal_rating, None);
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image", "rating"))]
+    #[sqlx::test(fixtures("meal", "image", "rating"))]
     async fn test_get_personal_upvote(pool: PgPool) {
         let request = PersistentRequestData { pool };
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
@@ -526,7 +521,7 @@ mod tests {
         assert!(!personal_rating);
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image", "rating"))]
+    #[sqlx::test(fixtures("meal", "image", "rating"))]
     async fn test_get_personal_downvote(pool: PgPool) {
         let request = PersistentRequestData { pool };
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();

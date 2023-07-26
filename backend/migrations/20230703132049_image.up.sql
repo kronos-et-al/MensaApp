@@ -2,7 +2,7 @@
 
 CREATE TABLE image (
   image_id uuid DEFAULT gen_random_uuid()  PRIMARY KEY,
-  user_id uuid NOT NULL REFERENCES users(user_id),
+  user_id uuid NOT NULL,
   food_id uuid NOT NULL REFERENCES meal(food_id),
   id text NOT NULL,
   url text NOT NULL,

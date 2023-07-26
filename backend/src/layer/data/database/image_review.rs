@@ -145,7 +145,7 @@ mod test {
     use chrono::Local;
     use sqlx::PgPool;
 
-    #[sqlx::test(fixtures("meal", "user", "image_review_data", "canteen", "line", "food_plan"))]
+    #[sqlx::test(fixtures("meal", "image_review_data", "canteen", "line", "food_plan"))]
     async fn test_get_n_images_by_rank_date(pool: PgPool) {
         let review = PersistentImageReviewData { pool };
         let n = 4;
@@ -210,7 +210,7 @@ mod test {
         vec![image1, image2, image3, image4]
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image_review_data", "canteen", "line", "food_plan"))]
+    #[sqlx::test(fixtures("meal", "image_review_data", "canteen", "line", "food_plan"))]
     async fn test_get_n_images_next_week_by_rank_not_checked_last_week(pool: PgPool) {
         let review = PersistentImageReviewData { pool };
         let n = 4;
@@ -239,7 +239,7 @@ mod test {
             .is_empty());
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image_review_data", "canteen", "line", "food_plan"))]
+    #[sqlx::test(fixtures("meal", "image_review_data", "canteen", "line", "food_plan"))]
     async fn test_get_n_images_by_last_checked_not_checked_last_week(pool: PgPool) {
         let review = PersistentImageReviewData { pool };
         let n = 4;
@@ -267,7 +267,7 @@ mod test {
             .is_empty());
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image_review_data"))]
+    #[sqlx::test(fixtures("meal", "image_review_data"))]
     async fn test_delete_image(pool: PgPool) {
         let review = PersistentImageReviewData { pool: pool.clone() };
         let id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
@@ -288,7 +288,7 @@ mod test {
             .is_some()
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image_review_data"))]
+    #[sqlx::test(fixtures("meal", "image_review_data"))]
     async fn test_mark_as_checked(pool: PgPool) {
         let review = PersistentImageReviewData { pool: pool.clone() };
         let id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
