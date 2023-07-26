@@ -70,8 +70,6 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
       return "snackbar.reportImageError";
     }
 
-    // todo wie wird es nicht mehr angezeigt
-
     notifyListeners();
     return "snackbar.reportImageSuccess";
   }
