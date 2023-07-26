@@ -87,17 +87,17 @@ impl RequestDataAccess for PersistentRequestData {
                 name: null_error!(m.name),
                 meal_type: null_error!(m.meal_type),
                 price: Price {
-                    price_student: m.price_student as u32,
-                    price_employee: m.price_employee as u32,
-                    price_guest: m.price_guest as u32,
-                    price_pupil: m.price_pupil as u32
+                    price_student: u32::try_from(m.price_student)?,
+                    price_employee: u32::try_from(m.price_employee)?,
+                    price_guest: u32::try_from(m.price_guest)?,
+                    price_pupil: u32::try_from(m.price_pupil)?
                 },
-                frequency: null_error!(m.frequency) as u32,
+                frequency: u32::try_from(null_error!(m.frequency))?,
                 new: null_error!(m.new),
                 last_served: m.last_served,
                 next_served: m.next_served,
                 average_rating: null_error!(m.average_rating),
-                rating_count: null_error!(m.rating_count) as u32,
+                rating_count: u32::try_from(null_error!(m.rating_count))?,
             })
         }).transpose()
     }
@@ -133,24 +133,24 @@ impl RequestDataAccess for PersistentRequestData {
                 name: null_error!(m.name),
                 meal_type: null_error!(m.meal_type),
                 price: Price {
-                    price_student: m.price_student as u32,
-                    price_employee: m.price_employee as u32,
-                    price_guest: m.price_guest as u32,
-                    price_pupil: m.price_pupil as u32
+                    price_student: u32::try_from(m.price_student)?,
+                    price_employee: u32::try_from(m.price_employee)?,
+                    price_guest: u32::try_from(m.price_guest)?,
+                    price_pupil: u32::try_from(m.price_pupil)?
                 },
-                frequency: null_error!(m.frequency) as u32,
+                frequency: u32::try_from(null_error!(m.frequency))?,
                 new: null_error!(m.new),
                 last_served: m.last_served,
                 next_served: m.next_served,
                 average_rating: null_error!(m.average_rating),
-                rating_count: null_error!(m.rating_count) as u32,
+                rating_count: u32::try_from(null_error!(m.rating_count))?,
             })
         })
         .collect::<Result<Vec<_>>>().map(Some)
     }
 
     async fn get_sides(&self, line_id: Uuid, date: Date) -> Result<Vec<Side>> {
-        let vec = sqlx::query!(
+        sqlx::query!(
             r#"
             SELECT food_id, name, food_type as "meal_type: MealType", 
             price_student, price_employee, price_guest, price_pupil
@@ -164,21 +164,19 @@ impl RequestDataAccess for PersistentRequestData {
         .await?
         .into_iter()
         .map(|side| {
-            Side {
+            Ok(Side {
                 id: side.food_id,
                 meal_type: side.meal_type,
                 name: side.name,
                 price: Price {
-                    price_student: side.price_student as u32,
-                    price_employee: side.price_employee as u32,
-                    price_guest: side.price_guest as u32,
-                    price_pupil: side.price_pupil as u32,
-                }, // todo remove silent error, find better solution; maybe even panic as this should never occur and this we should notice?
-            }
+                    price_student: u32::try_from(side.price_student)?,
+                    price_employee: u32::try_from(side.price_employee)?,
+                    price_guest: u32::try_from(side.price_guest)?,
+                    price_pupil: u32::try_from(side.price_pupil)?,
+                },
+            })
         })
-        .collect();
-
-        Ok(vec)
+        .collect::<Result<Vec<_>>>()
     }
 
     async fn get_visible_images(
@@ -210,10 +208,10 @@ impl RequestDataAccess for PersistentRequestData {
                 url: null_error!(r.url),
                 rank: null_error!(r.rank),
                 image_hoster_id: null_error!(r.hoster_id),
-                downvotes: null_error!(r.downvotes) as u32,
-                upvotes: null_error!(r.upvotes) as u32,
+                downvotes: u32::try_from(null_error!(r.downvotes))?,
+                upvotes: u32::try_from(null_error!(r.upvotes))?,
                 approved: null_error!(r.approved),
-                report_count: null_error!(r.report_count) as _,
+                report_count: u32::try_from(null_error!(r.report_count))?,
                 upload_date: null_error!(r.link_date),
             })
         })
@@ -228,8 +226,8 @@ impl RequestDataAccess for PersistentRequestData {
         )
         .fetch_optional(&self.pool)
         .await?;
-        let res = res.map(|i| i as u32);
-        Ok(res)
+
+        res.map(u32::try_from).transpose().map_err(Into::into)
     }
 
     async fn get_personal_upvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool> {
@@ -488,7 +486,10 @@ mod tests {
             "0a850476-eda4-4fd8-9f93-579eb85b8c25",
             "1b5633c2-05c5-4444-90e5-2e475bae6463",
         ];
-        let food_ids: Vec<Uuid> = food_ids.into_iter().filter_map(|id| Uuid::parse_str(id).ok()).collect();
+        let food_ids: Vec<Uuid> = food_ids
+            .into_iter()
+            .filter_map(|id| Uuid::parse_str(id).ok())
+            .collect();
         assert_eq!(food_ids.len(), 5);
         let mut allergens = Vec::new();
         for food_id in food_ids {

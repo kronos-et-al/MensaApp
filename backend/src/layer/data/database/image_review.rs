@@ -33,11 +33,11 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
                 id: null_error!(r.image_id),
                 url: null_error!(r.url),
                 image_hoster_id: null_error!(r.hoster_id),
-                downvotes: null_error!(r.downvotes) as _,
-                upvotes: null_error!(r.upvotes) as _,
+                downvotes: u32::try_from(null_error!(r.downvotes))?,
+                upvotes: u32::try_from(null_error!(r.upvotes))?,
                 rank: null_error!(r.rank),
                 approved: null_error!(r.approved),
-                report_count: null_error!(r.report_count) as _,
+                report_count: u32::try_from(null_error!(r.report_count))?,
                 upload_date: null_error!(r.link_date),
             })
         })
@@ -68,11 +68,11 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
                 id: null_error!(r.image_id),
                 url: null_error!(r.url),
                 image_hoster_id: null_error!(r.hoster_id),
-                downvotes: null_error!(r.downvotes) as _,
-                upvotes: null_error!(r.upvotes) as _,
+                downvotes: u32::try_from(null_error!(r.downvotes))?,
+                upvotes: u32::try_from(null_error!(r.upvotes))?,
                 rank: null_error!(r.rank),
                 approved: null_error!(r.approved),
-                report_count: null_error!(r.report_count) as _,
+                report_count: u32::try_from(null_error!(r.report_count))?,
                 upload_date: null_error!(r.link_date),
             })
         })
@@ -102,11 +102,11 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
                 id: null_error!(r.image_id),
                 url: null_error!(r.url),
                 image_hoster_id: null_error!(r.hoster_id),
-                downvotes: null_error!(r.downvotes) as _,
-                upvotes: null_error!(r.upvotes) as _,
+                downvotes: u32::try_from(null_error!(r.downvotes))?,
+                upvotes: u32::try_from(null_error!(r.upvotes))?,
                 rank: null_error!(r.rank),
                 approved: null_error!(r.approved),
-                report_count: null_error!(r.report_count) as _,
+                report_count: u32::try_from(null_error!(r.report_count))?,
                 upload_date: null_error!(r.link_date),
             })
         })

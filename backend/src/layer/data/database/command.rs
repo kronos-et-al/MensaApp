@@ -4,7 +4,7 @@ use sqlx::{Pool, Postgres};
 use crate::{
     interface::persistent_data::{
         model::{ApiKey, Image},
-        CommandDataAccess, DataError, Result,
+        CommandDataAccess, Result,
     },
     util::{ReportReason, Uuid}, null_error,
 };
@@ -33,10 +33,10 @@ impl CommandDataAccess for PersistentCommandData {
                 approved: null_error!(record.approved),
                 url: null_error!(record.url),
                 rank: null_error!(record.rank),
-                report_count: null_error!(record.report_count) as u32,
+                report_count: u32::try_from(null_error!(record.report_count))?,
                 upload_date: null_error!(record.upload_date),
-                downvotes: null_error!(record.downvotes) as u32,
-                upvotes: null_error!(record.upvotes) as u32,
+                downvotes: u32::try_from(null_error!(record.downvotes))?,
+                upvotes: u32::try_from(null_error!(record.upvotes))?,
                 id: null_error!(record.image_id),
                 image_hoster_id: null_error!(record.image_hoster_id),
         })
@@ -137,7 +137,7 @@ impl CommandDataAccess for PersistentCommandData {
             "INSERT INTO meal_rating (user_id, food_id, rating) VALUES ($1, $2, $3::smallint)",
             user_id,
             meal_id,
-            i16::try_from(rating).map_err(|e| DataError::TypeConversionError(e))?
+            i16::try_from(rating)?
         )
         .execute(&self.pool)
         .await?;
