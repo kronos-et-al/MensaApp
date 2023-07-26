@@ -297,4 +297,18 @@ mod test {
         assert!(450.0 < average);
         assert!(460.0 > average);
     }
+
+    #[test]
+    fn test_valid_position() {
+        let expected = 10_u32;
+        let name = "Mensa am Adenauerring";
+        assert_eq!(expected, RelationResolver::<MealplanManagementDatabaseMock>::get_position(name));
+    }
+
+    #[test]
+    fn test_invalid_position() {
+        let expected = 1000_u32;
+        let name = "invalid";
+        assert_eq!(expected, RelationResolver::<MealplanManagementDatabaseMock>::get_position(name));
+    }
 }
