@@ -105,14 +105,26 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     ) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
             // the `<@` operator checks whether each element in the left array is also present in the right
-            "SELECT food_id 
-            FROM food JOIN food_additive USING (food_id) 
-                JOIN food_allergen USING (food_id)
-            WHERE food_id NOT IN (SELECT food_id FROM meal) AND similarity(name, $1) >= $4
-            GROUP BY food_id
-            HAVING array_agg(allergen) <@ $2::Allergen[] AND array_agg(allergen) @> $2::Allergen[]
-                AND array_agg(additive) <@ $3::Additive[] AND array_agg(additive) @> $3::Additive[]
-            ORDER BY similarity(name, $1) DESC",
+            "
+            SELECT food_id 
+            FROM food
+            WHERE similarity(name, $1) >= $4 AND food_id NOT IN (SELECT food_id FROM meal)
+            AND food_id IN (
+                SELECT food_id 
+                FROM food_allergen FULL JOIN food USING (food_id)
+                GROUP BY food_id 
+				HAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $2::allergen[] 
+				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $2::allergen[]
+            )
+            AND food_id IN (
+                SELECT food_id
+				FROM food_additive FULL JOIN food USING (food_id)
+				GROUP BY food_id 
+				HAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $3::additive[] 
+				AND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $3::additive[]
+            )
+            ORDER BY similarity(name, $1) DESC
+            ",
             similar_name,
             allergens
                 .iter()
