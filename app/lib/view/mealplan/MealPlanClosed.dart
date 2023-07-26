@@ -11,6 +11,7 @@ class MealPlanClosed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
       const CanteenClosedExceptionIcon(size: 48),
       Text(FlutterI18n.translate(

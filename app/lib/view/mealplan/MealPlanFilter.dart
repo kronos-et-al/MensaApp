@@ -15,7 +15,8 @@ class MealPlanFilter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<IMealAccess>(
         builder: (context, mealAccess, child) => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const ErrorExceptionIcon(size: 48),
               Text(FlutterI18n.translate(
