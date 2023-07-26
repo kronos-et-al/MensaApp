@@ -11,6 +11,8 @@ pub struct PersistentMealplanManagementData {
     pub(super) pool: Pool<Postgres>,
 }
 
+const THRESHOLD: f32 = 0.8;
+
 #[async_trait]
 #[allow(clippy::missing_panics_doc)] // necessary because sqlx macro sometimes create unreachable panics?
 impl MealplanManagementDataAccess for PersistentMealplanManagementData {
@@ -31,8 +33,8 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
 
     async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
-            "SELECT canteen_id FROM canteen WHERE name % $1 ORDER BY similarity(name, $1) DESC",
-            similar_name
+            "SELECT canteen_id FROM canteen WHERE name % $1 AND similarity(name, $1) >= $2 ORDER BY similarity(name, $1) DESC",
+            similar_name, THRESHOLD
         )
         .fetch_optional(&self.pool)
         .await
@@ -41,8 +43,8 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
 
     async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
-            "SELECT line_id FROM line WHERE name % $1 ORDER BY similarity(name, $1) DESC",
-            similar_name
+            "SELECT line_id FROM line WHERE name % $1 AND similarity(name, $1) >= $2 ORDER BY similarity(name, $1) DESC",
+            similar_name, THRESHOLD
         )
         .fetch_optional(&self.pool)
         .await
@@ -60,10 +62,10 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
             "SELECT food_id 
             FROM food JOIN meal USING (food_id) JOIN food_additive USING (food_id) 
                 JOIN food_allergen USING (food_id)
-            WHERE name % $1
+            WHERE name % $1 AND similarity(name, $1) >= $4
             GROUP BY food_id
-            HAVING array_agg(allergen) <@ $2 AND array_agg(allergen) @> $2
-                AND array_agg(additive) <@ $3 AND array_agg(additive) @> $3
+            HAVING array_agg(allergen) <@ $2::Allergen[] AND array_agg(allergen) @> $2::Allergen[]
+                AND array_agg(additive) <@ $3::Additive[] AND array_agg(additive) @> $3::Additive[]
             ORDER BY similarity(name, $1) DESC",
             similar_name,
             allergens
@@ -75,7 +77,8 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
                 .iter()
                 .copied()
                 .map(Additive::to_db_string)
-                .collect::<Vec<_>>() as _
+                .collect::<Vec<_>>() as _,
+            THRESHOLD
         )
         .fetch_optional(&self.pool)
         .await
@@ -93,10 +96,10 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
             "SELECT food_id 
             FROM food JOIN food_additive USING (food_id) 
                 JOIN food_allergen USING (food_id)
-            WHERE food_id NOT IN (SELECT food_id FROM meal) AND name % $1
+            WHERE food_id NOT IN (SELECT food_id FROM meal) AND name % $1 AND similarity(name, $1) >= $4
             GROUP BY food_id
-            HAVING array_agg(allergen) <@ $2 AND array_agg(allergen) @> $2
-                AND array_agg(additive) <@ $3 AND array_agg(additive) @> $3
+            HAVING array_agg(allergen) <@ $2::Allergen[] AND array_agg(allergen) @> $2::Allergen[]
+                AND array_agg(additive) <@ $3::Additive[] AND array_agg(additive) @> $3::Additive[]
             ORDER BY similarity(name, $1) DESC",
             similar_name,
             allergens
@@ -108,7 +111,8 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
                 .iter()
                 .copied()
                 .map(Additive::to_db_string)
-                .collect::<Vec<_>>() as _
+                .collect::<Vec<_>>() as _,
+            THRESHOLD
         )
         .fetch_optional(&self.pool)
         .await
@@ -275,7 +279,7 @@ impl PersistentMealplanManagementData {
         additives: &[Additive],
     ) -> Result<Uuid> {
         let food_id = sqlx::query_scalar!(
-            "INSERT INTO food(name, food_type) VALUES ($1, $2) RETURNING food_id",
+            r#"INSERT INTO food(name, food_type) VALUES ($1, $2) RETURNING food_id"#,
             name,
             meal_type as _
         )
@@ -333,9 +337,6 @@ mod test {
     async fn test_get_similar_canteen(pool: PgPool) {
         let req = PersistentMealplanManagementData { pool: pool.clone() };
 
-        // TODO force threshold (remove) ... doesnt work either
-        assert!(sqlx::query!("SET pg_trgm.similarity_threshold = 0.8").fetch_all(&pool).await.is_ok());
-
         let tests = [
             // Identical
             (Uuid::parse_str("8f10c56d-da9b-4f62-b4c1-16feb0f98c67").unwrap(), "second canteen", true),
@@ -348,7 +349,6 @@ mod test {
             (Uuid::parse_str("f2885f67-fc95-4205-bc7d-b2fb78cee0a8").unwrap(), "  bad  canteen ", true),
 
             // No longer 'similar'
-            // TODO threshold wont work
             (Uuid::default(), "second", false),
             (Uuid::default(), "canteen", false),
             (Uuid::default(), "", false),
@@ -377,12 +377,11 @@ mod test {
             (Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(), "special line", true),
 
             // 'Similar'
-            (Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap(), "line2", true),
-            (Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap(), "sing. line", true),
-            (Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(), "spec. line", true),
+            //(Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap(), "line2", true), isn't similar
+            (Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap(), " single   line ", true),
+            //(Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(), "specia line", true), isn't similar
 
             // No longer 'similar'
-            // TODO threshold wont work: All results under the threshold should be ignored.
             (Uuid::default(), "line", false),
             (Uuid::default(), "sing.", false),
             (Uuid::default(), "", false),
@@ -460,7 +459,7 @@ mod test {
             r#"SELECT * FROM food_plan WHERE line_id = $1 AND food_id = $2 AND serve_date = $3"#,
             line_id, food_id, date
         ).fetch_all(&pool).await.unwrap();
-        let selection = selections.first().unwrap(); // TODO selections is empty
+        let selection = selections.first().unwrap();
 
         assert_eq!(selection.line_id, line_id);
         assert_eq!(selection.food_id, food_id);
@@ -469,5 +468,42 @@ mod test {
         assert_eq!(selection.price_employee as u32, price.price_employee);
         assert_eq!(selection.price_guest as u32, price.price_guest);
         assert_eq!(selection.price_pupil as u32, price.price_pupil);
+    }
+
+    #[sqlx::test(fixtures("meal", "allergen", "additive"))]
+    async fn test_insert_food(pool: PgPool) {
+        let req = PersistentMealplanManagementData { pool: pool.clone() };
+
+        let meal_type = MealType::Vegan;
+        let name = "TEST_FOOD";
+        let additives = vec![
+            Additive::Alcohol
+        ];
+        let allergens = vec![
+            Allergen::Ca, Allergen::Pa
+        ];
+
+        let res = req.insert_food(name, meal_type, &allergens, &additives).await;
+        //assert!(res.is_ok());
+        let food_id = res.unwrap();
+
+        let db_additives = sqlx::query_scalar!(
+            r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1"#,
+            food_id
+        ).fetch_all(&pool).await.unwrap();
+        assert_eq!(db_additives, additives);
+
+        let db_allergens = sqlx::query_scalar!(
+            r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1"#,
+            food_id
+        ).fetch_all(&pool).await.unwrap();
+        assert_eq!(db_allergens, allergens);
+
+
+        let selections = sqlx::query!(r#"SELECT name, food_type as "meal_type: MealType" FROM food WHERE food_id = $1"#, food_id).fetch_all(&pool).await.unwrap();
+        let selection = selections.first().unwrap();
+
+        assert_eq!(selection.name, name);
+        assert_eq!(selection.meal_type, meal_type);
     }
 }
