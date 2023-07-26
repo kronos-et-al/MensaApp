@@ -13,16 +13,11 @@ import 'package:provider/provider.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
-class Settings extends StatefulWidget {
+class Settings extends StatelessWidget {
   Settings({super.key}) {
     WidgetsFlutterBinding.ensureInitialized();
   }
 
-  @override
-  State<StatefulWidget> createState() => _SettingsState();
-}
-
-class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     return Consumer<IPreferenceAccess>(
@@ -146,3 +141,4 @@ class _SettingsState extends State<Settings> {
     return entries;
   }
 }
+
