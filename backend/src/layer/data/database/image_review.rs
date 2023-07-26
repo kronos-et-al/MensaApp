@@ -137,3 +137,129 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod test {
+    #![allow(clippy::unwrap_used)]
+    use super::*;
+    use sqlx::PgPool;
+
+    const WRONG_UUID: Uuid = Uuid::from_u128(7u128);
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_get_n_images_by_rank_date(pool: PgPool) {
+        let review = PersistentImageReviewData { pool };
+        let n = 4;
+        let date = Date::parse_from_str("2023-07-26", "%Y-%m-%d").unwrap();
+
+        let n_images_by_rank_date = review.get_n_images_by_rank_date(n, date).await.unwrap();
+        assert!(n_images_by_rank_date.len() <= n.try_into().unwrap());
+        assert_eq!(n_images_by_rank_date, provide_dummy_images());
+        assert!(review
+            .get_n_images_by_rank_date(u32::MAX, date)
+            .await
+            .is_err());
+        assert!(review
+            .get_n_images_by_rank_date(0, date)
+            .await
+            .unwrap()
+            .is_empty());
+        assert!(review
+            .get_n_images_by_rank_date(n, Date::parse_from_str("2023-07-01", "%Y-%m-%d").unwrap())
+            .await
+            .unwrap()
+            .is_empty());       //TODO: EMPTY VEC OR ERR ON NO DATA?
+    }
+
+    fn provide_dummy_images() -> Vec<Image> {
+        let image1 = Image {
+            id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
+            image_hoster_id: "test".to_string(),
+            url: "www.test.com".to_string(),
+            rank: 0.0,
+            downvotes: 0,
+            upvotes: 0,
+            approved: false,
+            upload_date: Date::parse_from_str("2023-07-26", "%Y-%m-%d").unwrap(),
+            report_count: 0,
+        };
+        let image2 = Image {
+            id: Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap(),
+            image_hoster_id: "test2".to_string(),
+            url: "www.test2.com".to_string(),
+            approved: true,
+            ..image1
+        };
+        let image3 = Image {
+            id: Uuid::parse_str("ea8cce48-a3c7-4f8e-a222-5f3891c13804").unwrap(),
+            image_hoster_id: "test2".to_string(),
+            url: "www.test2.com".to_string(),
+            approved: false,
+            ..image2
+        };
+        let image4 = Image {
+            id: Uuid::parse_str("68153ab6-ebbf-48f4-b8dd-a9b2a19a5221").unwrap(),
+            image_hoster_id: "test2".to_string(),
+            url: "www.test2.com".to_string(),
+            approved: false,
+            ..image2
+        };
+        vec![image1, image2, image3, image4]
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_get_n_images_next_week_by_rank_not_checked_last_week(pool: PgPool) {
+        let review = PersistentImageReviewData { pool };
+        let n = 4;
+
+        let n_images_by_rank_date = review.get_n_images_next_week_by_rank_not_checked_last_week(n).await.unwrap();
+        assert!(n_images_by_rank_date.len() <= n.try_into().unwrap());
+        //TODO add positive test
+        assert!(review
+            .get_n_images_next_week_by_rank_not_checked_last_week(u32::MAX)
+            .await
+            .is_err());
+        assert!(review
+            .get_n_images_next_week_by_rank_not_checked_last_week(0)
+            .await
+            .unwrap()
+            .is_empty());
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_get_n_images_by_last_checked_not_checked_last_week(pool: PgPool) {
+        let review = PersistentImageReviewData { pool };
+        let n = 4;
+
+        let n_images_by_rank_date = review.get_n_images_by_last_checked_not_checked_last_week(n).await.unwrap();
+        assert!(n_images_by_rank_date.len() <= n.try_into().unwrap());
+        //TODO add positive test
+        assert!(review
+            .get_n_images_by_last_checked_not_checked_last_week(u32::MAX)
+            .await
+            .is_err());
+        assert!(review
+            .get_n_images_by_last_checked_not_checked_last_week(0)
+            .await
+            .unwrap()
+            .is_empty());
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_delete_image(pool: PgPool) {
+        let review = PersistentImageReviewData { pool };
+        let id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+
+        assert!(review.delete_image(id).await.is_ok());
+        assert!(review.delete_image(WRONG_UUID).await.is_err());
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_mark_as_checked(pool: PgPool) {
+        let review = PersistentImageReviewData { pool };
+        let id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+
+        assert!(review.mark_as_checked(id).await.is_ok());
+        assert!(review.mark_as_checked(WRONG_UUID).await.is_err());
+    }
+}

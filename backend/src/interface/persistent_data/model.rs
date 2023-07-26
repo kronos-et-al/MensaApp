@@ -5,7 +5,7 @@ use crate::util::{self, Date};
 use util::{MealType, Uuid};
 
 /// Struct to storage related data. Contains all api-key related information.
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct ApiKey {
     /// The api-key
     pub key: String,
