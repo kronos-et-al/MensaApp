@@ -167,7 +167,7 @@ void main() {
 
   setUp(() {
     when(() => localStorage.getFilterPreferences())
-        .thenAnswer((_) async => null);
+        .thenAnswer((_) => null);
     when(() => localStorage.getCanteen()).thenAnswer((_) => canteenID);
     when(() => localStorage.getPriceCategory())
         .thenAnswer((_) => PriceCategory.student);

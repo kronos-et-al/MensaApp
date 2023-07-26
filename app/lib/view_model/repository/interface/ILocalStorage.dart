@@ -17,7 +17,7 @@ abstract class ILocalStorage {
 
   /// The saved FilterPreferences is returned.
   /// @return The saved FilterPreferences.
-  Future<FilterPreferences?> getFilterPreferences();
+  FilterPreferences? getFilterPreferences();
 
   /// The committed FilterPreferences is set.
   /// @param filter The new FilterPreferences.

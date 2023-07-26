@@ -5,8 +5,6 @@ import 'package:app/view/core/icons/navigation/NavigationGridOutlinedIcon.dart';
 import 'package:app/view/core/icons/navigation/NavigationListOutlinedIcon.dart';
 import 'package:app/view/core/meal_view_format/MealGrid.dart';
 import 'package:app/view/core/meal_view_format/MealList.dart';
-import 'package:app/view/core/selection_components/MensaDropdown.dart';
-import 'package:app/view/core/selection_components/MensaDropdownEntry.dart';
 import 'package:app/view/mealplan/MealPlanClosed.dart';
 import 'package:app/view/mealplan/MealPlanDateSelect.dart';
 import 'package:app/view/mealplan/MealPlanError.dart';
@@ -33,7 +31,6 @@ class MealPlanView extends StatelessWidget {
             Consumer<IMealAccess>(builder: (context, mealAccess, child) {
               return FutureBuilder(
                   future: Future.wait([
-                    preferenceAccess.getMealPlanFormat(),
                     mealAccess.getCanteen(),
                     mealAccess.getAvailableCanteens(),
                     mealAccess.getDate(),
@@ -47,15 +44,14 @@ class MealPlanView extends StatelessWidget {
                       );
                     }
                     if (snapshot.hasError) return const MealPlanError();
-                    MealPlanFormat mealPlanFormat =
-                        snapshot.requireData[0] as MealPlanFormat;
+                    MealPlanFormat mealPlanFormat = preferenceAccess.getMealPlanFormat();
                     Canteen selectedCanteen =
-                        snapshot.requireData[1] as Canteen;
+                        snapshot.requireData[0] as Canteen;
                     List<Canteen> availableCanteens =
-                        snapshot.requireData[2] as List<Canteen>;
-                    DateTime date = snapshot.requireData[3] as DateTime;
+                        snapshot.requireData[1] as List<Canteen>;
+                    DateTime date = snapshot.requireData[2] as DateTime;
                     Result<List<MealPlan>, MealPlanException> mealPlans =
-                        snapshot.requireData[4]
+                        snapshot.requireData[3]
                             as Result<List<MealPlan>, MealPlanException>;
                     return Scaffold(
                         appBar: MensaAppBar(

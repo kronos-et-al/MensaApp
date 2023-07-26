@@ -8,7 +8,7 @@ import '../../repository/data_classes/settings/PriceCategory.dart';
 abstract class IPreferenceAccess with ChangeNotifier {
   /// The client identifier is returned.
   /// @return The client identifier.
-  Future<String> getClientIdentifier();
+  String getClientIdentifier();
 
   /// The client identifier is set.
   /// @param identifier The new client identifier.
@@ -26,7 +26,7 @@ abstract class IPreferenceAccess with ChangeNotifier {
 
   /// The saved PriceCategory is returned.
   /// @return The saved PriceCategory.
-  Future<PriceCategory> getPriceCategory();
+  PriceCategory getPriceCategory();
 
   /// The committed PriceCategory is set.
   /// @param category The new PriceCategory.
@@ -35,7 +35,7 @@ abstract class IPreferenceAccess with ChangeNotifier {
 
   /// The saved MealPlanFormat is returned.
   /// @return The saved MealPlanFormat.
-  Future<MealPlanFormat> getMealPlanFormat();
+  MealPlanFormat getMealPlanFormat();
 
   /// The committed MealPlanFormat is set.
   /// @param format The new MealPlanFormat.

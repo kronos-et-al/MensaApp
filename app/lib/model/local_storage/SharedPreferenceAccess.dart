@@ -34,7 +34,7 @@ class SharedPreferenceAccess implements ILocalStorage {
   }
 
   @override
-  Future<FilterPreferences?> getFilterPreferences() async {
+  FilterPreferences? getFilterPreferences() {
     // get data from shared preferences
     final categories = _pref.getStringList('filterCategories');
     final allergens = _pref.getStringList('filterAllergens');
@@ -67,7 +67,7 @@ class SharedPreferenceAccess implements ILocalStorage {
     }
 
     // return filter preferences
-    return Future<FilterPreferences>.value(FilterPreferences(
+    return FilterPreferences(
       categories: foodTypeEnum,
       allergens: allergensEnum,
       price: price,
@@ -76,7 +76,7 @@ class SharedPreferenceAccess implements ILocalStorage {
       onlyFavorite: onlyFavorites,
       sortedBy: sortedByEnum,
       ascending: ascending
-    ));
+    );
   }
 
   @override

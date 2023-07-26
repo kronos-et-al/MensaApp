@@ -21,14 +21,10 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
 
   void _init() {
     _clientIdentifier = _access.getClientIdentifier() ?? "";
-    print("cidd: $_clientIdentifier");
     _colorScheme = _access.getColorScheme() ?? MensaColorScheme.system;
-    print("cs: $_colorScheme");
     _mealPlanFormat = _access.getMealPlanFormat() ?? MealPlanFormat.grid;
-    print("mpf: $_mealPlanFormat");
 
     PriceCategory? category = _access.getPriceCategory();
-    print("pc: $category");
     if (category == null) {
       category = PriceCategory.student;
       _access.setPriceCategory(category);
@@ -38,8 +34,8 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
   }
 
   @override
-  Future<String> getClientIdentifier() async {
-    return Future.value(_clientIdentifier);
+  String getClientIdentifier() {
+    return _clientIdentifier;
   }
 
   @override
@@ -48,13 +44,13 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
   }
 
   @override
-  Future<MealPlanFormat> getMealPlanFormat() async {
-    return Future.value(_mealPlanFormat);
+  MealPlanFormat getMealPlanFormat() {
+    return _mealPlanFormat;
   }
 
   @override
-  Future<PriceCategory> getPriceCategory() async {
-    return Future.value(_priceCategory);
+  PriceCategory getPriceCategory() {
+    return _priceCategory;
   }
 
   @override
