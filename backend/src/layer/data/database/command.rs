@@ -25,6 +25,7 @@ impl CommandDataAccess for PersistentCommandData {
             upvotes, downvotes, id as image_hoster_id, image_id, rank
             FROM image_detail
             WHERE image_id = $1
+            ORDER BY image_id
             "#,
             image_id
         )
@@ -147,7 +148,7 @@ impl CommandDataAccess for PersistentCommandData {
     }
 
     async fn get_api_keys(&self) -> Result<Vec<ApiKey>> {
-        let keys = sqlx::query_as!(ApiKey, "SELECT api_key as key, description FROM api_key")
+        let keys = sqlx::query_as!(ApiKey, "SELECT api_key as key, description FROM api_key ORDER BY api_key")
             .fetch_all(&self.pool)
             .await?;
 
@@ -166,7 +167,7 @@ mod test {
 
     const WRONG_UUID: Uuid = Uuid::from_u128(7u128);
 
-    #[sqlx::test(fixtures("meal", "user", "image"))]
+    #[sqlx::test(fixtures("meal", "image"))]
     async fn test_get_image_info(pool: PgPool) {
         let command = PersistentCommandData { pool };
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
@@ -190,7 +191,7 @@ mod test {
         }
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image"))]
+    #[sqlx::test(fixtures("meal", "image"))]
     async fn test_hide_image(pool: PgPool) {
         let command = PersistentCommandData { pool: pool.clone() };
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
@@ -210,7 +211,7 @@ mod test {
             .len()
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image"))]
+    #[sqlx::test(fixtures("meal", "image"))]
     async fn test_add_report(pool: PgPool) {
         let command = PersistentCommandData { pool: pool.clone() };
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
@@ -231,10 +232,6 @@ mod test {
             .add_report(WRONG_UUID, client_id, reason)
             .await
             .is_err());
-        assert!(command
-            .add_report(image_id, WRONG_UUID, reason)
-            .await
-            .is_err());
         assert_eq!(number_of_reports(&pool).await, reports + 1);
     }
 
@@ -246,7 +243,7 @@ mod test {
             .len()
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image"))]
+    #[sqlx::test(fixtures("meal", "image"))]
     async fn test_add_upvote(pool: PgPool) {
         let command = PersistentCommandData { pool: pool.clone() };
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
@@ -257,11 +254,10 @@ mod test {
         assert_eq!(number_of_votes(&pool, 1).await, upvotes + 1);
         assert!(command.add_upvote(image_id, user_id).await.is_err());
         assert!(command.add_upvote(WRONG_UUID, user_id).await.is_err());
-        assert!(command.add_upvote(image_id, WRONG_UUID).await.is_err());
         assert_eq!(number_of_votes(&pool, 1).await, upvotes + 1);
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image"))]
+    #[sqlx::test(fixtures("meal", "image"))]
     async fn test_add_downvote(pool: PgPool) {
         let command = PersistentCommandData { pool: pool.clone() };
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
@@ -272,11 +268,10 @@ mod test {
         assert_eq!(number_of_votes(&pool, -1).await, downvotes + 1);
         assert!(command.add_downvote(image_id, user_id).await.is_err());
         assert!(command.add_downvote(WRONG_UUID, user_id).await.is_err());
-        assert!(command.add_downvote(image_id, WRONG_UUID).await.is_err());
         assert_eq!(number_of_votes(&pool, -1).await, downvotes + 1);
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image"))]
+    #[sqlx::test(fixtures("meal", "image"))]
     async fn test_remove_upvote(pool: PgPool) {
         let command = PersistentCommandData { pool: pool.clone() };
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
@@ -288,11 +283,10 @@ mod test {
         assert_eq!(number_of_votes(&pool, 1).await, upvotes);
         assert!(command.remove_upvote(image_id, user_id).await.is_ok());
         assert!(command.remove_upvote(WRONG_UUID, user_id).await.is_ok());
-        assert!(command.remove_upvote(image_id, WRONG_UUID).await.is_ok());
         assert_eq!(number_of_votes(&pool, 1).await, upvotes);
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image"))]
+    #[sqlx::test(fixtures("meal", "image"))]
     async fn test_remove_downvote(pool: PgPool) {
         let command = PersistentCommandData { pool: pool.clone() };
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
@@ -304,7 +298,6 @@ mod test {
         assert_eq!(number_of_votes(&pool, -1).await, downvotes);
         assert!(command.remove_downvote(image_id, user_id).await.is_ok());
         assert!(command.remove_downvote(WRONG_UUID, user_id).await.is_ok());
-        assert!(command.remove_downvote(image_id, WRONG_UUID).await.is_ok());
         assert_eq!(number_of_votes(&pool, -1).await, downvotes);
     }
 
@@ -319,7 +312,7 @@ mod test {
         .len()
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image"))]
+    #[sqlx::test(fixtures("meal", "image"))]
     async fn test_link_image(pool: PgPool) {
         let command = PersistentCommandData { pool: pool.clone() };
         let user_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
@@ -350,15 +343,6 @@ mod test {
         //     .is_ok());
         assert!(command
             .link_image(
-                meal_id,
-                WRONG_UUID,
-                image_hoster_id.to_string(),
-                url.to_string()
-            )
-            .await
-            .is_err());
-        assert!(command
-            .link_image(
                 WRONG_UUID,
                 user_id,
                 image_hoster_id.to_string(),
@@ -377,7 +361,7 @@ mod test {
             .len()
     }
 
-    #[sqlx::test(fixtures("meal", "user"))]
+    #[sqlx::test(fixtures("meal"))]
     async fn test_add_rating(pool: PgPool) {
         let command = PersistentCommandData { pool: pool.clone() };
         let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
@@ -390,10 +374,6 @@ mod test {
         assert!(command.add_rating(meal_id, user_id, rating).await.is_err());
         assert!(command
             .add_rating(WRONG_UUID, user_id, rating)
-            .await
-            .is_err());
-        assert!(command
-            .add_rating(meal_id, WRONG_UUID, rating)
             .await
             .is_err());
         assert!(command

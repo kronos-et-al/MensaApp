@@ -11,6 +11,7 @@ pub trait AdminNotification: Sync + Send {
     async fn notify_admin_image_report(&self, info: ImageReportInfo);
 }
 
+#[derive(Debug)]
 /// Structure containing all information about the reporting of an image.
 pub struct ImageReportInfo {
     /// Reason for the report.

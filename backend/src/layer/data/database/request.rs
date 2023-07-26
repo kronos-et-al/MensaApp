@@ -70,8 +70,7 @@ impl RequestDataAccess for PersistentRequestData {
             r#"
             SELECT food_id, name, food_type as "meal_type: MealType",
                 price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,
-                average_rating, rating_count,
-                (get_statistic(food_id, serve_date)).*
+                new, frequency, last_served, next_served, average_rating, rating_count
             FROM meal_detail JOIN food_plan USING (food_id)
             WHERE food_id = $1 AND line_id = $2 AND serve_date = $3
             "#,
@@ -117,10 +116,10 @@ impl RequestDataAccess for PersistentRequestData {
             r#"
             SELECT food_id, name, food_type as "meal_type: MealType",
                 price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,
-                average_rating, rating_count,
-                (get_statistic(food_id, serve_date)).*
+                new, frequency, last_served, next_served, average_rating, rating_count
             FROM meal_detail JOIN food_plan USING (food_id)
             WHERE line_id = $1 AND serve_date = $2
+            ORDER BY food_id
             "#,
             line_id,
             date
@@ -159,6 +158,7 @@ impl RequestDataAccess for PersistentRequestData {
             price_student, price_employee, price_guest, price_pupil
             FROM food JOIN food_plan USING (food_id)
             WHERE line_id = $1 AND serve_date = $2 AND food_id NOT IN (SELECT food_id FROM meal)
+            ORDER BY food_id
             "#,
             line_id,
             date
@@ -199,7 +199,7 @@ impl RequestDataAccess for PersistentRequestData {
                 HAVING COUNT(*) FILTER (WHERE r.user_id = $2) = 0
             ) not_reported JOIN image_detail USING (image_id)
             WHERE currently_visible AND food_id = $1
-            ORDER BY rank DESC
+            ORDER BY rank DESC, image_id
             ",
             meal_id,
             client_id
@@ -261,7 +261,7 @@ impl RequestDataAccess for PersistentRequestData {
 
     async fn get_additives(&self, food_id: Uuid) -> Result<Vec<Additive>> {
         let res = sqlx::query_scalar!(
-            r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1"#,
+            r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1 ORDER BY additive"#,
             food_id
         )
         .fetch_all(&self.pool)
@@ -271,7 +271,7 @@ impl RequestDataAccess for PersistentRequestData {
 
     async fn get_allergens(&self, food_id: Uuid) -> Result<Vec<Allergen>> {
         let res = sqlx::query_scalar!(
-            r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1"#,
+            r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1 ORDER BY allergen"#,
             food_id
         )
         .fetch_all(&self.pool)
@@ -382,7 +382,6 @@ mod tests {
                 meals.push(meal);
             }
         }
-        dbg!(&meals);
         assert_eq!(meals, provide_dummy_meals());
 
         let meal_id: uuid::Uuid = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
@@ -397,11 +396,7 @@ mod tests {
             .unwrap()
             .is_none());
         assert!(request
-            .get_meal(
-                meal_id,
-                line_id,
-                Date::default()
-            )
+            .get_meal(meal_id, line_id, Date::default())
             .await
             .unwrap()
             .is_none());
@@ -433,18 +428,12 @@ mod tests {
         assert_eq!(sides, provide_dummy_sides());
         assert_eq!(request.get_sides(WRONG_UUID, date).await.unwrap(), vec![]);
         assert_eq!(
-            request
-                .get_sides(
-                    line_id,
-                    Date::default()
-                )
-                .await
-                .unwrap(),
+            request.get_sides(line_id, Date::default()).await.unwrap(),
             vec![]
         );
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image"))]
+    #[sqlx::test(fixtures("meal", "image"))]
     async fn test_get_visible_images(pool: PgPool) {
         let request = PersistentRequestData { pool };
         let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
@@ -491,45 +480,67 @@ mod tests {
         vec![image1, image2]
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image", "rating"))]
+    #[sqlx::test(fixtures("meal", "image", "rating"))]
     async fn test_get_personal_rating(pool: PgPool) {
         let request = PersistentRequestData { pool };
         let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         let client_id = Uuid::parse_str("c51d2d81-3547-4f07-af58-ed613c6ece67").unwrap();
 
-        let personal_rating = request.get_personal_rating(meal_id, client_id).await.unwrap();
+        let personal_rating = request
+            .get_personal_rating(meal_id, client_id)
+            .await
+            .unwrap();
         assert_eq!(personal_rating, Some(5));
-        let personal_rating = request.get_personal_rating(WRONG_UUID, client_id).await.unwrap();
-        assert_eq!(personal_rating, None);
-        let personal_rating = request.get_personal_rating(meal_id, WRONG_UUID).await.unwrap();
+        let personal_rating = request
+            .get_personal_rating(WRONG_UUID, client_id)
+            .await
+            .unwrap();
         assert_eq!(personal_rating, None);
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image", "rating"))]
+    #[sqlx::test(fixtures("meal", "image", "rating"))]
     async fn test_get_personal_upvote(pool: PgPool) {
         let request = PersistentRequestData { pool };
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
         let client_id = Uuid::parse_str("c51d2d81-3547-4f07-af58-ed613c6ece67").unwrap();
 
-        let personal_rating = request.get_personal_upvote(image_id, client_id).await.unwrap();
+        let personal_rating = request
+            .get_personal_upvote(image_id, client_id)
+            .await
+            .unwrap();
         assert!(personal_rating);
-        let personal_rating = request.get_personal_upvote(WRONG_UUID, client_id).await.unwrap();
+        let personal_rating = request
+            .get_personal_upvote(WRONG_UUID, client_id)
+            .await
+            .unwrap();
         assert!(!personal_rating);
-        let personal_rating = request.get_personal_upvote(image_id, WRONG_UUID).await.unwrap();
+        let personal_rating = request
+            .get_personal_upvote(image_id, WRONG_UUID)
+            .await
+            .unwrap();
         assert!(!personal_rating);
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image", "rating"))]
+    #[sqlx::test(fixtures("meal", "image", "rating"))]
     async fn test_get_personal_downvote(pool: PgPool) {
         let request = PersistentRequestData { pool };
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
         let client_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
 
-        let personal_rating = request.get_personal_downvote(image_id, client_id).await.unwrap();
+        let personal_rating = request
+            .get_personal_downvote(image_id, client_id)
+            .await
+            .unwrap();
         assert!(personal_rating);
-        let personal_rating = request.get_personal_downvote(WRONG_UUID, client_id).await.unwrap();
+        let personal_rating = request
+            .get_personal_downvote(WRONG_UUID, client_id)
+            .await
+            .unwrap();
         assert!(!personal_rating);
-        let personal_rating = request.get_personal_downvote(image_id, WRONG_UUID).await.unwrap();
+        let personal_rating = request
+            .get_personal_downvote(image_id, WRONG_UUID)
+            .await
+            .unwrap();
         assert!(!personal_rating);
     }
 
@@ -622,9 +633,9 @@ mod tests {
                 price_guest: 460,
                 price_pupil: 355,
             },
-            last_served: Some(Local::now().date_naive()),
+            last_served: None,
             next_served: None,
-            frequency: 1,
+            frequency: 0,
             new: true,
             rating_count: 0,
             average_rating: 2.5,

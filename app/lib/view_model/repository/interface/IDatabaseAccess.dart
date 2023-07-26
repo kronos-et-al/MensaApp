@@ -1,6 +1,6 @@
 import '../data_classes/meal/Meal.dart';
 import '../data_classes/mealplan/Canteen.dart';
-import '../data_classes/mealplan/Mealplan.dart';
+import '../data_classes/mealplan/MealPlan.dart';
 import '../error_handling/Result.dart';
 
 /// This is an interface to the database of the client.
@@ -8,13 +8,13 @@ abstract class IDatabaseAccess {
   /// This method updates all mealplans with the committed mealplans.
   /// @param mealplans The mealplans that should be updated
   /// @return The result of the update
-  Future<void> updateAll(List<Mealplan> mealplans);
+  Future<void> updateAll(List<MealPlan> mealplans);
 
   /// This method returns the mealplan of the committed date of the committed canteen.
   /// @param date The date of the mealplan
   /// @param canteen The canteen of the mealplan
   /// @return The mealplan of the committed date of the committed canteen or an error
-  Future<Result<List<Mealplan>>> getMealPlan(DateTime date, Canteen canteen);
+  Future<Result<List<MealPlan>>> getMealPlan(DateTime date, Canteen canteen);
 
   /// This method returns a favorite meal.
   /// @param id The id of the meal
