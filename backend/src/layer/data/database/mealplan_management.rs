@@ -359,7 +359,7 @@ mod test {
     use std::collections::HashMap;
     use std::str::FromStr;
 
-    #[sqlx::test(fixtures("canteen", "line", "food_plan", "meal"))]
+    #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_dissolve_relations(pool: PgPool) {
         let req = PersistentMealplanManagementData { pool: pool.clone() };
 
