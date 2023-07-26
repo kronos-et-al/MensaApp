@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT allergen as \"allergen: Allergen\" FROM food_allergen WHERE food_id = $1",
+  "query": "SELECT allergen as \"allergen: Allergen\" FROM food_allergen WHERE food_id = $1 ORDER BY allergen",
   "describe": {
     "columns": [
       {
@@ -54,5 +54,5 @@
       false
     ]
   },
-  "hash": "625e48c29861f5d29aa0aa2e60fd6a7db252776dfd1b7e4c5bd825938932a9e4"
+  "hash": "e389f033438b384fafce3fd5e6bdc67324c20ff43060700180922b9136078ea4"
 }

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT food_id, name, food_type as \"meal_type: MealType\", \n            price_student, price_employee, price_guest, price_pupil\n            FROM food JOIN food_plan USING (food_id)\n            WHERE line_id = $1 AND serve_date = $2 AND food_id NOT IN (SELECT food_id FROM meal)\n            ",
+  "query": "\n            SELECT food_id, name, food_type as \"meal_type: MealType\", \n            price_student, price_employee, price_guest, price_pupil\n            FROM food JOIN food_plan USING (food_id)\n            WHERE line_id = $1 AND serve_date = $2 AND food_id NOT IN (SELECT food_id FROM meal)\n            ORDER BY food_id\n            ",
   "describe": {
     "columns": [
       {
@@ -71,5 +71,5 @@
       false
     ]
   },
-  "hash": "c3657a511fc924b00c4da86459097c603a6468c958add07953f9a72ed3a6ffa9"
+  "hash": "dcddf449ce9974fad1dd71995a700471e023e717eae09330f1a661660e128689"
 }

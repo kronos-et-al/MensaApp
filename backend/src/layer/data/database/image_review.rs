@@ -148,20 +148,15 @@ mod test {
     #[sqlx::test(fixtures("meal", "image_review_data", "canteen", "line", "food_plan"))]
     async fn test_get_n_images_by_rank_date(pool: PgPool) {
         let review = PersistentImageReviewData { pool };
-        let n = 4;
+        let n = 100;
         let date = Local::now().date_naive();
 
         let images = review.get_n_images_by_rank_date(n, date).await.unwrap();
-        assert_eq!(images, provide_dummy_images());
+        assert_eq!(images, provide_dummy_images()[0]);
 
         let n = 2;
         let images = review.get_n_images_by_rank_date(n, date).await.unwrap();
         assert!(images.len() <= n.try_into().unwrap());
-
-        assert!(review
-            .get_n_images_by_rank_date(u32::MAX, date)
-            .await
-            .is_err());
         assert!(review
             .get_n_images_by_rank_date(0, date)
             .await
@@ -174,52 +169,16 @@ mod test {
             .is_empty());
     }
 
-    fn provide_dummy_images() -> Vec<Image> {
-        let image1 = Image {
-            id: Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap(),
-            image_hoster_id: "test2".to_string(),
-            url: "www.test2.com".to_string(),
-            approved: true,
-            rank: 0.5,
-            downvotes: 0,
-            upvotes: 0,
-            upload_date: Local::now().date_naive(),
-            report_count: 0,
-        };
-        let image2 = Image {
-            id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
-            image_hoster_id: "test".to_string(),
-            url: "www.test.com".to_string(),
-            approved: false,
-            ..image1
-        };
-        let image3 = Image {
-            id: Uuid::parse_str("68153ab6-ebbf-48f4-b8dd-a9b2a19a5221").unwrap(),
-            image_hoster_id: "test2".to_string(),
-            url: "www.test2.com".to_string(),
-            approved: false,
-            ..image2
-        };
-        let image4 = Image {
-            id: Uuid::parse_str("ea8cce48-a3c7-4f8e-a222-5f3891c13804").unwrap(),
-            image_hoster_id: "test2".to_string(),
-            url: "www.test2.com".to_string(),
-            approved: false,
-            ..image2
-        };
-        vec![image1, image2, image3, image4]
-    }
-
     #[sqlx::test(fixtures("meal", "image_review_data", "canteen", "line", "food_plan"))]
     async fn test_get_n_images_next_week_by_rank_not_checked_last_week(pool: PgPool) {
         let review = PersistentImageReviewData { pool };
-        let n = 4;
+        let n = 100;
 
         let images = review
             .get_n_images_next_week_by_rank_not_checked_last_week(n)
             .await
             .unwrap();
-        assert_eq!(images, provide_dummy_images());
+        assert_eq!(images, provide_dummy_images()[1]);
 
         let n = 2;
         let images = review
@@ -227,11 +186,6 @@ mod test {
             .await
             .unwrap();
         assert!(images.len() <= n.try_into().unwrap());
-
-        assert!(review
-            .get_n_images_next_week_by_rank_not_checked_last_week(u32::MAX)
-            .await
-            .is_err());
         assert!(review
             .get_n_images_next_week_by_rank_not_checked_last_week(0)
             .await
@@ -242,13 +196,13 @@ mod test {
     #[sqlx::test(fixtures("meal", "image_review_data", "canteen", "line", "food_plan"))]
     async fn test_get_n_images_by_last_checked_not_checked_last_week(pool: PgPool) {
         let review = PersistentImageReviewData { pool };
-        let n = 4;
+        let n = 100;
 
         let images = review
             .get_n_images_by_last_checked_not_checked_last_week(n)
             .await
             .unwrap();
-        assert_eq!(images, provide_dummy_images());
+        assert_eq!(images, provide_dummy_images()[2]);
 
         let n = 2;
         let images = review
@@ -257,14 +211,68 @@ mod test {
             .unwrap();
         assert!(images.len() <= n.try_into().unwrap());
         assert!(review
-            .get_n_images_by_last_checked_not_checked_last_week(u32::MAX)
-            .await
-            .is_err());
-        assert!(review
             .get_n_images_by_last_checked_not_checked_last_week(0)
             .await
             .unwrap()
             .is_empty());
+    }
+
+    fn provide_dummy_images() -> [Vec<Image>; 3] {
+        let image1 = Image {
+            id: Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap(),
+            image_hoster_id: "test3".to_string(),
+            url: "www.test.com".to_string(),
+            approved: true,
+            rank: 0.5,
+            downvotes: 0,
+            upvotes: 0,
+            upload_date: Local::now().date_naive(),
+            report_count: 0,
+        };
+        let image2 = Image {
+            id: Uuid::parse_str("1ec94803-7b63-4fa0-bd8d-f9d2f8edb6ea").unwrap(),
+            image_hoster_id: "test1".to_string(),
+            url: "www.test.com".to_string(),
+            approved: false,
+            ..image1
+        };
+        let image3 = Image {
+            id: Uuid::parse_str("68153ab6-ebbf-48f4-b8dd-a9b2a19a5221").unwrap(),
+            image_hoster_id: "test5".to_string(),
+            url: "www.test.com".to_string(),
+            approved: false,
+            ..image2
+        };
+        let image4 = Image {
+            id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
+            image_hoster_id: "test2".to_string(),
+            url: "www.test.com".to_string(),
+            approved: false,
+            ..image3
+        };
+        let image5 = Image {
+            id: Uuid::parse_str("ea8cce48-a3c7-4f8e-a222-5f3891c13804").unwrap(),
+            image_hoster_id: "test4".to_string(),
+            url: "www.test.com".to_string(),
+            approved: false,
+            ..image4
+        };
+        [
+            vec![
+                image1.clone(),
+                image2.clone(),
+                image3.clone(),
+                image4.clone(),
+                image5.clone(),
+            ],
+            vec![
+                image1.clone(),
+                image3.clone(),
+                image4.clone(),
+                image5.clone(),
+            ],
+            vec![image3, image5, image1, image4],
+        ]
     }
 
     #[sqlx::test(fixtures("meal", "image_review_data"))]

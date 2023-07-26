@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT approved, link_date as upload_date, report_count, url,\n            upvotes, downvotes, id as image_hoster_id, image_id, rank\n            FROM image_detail\n            WHERE image_id = $1\n            ",
+  "query": "\n            SELECT approved, link_date as upload_date, report_count, url,\n            upvotes, downvotes, id as image_hoster_id, image_id, rank\n            FROM image_detail\n            WHERE image_id = $1\n            ORDER BY image_id\n            ",
   "describe": {
     "columns": [
       {
@@ -66,5 +66,5 @@
       true
     ]
   },
-  "hash": "8a343770be112facda04055d8143cb67e2d35f32a5e2ee1358867055d17b782a"
+  "hash": "79c15947c5c3d2c254336f120ca7467d43340ada4ced769ca769633e70bfdd49"
 }

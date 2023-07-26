@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT food_id, name, food_type as \"meal_type: MealType\",\n                price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,\n                average_rating, rating_count,\n                (get_statistic(food_id, serve_date)).*\n            FROM meal_detail JOIN food_plan USING (food_id)\n            WHERE line_id = $1 AND serve_date = $2\n            ",
+  "query": "\n            SELECT food_id, name, food_type as \"meal_type: MealType\",\n                price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,\n                new, frequency, last_served, next_served, average_rating, rating_count\n            FROM meal_detail JOIN food_plan USING (food_id)\n            WHERE food_id = $1 AND line_id = $2 AND serve_date = $3\n            ",
   "describe": {
     "columns": [
       {
@@ -66,37 +66,38 @@
       },
       {
         "ordinal": 9,
-        "name": "average_rating",
-        "type_info": "Float4"
-      },
-      {
-        "ordinal": 10,
-        "name": "rating_count",
-        "type_info": "Int8"
-      },
-      {
-        "ordinal": 11,
         "name": "new",
         "type_info": "Bool"
       },
       {
-        "ordinal": 12,
+        "ordinal": 10,
         "name": "frequency",
-        "type_info": "Int4"
+        "type_info": "Int8"
       },
       {
-        "ordinal": 13,
+        "ordinal": 11,
         "name": "last_served",
         "type_info": "Date"
       },
       {
-        "ordinal": 14,
+        "ordinal": 12,
         "name": "next_served",
         "type_info": "Date"
+      },
+      {
+        "ordinal": 13,
+        "name": "average_rating",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 14,
+        "name": "rating_count",
+        "type_info": "Int8"
       }
     ],
     "parameters": {
       "Left": [
+        "Uuid",
         "Uuid",
         "Date"
       ]
@@ -113,11 +114,11 @@
       false,
       true,
       true,
-      null,
-      null,
-      null,
-      null
+      true,
+      true,
+      true,
+      true
     ]
   },
-  "hash": "849d21e923f5aa64dbcd62bc08f0ad39807306c0d1420a835ba0e878ad4c54db"
+  "hash": "717d29b8cc04d245c6eef67d5bc51515be1558aa0bae22ab0a55dc06f4382a77"
 }

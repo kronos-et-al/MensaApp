@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT line_id FROM line WHERE name % $1 AND similarity(name, $1) >= $2 ORDER BY similarity(name, $1) DESC",
+  "query": "SELECT line_id FROM line WHERE similarity(name, $1) >= $2 ORDER BY similarity(name, $1) DESC",
   "describe": {
     "columns": [
       {
@@ -19,5 +19,5 @@
       false
     ]
   },
-  "hash": "986a82805be75208b25095a38e22164a9878b58b6020eedd9a84e6da4d475443"
+  "hash": "3da2eebb0c6ce127f6848e6c64409d21dce562cf3acf9ed85ca71041bb6a5308"
 }
