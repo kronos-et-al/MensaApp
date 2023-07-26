@@ -1,0 +1,3 @@
+INSERT INTO food_additive (food_id, additive)
+VALUES  ('1b5633c2-05c5-4444-90e5-2e475bae6463', 'PRESERVING_AGENTS'),
+        ('1b5633c2-05c5-4444-90e5-2e475bae6463', 'ANTIOXIDANT_AGENTS');

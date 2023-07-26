@@ -449,6 +449,35 @@ mod tests {
             .is_empty());
     }
 
+    #[sqlx::test(fixtures("meal", "additive"))]
+    async fn test_get_additives(pool: PgPool) {
+        let request = PersistentRequestData { pool };
+        let food_ids = [
+            "f7337122-b018-48ad-b420-6202dc3cb4ff",
+            "73cf367b-a536-4b49-ad0c-cb984caa9a08",
+            "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
+            "0a850476-eda4-4fd8-9f93-579eb85b8c25",
+            "1b5633c2-05c5-4444-90e5-2e475bae6463",
+        ];
+        let food_ids: Vec<Uuid> = food_ids.into_iter().filter_map(|id| Uuid::parse_str(id).ok()).collect();
+        assert_eq!(food_ids.len(), 5);
+        let mut additives = Vec::new();
+        for food_id in food_ids {
+            additives.push(request.get_additives(food_id).await.unwrap());
+        }
+        assert_eq!(additives, provide_dummy_additives());
+    }
+
+    fn provide_dummy_additives() -> Vec<Vec<Additive>> {
+        vec![
+            vec![],
+            vec![],
+            vec![],
+            vec![],
+            vec![Additive::PreservingAgents, Additive::AntioxidantAgents],
+        ]
+    }
+
     #[sqlx::test(fixtures("meal", "allergen"))]
     async fn test_get_allergens(pool: PgPool) {
         let request = PersistentRequestData { pool };
