@@ -80,23 +80,23 @@ impl RequestDataAccess for PersistentRequestData {
         .await?
         .map(|m| {
             Ok(Meal {
-                id: m.food_id.ok_or(null_error!())?,
+                id: null_error!(m.food_id),
                 line_id: m.line_id,
                 date: m.date,
-                name: m.name.ok_or(null_error!())?,
-                meal_type: m.meal_type.ok_or(null_error!())?,
+                name: null_error!(m.name),
+                meal_type: null_error!(m.meal_type),
                 price: Price {
                     price_student: m.price_student as u32,
                     price_employee: m.price_employee as u32,
                     price_guest: m.price_guest as u32,
                     price_pupil: m.price_pupil as u32
                 },
-                frequency: m.frequency.ok_or(null_error!())? as u32,
-                new: m.new.ok_or(null_error!())?,
+                frequency: null_error!(m.frequency) as u32,
+                new: null_error!(m.new),
                 last_served: m.last_served,
                 next_served: m.next_served,
-                average_rating: m.average_rating.ok_or(null_error!())?,
-                rating_count: m.rating_count.ok_or(null_error!())? as u32,
+                average_rating: null_error!(m.average_rating),
+                rating_count: null_error!(m.rating_count) as u32,
             })
         }).transpose()
     }

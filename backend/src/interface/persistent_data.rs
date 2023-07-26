@@ -26,10 +26,20 @@ pub enum DataError {
     UnexpectedNullError(String),
 }
 
+/// Extracts a value from an option by returning an [`DataError::UnexpectedNullError`] using [`std::ops::Try`] (`?`).
 #[macro_export]
 macro_rules! null_error {
-    () => {
-        DataError::UnexpectedNullError(format!("{}:{}:{}", file!(), line!(), column!()).to_string())
+    ($x:expr) => {
+        $x.ok_or(DataError::UnexpectedNullError(
+            format!(
+                "{} at {}:{}:{}",
+                stringify!($x),
+                file!(),
+                line!(),
+                column!()
+            )
+            .to_string(),
+        ))?
     };
 }
 
