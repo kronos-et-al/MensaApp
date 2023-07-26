@@ -19,13 +19,13 @@ class MealPlanFilter extends StatelessWidget {
             children: [
               const ErrorExceptionIcon(size: 48),
               Text(FlutterI18n.translate(
-                  context, "mealplanException.noConnectionException"),
+                  context, "mealplanException.filterException"),
                 style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1.5),
                 textAlign: TextAlign.center,
               ),
               MensaButton(
                   onPressed: () => mealAccess.deactivateFilter(),
-                  text: "mealplanException.noConnectionButton"),
+                  text: FlutterI18n.translate(context, "mealplanException.filterButton")),
             ]));
   }
   
