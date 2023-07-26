@@ -98,7 +98,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 
 #[async_trait]
 /// An interface for image related data. The ImageReview component uses this interface for database access.
-pub trait ImageReviewDataAccess {
+pub trait ImageReviewDataAccess: Send + Sync {
     /// Returns the first n images sorted by rank which are related to an meal served at the given day.
     async fn get_n_images_by_rank_date(&self, n: u32, date: Date) -> Result<Vec<Image>>;
     /// Returns the first n images sorted by rank which are related to an meal served in the next week or which were not validated last week.
@@ -112,9 +112,9 @@ pub trait ImageReviewDataAccess {
         n: u32,
     ) -> Result<Vec<Image>>;
     /// Removes an image with all relations from the database.
-    async fn delete_image(&self, id: Uuid) -> Result<bool>;
+    async fn delete_image(&self, id: Uuid) -> Result<()>;
     /// Marks all images identified by the given uuids as checked.
-    async fn mark_as_checked(&self, ids: Vec<Uuid>) -> Result<()>;
+    async fn mark_as_checked(&self, id: Uuid) -> Result<()>;
 }
 
 #[async_trait]
