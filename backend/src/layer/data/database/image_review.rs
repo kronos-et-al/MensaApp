@@ -260,7 +260,7 @@ mod test {
         [
             vec![
                 image1.clone(),
-                image2.clone(),
+                image2,
                 image3.clone(),
                 image4.clone(),
                 image5.clone(),
