@@ -55,14 +55,14 @@ jobs:
       run: |
         rustup component add rustfmt
         cargo fmt --check
-    - name: Check linter warnings
-      run: | 
-          rustup component add clippy
-          cargo clippy -- -D warnings
     - name: Setup database
       run: |
         cargo install sqlx-cli --no-default-features --features native-tls,postgres
         cargo sqlx database setup
+    - name: Check linter warnings
+      run: | 
+          rustup component add clippy
+          cargo clippy -- -D warnings
     - name: Check prepared sql query information
       run: cargo sqlx prepare --check
     - name: Build
