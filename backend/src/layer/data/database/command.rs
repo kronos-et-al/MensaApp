@@ -154,3 +154,183 @@ impl CommandDataAccess for PersistentCommandData {
         Ok(keys)
     }
 }
+
+#[cfg(test)]
+mod test {
+    #![allow(clippy::unwrap_used)]
+    use super::*;
+    use sqlx::PgPool;
+
+    use crate::util::{Date, Uuid};
+
+    const WRONG_UUID: Uuid = Uuid::from_u128(7u128);
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_get_image_info(pool: PgPool) {
+        let command = PersistentCommandData { pool };
+        let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+
+        let image_info = command.get_image_info(image_id).await.unwrap();
+        assert_eq!(image_info, provide_dummy_image());
+        assert!(command.get_image_info(WRONG_UUID).await.is_err());
+    }
+
+    fn provide_dummy_image() -> Image {
+        Image {
+            id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
+            image_hoster_id: "test".to_string(),
+            url: "www.test.com".to_string(),
+            rank: 0.0,
+            downvotes: 0,
+            upvotes: 0,
+            approved: false,
+            upload_date: Date::parse_from_str("2023-07-26", "%Y-%m-%d").unwrap(),
+            report_count: 0,
+        }
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_hide_image(pool: PgPool) {
+        let command = PersistentCommandData { pool };
+        let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+
+        assert!(command.hide_image(image_id).await.is_ok());
+        assert!(command.hide_image(WRONG_UUID).await.is_err());
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_add_report(pool: PgPool) {
+        let command = PersistentCommandData { pool };
+        let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+        let client_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
+        let reason = ReportReason::Advert;
+
+        assert!(command
+            .add_report(image_id, client_id, reason)
+            .await
+            .is_ok());
+        assert!(command
+            .add_report(WRONG_UUID, client_id, reason)
+            .await
+            .is_err());
+        assert!(command
+            .add_report(image_id, WRONG_UUID, reason)
+            .await
+            .is_err());
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_add_upvote(pool: PgPool) {
+        let command = PersistentCommandData { pool };
+        let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+        let user_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
+
+        assert!(command.add_upvote(image_id, user_id).await.is_ok());
+        assert!(command.add_upvote(WRONG_UUID, user_id).await.is_err());
+        assert!(command.add_upvote(image_id, WRONG_UUID).await.is_err());
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_add_downvote(pool: PgPool) {
+        let command = PersistentCommandData { pool };
+        let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+        let user_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
+
+        assert!(command.add_downvote(image_id, user_id).await.is_ok());
+        assert!(command.add_downvote(WRONG_UUID, user_id).await.is_err());
+        assert!(command.add_downvote(image_id, WRONG_UUID).await.is_err());
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_remove_upvote(pool: PgPool) {
+        let command = PersistentCommandData { pool };
+        let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+        let user_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
+
+        assert!(command.remove_upvote(image_id, user_id).await.is_ok());
+        assert!(command.remove_upvote(WRONG_UUID, user_id).await.is_err());
+        assert!(command.remove_upvote(image_id, WRONG_UUID).await.is_err());
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_remove_downvote(pool: PgPool) {
+        let command = PersistentCommandData { pool };
+        let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+        let user_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
+
+        assert!(command.remove_downvote(image_id, user_id).await.is_ok());
+        assert!(command.remove_downvote(WRONG_UUID, user_id).await.is_err());
+        assert!(command.remove_downvote(image_id, WRONG_UUID).await.is_err());
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_link_image(pool: PgPool) {
+        let command = PersistentCommandData { pool };
+        let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+        let user_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
+        let image_hoster_id = "Test";
+        let url = "www.test.com";
+
+        assert!(command
+            .link_image(
+                image_id,
+                user_id,
+                image_hoster_id.to_string(),
+                url.to_string()
+            )
+            .await
+            .is_ok());
+        assert!(command
+            .link_image(
+                WRONG_UUID,
+                user_id,
+                image_hoster_id.to_string(),
+                url.to_string()
+            )
+            .await
+            .is_err());
+        assert!(command
+            .link_image(
+                image_id,
+                WRONG_UUID,
+                image_hoster_id.to_string(),
+                url.to_string()
+            )
+            .await
+            .is_err());
+    }
+
+    #[sqlx::test(fixtures("meal", "user"))]
+    async fn test_add_rating(pool: PgPool) {
+        let command = PersistentCommandData { pool };
+        let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
+        let user_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
+        let rating = 5;
+
+        assert!(command.add_rating(meal_id, user_id, rating).await.is_ok());
+        assert!(command.add_rating(WRONG_UUID, user_id, rating).await.is_err());
+        assert!(command.add_rating(meal_id, WRONG_UUID, rating).await.is_err());
+        assert!(command.add_rating(meal_id, user_id, u32::MAX).await.is_err());
+    }
+
+    #[sqlx::test(fixtures("api_key"))]
+    async fn test_get_api_keys(pool: PgPool) {
+        let command = PersistentCommandData { pool };
+
+        assert!(command.get_api_keys().await.is_ok());
+        assert_eq!(command.get_api_keys().await.unwrap(), provide_dummy_api_keys());
+    }
+
+    fn provide_dummy_api_keys() -> Vec<ApiKey> {
+        vec![
+            ApiKey {
+                key: "abc".into(),
+                description: String::new(),
+            },
+            ApiKey {
+                key: "YWpzZGg4MnozNzhkMnppZGFzYXNkMiBzYWZzYSBzPGE5MDk4".into(),
+                description: String::new(),
+            },
+        ]
+    }
+}
