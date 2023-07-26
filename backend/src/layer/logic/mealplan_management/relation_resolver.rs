@@ -72,7 +72,7 @@ where
         self.db.dissolve_relations(db_canteen, date).await?;
         let mut position: u32 = 0;
         for line in canteen.lines {
-            position = position + 1;
+            position += 1;
             let name = &line.name.clone();
             if (self.resolve_line(date, line, position).await).is_err() {
                 warn!("Skip line '{}' as it could not be resolved", name);
@@ -98,11 +98,10 @@ where
         Ok(())
     }
 
-    fn get_position(canteen_name: &String) -> u32 {
-        CANTEEN_POSITIONS
-            .get(&*canteen_name.clone())
+    fn get_position(canteen_name: &str) -> u32 {
+        *CANTEEN_POSITIONS
+            .get(canteen_name)
             .unwrap_or(&DEFAULT_POSITION)
-            .clone()
     }
 
     async fn resolve_dish(
