@@ -49,17 +49,17 @@ where
         self.db.dissolve_relations(db_canteen, date).await?;
         for line in canteen.lines {
             let name = &line.name.clone();
-            if (self.resolve_line(date, line).await).is_err() {
+            if (self.resolve_line(date, line, db_canteen).await).is_err() {
                 warn!("Skip line '{}' as it could not be resolved", name);
             }
         }
         Ok(())
     }
 
-    async fn resolve_line(&self, date: Date, line: ParseLine) -> Result<(), DataError> {
+    async fn resolve_line(&self, date: Date, line: ParseLine, canteen_id: Uuid) -> Result<(), DataError> {
         let line_id = match self.db.get_similar_line(&line.name).await? {
             Some(similar_line) => self.db.update_line(similar_line, &line.name, line.pos).await?,
-            None => self.db.insert_line(&line.name, line.pos).await?,
+            None => self.db.insert_line(canteen_id, &line.name, line.pos).await?,
         };
 
         let average = Self::average(line.dishes.iter());
@@ -146,6 +146,7 @@ mod test {
     use crate::util::{MealType, Price};
     use chrono::Utc;
     use rand::{self, Rng};
+    use uuid::Uuid;
 
     fn get_dish() -> Dish {
         Dish {
@@ -252,7 +253,7 @@ mod test {
         }
         let line = get_line(dishes);
         assert!(resolver
-            .resolve_line(Utc::now().date_naive(), line)
+            .resolve_line(Utc::now().date_naive(), line, Uuid::default())
             .await
             .is_ok());
     }

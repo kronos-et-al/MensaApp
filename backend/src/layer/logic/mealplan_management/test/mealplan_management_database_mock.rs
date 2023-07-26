@@ -63,7 +63,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         Ok(gen_random_uuid())
     }
 
-    async fn insert_line(&self, _name: &str, _position: u32) -> Result<Uuid> {
+    async fn insert_line(&self, _canteen_id: Uuid, _name: &str, _position: u32) -> Result<Uuid> {
         Ok(gen_random_uuid())
     }
 

@@ -176,13 +176,14 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         .map_err(Into::into)
     }
 
-    async fn insert_line(&self, name: &str, position: u32) -> Result<Uuid> {
+    async fn insert_line(&self, canteen_id: Uuid, name: &str, position: u32) -> Result<Uuid> {
         sqlx::query_scalar!(
             "
-            INSERT INTO line (name, position)
-            VALUES ($1, $2)
+            INSERT INTO line (canteen_id, name, position)
+            VALUES ($1, $2, $3)
             RETURNING line_id
             ",
+            canteen_id,
             name,
             i32::try_from(position)?
         )

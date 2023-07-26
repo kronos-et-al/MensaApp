@@ -98,7 +98,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 
     /// Adds a new line entity to the database.
     /// Returns uuid of the new line.
-    async fn insert_line(&self, name: &str, position: u32) -> Result<Uuid>;
+    async fn insert_line(&self, canteen_id: Uuid, name: &str, position: u32) -> Result<Uuid>;
 
     /// Adds a new meal entity to the database. Returns the UUID of the created meal.
     async fn insert_meal(
