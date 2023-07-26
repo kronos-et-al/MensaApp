@@ -43,17 +43,6 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     _filter = await _preferences.getFilterPreferences() ?? FilterPreferences();
     _priceCategory = _preferences.getPriceCategory() ?? PriceCategory.student;
 
-    // get meal plans form server
-    List<MealPlan> mealPlans = switch (await _api.updateAll()) {
-      Success(value: final mealplan) => mealplan,
-      Failure() => []
-    };
-
-    // update all if connection to server is successful
-    if (mealPlans.isNotEmpty) {
-      _database.updateAll(mealPlans);
-    }
-
     // get canteen from string
     // get canteen id from local storage
     final canteenString = _preferences.getCanteen();
@@ -89,6 +78,17 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       Success(value: final mealplan) => mealplan,
       Failure() => []
     };
+
+    // get meal plans form server
+    List<MealPlan> mealPlans = switch (await _api.updateAll()) {
+      Success(value: final mealplan) => mealplan,
+      Failure(exception: final exception) => _convertMealPlanExceptionToMealPlan(exception)
+    };
+
+    // update all if connection to server is successful
+    if (mealPlans.isNotEmpty) {
+      _database.updateAll(mealPlans);
+    }
 
     // filter meal plans
     await _filterMealPlans();
