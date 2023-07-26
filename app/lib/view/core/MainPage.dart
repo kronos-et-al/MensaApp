@@ -3,6 +3,7 @@ import 'package:app/view/core/icons/navigation/NavigationMealPlanIcon.dart';
 import 'package:app/view/core/icons/navigation/NavigationSettingsIcon.dart';
 import 'package:app/view/favorites/Favorites.dart';
 import 'package:app/view/mealplan/MealPlanView.dart';
+import 'package:app/view/settings/Settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 
@@ -25,7 +26,7 @@ class _MainPageState extends State<MainPage> {
             children: [
               MealPlanView(),
               Favorites(),
-              Container(color: Colors.blue),
+              Settings(),
             ],
           ),
           bottomNavigationBar: BottomNavigationBar(
