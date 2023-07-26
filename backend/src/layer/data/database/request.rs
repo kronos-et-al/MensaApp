@@ -386,7 +386,7 @@ mod tests {
         dbg!(&meals);
         assert_eq!(meals, provide_dummy_meals());
 
-        let meal_id: uuid::Uuid = Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap();
+        let meal_id: uuid::Uuid = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         assert!(request
             .get_meal(Uuid::from_u128(7u128), line_id, date)
             .await
@@ -445,6 +445,41 @@ mod tests {
             .await
             .unwrap()
             .is_empty());
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_get_visible_images(pool: PgPool) {
+        let request = PersistentRequestData { pool };
+        let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
+        let client_id = Uuid::parse_str("c51d2d81-3547-4f07-af58-ed613c6ece67").unwrap();
+
+        let visible_images = request.get_visible_images(meal_id, Some(client_id)).await.unwrap();
+        assert_eq!(visible_images, provide_dummy_images());
+
+        assert_eq!(request.get_visible_images(Uuid::from_u128(7u128), Some(client_id)).await.unwrap(), vec![]);
+        assert_eq!(request.get_visible_images(meal_id, None).await.unwrap(), vec![]);
+    }
+
+    fn provide_dummy_images() -> Vec<Image> {
+        let image1 = Image {
+            id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
+            image_hoster_id: "test".to_string(),
+            url:  "www.test.com".to_string(),
+            rank: 0.0,
+            downvotes: 0,
+            upvotes: 0,
+            approved: false,
+            upload_date: Date::parse_from_str("2023-07-26", "%Y-%m-%d").unwrap(),
+            report_count: 0
+        };
+        let image2 = Image {
+            id: Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap(),
+            image_hoster_id: "test2".to_string(),
+            url: "www.test2.com".to_string(),
+            approved: true,
+            ..image1
+        };
+        vec![image1, image2]
     }
 
     #[sqlx::test(fixtures("meal", "additive"))]

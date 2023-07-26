@@ -75,9 +75,8 @@ pub struct Side {
     pub price: Price,
 }
 
-#[derive(Default)]
+#[derive(Debug, Default, PartialEq)]
 /// This structure is used for database operations. This image structure is based on the database entity 'image'.
-#[derive(Debug)]
 pub struct Image {
     /// Database-identification of the image.
     pub id: Uuid,
