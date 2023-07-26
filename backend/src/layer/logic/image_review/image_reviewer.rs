@@ -120,7 +120,7 @@ mod test {
                 },
             },
         },
-        util::Uuid,
+        util::{Uuid, Date},
     };
 
     #[tokio::test]
@@ -194,6 +194,9 @@ mod test {
             rank: 0.0,
             upvotes: 0,
             downvotes: 0,
+            approved: false,
+            upload_date: Date::default(),
+            report_count: 0,
         }
     }
 
