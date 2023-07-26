@@ -1,12 +1,14 @@
+import 'package:flutter/material.dart';
+
 import '../../repository/data_classes/settings/MensaColorScheme.dart';
 import '../../repository/data_classes/settings/MealPlanFormat.dart';
 import '../../repository/data_classes/settings/PriceCategory.dart';
 
 /// This is an interface for accessing the preferences.
-abstract class IPreferenceAccess {
+abstract class IPreferenceAccess with ChangeNotifier {
   /// The client identifier is returned.
   /// @return The client identifier.
-  Future<String> getClientIdentifier();
+  String getClientIdentifier();
 
   /// The client identifier is set.
   /// @param identifier The new client identifier.
@@ -15,7 +17,7 @@ abstract class IPreferenceAccess {
 
   /// The saved ColorScheme is returned.
   /// @return The saved ColorScheme.
-  Future<MensaColorScheme> getColorScheme();
+  MensaColorScheme getColorScheme();
 
   /// The committed ColorScheme is set.
   /// @param scheme The new ColorScheme.
@@ -24,7 +26,7 @@ abstract class IPreferenceAccess {
 
   /// The saved PriceCategory is returned.
   /// @return The saved PriceCategory.
-  Future<PriceCategory> getPriceCategory();
+  PriceCategory getPriceCategory();
 
   /// The committed PriceCategory is set.
   /// @param category The new PriceCategory.
@@ -33,7 +35,7 @@ abstract class IPreferenceAccess {
 
   /// The saved MealPlanFormat is returned.
   /// @return The saved MealPlanFormat.
-  Future<MealPlanFormat> getMealPlanFormat();
+  MealPlanFormat getMealPlanFormat();
 
   /// The committed MealPlanFormat is set.
   /// @param format The new MealPlanFormat.

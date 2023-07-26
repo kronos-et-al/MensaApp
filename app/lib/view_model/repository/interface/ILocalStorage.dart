@@ -8,7 +8,7 @@ import '../data_classes/settings/PriceCategory.dart';
 abstract class ILocalStorage {
   /// The device identifier is returned.
   /// @return The device identifier.
-  Future<String?> getClientIdentifier();
+  String? getClientIdentifier();
 
   /// The device identifier is set.
   /// @param identifier The new device identifier.
@@ -17,7 +17,7 @@ abstract class ILocalStorage {
 
   /// The saved FilterPreferences is returned.
   /// @return The saved FilterPreferences.
-  Future<FilterPreferences?> getFilterPreferences();
+  FilterPreferences? getFilterPreferences();
 
   /// The committed FilterPreferences is set.
   /// @param filter The new FilterPreferences.
@@ -26,7 +26,7 @@ abstract class ILocalStorage {
 
   /// The saved canteen id is returned.
   /// @return The saved canteen id.
-  Future<String?> getCanteen();
+  String? getCanteen();
 
   /// The committed id of the canteen is set.
   /// @param canteen The id of the new canteen.
@@ -35,7 +35,7 @@ abstract class ILocalStorage {
 
   /// The saved ColorScheme is returned.
   /// @return The saved ColorScheme.
-  Future<MensaColorScheme?> getColorScheme();
+  MensaColorScheme? getColorScheme();
 
   /// The committed ColorScheme is set.
   /// @param scheme The new ColorScheme.
@@ -45,7 +45,7 @@ abstract class ILocalStorage {
   /// The saved PriceCategory is returned.
   /// @return The saved PriceCategory.
   /// @return The result of the update.
-  Future<PriceCategory?> getPriceCategory();
+  PriceCategory? getPriceCategory();
 
   /// The committed PriceCategory is set.
   /// @param category The new PriceCategory.
@@ -54,7 +54,7 @@ abstract class ILocalStorage {
 
   /// The saved MealPlanFormat is returned.
   /// @return The saved MealPlanFormat.
-  Future<MealPlanFormat?> getMealPlanFormat();
+  MealPlanFormat? getMealPlanFormat();
 
   /// The committed MealPlanFormat is set.
   /// @param format The new MealPlanFormat.

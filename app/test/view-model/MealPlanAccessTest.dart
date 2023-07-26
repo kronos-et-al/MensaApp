@@ -167,10 +167,10 @@ void main() {
 
   setUp(() {
     when(() => localStorage.getFilterPreferences())
-        .thenAnswer((_) async => null);
-    when(() => localStorage.getCanteen()).thenAnswer((_) async => canteenID);
+        .thenAnswer((_) => null);
+    when(() => localStorage.getCanteen()).thenAnswer((_) => canteenID);
     when(() => localStorage.getPriceCategory())
-        .thenAnswer((_) async => PriceCategory.student);
+        .thenAnswer((_) => PriceCategory.student);
 
     when(() => api.updateAll())
         .thenAnswer((_) async => Failure(NoConnectionException("error")));
@@ -211,7 +211,7 @@ void main() {
         .thenAnswer((_) async {});
     when(() => database.getFavorites()).thenAnswer((_) async => favorites);
     when(() => localStorage.getPriceCategory())
-        .thenAnswer((_) async => PriceCategory.student);
+        .thenAnswer((_) => PriceCategory.student);
 
     group("allergens", () {
       test("change allergens er", () async {
@@ -578,7 +578,7 @@ void main() {
 
       test("price limit employee", () async {
         when(() => localStorage.getPriceCategory())
-            .thenAnswer((_) async => PriceCategory.employee);
+            .thenAnswer((_) => PriceCategory.employee);
         when(() => database.getFavorites()).thenAnswer((_) async => favorites);
 
         mealPlanAccess.switchToMealPlanView();

@@ -41,26 +41,14 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   Future<void> _init() async {
     _displayedDate = DateTime.timestamp();
     _filter = await _preferences.getFilterPreferences() ?? FilterPreferences();
-    _priceCategory =
-        await _preferences.getPriceCategory() ?? PriceCategory.student;
-
-    // get meal plans form server
-    List<MealPlan> mealPlans = switch (await _api.updateAll()) {
-      Success(value: final mealplan) => mealplan,
-      Failure() => []
-    };
-
-    // update all if connection to server is successful
-    if (mealPlans.isNotEmpty) {
-      _database.updateAll(mealPlans);
-    }
+    _priceCategory = _preferences.getPriceCategory() ?? PriceCategory.student;
 
     // get canteen from string
     // get canteen id from local storage
-    final canteenString = await _preferences.getCanteen();
+    final canteenString = _preferences.getCanteen();
     Canteen? canteen;
     // get default canteen from server if canteen id not saved in local storage
-    if (canteenString == null) {
+    if (canteenString == null || canteenString.isEmpty) {
       canteen = await _api.getDefaultCanteen();
 
       // save canteen id in local storage
@@ -90,6 +78,17 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       Success(value: final mealplan) => mealplan,
       Failure() => []
     };
+
+    // get meal plans form server
+    List<MealPlan> mealPlans = switch (await _api.updateAll()) {
+      Success(value: final mealplan) => mealplan,
+      Failure(exception: final exception) => _convertMealPlanExceptionToMealPlan(exception)
+    };
+
+    // update all if connection to server is successful
+    if (mealPlans.isNotEmpty) {
+      _database.updateAll(mealPlans);
+    }
 
     // filter meal plans
     await _filterMealPlans();

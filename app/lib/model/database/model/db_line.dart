@@ -35,7 +35,7 @@ class DBLine implements DatabaseModel {
   /// The string to create a table for a line of a canteen.
   static String initTable() {
     return '''
-    CREATE TABLE $tableName(
+    CREATE TABLE $tableName (
       $columnLineID TEXT PRIMARY KEY,
       $columnCanteenID TEXT NOT NULL,
       $columnName TEXT NOT NULL,

@@ -30,9 +30,9 @@ class DBMealAdditive implements DatabaseModel {
   /// The string to create a table for an additive of a meal.
   static String initTable() {
     return '''
-    CREATE TABLE $tableName(
+    CREATE TABLE $tableName (
       $columnMealID TEXT,
-      $columnAdditive TEXT CHECK IN (${Additive.values.map((additive) => "'$additive'").join(', ')}),
+      $columnAdditive TEXT,
       FOREIGN KEY($columnMealID) REFERENCES ${DBMeal.tableName}(${DBMeal.columnMealID}),
       PRIMARY KEY($columnMealID, $columnAdditive)
     )

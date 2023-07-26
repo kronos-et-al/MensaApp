@@ -48,11 +48,11 @@ class DBFavorite implements DatabaseModel {
   /// The string to create a table for a favorite.
   static String initTable() {
     return '''
-    CREATE TABLE $tableName(
+    CREATE TABLE $tableName (
       $columnFavoriteID TEXT PRIMARY KEY,
       $columnLineID TEXT NOT NULL,
       $columnLastDate TEXT NOT NULL,
-      $columnFoodType TEXT CHECK($columnFoodType IN (${FoodType.values.map((type) => "'$type'").join(', ')})),
+      $columnFoodType TEXT,
       $columnPriceStudent INTEGER CHECK($columnPriceStudent > 0),
       $columnPriceEmployee INTEGER CHECK($columnPriceEmployee > 0),
       $columnPricePupil INTEGER CHECK($columnPricePupil > 0),

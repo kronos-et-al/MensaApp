@@ -30,9 +30,9 @@ class DBSideAllergen implements DatabaseModel {
   /// The string to create a table for an allergen of a side.
   static String initTable() {
     return '''
-    CREATE TABLE $tableName(
+    CREATE TABLE $tableName (
       $columnSideID TEXT,
-      $columnAllergen TEXT CHECK IN (${Allergen.values.map((allergen) => "'$allergen'").join(', ')}),
+      $columnAllergen TEXT,
       FOREIGN KEY($columnSideID) REFERENCES ${DBSide.tableName}(${DBSide.columnSideID}),
       PRIMARY KEY($columnSideID, $columnAllergen)
     )

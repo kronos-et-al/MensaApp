@@ -48,11 +48,11 @@ class DBSide implements DatabaseModel {
   /// The string to create a table for a side.
   static String initTable() {
     return '''
-    CREATE TABLE $tableName(
+    CREATE TABLE $tableName (
       $columnSideID TEXT PRIMARY KEY,
       $columnMealID TEXT NOT NULL,
       $columnName TEXT NOT NULL,
-      $columnFoodType TEXT NOT NULL CHECK($columnFoodType IN (${FoodType.values.map((type) => "'$type'").join(', ')})),
+      $columnFoodType TEXT NOT NULL,
       $columnPriceStudent INTEGER NOT NULL CHECK($columnPriceStudent >= 0),
       $columnPriceEmployee INTEGER NOT NULL CHECK($columnPriceEmployee >= 0),
       $columnPricePupil INTEGER NOT NULL CHECK($columnPricePupil >= 0),

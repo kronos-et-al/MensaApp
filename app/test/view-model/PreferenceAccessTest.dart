@@ -14,10 +14,10 @@ void main () {
   late PreferenceAccess preferencesPredefined;
 
   setUp(() async {
-    when(() => localStorage.getClientIdentifier()).thenAnswer((_) => Future.value(null));
-    when(() => localStorage.getColorScheme()).thenAnswer((_) => Future.value(null));
-    when(() => localStorage.getPriceCategory()).thenAnswer((_) => Future.value(null));
-    when(() => localStorage.getMealPlanFormat()).thenAnswer((_) => Future.value(null));
+    when(() => localStorage.getClientIdentifier()).thenAnswer((_) => null);
+    when(() => localStorage.getColorScheme()).thenAnswer((_) => null);
+    when(() => localStorage.getPriceCategory()).thenAnswer((_) => null);
+    when(() => localStorage.getMealPlanFormat()).thenAnswer((_) => null);
 
     preferences = PreferenceAccess(localStorage);
   });
@@ -28,7 +28,7 @@ void main () {
     });
 
     test("color scheme", () async {
-      expect(await preferences.getColorScheme(), MensaColorScheme.system);
+      expect(preferences.getColorScheme(), MensaColorScheme.system);
     });
 
     test("meal plan format", () async {
@@ -56,7 +56,7 @@ void main () {
 
       await preferences.setColorScheme(scheme);
       verify(() => localStorage.setColorScheme(scheme)).called(1);
-      expect(await preferences.getColorScheme(), scheme);
+      expect(preferences.getColorScheme(), scheme);
     });
 
     test("set Meal Plan Format", () async {
@@ -79,10 +79,10 @@ void main () {
   });
 
   group("initialization with non standard values", () {
-    when(() => localStorage.getClientIdentifier()).thenAnswer((_) => Future.value("42"));
-    when(() => localStorage.getColorScheme()).thenAnswer((_) => Future.value(MensaColorScheme.light));
-    when(() => localStorage.getPriceCategory()).thenAnswer((_) => Future.value(PriceCategory.employee));
-    when(() => localStorage.getMealPlanFormat()).thenAnswer((_) => Future.value(MealPlanFormat.list));
+    when(() => localStorage.getClientIdentifier()).thenAnswer((_) => "42");
+    when(() => localStorage.getColorScheme()).thenAnswer((_) => MensaColorScheme.light);
+    when(() => localStorage.getPriceCategory()).thenAnswer((_) => PriceCategory.employee);
+    when(() => localStorage.getMealPlanFormat()).thenAnswer((_) => MealPlanFormat.list);
 
     preferencesPredefined = PreferenceAccess(localStorage);
 
@@ -91,7 +91,7 @@ void main () {
     });
 
     test("color scheme", () async {
-      expect(await preferencesPredefined.getColorScheme(), MensaColorScheme.light);
+      expect(preferencesPredefined.getColorScheme(), MensaColorScheme.light);
     });
 
     test("meal plan format", () async {

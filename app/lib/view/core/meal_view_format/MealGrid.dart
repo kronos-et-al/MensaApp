@@ -16,7 +16,7 @@ class MealGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      physics: const AlwaysScrollableScrollPhysics(),
+      //physics: const AlwaysScrollableScrollPhysics(),
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       itemBuilder: (ctx, index) {

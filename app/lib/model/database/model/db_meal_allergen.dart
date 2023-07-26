@@ -30,9 +30,9 @@ class DBMealAllergen implements DatabaseModel {
   /// The string to create a table for an allergen of a meal.
   static String initTable() {
     return '''
-    CREATE TABLE $tableName(
+    CREATE TABLE $tableName (
       $columnMealID TEXT,
-      $columnAllergen TEXT CHECK IN (${Allergen.values.map((allergen) => "'$allergen'").join(', ')}),
+      $columnAllergen TEXT,
       FOREIGN KEY($columnMealID) REFERENCES ${DBMeal.tableName}(${DBMeal.columnMealID}),
       PRIMARY KEY($columnMealID, $columnAllergen)
     )

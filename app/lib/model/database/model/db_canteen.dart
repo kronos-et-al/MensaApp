@@ -26,7 +26,7 @@ class DBCanteen implements DatabaseModel {
   /// The string to create a table for the canteen.
   static String initTable() {
     return '''
-    CREATE TABLE $tableName(
+    CREATE TABLE $tableName (
       $columnCanteenID TEXT PRIMARY KEY,
       $columnName TEXT NOT NULL
     )

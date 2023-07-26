@@ -30,9 +30,9 @@ class DBSideAdditive implements DatabaseModel {
   /// The string to create a table for an additive of a side.
   static String initTable() {
     return '''
-    CREATE TABLE $tableName(
+    CREATE TABLE $tableName (
       $columnSideID TEXT,
-      $columnAdditive TEXT CHECK IN (${Additive.values.map((additive) => "'$additive'").join(', ')}),
+      $columnAdditive TEXT,
       FOREIGN KEY($columnSideID) REFERENCES ${DBSide.tableName}(${DBSide.columnSideID}),
       PRIMARY KEY($columnSideID, $columnAdditive)
     )
