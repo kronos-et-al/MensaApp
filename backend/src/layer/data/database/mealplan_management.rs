@@ -546,10 +546,11 @@ mod test {
     async fn test_insert_line(pool: PgPool) {
         let req = PersistentMealplanManagementData { pool: pool.clone() };
 
+        let canteen_id = Uuid::parse_str("f2885f67-fc95-4205-bc7d-b2fb78cee0a8").unwrap();
         let name = "TEST_LINE";
         let pos = 42_u32;
 
-        let res = req.insert_line(name, pos).await; // TODO insert canteen_id
+        let res = req.insert_line(canteen_id, name, pos).await; // TODO insert canteen_id
         assert!(res.is_ok());
         let line_id = res.unwrap();
 
