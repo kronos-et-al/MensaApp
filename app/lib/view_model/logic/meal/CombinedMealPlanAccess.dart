@@ -41,8 +41,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   Future<void> _init() async {
     _displayedDate = DateTime.timestamp();
     _filter = await _preferences.getFilterPreferences() ?? FilterPreferences();
-    _priceCategory =
-        await _preferences.getPriceCategory() ?? PriceCategory.student;
+    _priceCategory = _preferences.getPriceCategory() ?? PriceCategory.student;
 
     // get meal plans form server
     List<MealPlan> mealPlans = switch (await _api.updateAll()) {
@@ -57,10 +56,10 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     // get canteen from string
     // get canteen id from local storage
-    final canteenString = await _preferences.getCanteen();
+    final canteenString = _preferences.getCanteen();
     Canteen? canteen;
     // get default canteen from server if canteen id not saved in local storage
-    if (canteenString == null) {
+    if (canteenString == null || canteenString.isEmpty) {
       canteen = await _api.getDefaultCanteen();
 
       // save canteen id in local storage
