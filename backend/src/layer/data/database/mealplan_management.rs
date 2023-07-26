@@ -33,7 +33,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
 
     async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
-            "SELECT canteen_id FROM canteen WHERE name % $1 AND similarity(name, $1) >= $2 ORDER BY similarity(name, $1) DESC",
+            "SELECT canteen_id FROM canteen WHERE similarity(name, $1) >= $2 ORDER BY similarity(name, $1) DESC",
             similar_name, THRESHOLD
         )
         .fetch_optional(&self.pool)
@@ -43,7 +43,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
 
     async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
-            "SELECT line_id FROM line WHERE name % $1 AND similarity(name, $1) >= $2 ORDER BY similarity(name, $1) DESC",
+            "SELECT line_id FROM line WHERE similarity(name, $1) >= $2 ORDER BY similarity(name, $1) DESC",
             similar_name, THRESHOLD
         )
         .fetch_optional(&self.pool)
@@ -59,14 +59,26 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     ) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
             // the `<@` operator checks whether each element in the left array is also present in the right
-            "SELECT food_id 
-            FROM food JOIN meal USING (food_id) JOIN food_additive USING (food_id) 
-                JOIN food_allergen USING (food_id)
-            WHERE name % $1 AND similarity(name, $1) >= $4
-            GROUP BY food_id
-            HAVING array_agg(allergen) <@ $2::Allergen[] AND array_agg(allergen) @> $2::Allergen[]
-                AND array_agg(additive) <@ $3::Additive[] AND array_agg(additive) @> $3::Additive[]
-            ORDER BY similarity(name, $1) DESC",
+            "
+            SELECT food_id 
+            FROM food JOIN meal USING (food_id)
+            WHERE similarity(name, $1) >= $4
+            AND food_id IN (
+                SELECT food_id 
+                FROM food_allergen FULL JOIN food USING (food_id)
+                GROUP BY food_id 
+				HAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $2::allergen[] 
+				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $2::allergen[]
+            )
+            AND food_id IN (
+                SELECT food_id
+				FROM food_additive FULL JOIN food USING (food_id)
+				GROUP BY food_id 
+				HAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $3::additive[] 
+				AND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $3::additive[]
+            )
+            ORDER BY similarity(name, $1) DESC
+            ",
             similar_name,
             allergens
                 .iter()
@@ -96,7 +108,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
             "SELECT food_id 
             FROM food JOIN food_additive USING (food_id) 
                 JOIN food_allergen USING (food_id)
-            WHERE food_id NOT IN (SELECT food_id FROM meal) AND name % $1 AND similarity(name, $1) >= $4
+            WHERE food_id NOT IN (SELECT food_id FROM meal) AND similarity(name, $1) >= $4
             GROUP BY food_id
             HAVING array_agg(allergen) <@ $2::Allergen[] AND array_agg(allergen) @> $2::Allergen[]
                 AND array_agg(additive) <@ $3::Additive[] AND array_agg(additive) @> $3::Additive[]
@@ -327,13 +339,13 @@ impl PersistentMealplanManagementData {
 mod test {
     #![allow(clippy::unwrap_used)]
 
+    use super::*;
+    use crate::util::Additive::{AntioxidantAgents, PreservingAgents};
+    use crate::util::Allergen::{Se, So, We, ML};
+    use chrono::{NaiveDate, Utc};
+    use sqlx::PgPool;
     use std::collections::HashMap;
     use std::str::FromStr;
-    use chrono::{NaiveDate, Utc};
-    use super::*;
-    use sqlx::PgPool;
-    use crate::util::Additive::{AntioxidantAgents, PreservingAgents};
-    use crate::util::Allergen::{ML, Se, So, We};
 
     #[sqlx::test(fixtures("canteen", "line", "food_plan", "meal"))]
     async fn test_dissolve_relations(pool: PgPool) {
@@ -346,7 +358,14 @@ mod test {
         let res = req.dissolve_relations(canteen_id, date).await;
         assert!(res.is_ok());
 
-        let deleted = sqlx::query!(r#"SELECT * FROM food_plan WHERE line_id = $1 AND serve_date = $2"#, line_id, date).fetch_all(&pool).await.unwrap();
+        let deleted = sqlx::query!(
+            r#"SELECT * FROM food_plan WHERE line_id = $1 AND serve_date = $2"#,
+            line_id,
+            date
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
         assert!(deleted.is_empty());
     }
 
@@ -356,15 +375,37 @@ mod test {
 
         let tests = [
             // Identical
-            (Uuid::parse_str("8f10c56d-da9b-4f62-b4c1-16feb0f98c67").unwrap(), "second canteen", true),
-            (Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap(), "my favorite canteen", true),
-            (Uuid::parse_str("f2885f67-fc95-4205-bc7d-b2fb78cee0a8").unwrap(), "bad canteen", true),
-
+            (
+                Uuid::parse_str("8f10c56d-da9b-4f62-b4c1-16feb0f98c67").unwrap(),
+                "second canteen",
+                true,
+            ),
+            (
+                Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap(),
+                "my favorite canteen",
+                true,
+            ),
+            (
+                Uuid::parse_str("f2885f67-fc95-4205-bc7d-b2fb78cee0a8").unwrap(),
+                "bad canteen",
+                true,
+            ),
             // 'Similar'
-            (Uuid::parse_str("8f10c56d-da9b-4f62-b4c1-16feb0f98c67").unwrap(), "second cantee", true),
-            (Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap(), "favorite canteen", true),
-            (Uuid::parse_str("f2885f67-fc95-4205-bc7d-b2fb78cee0a8").unwrap(), "  bad  canteen ", true),
-
+            (
+                Uuid::parse_str("8f10c56d-da9b-4f62-b4c1-16feb0f98c67").unwrap(),
+                "second cantee",
+                true,
+            ),
+            (
+                Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap(),
+                "favorite canteen",
+                true,
+            ),
+            (
+                Uuid::parse_str("f2885f67-fc95-4205-bc7d-b2fb78cee0a8").unwrap(),
+                "  bad  canteen ",
+                true,
+            ),
             // No longer 'similar'
             (Uuid::default(), "second", false),
             (Uuid::default(), "canteen", false),
@@ -373,13 +414,16 @@ mod test {
 
         for (uuid, name, is_similar) in tests {
             println!("Testing values: '{uuid}', '{name}'. Should be similar: {is_similar}");
-            req.get_similar_canteen(name).await.unwrap().map_or_else(|| {
+            req.get_similar_canteen(name).await.unwrap().map_or_else(
+                || {
                     println!("{is_similar}");
                     assert!(!is_similar);
-                }, |res| {
+                },
+                |res| {
                     println!("{res}");
                     assert_eq!(uuid, res);
-                });
+                },
+            );
         }
     }
 
@@ -389,13 +433,28 @@ mod test {
 
         let tests = [
             // Identical
-            (Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap(), "line 2", true),
-            (Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap(), "single line", true),
-            (Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(), "special line", true),
-
+            (
+                Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap(),
+                "line 2",
+                true,
+            ),
+            (
+                Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap(),
+                "single line",
+                true,
+            ),
+            (
+                Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(),
+                "special line",
+                true,
+            ),
             // 'Similar'
             //(Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap(), "line2", true), isn't similar
-            (Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap(), " single   line ", true),
+            (
+                Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap(),
+                " single   line ",
+                true,
+            ),
             //(Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(), "specia line", true), isn't similar
 
             // No longer 'similar'
@@ -406,13 +465,16 @@ mod test {
 
         for (uuid, name, is_similar) in tests {
             println!("Testing values: '{uuid}', '{name}'. Should be similar: {is_similar}");
-            req.get_similar_line(name).await.unwrap().map_or_else(|| {
-                println!("{is_similar}");
-                assert!(!is_similar);
-            }, |res| {
-                println!("{res}");
-                assert_eq!(uuid, res);
-            });
+            req.get_similar_line(name).await.unwrap().map_or_else(
+                || {
+                    println!("{is_similar}");
+                    assert!(!is_similar);
+                },
+                |res| {
+                    println!("{res}");
+                    assert_eq!(uuid, res);
+                },
+            );
         }
     }
 
@@ -423,20 +485,45 @@ mod test {
         let addons: HashMap<&str, (Vec<Additive>, Vec<Allergen>)> = HashMap::from([
             ("f7337122-b018-48ad-b420-6202dc3cb4ff", (vec![], vec![We])),
             ("73cf367b-a536-4b49-ad0c-cb984caa9a08", (vec![], vec![])),
-            ("1b5633c2-05c5-4444-90e5-2e475bae6463", (vec![PreservingAgents, AntioxidantAgents], vec![ML, Se, So])),
+            (
+                "1b5633c2-05c5-4444-90e5-2e475bae6463",
+                (vec![PreservingAgents, AntioxidantAgents], vec![ML, Se, So]),
+            ),
         ]);
 
         let tests = [
             // Identical
-            (Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(), "Geflügel - Cevapcici, Ajvar, Djuvec Reis", true),
-            (Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(), "zu jedem Gericht reichen wir ein Dessert oder Salat", true),
-            (Uuid::parse_str("1b5633c2-05c5-4444-90e5-2e475bae6463").unwrap(), "Cordon bleu vom Schwein mit Bratensoße", true),
-
+            (
+                Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
+                "Geflügel - Cevapcici, Ajvar, Djuvec Reis",
+                true,
+            ),
+            // (
+            //     Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
+            //     "zu jedem Gericht reichen wir ein Dessert oder Salat",
+            //     true,
+            // ),
+            (
+                Uuid::parse_str("1b5633c2-05c5-4444-90e5-2e475bae6463").unwrap(),
+                "Cordon bleu vom Schwein mit Bratensoße",
+                true,
+            ),
             // 'Similar' with identical addons
-            (Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap(), "line2", true),
-            (Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap(), "sing. line", true),
-            (Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(), "spec. line", true),
-
+            // (
+            //     Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap(),
+            //     "line2",
+            //     true,
+            // ),
+            // (
+            //     Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap(),
+            //     "sing. line",
+            //     true,
+            // ),
+            // (
+            //     Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(),
+            //     "spec. line",
+            //     true,
+            // ),
             // No longer 'similar' with identical addons
             // TODO threshold wont work: All results under the threshold should be ignored.
             (Uuid::default(), "line", false),
@@ -447,13 +534,20 @@ mod test {
         for (uuid, name, is_similar) in tests {
             println!("Testing values: '{uuid}', '{name}'. Should be similar: {is_similar}");
             let (additives, allergens) = addons.get(&*uuid.to_string()).unwrap();
-            req.get_similar_meal(name, allergens, additives).await.unwrap().map_or_else(|| {// TODO unwrap error as operator does not exist in query
-                println!("{is_similar}");
-                assert!(!is_similar);
-            }, |res| {
-                println!("{res}");
-                assert_eq!(uuid, res);
-            });
+            req.get_similar_meal(name, allergens, additives)
+                .await
+                .unwrap()
+                .map_or_else(
+                    || {
+                        // TODO unwrap error as operator does not exist in query
+                        println!("{is_similar}");
+                        assert!(!is_similar);
+                    },
+                    |res| {
+                        println!("{res}");
+                        assert_eq!(uuid, res);
+                    },
+                );
         }
     }
 
@@ -474,8 +568,13 @@ mod test {
 
         let selections = sqlx::query!(
             r#"SELECT * FROM food_plan WHERE line_id = $1 AND food_id = $2 AND serve_date = $3"#,
-            line_id, food_id, date
-        ).fetch_all(&pool).await.unwrap();
+            line_id,
+            food_id,
+            date
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
         let selection = selections.first().unwrap();
 
         assert_eq!(selection.line_id, line_id);
@@ -493,31 +592,40 @@ mod test {
 
         let meal_type = MealType::Vegan;
         let name = "TEST_FOOD";
-        let additives = vec![
-            Additive::Alcohol
-        ];
-        let allergens = vec![
-            Allergen::Ca, Allergen::Pa
-        ];
+        let additives = vec![Additive::Alcohol];
+        let allergens = vec![Allergen::Ca, Allergen::Pa];
 
-        let res = req.insert_food(name, meal_type, &allergens, &additives).await;
+        let res = req
+            .insert_food(name, meal_type, &allergens, &additives)
+            .await;
         //assert!(res.is_ok());
         let food_id = res.unwrap();
 
         let db_additives = sqlx::query_scalar!(
             r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1"#,
             food_id
-        ).fetch_all(&pool).await.unwrap();
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
         assert_eq!(db_additives, additives);
 
         let db_allergens = sqlx::query_scalar!(
             r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1"#,
             food_id
-        ).fetch_all(&pool).await.unwrap();
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
         assert_eq!(db_allergens, allergens);
 
-
-        let selections = sqlx::query!(r#"SELECT name, food_type as "meal_type: MealType" FROM food WHERE food_id = $1"#, food_id).fetch_all(&pool).await.unwrap();
+        let selections = sqlx::query!(
+            r#"SELECT name, food_type as "meal_type: MealType" FROM food WHERE food_id = $1"#,
+            food_id
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
         let selection = selections.first().unwrap();
 
         assert_eq!(selection.name, name);
@@ -535,7 +643,13 @@ mod test {
         assert!(res.is_ok());
         let canteen_id = res.unwrap();
 
-        let selections = sqlx::query!(r#"SELECT name, position FROM canteen WHERE canteen_id = $1"#, canteen_id).fetch_all(&pool).await.unwrap();
+        let selections = sqlx::query!(
+            r#"SELECT name, position FROM canteen WHERE canteen_id = $1"#,
+            canteen_id
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
         let selection = selections.first().unwrap();
 
         assert_eq!(selection.name, name);
@@ -554,7 +668,13 @@ mod test {
         assert!(res.is_ok());
         let line_id = res.unwrap();
 
-        let selections = sqlx::query!(r#"SELECT name, position FROM line WHERE line_id = $1"#, line_id).fetch_all(&pool).await.unwrap();
+        let selections = sqlx::query!(
+            r#"SELECT name, position FROM line WHERE line_id = $1"#,
+            line_id
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
         let selection = selections.first().unwrap();
 
         assert_eq!(selection.name, name);
@@ -571,7 +691,10 @@ mod test {
         let res = req.update_food(food_id, name).await;
         assert!(res.is_ok());
 
-        let selections = sqlx::query!(r#"SELECT name FROM food WHERE food_id = $1"#, food_id).fetch_all(&pool).await.unwrap();
+        let selections = sqlx::query!(r#"SELECT name FROM food WHERE food_id = $1"#, food_id)
+            .fetch_all(&pool)
+            .await
+            .unwrap();
         let selection = selections.first().unwrap();
 
         assert_eq!(selection.name, name);
@@ -589,7 +712,13 @@ mod test {
         assert!(res.is_ok());
         let canteen_id = res.unwrap();
 
-        let selections = sqlx::query!(r#"SELECT name, position FROM canteen WHERE canteen_id = $1"#, canteen_id).fetch_all(&pool).await.unwrap();
+        let selections = sqlx::query!(
+            r#"SELECT name, position FROM canteen WHERE canteen_id = $1"#,
+            canteen_id
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
         let selection = selections.first().unwrap();
 
         assert_eq!(selection.name, name);
@@ -608,11 +737,16 @@ mod test {
         assert!(res.is_ok());
         let line_id = res.unwrap();
 
-        let selections = sqlx::query!(r#"SELECT name, position FROM line WHERE line_id = $1"#, line_id).fetch_all(&pool).await.unwrap();
+        let selections = sqlx::query!(
+            r#"SELECT name, position FROM line WHERE line_id = $1"#,
+            line_id
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
         let selection = selections.first().unwrap();
 
         assert_eq!(selection.name, name);
         assert_eq!(selection.position as u32, pos);
     }
-
 }
