@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, \n                approved, report_count, link_date \n            FROM (\n                SELECT image_id \n                FROM image JOIN image_report r USING (image_id)\n                WHERE currently_visible AND food_id = $1\n                GROUP BY image_id\n                HAVING COUNT(*) FILTER (WHERE r.user_id = $2) = 0\n            ) not_reported JOIN image_detail USING (image_id)\n            ",
+  "query": "\n            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, \n                approved, report_count, link_date \n            FROM (\n                --- not reported by user\n                SELECT image_id \n                FROM image LEFT JOIN image_report r USING (image_id)\n                GROUP BY image_id\n                HAVING COUNT(*) FILTER (WHERE r.user_id = $2) = 0\n            ) not_reported JOIN image_detail USING (image_id)\n            WHERE currently_visible AND food_id = $1\n            ORDER BY rank DESC\n            ",
   "describe": {
     "columns": [
       {
@@ -56,7 +56,7 @@
       ]
     },
     "nullable": [
-      true,
+      false,
       true,
       true,
       true,
@@ -67,5 +67,5 @@
       true
     ]
   },
-  "hash": "8eee30e40473b23dff105e62dceef6c7074b6b789229dfee83bbff4f0e0ee9d7"
+  "hash": "56a4ea8e3f1b2d012ba10b82d4cb84b04bc0fe15539a3eec9d56fa9e78bdf75c"
 }
