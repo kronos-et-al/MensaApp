@@ -157,26 +157,6 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         self.update_food(uuid, name).await
     }
 
-    async fn add_meal_to_plan(
-        &self,
-        meal_id: Uuid,
-        line_id: Uuid,
-        date: Date,
-        price: Price,
-    ) -> Result<()> {
-        self.add_to_plan(meal_id, line_id, date, price).await
-    }
-
-    async fn add_side_to_plan(
-        &self,
-        side_id: Uuid,
-        line_id: Uuid,
-        date: Date,
-        price: Price,
-    ) -> Result<()> {
-        self.add_to_plan(side_id, line_id, date, price).await
-    }
-
     async fn insert_canteen(&self, name: &str, position: u32) -> Result<Uuid> {
         sqlx::query_scalar!(
             "
@@ -227,6 +207,26 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     ) -> Result<Uuid> {
         self.insert_food(name, meal_type, allergens, additives)
             .await
+    }
+
+    async fn add_meal_to_plan(
+        &self,
+        meal_id: Uuid,
+        line_id: Uuid,
+        date: Date,
+        price: Price,
+    ) -> Result<()> {
+        self.add_to_plan(meal_id, line_id, date, price).await
+    }
+
+    async fn add_side_to_plan(
+        &self,
+        side_id: Uuid,
+        line_id: Uuid,
+        date: Date,
+        price: Price,
+    ) -> Result<()> {
+        self.add_to_plan(side_id, line_id, date, price).await
     }
 }
 
@@ -315,5 +315,159 @@ impl PersistentMealplanManagementData {
         .await?;
 
         Ok(food_id)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    #![allow(clippy::unwrap_used)]
+
+    use std::collections::HashMap;
+    use chrono::Utc;
+    use super::*;
+    use sqlx::PgPool;
+    use crate::util::Additive::{AntioxidantAgents, PreservingAgents};
+    use crate::util::Allergen::{ML, Se, So, We};
+
+    #[sqlx::test(fixtures("canteen"))]
+    async fn test_get_similar_canteen(pool: PgPool) {
+        let req = PersistentMealplanManagementData { pool: pool.clone() };
+
+        // TODO force threshold (remove) ... doesnt work either
+        assert!(sqlx::query!("SET pg_trgm.similarity_threshold = 0.8").fetch_all(&pool).await.is_ok());
+
+        let tests = [
+            // Identical
+            (Uuid::parse_str("8f10c56d-da9b-4f62-b4c1-16feb0f98c67").unwrap(), "second canteen", true),
+            (Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap(), "my favorite canteen", true),
+            (Uuid::parse_str("f2885f67-fc95-4205-bc7d-b2fb78cee0a8").unwrap(), "bad canteen", true),
+
+            // 'Similar'
+            (Uuid::parse_str("8f10c56d-da9b-4f62-b4c1-16feb0f98c67").unwrap(), "second cantee", true),
+            (Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap(), "favorite canteen", true),
+            (Uuid::parse_str("f2885f67-fc95-4205-bc7d-b2fb78cee0a8").unwrap(), "  bad  canteen ", true),
+
+            // No longer 'similar'
+            // TODO threshold wont work
+            (Uuid::default(), "second", false),
+            (Uuid::default(), "canteen", false),
+            (Uuid::default(), "", false),
+        ];
+
+        for (uuid, name, is_similar) in tests {
+            println!("Testing values: '{uuid}', '{name}'. Should be similar: {is_similar}");
+            req.get_similar_canteen(name).await.unwrap().map_or_else(|| {
+                    println!("{is_similar}");
+                    assert!(!is_similar);
+                }, |res| {
+                    println!("{res}");
+                    assert_eq!(uuid, res);
+                });
+        }
+    }
+
+    #[sqlx::test(fixtures("canteen", "line"))]
+    async fn test_get_similar_line(pool: PgPool) {
+        let req = PersistentMealplanManagementData { pool };
+
+        let tests = [
+            // Identical
+            (Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap(), "line 2", true),
+            (Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap(), "single line", true),
+            (Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(), "special line", true),
+
+            // 'Similar'
+            (Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap(), "line2", true),
+            (Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap(), "sing. line", true),
+            (Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(), "spec. line", true),
+
+            // No longer 'similar'
+            // TODO threshold wont work: All results under the threshold should be ignored.
+            (Uuid::default(), "line", false),
+            (Uuid::default(), "sing.", false),
+            (Uuid::default(), "", false),
+        ];
+
+        for (uuid, name, is_similar) in tests {
+            println!("Testing values: '{uuid}', '{name}'. Should be similar: {is_similar}");
+            req.get_similar_line(name).await.unwrap().map_or_else(|| {
+                println!("{is_similar}");
+                assert!(!is_similar);
+            }, |res| {
+                println!("{res}");
+                assert_eq!(uuid, res);
+            });
+        }
+    }
+
+    #[sqlx::test(fixtures("meal", "allergen", "additive"))]
+    async fn test_get_similar_meal(pool: PgPool) {
+        let req = PersistentMealplanManagementData { pool };
+
+        let addons: HashMap<&str, (Vec<Additive>, Vec<Allergen>)> = HashMap::from([
+            ("f7337122-b018-48ad-b420-6202dc3cb4ff", (vec![], vec![We])),
+            ("73cf367b-a536-4b49-ad0c-cb984caa9a08", (vec![], vec![])),
+            ("1b5633c2-05c5-4444-90e5-2e475bae6463", (vec![PreservingAgents, AntioxidantAgents], vec![ML, Se, So])),
+        ]);
+
+        let tests = [
+            // Identical
+            (Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(), "Geflügel - Cevapcici, Ajvar, Djuvec Reis", true),
+            (Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(), "zu jedem Gericht reichen wir ein Dessert oder Salat", true),
+            (Uuid::parse_str("1b5633c2-05c5-4444-90e5-2e475bae6463").unwrap(), "Cordon bleu vom Schwein mit Bratensoße", true),
+
+            // 'Similar' with identical addons
+            (Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap(), "line2", true),
+            (Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap(), "sing. line", true),
+            (Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(), "spec. line", true),
+
+            // No longer 'similar' with identical addons
+            // TODO threshold wont work: All results under the threshold should be ignored.
+            (Uuid::default(), "line", false),
+            (Uuid::default(), "sing.", false),
+            (Uuid::default(), "", false),
+        ];
+
+        for (uuid, name, is_similar) in tests {
+            println!("Testing values: '{uuid}', '{name}'. Should be similar: {is_similar}");
+            let (additives, allergens) = addons.get(&*uuid.to_string()).unwrap();
+            req.get_similar_meal(name, allergens, additives).await.unwrap().map_or_else(|| {// TODO unwrap error as operator does not exist in query
+                println!("{is_similar}");
+                assert!(!is_similar);
+            }, |res| {
+                println!("{res}");
+                assert_eq!(uuid, res);
+            });
+        }
+    }
+
+    #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
+    async fn test_add_to_plan(pool: PgPool) {
+        let req = PersistentMealplanManagementData { pool: pool.clone() };
+        let food_id = Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap();
+        let line_id = Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap();
+        let date = Utc::now().date_naive();
+        let price = Price {
+            price_student: 42,
+            price_employee: 420,
+            price_guest: 4200,
+            price_pupil: 42000,
+        };
+        let res = req.add_to_plan(food_id, line_id, date, price).await;
+        assert!(res.is_ok());
+
+        let selections = sqlx::query!(
+            r#"SELECT * FROM food_plan WHERE line_id = $1 AND food_id = $2 AND serve_date = $3"#,
+            line_id, food_id, date
+        ).fetch_all(&pool).await.unwrap();
+        let selection = selections.first().unwrap(); // TODO selections is empty
+
+        assert_eq!(selection.line_id, line_id);
+        assert_eq!(selection.food_id, food_id);
+        assert_eq!(selection.serve_date, date);
+        assert_eq!(selection.price_student as u32, price.price_student);
+        assert_eq!(selection.price_employee as u32, price.price_employee);
+        assert_eq!(selection.price_guest as u32, price.price_guest);
+        assert_eq!(selection.price_pupil as u32, price.price_pupil);
     }
 }
