@@ -6,7 +6,7 @@ use crate::{
         model::{ApiKey, Image},
         CommandDataAccess, DataError, Result,
     },
-    util::{ReportReason, Uuid},
+    util::{ReportReason, Uuid}, null_error,
 };
 
 /// Class implementing all database requests arising from graphql manipulations.
@@ -29,20 +29,17 @@ impl CommandDataAccess for PersistentCommandData {
         .fetch_one(&self.pool)
         .await?;
 
-        (|| {
-            Some(Image {
-                approved: record.approved?,
-                url: record.url?,
-                rank: record.rank?,
-                report_count: record.report_count? as u32,
-                upload_date: record.upload_date?,
-                downvotes: record.downvotes? as u32,
-                upvotes: record.upvotes? as u32,
-                id: record.image_id?,
-                image_hoster_id: record.image_hoster_id?,
-            })
-        })()
-        .ok_or(DataError::NoSuchItem)
+        Ok(Image {
+                approved: null_error!(record.approved),
+                url: null_error!(record.url),
+                rank: null_error!(record.rank),
+                report_count: null_error!(record.report_count) as u32,
+                upload_date: null_error!(record.upload_date),
+                downvotes: null_error!(record.downvotes) as u32,
+                upvotes: null_error!(record.upvotes) as u32,
+                id: null_error!(record.image_id),
+                image_hoster_id: null_error!(record.image_hoster_id),
+        })
     }
 
     async fn hide_image(&self, image_id: Uuid) -> Result<()> {
