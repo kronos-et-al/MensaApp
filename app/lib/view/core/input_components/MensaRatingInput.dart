@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// A input component that is used in the Mensa app and enables the user to enter a 1-5 star rating.
 class MensaRatingInput extends StatelessWidget {
   final Function(int) _onChanged;
-  final int _value;
+  final double _value;
   final int _max;
   final Color? _color;
   final bool _disabled;
+  final double _size;
 
   /// Creates a new MensaRatingInput.
   /// @param key The key to identify this widget.
@@ -19,15 +21,17 @@ class MensaRatingInput extends StatelessWidget {
   const MensaRatingInput(
       {super.key,
       required Function(int) onChanged,
-      required int value,
+      required double value,
       int max = 5,
       Color? color,
-      bool disabled = false})
+      bool disabled = false,
+      double size = 24})
       : _onChanged = onChanged,
         _value = value,
         _max = max,
         _color = color,
-        _disabled = disabled;
+        _disabled = disabled,
+        _size = size;
 
   /// Builds the widget.
   /// @param context The context in which the widget is built.
@@ -38,17 +42,73 @@ class MensaRatingInput extends StatelessWidget {
       children: [
         for (int i = 0; i < _max; i++)
           AbsorbPointer(
-              absorbing: _disabled,
-              child: IconButton(
-                padding: const EdgeInsets.all(4),
-                constraints: const BoxConstraints(),
-                onPressed: () => {if (!_disabled) _onChanged(i + 1)},
-                icon: Icon(
-                  i < _value ? Icons.star : Icons.star_border,
-                  color: _color ?? Theme.of(context).colorScheme.primary,
-                ),
-              ))
+            absorbing: _disabled,
+            child: IconButton(
+              padding: const EdgeInsets.symmetric(horizontal: 0),
+              constraints: const BoxConstraints(),
+              onPressed: () => {if (!_disabled) _onChanged(i + 1)},
+              icon: i < _value.floor()
+                  ? SvgPicture.asset(
+                      'assets/icons/star_filled.svg',
+                      colorFilter: ColorFilter.mode(
+                          _color ?? Theme.of(context).colorScheme.primary,
+                          BlendMode.srcIn),
+                      width: _size,
+                      height: _size,
+                    )
+                  : i < _value && _value < i + 1
+                      ? Stack(
+                          //fit: StackFit.expand,
+                          children: [
+                            SvgPicture.asset(
+                              'assets/icons/star_outlined.svg',
+                              colorFilter: ColorFilter.mode(
+                                  _color ??
+                                      Theme.of(context).colorScheme.primary,
+                                  BlendMode.srcIn),
+                              width: _size,
+                              height: _size,
+                            ),
+                            ClipRect(
+                                clipper: _Clipper(part: _value - i),
+                                child: SvgPicture.asset(
+                                  'assets/icons/star_filled.svg',
+                                  colorFilter: ColorFilter.mode(
+                                      _color ??
+                                          Theme.of(context).colorScheme.primary,
+                                      BlendMode.srcIn),
+                                  width: _size,
+                                  height: _size,
+                                ))
+                          ],
+                        )
+                      : SvgPicture.asset(
+                          'assets/icons/star_outlined.svg',
+                          colorFilter: ColorFilter.mode(
+                              _color ?? Theme.of(context).colorScheme.primary,
+                              BlendMode.srcIn),
+                          width: _size,
+                          height: _size,
+                        ),
+            ),
+          )
       ],
     );
+  }
+}
+
+class _Clipper extends CustomClipper<Rect> {
+  final double _part;
+
+  _Clipper({required double part}) : _part = part;
+
+  @override
+  Rect getClip(Size size) {
+    return Rect.fromLTRB(0, 0, size.width * _part, size.height);
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Rect> oldClipper) {
+    return false;
   }
 }

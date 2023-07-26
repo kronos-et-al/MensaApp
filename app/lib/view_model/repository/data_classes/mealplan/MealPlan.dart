@@ -1,14 +1,14 @@
 import '../meal/Meal.dart';
 import 'Line.dart';
 
-class Mealplan {
+class MealPlan {
 
   final DateTime _date;
   final Line _line;
   final bool _isClosed;
   final List<Meal> _meals;
 
-  Mealplan({
+  MealPlan({
     required DateTime date,
     required Line line,
     required bool isClosed,
