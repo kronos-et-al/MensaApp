@@ -6,7 +6,8 @@ use crate::{
         model::{ApiKey, Image},
         CommandDataAccess, Result,
     },
-    util::{ReportReason, Uuid}, null_error,
+    null_error,
+    util::{ReportReason, Uuid},
 };
 
 /// Class implementing all database requests arising from graphql manipulations.
@@ -15,6 +16,7 @@ pub struct PersistentCommandData {
 }
 
 #[async_trait]
+#[allow(clippy::missing_panics_doc)] // necessary because sqlx macro sometimes create unreachable panics?
 impl CommandDataAccess for PersistentCommandData {
     async fn get_image_info(&self, image_id: Uuid) -> Result<Image> {
         let record = sqlx::query!(
@@ -30,15 +32,15 @@ impl CommandDataAccess for PersistentCommandData {
         .await?;
 
         Ok(Image {
-                approved: null_error!(record.approved),
-                url: null_error!(record.url),
-                rank: null_error!(record.rank),
-                report_count: u32::try_from(null_error!(record.report_count))?,
-                upload_date: null_error!(record.upload_date),
-                downvotes: u32::try_from(null_error!(record.downvotes))?,
-                upvotes: u32::try_from(null_error!(record.upvotes))?,
-                id: null_error!(record.image_id),
-                image_hoster_id: null_error!(record.image_hoster_id),
+            approved: null_error!(record.approved),
+            url: null_error!(record.url),
+            rank: null_error!(record.rank),
+            report_count: u32::try_from(null_error!(record.report_count))?,
+            upload_date: null_error!(record.upload_date),
+            downvotes: u32::try_from(null_error!(record.downvotes))?,
+            upvotes: u32::try_from(null_error!(record.upvotes))?,
+            id: null_error!(record.image_id),
+            image_hoster_id: null_error!(record.image_hoster_id),
         })
     }
 

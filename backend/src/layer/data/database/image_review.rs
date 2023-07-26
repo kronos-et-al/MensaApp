@@ -3,7 +3,8 @@ use sqlx::{Pool, Postgres};
 
 use crate::{
     interface::persistent_data::{model::Image, ImageReviewDataAccess, Result},
-    util::{Date, Uuid}, null_error,
+    null_error,
+    util::{Date, Uuid},
 };
 
 pub struct PersistentImageReviewData {
@@ -11,6 +12,7 @@ pub struct PersistentImageReviewData {
 }
 
 #[async_trait]
+#[allow(clippy::missing_panics_doc)] // necessary because sqlx macro sometimes create unreachable panics?
 impl ImageReviewDataAccess for PersistentImageReviewData {
     async fn get_n_images_by_rank_date(&self, n: u32, date: Date) -> Result<Vec<Image>> {
         sqlx::query!(

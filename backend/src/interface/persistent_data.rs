@@ -30,16 +30,18 @@ pub enum DataError {
 #[macro_export]
 macro_rules! null_error {
     ($x:expr) => {
-        $x.ok_or($crate::interface::persistent_data::DataError::UnexpectedNullError(
-            format!(
-                "{} at {}:{}:{}",
-                stringify!($x),
-                file!(),
-                line!(),
-                column!()
-            )
-            .to_string(),
-        ))?
+        $x.ok_or(
+            $crate::interface::persistent_data::DataError::UnexpectedNullError(
+                format!(
+                    "{} at {}:{}:{}",
+                    stringify!($x),
+                    file!(),
+                    line!(),
+                    column!()
+                )
+                .to_string(),
+            ),
+        )?
     };
 }
 

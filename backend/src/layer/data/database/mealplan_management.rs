@@ -12,6 +12,7 @@ pub struct PersistentMealplanManagementData {
 }
 
 #[async_trait]
+#[allow(clippy::missing_panics_doc)] // necessary because sqlx macro sometimes create unreachable panics?
 impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     async fn dissolve_relations(&self, canteen_id: Uuid, date: Date) -> Result<()> {
         sqlx::query!(

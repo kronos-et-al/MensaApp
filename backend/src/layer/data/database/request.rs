@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use chrono::{DateTime, Local};
+use chrono::Local;
 use sqlx::{Pool, Postgres};
 
 use crate::{
@@ -20,6 +20,7 @@ pub struct PersistentRequestData {
 }
 
 #[async_trait]
+#[allow(clippy::missing_panics_doc)] // necessary because sqlx macro sometimes create unreachable panics?
 impl RequestDataAccess for PersistentRequestData {
     async fn get_canteen(&self, id: Uuid) -> Result<Option<Canteen>> {
         sqlx::query_as!(
