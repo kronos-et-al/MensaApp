@@ -452,6 +452,35 @@ mod tests {
             .is_empty());
     }
 
+    #[sqlx::test(fixtures("meal", "allergen"))]
+    async fn test_get_allergens(pool: PgPool) {
+        let request = PersistentRequestData { pool };
+        let food_ids = [
+            "f7337122-b018-48ad-b420-6202dc3cb4ff",
+            "73cf367b-a536-4b49-ad0c-cb984caa9a08",
+            "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
+            "0a850476-eda4-4fd8-9f93-579eb85b8c25",
+            "1b5633c2-05c5-4444-90e5-2e475bae6463",
+        ];
+        let food_ids: Vec<Uuid> = food_ids.into_iter().filter_map(|id| Uuid::parse_str(id).ok()).collect();
+        assert_eq!(food_ids.len(), 5);
+        let mut allergens = Vec::new();
+        for food_id in food_ids {
+            allergens.push(request.get_allergens(food_id).await.unwrap());
+        }
+        assert_eq!(allergens, provide_dummy_allergens());
+    }
+
+    fn provide_dummy_allergens() -> Vec<Vec<Allergen>> {
+        vec![
+            vec![Allergen::We],
+            vec![],
+            vec![Allergen::Ei, Allergen::ML, Allergen::We],
+            vec![Allergen::Se, Allergen::So, Allergen::We],
+            vec![Allergen::ML, Allergen::Se, Allergen::So],
+        ]
+    }
+
     fn provide_dummy_sides() -> Vec<Side> {
         vec![Side {
             id: Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
