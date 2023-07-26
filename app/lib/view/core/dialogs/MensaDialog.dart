@@ -14,13 +14,18 @@ class MensaDialog {
       builder: (BuildContext context) {
         return Dialog(
             backgroundColor: Theme.of(context).colorScheme.background,
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-              Padding(padding: EdgeInsets.all(16), child: Text(title,
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold))),
-              if (content != null) content,
-              if (actions != null) actions
-            ]));
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Text(title,
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold))),
+                  if (content != null) content,
+                  if (actions != null) actions
+                ]));
       },
     );
   }
