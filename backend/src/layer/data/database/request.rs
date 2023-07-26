@@ -432,19 +432,23 @@ mod tests {
 
         let sides = request.get_sides(line_id, date).await.unwrap();
         assert_eq!(sides, provide_dummy_sides());
-        assert!(request
-            .get_sides(Uuid::from_u128(7u128), date)
-            .await
-            .unwrap()
-            .is_empty());
-        assert!(request
-            .get_sides(
-                line_id,
-                Date::parse_from_str("2023-07-30", "%Y-%m-%d").unwrap()
-            )
-            .await
-            .unwrap()
-            .is_empty());
+        assert_eq!(
+            request
+                .get_sides(Uuid::from_u128(7u128), date)
+                .await
+                .unwrap(),
+            vec![]
+        );
+        assert_eq!(
+            request
+                .get_sides(
+                    line_id,
+                    Date::parse_from_str("2023-07-30", "%Y-%m-%d").unwrap()
+                )
+                .await
+                .unwrap(),
+            vec![]
+        );
     }
 
     #[sqlx::test(fixtures("meal", "user", "image"))]
@@ -453,24 +457,36 @@ mod tests {
         let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         let client_id = Uuid::parse_str("c51d2d81-3547-4f07-af58-ed613c6ece67").unwrap();
 
-        let visible_images = request.get_visible_images(meal_id, Some(client_id)).await.unwrap();
+        let visible_images = request
+            .get_visible_images(meal_id, Some(client_id))
+            .await
+            .unwrap();
         assert_eq!(visible_images, provide_dummy_images());
 
-        assert_eq!(request.get_visible_images(Uuid::from_u128(7u128), Some(client_id)).await.unwrap(), vec![]);
-        assert_eq!(request.get_visible_images(meal_id, None).await.unwrap(), vec![]);
+        assert_eq!(
+            request
+                .get_visible_images(Uuid::from_u128(7u128), Some(client_id))
+                .await
+                .unwrap(),
+            vec![]
+        );
+        assert_eq!(
+            request.get_visible_images(meal_id, None).await.unwrap(),
+            vec![]
+        );
     }
 
     fn provide_dummy_images() -> Vec<Image> {
         let image1 = Image {
             id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
             image_hoster_id: "test".to_string(),
-            url:  "www.test.com".to_string(),
+            url: "www.test.com".to_string(),
             rank: 0.0,
             downvotes: 0,
             upvotes: 0,
             approved: false,
             upload_date: Date::parse_from_str("2023-07-26", "%Y-%m-%d").unwrap(),
-            report_count: 0
+            report_count: 0,
         };
         let image2 = Image {
             id: Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap(),
@@ -492,7 +508,10 @@ mod tests {
             "0a850476-eda4-4fd8-9f93-579eb85b8c25",
             "1b5633c2-05c5-4444-90e5-2e475bae6463",
         ];
-        let food_ids: Vec<Uuid> = food_ids.into_iter().filter_map(|id| Uuid::parse_str(id).ok()).collect();
+        let food_ids: Vec<Uuid> = food_ids
+            .into_iter()
+            .filter_map(|id| Uuid::parse_str(id).ok())
+            .collect();
         assert_eq!(food_ids.len(), 5);
         let mut additives = Vec::new();
         for food_id in food_ids {
