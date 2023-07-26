@@ -1,8 +1,29 @@
+use std::collections::HashMap;
+use std::iter::Map;
 use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
 use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
 use crate::util::{Date, Uuid};
 use std::slice::Iter;
 use tracing::warn;
+
+const CANTEEN_POSITIONS: HashMap<&str, u32> = HashMap::from([
+    ("Mensa am Adenauerring", 10),
+    ("chicco di caffè Karlsruhe", 20),
+    ("Cafeteria Engesserstraẞe", 30),
+    ("Chicco di Caffè", 40),
+    ("Menseria  Schloss Gottesaue", 50),
+    ("Mensa Moltke", 60),
+    ("Cafébar Moltke", 70),
+    ("Menseria  Schloss Gottesaue", 80),
+    ("Menseria Moltkestraẞe 30", 90),
+    ("Menseria Erzbergerstraẞe", 100),
+    ("Mensa Tiefenbronnerstraẞe", 110),
+    ("Cafeteria Tiefenbronner Straẞe", 120),
+    ("chicco di caffè Pforzheim", 130),
+    ("Menseria Holzgartenstraẞe", 140),
+]);
+
+const DEFAULT_POSITION: u32 = 1000_u32;
 
 pub struct RelationResolver<DataAccess>
 where
@@ -33,10 +54,10 @@ where
         let db_canteen = match self.db.get_similar_canteen(&canteen.name).await? {
             Some(similar_canteen) => {
                 self.db
-                    .update_canteen(similar_canteen, &canteen.name, todo!())
+                    .update_canteen(similar_canteen, &canteen.name, Self::get_position(&canteen.name))
                     .await?
             }
-            None => self.db.insert_canteen(&canteen.name, todo!()).await?,
+            None => self.db.insert_canteen(&canteen.name, Self::get_position(&canteen.name)).await?,
         };
         self.db.dissolve_relations(db_canteen, date).await?;
         for line in canteen.lines {
@@ -52,10 +73,10 @@ where
         let line_id = match self.db.get_similar_line(&line.name).await? {
             Some(similar_line) => {
                 self.db
-                    .update_line(similar_line, &line.name, todo!())
+                    .update_line(similar_line, &line.name, )
                     .await?
             }
-            None => self.db.insert_line(&line.name, todo!()).await?,
+            None => self.db.insert_line(&line.name, ).await?,
         };
 
         let average = Self::average(line.dishes.iter());
@@ -67,6 +88,10 @@ where
             }
         }
         Ok(())
+    }
+
+    fn get_position(canteen_name: &String) -> u32 {
+        CANTEEN_POSITIONS.get(canteen_name).unwrap_or(&DEFAULT_POSITION).clone()
     }
 
     async fn resolve_dish(
