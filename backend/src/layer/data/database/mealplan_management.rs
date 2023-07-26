@@ -11,7 +11,7 @@ pub struct PersistentMealplanManagementData {
     pub(super) pool: Pool<Postgres>,
 }
 
-const THRESHOLD: f32 = 0.8;
+const THRESHOLD: f32 = 0.785;
 
 #[async_trait]
 #[allow(clippy::missing_panics_doc)] // necessary because sqlx macro sometimes create unreachable panics?
@@ -352,8 +352,7 @@ mod test {
     #![allow(clippy::unwrap_used)]
 
     use super::*;
-    use crate::util::Additive::{AntioxidantAgents, PreservingAgents};
-    use crate::util::Allergen::{Se, So, We, ML};
+    use crate::util::Allergen::{Se, So, We, ML, Ei};
     use chrono::{NaiveDate, Utc};
     use sqlx::PgPool;
     use std::collections::HashMap;
@@ -381,7 +380,7 @@ mod test {
         assert!(deleted.is_empty());
     }
 
-    #[sqlx::test(fixtures("canteen"))]
+    #[sqlx::test(fixtures("similar_canteen"))]
     async fn test_get_similar_canteen(pool: PgPool) {
         let req = PersistentMealplanManagementData { pool: pool.clone() };
 
@@ -389,39 +388,39 @@ mod test {
             // Identical
             (
                 Uuid::parse_str("8f10c56d-da9b-4f62-b4c1-16feb0f98c67").unwrap(),
-                "second canteen",
+                "Mensa am Adenauerring",
                 true,
             ),
             (
                 Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap(),
-                "my favorite canteen",
+                "chicco di caffe Karlsruhe",
                 true,
             ),
             (
                 Uuid::parse_str("f2885f67-fc95-4205-bc7d-b2fb78cee0a8").unwrap(),
-                "bad canteen",
+                "Cafebar Moltke",
                 true,
             ),
             // 'Similar'
             (
                 Uuid::parse_str("8f10c56d-da9b-4f62-b4c1-16feb0f98c67").unwrap(),
-                "second cantee",
+                "   Mensa   am   Adenauerring  ",
                 true,
             ),
             (
                 Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap(),
-                "favorite canteen",
+                "chicco di caffé Karlsruhe",
                 true,
             ),
             (
                 Uuid::parse_str("f2885f67-fc95-4205-bc7d-b2fb78cee0a8").unwrap(),
-                "  bad  canteen ",
+                "Cafebar Moltke 2",
                 true,
             ),
             // No longer 'similar'
-            (Uuid::default(), "second", false),
-            (Uuid::default(), "canteen", false),
-            (Uuid::default(), "", false),
+            (Uuid::default(), "Adenauerring", false),
+            (Uuid::default(), "chicco di caffe", false),
+            (Uuid::default(), "Moltkestraße", false),
         ];
 
         for (uuid, name, is_similar) in tests {
@@ -439,7 +438,7 @@ mod test {
         }
     }
 
-    #[sqlx::test(fixtures("canteen", "line"))]
+    #[sqlx::test(fixtures("canteen", "similar_line"))]
     async fn test_get_similar_line(pool: PgPool) {
         let req = PersistentMealplanManagementData { pool };
 
@@ -447,32 +446,39 @@ mod test {
             // Identical
             (
                 Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap(),
-                "line 2",
+                "LINIE 1 GUT & GÜNSTIG",
                 true,
             ),
             (
-                Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap(),
-                "single line",
+                Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(),
+                "LINIE 2 VEGANE LINIE",
                 true,
             ),
             (
                 Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(),
-                "special line",
+                "LINIE 4",
                 true,
             ),
             // 'Similar'
-            //(Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap(), "line2", true), isn't similar
             (
-                Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap(),
-                " single   line ",
+                Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap(),
+                "LINIE GUT & GÜNSTIG",
+                true
+            ),
+            (
+                Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(),
+                "LINIE 2: VEGANE LINIE",
                 true,
             ),
-            //(Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(), "specia line", true), isn't similar
-
+            (
+                Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(),
+                "Linie 4",
+                true
+            ),
             // No longer 'similar'
-            (Uuid::default(), "line", false),
-            (Uuid::default(), "sing.", false),
-            (Uuid::default(), "", false),
+            (Uuid::default(), "GUT & GÜNSTIG", false),
+            (Uuid::default(), "LINIE 2", false),
+            (Uuid::default(), "LINIE 3", false),
         ];
 
         for (uuid, name, is_similar) in tests {
@@ -490,17 +496,15 @@ mod test {
         }
     }
 
-    #[sqlx::test(fixtures("meal", "allergen", "additive"))]
+    #[sqlx::test(fixtures("similar_meal", "allergen", "additive"))]
     async fn test_get_similar_meal(pool: PgPool) {
         let req = PersistentMealplanManagementData { pool };
 
         let addons: HashMap<&str, (Vec<Additive>, Vec<Allergen>)> = HashMap::from([
             ("f7337122-b018-48ad-b420-6202dc3cb4ff", (vec![], vec![We])),
-            ("73cf367b-a536-4b49-ad0c-cb984caa9a08", (vec![], vec![])),
-            (
-                "1b5633c2-05c5-4444-90e5-2e475bae6463",
-                (vec![PreservingAgents, AntioxidantAgents], vec![ML, Se, So]),
-            ),
+            ("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec", (vec![], vec![Ei, ML, We])),
+            ("0a850476-eda4-4fd8-9f93-579eb85b8c25", (vec![], vec![Se, So, We])),
+            ("00000000-0000-0000-0000-000000000000", (vec![], vec![]))
         ]);
 
         let tests = [
@@ -510,36 +514,35 @@ mod test {
                 "Geflügel - Cevapcici, Ajvar, Djuvec Reis",
                 true,
             ),
-            // (
-            //     Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
-            //     "zu jedem Gericht reichen wir ein Dessert oder Salat",
-            //     true,
-            // ),
             (
-                Uuid::parse_str("1b5633c2-05c5-4444-90e5-2e475bae6463").unwrap(),
-                "Cordon bleu vom Schwein mit Bratensoße",
+                Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap(),
+                "2 Dampfnudeln mit Vanillesoße",
+                true,
+            ),
+            (
+                Uuid::parse_str("0a850476-eda4-4fd8-9f93-579eb85b8c25").unwrap(),
+                "Mediterraner Gemüsegulasch mit Räuchertofu, dazu Sommerweizen",
                 true,
             ),
             // 'Similar' with identical addons
-            // (
-            //     Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap(),
-            //     "line2",
-            //     true,
-            // ),
-            // (
-            //     Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap(),
-            //     "sing. line",
-            //     true,
-            // ),
-            // (
-            //     Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(),
-            //     "spec. line",
-            //     true,
-            // ),
+            (
+                Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
+                "Geflügel - Cevapcici, Ajvar, Reis",
+                true,
+            ),
+            (
+                Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap(),
+                "Dampfnudeln mit Vanillesoße",
+                true,
+            ),
+            (
+                Uuid::parse_str("0a850476-eda4-4fd8-9f93-579eb85b8c25").unwrap(),
+                "Mediterraner Gemüsegulasch mit Räuchertofu und Sommerweizen",
+                true,
+            ),
             // No longer 'similar' with identical addons
-            // TODO threshold wont work: All results under the threshold should be ignored.
-            (Uuid::default(), "line", false),
-            (Uuid::default(), "sing.", false),
+            (Uuid::default(), "Geflügel - Cevapcici", false),
+            (Uuid::default(), "Dampfnudeln", false),
             (Uuid::default(), "", false),
         ];
 
@@ -551,7 +554,75 @@ mod test {
                 .unwrap()
                 .map_or_else(
                     || {
-                        // TODO unwrap error as operator does not exist in query
+                        println!("{is_similar}");
+                        assert!(!is_similar);
+                    },
+                    |res| {
+                        println!("{res}");
+                        assert_eq!(uuid, res);
+                    },
+                );
+        }
+    }
+
+    #[sqlx::test(fixtures("similar_meal", "allergen", "additive"))]
+    async fn test_get_similar_side(pool: PgPool) {
+        let req = PersistentMealplanManagementData { pool };
+
+        let addons: HashMap<&str, (Vec<Additive>, Vec<Allergen>)> = HashMap::from([
+            ("73cf367b-a536-4b49-ad0c-cb984caa9a08", (vec![], vec![])),
+            ("836b17fb-cb16-425d-8d3c-c274a9cdbd0c", (vec![], vec![])),
+            ("2c662143-eb84-4142-aa98-bd7bdf84c498", (vec![], vec![])),
+            ("00000000-0000-0000-0000-000000000000", (vec![], vec![]))
+        ]);
+
+        let tests = [
+            // Identical
+            (
+                Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
+                "zu jedem Gericht reichen wir ein Dessert oder Salat",
+                true,
+            ),
+            (
+                Uuid::parse_str("836b17fb-cb16-425d-8d3c-c274a9cdbd0c").unwrap(),
+                "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings, Preis je 100 g",
+                true,
+            ),
+            (
+                Uuid::parse_str("2c662143-eb84-4142-aa98-bd7bdf84c498").unwrap(),
+                "Insalata piccola - kleiner Blattsalat mit Thunfisch und Paprika",
+                true,
+            ),
+            // 'Similar' with identical addons
+            (
+                Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
+                "zu jedem Gericht reichen wir Desserts oder Salate",
+                true,
+            ),
+            (
+                Uuid::parse_str("836b17fb-cb16-425d-8d3c-c274a9cdbd0c").unwrap(),
+                "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings",
+                true,
+            ),
+            (
+                Uuid::parse_str("2c662143-eb84-4142-aa98-bd7bdf84c498").unwrap(),
+                "Insalata piccola - Blattsalat mit Thunfisch und Paprika",
+                true,
+            ),
+            // No longer 'similar' with identical addons
+            (Uuid::default(), "zu jedem Gericht reichen wir ein Dessert", false),
+            (Uuid::default(), "Salatbuffet mit frischer Rohkost", false),
+            (Uuid::default(), "Insalata piccola", false),
+        ];
+
+        for (uuid, name, is_similar) in tests {
+            println!("Testing values: '{uuid}', '{name}'. Should be similar: {is_similar}");
+            let (additives, allergens) = addons.get(&*uuid.to_string()).unwrap();
+            req.get_similar_side(name, allergens, additives)
+                .await
+                .unwrap()
+                .map_or_else(
+                    || {
                         println!("{is_similar}");
                         assert!(!is_similar);
                     },
