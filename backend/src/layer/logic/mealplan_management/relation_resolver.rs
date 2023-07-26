@@ -1,7 +1,7 @@
-use std::collections::HashMap;
 use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
 use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
 use crate::util::{Date, Uuid};
+use std::collections::HashMap;
 use std::slice::Iter;
 use tracing::warn;
 
@@ -53,10 +53,18 @@ where
         let db_canteen = match self.db.get_similar_canteen(&canteen.name).await? {
             Some(similar_canteen) => {
                 self.db
-                    .update_canteen(similar_canteen, &canteen.name, Self::get_position(&canteen.name))
+                    .update_canteen(
+                        similar_canteen,
+                        &canteen.name,
+                        Self::get_position(&canteen.name),
+                    )
                     .await?
             }
-            None => self.db.insert_canteen(&canteen.name, Self::get_position(&canteen.name)).await?,
+            None => {
+                self.db
+                    .insert_canteen(&canteen.name, Self::get_position(&canteen.name))
+                    .await?
+            }
         };
         self.db.dissolve_relations(db_canteen, date).await?;
         let mut position: isize = 0;
@@ -72,11 +80,7 @@ where
 
     async fn resolve_line(&self, date: Date, line: ParseLine, pos: u32) -> Result<(), DataError> {
         let line_id = match self.db.get_similar_line(&line.name).await? {
-            Some(similar_line) => {
-                self.db
-                    .update_line(similar_line, &line.name, pos)
-                    .await?
-            }
+            Some(similar_line) => self.db.update_line(similar_line, &line.name, pos).await?,
             None => self.db.insert_line(&line.name, pos).await?,
         };
 
@@ -92,7 +96,10 @@ where
     }
 
     fn get_position(canteen_name: &String) -> u32 {
-        CANTEEN_POSITIONS.get(canteen_name).unwrap_or(&DEFAULT_POSITION).clone()
+        CANTEEN_POSITIONS
+            .get(canteen_name)
+            .unwrap_or(&DEFAULT_POSITION)
+            .clone()
     }
 
     async fn resolve_dish(
