@@ -7,7 +7,8 @@ use crate::{
         model::{Canteen, Image, Line, Meal, Side},
         DataError, RequestDataAccess, Result,
     },
-    util::{Additive, Allergen, Date, MealType, Price, Uuid}, null_error,
+    null_error,
+    util::{Additive, Allergen, Date, MealType, Price, Uuid},
 };
 
 const MAX_WEEKS_DATA: i64 = 4;
@@ -435,8 +436,7 @@ mod tests {
         let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
 
         let sides = request.get_sides(line_id, date).await.unwrap();
-        assert!(sides.len() == 1);
-        assert!(sides[0].name == "zu jedem Gericht reichen wir ein Dessert oder Salat");
+        assert_eq!(sides, provide_dummy_sides());
         assert!(request
             .get_sides(Uuid::from_u128(7u128), date)
             .await
@@ -450,6 +450,20 @@ mod tests {
             .await
             .unwrap()
             .is_empty());
+    }
+
+    fn provide_dummy_sides() -> Vec<Side> {
+        vec![Side {
+            id: Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
+            name: "zu jedem Gericht reichen wir ein Dessert oder Salat".to_string(),
+            meal_type: MealType::Unknown,
+            price: Price {
+                price_student: 0,
+                price_employee: 0,
+                price_guest: 0,
+                price_pupil: 0,
+            },
+        }]
     }
 
     fn provide_dummy_meals() -> Vec<Meal> {

@@ -63,7 +63,7 @@ pub struct Meal {
 }
 
 /// This structure is used for database operations. This side structure is based on the database entities 'food', 'foodAllergen' and 'foodAdditive'.
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Side {
     /// Identification of the side.
     pub id: Uuid,
