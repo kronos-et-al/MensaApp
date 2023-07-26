@@ -159,9 +159,10 @@ impl CommandDataAccess for PersistentCommandData {
 mod test {
     #![allow(clippy::unwrap_used)]
     use super::*;
+    use chrono::Local;
     use sqlx::PgPool;
 
-    use crate::util::{Date, Uuid};
+    use crate::util::Uuid;
 
     const WRONG_UUID: Uuid = Uuid::from_u128(7u128);
 
@@ -184,7 +185,7 @@ mod test {
             downvotes: 0,
             upvotes: 0,
             approved: false,
-            upload_date: Date::parse_from_str("2023-07-26", "%Y-%m-%d").unwrap(),
+            upload_date: Local::now().date_naive(),
             report_count: 0,
         }
     }

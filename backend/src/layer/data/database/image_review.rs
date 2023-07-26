@@ -142,13 +142,14 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
 mod test {
     #![allow(clippy::unwrap_used)]
     use super::*;
+    use chrono::Local;
     use sqlx::PgPool;
 
     #[sqlx::test(fixtures("meal", "user", "image"))]
     async fn test_get_n_images_by_rank_date(pool: PgPool) {
         let review = PersistentImageReviewData { pool };
         let n = 4;
-        let date = Date::parse_from_str("2023-07-26", "%Y-%m-%d").unwrap();
+        let date = Local::now().date_naive();
 
         let images = review.get_n_images_by_rank_date(n, date).await.unwrap();
         assert_eq!(images, provide_dummy_images());
@@ -167,7 +168,7 @@ mod test {
             .unwrap()
             .is_empty());
         assert!(review
-            .get_n_images_by_rank_date(n, Date::parse_from_str("2023-07-01", "%Y-%m-%d").unwrap())
+            .get_n_images_by_rank_date(n, Date::default())
             .await
             .unwrap()
             .is_empty());
@@ -182,7 +183,7 @@ mod test {
             downvotes: 0,
             upvotes: 0,
             approved: false,
-            upload_date: Date::parse_from_str("2023-07-26", "%Y-%m-%d").unwrap(),
+            upload_date: Local::now().date_naive(),
             report_count: 0,
         };
         let image2 = Image {
