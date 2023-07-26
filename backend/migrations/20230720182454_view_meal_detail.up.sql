@@ -9,8 +9,8 @@ CREATE VIEW meal_detail AS (
         FROM meal JOIN food USING (food_id)
     ) meal LEFT JOIN (
         -- statistics
-        SELECT food_id, false as new, 
-        COUNT(*) FILTER (WHERE serve_date > CURRENT_DATE - 30 * 3) as frequency,
+        SELECT food_id, COUNT(*) FILTER (WHERE serve_date < CURRENT_DATE) = 0 as new, 
+        COUNT(*) FILTER (WHERE serve_date >= CURRENT_DATE - 30 * 3 AND serve_date < CURRENT_DATE) as frequency,
         MAX(serve_date) FILTER (WHERE serve_date < CURRENT_DATE) as last_served,
         MIN(serve_date) FILTER (WHERE serve_date > CURRENT_DATE) as next_served 
         FROM food_plan

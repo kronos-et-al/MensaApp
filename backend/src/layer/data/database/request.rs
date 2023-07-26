@@ -380,7 +380,6 @@ mod tests {
                 meals.push(meal);
             }
         }
-        dbg!(&meals);
         assert_eq!(meals, provide_dummy_meals());
 
         let meal_id: uuid::Uuid = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
@@ -620,9 +619,9 @@ mod tests {
                 price_guest: 460,
                 price_pupil: 355,
             },
-            last_served: Some(Local::now().date_naive()),
+            last_served: None,
             next_served: None,
-            frequency: 1,
+            frequency: 0,
             new: true,
             rating_count: 0,
             average_rating: 2.5,
