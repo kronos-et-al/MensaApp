@@ -327,11 +327,27 @@ mod test {
     #![allow(clippy::unwrap_used)]
 
     use std::collections::HashMap;
-    use chrono::Utc;
+    use std::str::FromStr;
+    use chrono::{NaiveDate, Utc};
     use super::*;
     use sqlx::PgPool;
     use crate::util::Additive::{AntioxidantAgents, PreservingAgents};
     use crate::util::Allergen::{ML, Se, So, We};
+
+    #[sqlx::test(fixtures("canteen", "line", "food_plan", "meal"))]
+    async fn test_dissolve_relations(pool: PgPool) {
+        let req = PersistentMealplanManagementData { pool: pool.clone() };
+
+        let canteen_id = Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap();
+        let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
+        let date = NaiveDate::from_str("2023-07-10").unwrap();
+
+        let res = req.dissolve_relations(canteen_id, date).await;
+        assert!(res.is_ok());
+
+        let deleted = sqlx::query!(r#"SELECT * FROM food_plan WHERE line_id = $1 AND serve_date = $2"#, line_id, date).fetch_all(&pool).await.unwrap();
+        assert!(deleted.is_empty());
+    }
 
     #[sqlx::test(fixtures("canteen"))]
     async fn test_get_similar_canteen(pool: PgPool) {
@@ -506,4 +522,95 @@ mod test {
         assert_eq!(selection.name, name);
         assert_eq!(selection.meal_type, meal_type);
     }
+
+    #[sqlx::test(fixtures("canteen"))]
+    async fn test_insert_canteen(pool: PgPool) {
+        let req = PersistentMealplanManagementData { pool: pool.clone() };
+
+        let name = "TEST_CANTEEN";
+        let pos = 42_u32;
+
+        let res = req.insert_canteen(name, pos).await;
+        assert!(res.is_ok());
+        let canteen_id = res.unwrap();
+
+        let selections = sqlx::query!(r#"SELECT name, position FROM canteen WHERE canteen_id = $1"#, canteen_id).fetch_all(&pool).await.unwrap();
+        let selection = selections.first().unwrap();
+
+        assert_eq!(selection.name, name);
+        assert_eq!(selection.position as u32, pos);
+    }
+
+    #[sqlx::test(fixtures("canteen", "line"))]
+    async fn test_insert_line(pool: PgPool) {
+        let req = PersistentMealplanManagementData { pool: pool.clone() };
+
+        let name = "TEST_LINE";
+        let pos = 42_u32;
+
+        let res = req.insert_line(name, pos).await; // TODO insert canteen_id
+        assert!(res.is_ok());
+        let line_id = res.unwrap();
+
+        let selections = sqlx::query!(r#"SELECT name, position FROM line WHERE line_id = $1"#, line_id).fetch_all(&pool).await.unwrap();
+        let selection = selections.first().unwrap();
+
+        assert_eq!(selection.name, name);
+        assert_eq!(selection.position as u32, pos);
+    }
+
+    #[sqlx::test(fixtures("meal", "allergen", "additive"))]
+    async fn test_update_food(pool: PgPool) {
+        let req = PersistentMealplanManagementData { pool: pool.clone() };
+
+        let food_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
+        let name = "TEST_FOOD";
+
+        let res = req.update_food(food_id, name).await;
+        assert!(res.is_ok());
+
+        let selections = sqlx::query!(r#"SELECT name FROM food WHERE food_id = $1"#, food_id).fetch_all(&pool).await.unwrap();
+        let selection = selections.first().unwrap();
+
+        assert_eq!(selection.name, name);
+    }
+
+    #[sqlx::test(fixtures("canteen"))]
+    async fn test_update_canteen(pool: PgPool) {
+        let req = PersistentMealplanManagementData { pool: pool.clone() };
+
+        let canteen_id = Uuid::parse_str("8f10c56d-da9b-4f62-b4c1-16feb0f98c67").unwrap();
+        let name = "TEST_CANTEEN";
+        let pos = 42_u32;
+
+        let res = req.update_canteen(canteen_id, name, pos).await;
+        assert!(res.is_ok());
+        let canteen_id = res.unwrap();
+
+        let selections = sqlx::query!(r#"SELECT name, position FROM canteen WHERE canteen_id = $1"#, canteen_id).fetch_all(&pool).await.unwrap();
+        let selection = selections.first().unwrap();
+
+        assert_eq!(selection.name, name);
+        assert_eq!(selection.position as u32, pos);
+    }
+
+    #[sqlx::test(fixtures("canteen", "line"))]
+    async fn test_update_line(pool: PgPool) {
+        let req = PersistentMealplanManagementData { pool: pool.clone() };
+
+        let line_id = Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap();
+        let name = "TEST_LINE";
+        let pos = 42_u32;
+
+        let res = req.update_line(line_id, name, pos).await;
+        assert!(res.is_ok());
+        let line_id = res.unwrap();
+
+        let selections = sqlx::query!(r#"SELECT name, position FROM line WHERE line_id = $1"#, line_id).fetch_all(&pool).await.unwrap();
+        let selection = selections.first().unwrap();
+
+        assert_eq!(selection.name, name);
+        assert_eq!(selection.position as u32, pos);
+    }
+
 }
