@@ -550,7 +550,7 @@ mod test {
         let name = "TEST_LINE";
         let pos = 42_u32;
 
-        let res = req.insert_line(canteen_id, name, pos).await; // TODO insert canteen_id
+        let res = req.insert_line(canteen_id, name, pos).await;
         assert!(res.is_ok());
         let line_id = res.unwrap();
 
