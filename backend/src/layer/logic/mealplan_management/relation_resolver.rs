@@ -33,10 +33,18 @@ where
         let db_canteen = match self.db.get_similar_canteen(&canteen.name).await? {
             Some(similar_canteen) => {
                 self.db
-                    .update_canteen(similar_canteen, &canteen.name, todo!())
+                    .update_canteen(
+                        similar_canteen,
+                        &canteen.name,
+                        canteen.pos,
+                    )
                     .await?
             }
-            None => self.db.insert_canteen(&canteen.name, todo!()).await?,
+            None => {
+                self.db
+                    .insert_canteen(&canteen.name, canteen.pos)
+                    .await?
+            }
         };
         self.db.dissolve_relations(db_canteen, date).await?;
         for line in canteen.lines {
@@ -50,12 +58,8 @@ where
 
     async fn resolve_line(&self, date: Date, line: ParseLine) -> Result<(), DataError> {
         let line_id = match self.db.get_similar_line(&line.name).await? {
-            Some(similar_line) => {
-                self.db
-                    .update_line(similar_line, &line.name, todo!())
-                    .await?
-            }
-            None => self.db.insert_line(&line.name, todo!()).await?,
+            Some(similar_line) => self.db.update_line(similar_line, &line.name, line.pos).await?,
+            None => self.db.insert_line(&line.name, line.pos).await?,
         };
 
         let average = Self::average(line.dishes.iter());
@@ -179,6 +183,7 @@ mod test {
         ParseLine {
             name: "test_line".to_string(),
             dishes,
+            pos: 42_u32
         }
     }
 
@@ -186,6 +191,7 @@ mod test {
         ParseCanteen {
             name: "test_canteen".to_string(),
             lines,
+            pos: 42_u32
         }
     }
 

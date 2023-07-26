@@ -7,42 +7,52 @@
                 ParseLine {
                     name: "Linie 1 Gut & Günstig",
                     dishes: [],
+                    pos: 0,
                 },
                 ParseLine {
                     name: "Linie 2 Vegane Linie",
                     dishes: [],
+                    pos: 1,
                 },
                 ParseLine {
                     name: "Linie 3",
                     dishes: [],
+                    pos: 2,
                 },
                 ParseLine {
                     name: "Linie 4",
                     dishes: [],
+                    pos: 3,
                 },
                 ParseLine {
                     name: "Linie 5",
                     dishes: [],
+                    pos: 4,
                 },
                 ParseLine {
                     name: "Schnitzel-/ Burgerbar",
                     dishes: [],
+                    pos: 5,
                 },
                 ParseLine {
                     name: "Linie 6",
                     dishes: [],
+                    pos: 6,
                 },
                 ParseLine {
                     name: "Spätausgabe und Abendessen",
                     dishes: [],
+                    pos: 7,
                 },
                 ParseLine {
                     name: "[kœri]werk 11-14 Uhr",
                     dishes: [],
+                    pos: 8,
                 },
                 ParseLine {
                     name: "Cafeteria 11-14 Uhr",
                     dishes: [],
+                    pos: 9,
                 },
                 ParseLine {
                     name: "[pizza]werk Pizza 11-14 Uhr",
@@ -85,16 +95,20 @@
                             env_score: 0,
                         },
                     ],
+                    pos: 10,
                 },
                 ParseLine {
                     name: "[pizza]werk Pasta",
                     dishes: [],
+                    pos: 11,
                 },
                 ParseLine {
                     name: "[pizza]werk Salate / Vorspeisen",
                     dishes: [],
+                    pos: 12,
                 },
             ],
+            pos: 42,
         },
     ),
     (
@@ -105,42 +119,52 @@
                 ParseLine {
                     name: "Linie 1 Gut & Günstig",
                     dishes: [],
+                    pos: 0,
                 },
                 ParseLine {
                     name: "Linie 2 Vegane Linie",
                     dishes: [],
+                    pos: 1,
                 },
                 ParseLine {
                     name: "Linie 3",
                     dishes: [],
+                    pos: 2,
                 },
                 ParseLine {
                     name: "Linie 4",
                     dishes: [],
+                    pos: 3,
                 },
                 ParseLine {
                     name: "Linie 5",
                     dishes: [],
+                    pos: 4,
                 },
                 ParseLine {
                     name: "Schnitzel-/ Burgerbar",
                     dishes: [],
+                    pos: 5,
                 },
                 ParseLine {
                     name: "Linie 6",
                     dishes: [],
+                    pos: 6,
                 },
                 ParseLine {
                     name: "Spätausgabe und Abendessen",
                     dishes: [],
+                    pos: 7,
                 },
                 ParseLine {
                     name: "[kœri]werk 11-14 Uhr",
                     dishes: [],
+                    pos: 8,
                 },
                 ParseLine {
                     name: "Cafeteria 11-14 Uhr",
                     dishes: [],
+                    pos: 9,
                 },
                 ParseLine {
                     name: "[pizza]werk Pizza 11-14 Uhr",
@@ -183,16 +207,20 @@
                             env_score: 0,
                         },
                     ],
+                    pos: 10,
                 },
                 ParseLine {
                     name: "[pizza]werk Pasta",
                     dishes: [],
+                    pos: 11,
                 },
                 ParseLine {
                     name: "[pizza]werk Salate / Vorspeisen",
                     dishes: [],
+                    pos: 12,
                 },
             ],
+            pos: 42,
         },
     ),
     (
@@ -203,42 +231,52 @@
                 ParseLine {
                     name: "Linie 1 Gut & Günstig",
                     dishes: [],
+                    pos: 0,
                 },
                 ParseLine {
                     name: "Linie 2 Vegane Linie",
                     dishes: [],
+                    pos: 1,
                 },
                 ParseLine {
                     name: "Linie 3",
                     dishes: [],
+                    pos: 2,
                 },
                 ParseLine {
                     name: "Linie 4",
                     dishes: [],
+                    pos: 3,
                 },
                 ParseLine {
                     name: "Linie 5",
                     dishes: [],
+                    pos: 4,
                 },
                 ParseLine {
                     name: "Schnitzel-/ Burgerbar",
                     dishes: [],
+                    pos: 5,
                 },
                 ParseLine {
                     name: "Linie 6",
                     dishes: [],
+                    pos: 6,
                 },
                 ParseLine {
                     name: "Spätausgabe und Abendessen",
                     dishes: [],
+                    pos: 7,
                 },
                 ParseLine {
                     name: "[kœri]werk 11-14 Uhr",
                     dishes: [],
+                    pos: 8,
                 },
                 ParseLine {
                     name: "Cafeteria 11-14 Uhr",
                     dishes: [],
+                    pos: 9,
                 },
                 ParseLine {
                     name: "[pizza]werk Pizza 11-14 Uhr",
@@ -281,16 +319,20 @@
                             env_score: 0,
                         },
                     ],
+                    pos: 10,
                 },
                 ParseLine {
                     name: "[pizza]werk Pasta",
                     dishes: [],
+                    pos: 11,
                 },
                 ParseLine {
                     name: "[pizza]werk Salate / Vorspeisen",
                     dishes: [],
+                    pos: 12,
                 },
             ],
+            pos: 42,
         },
     ),
     (
@@ -301,42 +343,52 @@
                 ParseLine {
                     name: "Linie 1 Gut & Günstig",
                     dishes: [],
+                    pos: 0,
                 },
                 ParseLine {
                     name: "Linie 2 Vegane Linie",
                     dishes: [],
+                    pos: 1,
                 },
                 ParseLine {
                     name: "Linie 3",
                     dishes: [],
+                    pos: 2,
                 },
                 ParseLine {
                     name: "Linie 4",
                     dishes: [],
+                    pos: 3,
                 },
                 ParseLine {
                     name: "Linie 5",
                     dishes: [],
+                    pos: 4,
                 },
                 ParseLine {
                     name: "Schnitzel-/ Burgerbar",
                     dishes: [],
+                    pos: 5,
                 },
                 ParseLine {
                     name: "Linie 6",
                     dishes: [],
+                    pos: 6,
                 },
                 ParseLine {
                     name: "Spätausgabe und Abendessen",
                     dishes: [],
+                    pos: 7,
                 },
                 ParseLine {
                     name: "[kœri]werk 11-14 Uhr",
                     dishes: [],
+                    pos: 8,
                 },
                 ParseLine {
                     name: "Cafeteria 11-14 Uhr",
                     dishes: [],
+                    pos: 9,
                 },
                 ParseLine {
                     name: "[pizza]werk Pizza 11-14 Uhr",
@@ -379,16 +431,20 @@
                             env_score: 0,
                         },
                     ],
+                    pos: 10,
                 },
                 ParseLine {
                     name: "[pizza]werk Pasta",
                     dishes: [],
+                    pos: 11,
                 },
                 ParseLine {
                     name: "[pizza]werk Salate / Vorspeisen",
                     dishes: [],
+                    pos: 12,
                 },
             ],
+            pos: 42,
         },
     ),
     (
@@ -399,42 +455,52 @@
                 ParseLine {
                     name: "Linie 1 Gut & Günstig",
                     dishes: [],
+                    pos: 0,
                 },
                 ParseLine {
                     name: "Linie 2 Vegane Linie",
                     dishes: [],
+                    pos: 1,
                 },
                 ParseLine {
                     name: "Linie 3",
                     dishes: [],
+                    pos: 2,
                 },
                 ParseLine {
                     name: "Linie 4",
                     dishes: [],
+                    pos: 3,
                 },
                 ParseLine {
                     name: "Linie 5",
                     dishes: [],
+                    pos: 4,
                 },
                 ParseLine {
                     name: "Schnitzel-/ Burgerbar",
                     dishes: [],
+                    pos: 5,
                 },
                 ParseLine {
                     name: "Linie 6",
                     dishes: [],
+                    pos: 6,
                 },
                 ParseLine {
                     name: "Spätausgabe und Abendessen",
                     dishes: [],
+                    pos: 7,
                 },
                 ParseLine {
                     name: "[kœri]werk 11-14 Uhr",
                     dishes: [],
+                    pos: 8,
                 },
                 ParseLine {
                     name: "Cafeteria 11-14 Uhr",
                     dishes: [],
+                    pos: 9,
                 },
                 ParseLine {
                     name: "[pizza]werk Pizza 11-14 Uhr",
@@ -477,16 +543,20 @@
                             env_score: 0,
                         },
                     ],
+                    pos: 10,
                 },
                 ParseLine {
                     name: "[pizza]werk Pasta",
                     dishes: [],
+                    pos: 11,
                 },
                 ParseLine {
                     name: "[pizza]werk Salate / Vorspeisen",
                     dishes: [],
+                    pos: 12,
                 },
             ],
+            pos: 42,
         },
     ),
 ]

@@ -7,12 +7,15 @@
                 ParseLine {
                     name: "Wahlessen 1",
                     dishes: [],
+                    pos: 0,
                 },
                 ParseLine {
                     name: "Wahlessen 2",
                     dishes: [],
+                    pos: 1,
                 },
             ],
+            pos: 42,
         },
     ),
     (
@@ -23,12 +26,15 @@
                 ParseLine {
                     name: "Wahlessen 1",
                     dishes: [],
+                    pos: 0,
                 },
                 ParseLine {
                     name: "Wahlessen 2",
                     dishes: [],
+                    pos: 1,
                 },
             ],
+            pos: 42,
         },
     ),
     (
@@ -39,12 +45,15 @@
                 ParseLine {
                     name: "Wahlessen 1",
                     dishes: [],
+                    pos: 0,
                 },
                 ParseLine {
                     name: "Wahlessen 2",
                     dishes: [],
+                    pos: 1,
                 },
             ],
+            pos: 42,
         },
     ),
     (
@@ -55,12 +64,15 @@
                 ParseLine {
                     name: "Wahlessen 1",
                     dishes: [],
+                    pos: 0,
                 },
                 ParseLine {
                     name: "Wahlessen 2",
                     dishes: [],
+                    pos: 1,
                 },
             ],
+            pos: 42,
         },
     ),
     (
@@ -71,12 +83,15 @@
                 ParseLine {
                     name: "Wahlessen 1",
                     dishes: [],
+                    pos: 0,
                 },
                 ParseLine {
                     name: "Wahlessen 2",
                     dishes: [],
+                    pos: 1,
                 },
             ],
+            pos: 42,
         },
     ),
 ]
