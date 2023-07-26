@@ -1,0 +1,10 @@
+The image at the url {{image_link}}
+with the id {{image_id}}
+was reported {{report_count}} times.
+Reason: {{reason}}
+Image automatically hidden: {{image_got_hidden}}
+
+Additional Data:
+Positive ratings: {{positive_rating_count}}
+Negative ratings: {{negative_rating_count}}
+Rank: {{get_image_rank}}
