@@ -144,17 +144,19 @@ mod test {
     use super::*;
     use sqlx::PgPool;
 
-    const WRONG_UUID: Uuid = Uuid::from_u128(7u128);
-
     #[sqlx::test(fixtures("meal", "user", "image"))]
     async fn test_get_n_images_by_rank_date(pool: PgPool) {
         let review = PersistentImageReviewData { pool };
         let n = 4;
         let date = Date::parse_from_str("2023-07-26", "%Y-%m-%d").unwrap();
 
-        let n_images_by_rank_date = review.get_n_images_by_rank_date(n, date).await.unwrap();
-        assert!(n_images_by_rank_date.len() <= n.try_into().unwrap());
-        assert_eq!(n_images_by_rank_date, provide_dummy_images());
+        let images = review.get_n_images_by_rank_date(n, date).await.unwrap();
+        assert_eq!(images, provide_dummy_images());
+
+        let n = 2;
+        let images = review.get_n_images_by_rank_date(n, date).await.unwrap();
+        assert!(images.len() <= n.try_into().unwrap());
+        
         assert!(review
             .get_n_images_by_rank_date(u32::MAX, date)
             .await
@@ -168,7 +170,7 @@ mod test {
             .get_n_images_by_rank_date(n, Date::parse_from_str("2023-07-01", "%Y-%m-%d").unwrap())
             .await
             .unwrap()
-            .is_empty());       //TODO: EMPTY VEC OR ERR ON NO DATA?
+            .is_empty());
     }
 
     fn provide_dummy_images() -> Vec<Image> {
@@ -207,14 +209,18 @@ mod test {
         vec![image1, image2, image3, image4]
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image"))]
+    #[sqlx::test(fixtures("meal", "user", "image_review_data"))]
     async fn test_get_n_images_next_week_by_rank_not_checked_last_week(pool: PgPool) {
         let review = PersistentImageReviewData { pool };
         let n = 4;
 
-        let n_images_by_rank_date = review.get_n_images_next_week_by_rank_not_checked_last_week(n).await.unwrap();
-        assert!(n_images_by_rank_date.len() <= n.try_into().unwrap());
-        //TODO add positive test
+        let images = review.get_n_images_next_week_by_rank_not_checked_last_week(n).await.unwrap();
+        assert_eq!(images, provide_dummy_images());
+
+        let n = 2;
+        let images = review.get_n_images_next_week_by_rank_not_checked_last_week(n).await.unwrap();
+        assert!(images.len() <= n.try_into().unwrap());
+
         assert!(review
             .get_n_images_next_week_by_rank_not_checked_last_week(u32::MAX)
             .await
@@ -226,14 +232,17 @@ mod test {
             .is_empty());
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image"))]
+    #[sqlx::test(fixtures("meal", "user", "image_review_data"))]
     async fn test_get_n_images_by_last_checked_not_checked_last_week(pool: PgPool) {
         let review = PersistentImageReviewData { pool };
         let n = 4;
 
-        let n_images_by_rank_date = review.get_n_images_by_last_checked_not_checked_last_week(n).await.unwrap();
-        assert!(n_images_by_rank_date.len() <= n.try_into().unwrap());
-        //TODO add positive test
+        let images = review.get_n_images_by_last_checked_not_checked_last_week(n).await.unwrap();
+        assert_eq!(images, provide_dummy_images());
+
+        let n = 2;
+        let images = review.get_n_images_by_last_checked_not_checked_last_week(n).await.unwrap();
+        assert!(images.len() <= n.try_into().unwrap());
         assert!(review
             .get_n_images_by_last_checked_not_checked_last_week(u32::MAX)
             .await
@@ -245,21 +254,48 @@ mod test {
             .is_empty());
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image"))]
+    #[sqlx::test(fixtures("meal", "user", "image_review_data"))]
     async fn test_delete_image(pool: PgPool) {
-        let review = PersistentImageReviewData { pool };
+        let review = PersistentImageReviewData { pool: pool.clone() };
         let id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+        let other_id = Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap();
 
+        assert!(has_value(&pool, id).await);
+        assert!(has_value(&pool, other_id).await);
         assert!(review.delete_image(id).await.is_ok());
-        assert!(review.delete_image(WRONG_UUID).await.is_err());
+        assert!(!has_value(&pool, id).await);
+        assert!(has_value(&pool, other_id).await);
     }
+
+    async fn has_value(pool: &PgPool, id: Uuid) -> bool {
+        sqlx::query!(
+            "SELECT * FROM image WHERE image_id = $1",
+            id
+        )
+        .fetch_optional(pool)
+        .await
+        .unwrap()
+        .is_some()
+    } 
 
     #[sqlx::test(fixtures("meal", "user", "image"))]
     async fn test_mark_as_checked(pool: PgPool) {
-        let review = PersistentImageReviewData { pool };
+        let review = PersistentImageReviewData { pool: pool.clone() };
         let id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
 
+        assert_eq!(images_checked_today(&pool).await, 0);
         assert!(review.mark_as_checked(id).await.is_ok());
-        assert!(review.mark_as_checked(WRONG_UUID).await.is_err());
+        assert_eq!(images_checked_today(&pool).await, 1);
+    }
+
+    async fn images_checked_today(pool: &PgPool) -> usize {
+        let test = sqlx::query!(
+            "SELECT * FROM image WHERE last_verified_date = CURRENT_DATE"
+        )
+        .fetch_all(pool)
+        .await;
+        test
+        .unwrap()
+        .len()
     }
 }
