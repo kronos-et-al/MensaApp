@@ -1,13 +1,10 @@
-use std::sync::Arc;
+use std::{sync::Arc, env::VarError, num::ParseIntError};
 use thiserror::Error;
 use tokio::signal::ctrl_c;
+use tracing::info;
 
 use crate::{
-    interface::{
-        api_command::{Command, CommandError},
-        image_review, mealplan_management,
-        mensa_parser::ParseError,
-    },
+    interface::{api_command::CommandError, mensa_parser::ParseError},
     layer::{
         data::{
             database::factory::DataAccessFactory,
@@ -30,8 +27,8 @@ pub type Result<T> = std::result::Result<T, ServerError>;
 #[derive(Debug, Error)]
 pub enum ServerError {
     /// A necessary environment variable was not set.
-    #[error("missing environment variable for: ")]
-    MissingEnvVar,
+    #[error("missing environment variable: {0}")]
+    MissingEnvVar(#[from] VarError),
     /// Error while creating the mail sender.
     #[error("error while creating mail sender component: {0}")]
     MailError(#[from] MailError),
@@ -41,6 +38,12 @@ pub enum ServerError {
     /// Error while creating mensa parser component.
     #[error("error while creating mensa parser component: {0}")]
     ParseError(#[from] ParseError),
+    /// Io error
+    #[error("io error: {0}")]
+    IoError(#[from] std::io::Error),
+    // Error parsing integers.
+    #[error("could not parsing integer: {0}")]
+    ParseIntError(#[from] ParseIntError)
 }
 
 // Class providing the combined server functions to the outside.
@@ -50,6 +53,9 @@ impl Server {
     /// Runs the server and everything that belongs to.
     /// Therefore the configuration is read from environment variables.
     /// Afterwards, the component structure is created.
+    /// # Errors
+    /// - when the the config could not read environment variables
+    /// - when crating a component fails
     pub async fn run() -> Result<()> {
         Logger::init();
 
@@ -71,21 +77,27 @@ impl Server {
         let mealplan_management = MealPlanManager::new(mealplan_management_data, parser);
 
         // trigger layer
-        let mut graphql = GraphQLServer::new(ConfigReader::read_graphql_info()?, request_data, command);
+        let mut graphql =
+            GraphQLServer::new(ConfigReader::read_graphql_info()?, request_data, command);
         let mut scheduler = Scheduler::new(
             ConfigReader::read_schedule_info()?,
             image_review,
             mealplan_management,
-        ).await;
+        )
+        .await;
 
         // run server
         scheduler.start().await;
         graphql.start();
 
-        ctrl_c().await;
+        info!("server is running");
 
-        scheduler.shutdown();
-        graphql.shutdown();
+        ctrl_c().await?;
+
+        info!("shutting down server...");
+        
+        scheduler.shutdown().await;
+        graphql.shutdown().await;
 
         Ok(())
     }

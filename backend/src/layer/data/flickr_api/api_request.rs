@@ -120,7 +120,7 @@ mod test {
 
     fn get_api_key() -> String {
         dotenv().ok();
-        env::var("FLICKR_PUBLIC_KEY").expect("FLICKR_PUBLIC_KEY should be set in the .env!")
+        env::var("FLICKR_API_KEY").expect("FLICKR_API_KEY should be set in the .env!")
     }
 
     fn get_api_request() -> ApiRequest {

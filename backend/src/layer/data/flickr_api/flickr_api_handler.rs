@@ -1,4 +1,4 @@
-use std::sync::{Mutex, Arc};
+use std::sync::{Arc, Mutex};
 
 use crate::interface::image_hoster::model::ImageMetaData;
 use crate::interface::image_hoster::{ImageHoster, ImageHosterError, Result};
@@ -96,11 +96,14 @@ impl ImageHoster for FlickeApiHandler {
 }
 
 #[async_trait]
-impl<T> ImageHoster for Arc<T> where T: ImageHoster {
+impl<T> ImageHoster for Arc<T>
+where
+    T: ImageHoster,
+{
     async fn validate_url(&self, url: &str) -> Result<ImageMetaData> {
         self.validate_url(url).await
     }
-    
+
     async fn check_existence(&self, image_id: &str) -> Result<bool> {
         self.check_existence(image_id).await
     }
