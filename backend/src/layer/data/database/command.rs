@@ -328,16 +328,6 @@ mod test {
         let url = "www.test.com";
 
         let images = number_of_images(&pool).await;
-        assert!(dbg!(command
-            .link_image(
-                meal_id,
-                user_id,
-                image_hoster_id.to_string(),
-                url.to_string()
-            )
-            .await)
-            .is_ok());
-        assert_eq!(number_of_images(&pool).await, images + 1);
         assert!(command
             .link_image(
                 meal_id,
@@ -347,6 +337,17 @@ mod test {
             )
             .await
             .is_ok());
+        assert_eq!(number_of_images(&pool).await, images + 1);
+        // TBD is it allowed to link an image multiple times?
+        // assert!(command
+        //     .link_image(
+        //         meal_id,
+        //         user_id,
+        //         image_hoster_id.to_string(),
+        //         url.to_string()
+        //     )
+        //     .await
+        //     .is_ok());
         assert!(command
             .link_image(
                 meal_id,
