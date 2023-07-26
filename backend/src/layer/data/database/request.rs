@@ -111,7 +111,7 @@ impl RequestDataAccess for PersistentRequestData {
             return Ok(None);
         }
 
-        let meal = sqlx::query!(
+        sqlx::query!(
             r#"
             SELECT food_id, name, food_type as "meal_type: MealType",
                 price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,
@@ -125,30 +125,28 @@ impl RequestDataAccess for PersistentRequestData {
         .fetch_all(&self.pool)
         .await?
         .into_iter()
-        .filter_map(|m| {
-            Some(Meal {
-                id: m.food_id?,
+        .map(|m| {
+            Ok(Meal {
+                id: null_error!(m.food_id),
                 line_id: m.line_id,
                 date: m.date,
-                name: m.name?,
-                meal_type: m.meal_type?,
+                name: null_error!(m.name),
+                meal_type: null_error!(m.meal_type),
                 price: Price {
                     price_student: m.price_student as u32,
                     price_employee: m.price_employee as u32,
                     price_guest: m.price_guest as u32,
                     price_pupil: m.price_pupil as u32
                 },
-                frequency: m.frequency? as u32,
-                new: m.new?,
+                frequency: null_error!(m.frequency) as u32,
+                new: null_error!(m.new),
                 last_served: m.last_served,
                 next_served: m.next_served,
-                average_rating: m.average_rating?,
-                rating_count: m.rating_count? as u32,
+                average_rating: null_error!(m.average_rating),
+                rating_count: null_error!(m.rating_count) as u32,
             })
         })
-        .collect();
-
-        Ok(Some(meal))
+        .collect::<Result<Vec<_>>>().map(Some)
     }
 
     async fn get_sides(&self, line_id: Uuid, date: Date) -> Result<Vec<Side>> {
@@ -188,7 +186,7 @@ impl RequestDataAccess for PersistentRequestData {
         meal_id: Uuid,
         client_id: Option<Uuid>,
     ) -> Result<Vec<Image>> {
-        let images = sqlx::query!(
+        sqlx::query!(
             "
             SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
                 approved, report_count, link_date 
@@ -206,21 +204,20 @@ impl RequestDataAccess for PersistentRequestData {
         .fetch_all(&self.pool)
         .await?
         .into_iter()
-        .filter_map(|r| {
-            Some(Image {
-                id: r.image_id?,
-                url: r.url?,
-                rank: r.rank?,
-                image_hoster_id: r.hoster_id?,
-                downvotes: r.downvotes? as u32,
-                upvotes: r.upvotes? as u32,
-                approved: r.approved?,
-                report_count: r.report_count? as _,
-                upload_date: r.link_date?,
+        .map(|r| {
+            Ok(Image {
+                id: null_error!(r.image_id),
+                url: null_error!(r.url),
+                rank: null_error!(r.rank),
+                image_hoster_id: null_error!(r.hoster_id),
+                downvotes: null_error!(r.downvotes) as u32,
+                upvotes: null_error!(r.upvotes) as u32,
+                approved: null_error!(r.approved),
+                report_count: null_error!(r.report_count) as _,
+                upload_date: null_error!(r.link_date),
             })
         })
-        .collect();
-        Ok(images)
+        .collect::<Result<Vec<_>>>()
     }
 
     async fn get_personal_rating(&self, meal_id: Uuid, client_id: Uuid) -> Result<Option<u32>> {
