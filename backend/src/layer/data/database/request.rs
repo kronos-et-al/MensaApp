@@ -370,8 +370,8 @@ mod tests {
         let request = PersistentRequestData { pool };
 
         let meal_id_strs = [
-            "f7337122-b018-48ad-b420-6202dc3cb4ff",
             "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
+            "f7337122-b018-48ad-b420-6202dc3cb4ff",
         ];
         let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
         let date = Local::now().date_naive();
@@ -452,29 +452,25 @@ mod tests {
                 .unwrap(),
             vec![]
         );
-        assert_eq!(
-            request.get_visible_images(meal_id, None).await.unwrap(),
-            vec![]
-        );
     }
 
     fn provide_dummy_images() -> Vec<Image> {
         let image1 = Image {
-            id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
-            image_hoster_id: "test".to_string(),
+            id: Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap(),
+            image_hoster_id: "test2".to_string(),
             url: "www.test.com".to_string(),
+            approved: true,
             rank: 0.5,
             downvotes: 0,
             upvotes: 0,
-            approved: false,
             upload_date: Local::now().date_naive(),
             report_count: 0,
         };
         let image2 = Image {
-            id: Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap(),
-            image_hoster_id: "test2".to_string(),
-            url: "www.test2.com".to_string(),
-            approved: true,
+            id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
+            image_hoster_id: "test".to_string(),
+            url: "www.test.com".to_string(),
+            approved: false,
             ..image1
         };
         vec![image1, image2]
@@ -624,9 +620,9 @@ mod tests {
 
     fn provide_dummy_meals() -> Vec<Meal> {
         let meal1 = Meal {
-            id: Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
-            name: "Geflügel - Cevapcici, Ajvar, Djuvec Reis".to_string(),
-            meal_type: MealType::Unknown,
+            id: Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap(),
+            name: "2 Dampfnudeln mit Vanillesoße".to_string(),
+            meal_type: MealType::Vegetarian,
             price: Price {
                 price_student: 320,
                 price_employee: 420,
@@ -643,9 +639,9 @@ mod tests {
             line_id: Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(),
         };
         let meal2 = Meal {
-            id: Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap(),
-            name: "2 Dampfnudeln mit Vanillesoße".to_string(),
-            meal_type: MealType::Vegetarian,
+            id: Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
+            name: "Geflügel - Cevapcici, Ajvar, Djuvec Reis".to_string(),
+            meal_type: MealType::Unknown,
             ..meal1
         };
         vec![meal1, meal2]

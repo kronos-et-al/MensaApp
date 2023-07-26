@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT food_id \n            FROM food JOIN meal USING (food_id) JOIN food_additive USING (food_id) \n                JOIN food_allergen USING (food_id)\n            WHERE name % $1 AND similarity(name, $1) >= $4\n            GROUP BY food_id\n            HAVING array_agg(allergen) <@ $2::Allergen[] AND array_agg(allergen) @> $2::Allergen[]\n                AND array_agg(additive) <@ $3::Additive[] AND array_agg(additive) @> $3::Additive[]\n            ORDER BY similarity(name, $1) DESC",
+  "query": "\n            SELECT food_id \n            FROM food\n            WHERE similarity(name, $1) >= $4 AND food_id NOT IN (SELECT food_id FROM meal)\n            AND food_id IN (\n                SELECT food_id \n                FROM food_allergen FULL JOIN food USING (food_id)\n                GROUP BY food_id \n\t\t\t\tHAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $2::allergen[] \n\t\t\t\tAND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $2::allergen[]\n            )\n            AND food_id IN (\n                SELECT food_id\n\t\t\t\tFROM food_additive FULL JOIN food USING (food_id)\n\t\t\t\tGROUP BY food_id \n\t\t\t\tHAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $3::additive[] \n\t\t\t\tAND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $3::additive[]\n            )\n            ORDER BY similarity(name, $1) DESC\n            ",
   "describe": {
     "columns": [
       {
@@ -94,5 +94,5 @@
       false
     ]
   },
-  "hash": "e27ff95727ddee2bf8bec44096c2e9e279a493ffd1389237c0b2dd8baf049950"
+  "hash": "405d17501e191e03c2ade074479f6ebb9a6a295e66f9cba7ef1512a1a4fffc94"
 }

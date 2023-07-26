@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, \n                approved, report_count, link_date\n            FROM image_detail \n            WHERE food_id in (SELECT food_id from food_plan WHERE serve_date >= CURRENT_DATE AND serve_date < CURRENT_DATE + 7)\n            AND last_verified_date < CURRENT_DATE - 7\n            ORDER BY rank DESC\n            LIMIT $1\n            ",
+  "query": "\n            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, \n                approved, report_count, link_date\n            FROM image_detail \n            WHERE food_id in (SELECT food_id from food_plan WHERE serve_date >= CURRENT_DATE AND serve_date < CURRENT_DATE + 7)\n            AND last_verified_date < CURRENT_DATE - 7\n            ORDER BY rank DESC, image_id\n            LIMIT $1\n            ",
   "describe": {
     "columns": [
       {
@@ -66,5 +66,5 @@
       true
     ]
   },
-  "hash": "e375eb55db990031417197d7dabe838fb3860fbbe3c933bad8ccc6801e23c446"
+  "hash": "98d0eb5486f5947632b11ff4467a67aaf3f4c9bb693961e3391959db5bcb6126"
 }

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT api_key as key, description FROM api_key",
+  "query": "SELECT api_key as key, description FROM api_key ORDER BY api_key",
   "describe": {
     "columns": [
       {
@@ -22,5 +22,5 @@
       false
     ]
   },
-  "hash": "bb6558e04480265832d85724a4faf2f1e63e77be5b87aae3bea21c944d3f21b8"
+  "hash": "d41f7a8557958ad208a37eeb92a1913ff9b23a87fb03f22d56b1b71ada246ab8"
 }
