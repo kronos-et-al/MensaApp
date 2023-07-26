@@ -1,31 +1,8 @@
 use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
 use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
 use crate::util::{Date, Uuid};
-use std::collections::HashMap;
 use std::slice::Iter;
-use lazy_static::lazy_static;
 use tracing::warn;
-
-lazy_static! {
-    static ref CANTEEN_POSITIONS: HashMap<&'static str, u32> = HashMap::from([
-        ("Mensa am Adenauerring", 10),
-        ("chicco di caffè Karlsruhe", 20),
-        ("Cafeteria Engesserstraẞe", 30),
-        ("Chicco di Caffè", 40),
-        ("Menseria  Schloss Gottesaue", 50),
-        ("Mensa Moltke", 60),
-        ("Cafébar Moltke", 70),
-        ("Menseria  Schloss Gottesaue", 80),
-        ("Menseria Moltkestraẞe 30", 90),
-        ("Menseria Erzbergerstraẞe", 100),
-        ("Mensa Tiefenbronnerstraẞe", 110),
-        ("Cafeteria Tiefenbronner Straẞe", 120),
-        ("chicco di caffè Pforzheim", 130),
-        ("Menseria Holzgartenstraẞe", 140),
-    ]);
-}
-
-const DEFAULT_POSITION: u32 = 1000_u32;
 
 pub struct RelationResolver<DataAccess>
 where
@@ -59,32 +36,30 @@ where
                     .update_canteen(
                         similar_canteen,
                         &canteen.name,
-                        Self::get_position(&canteen.name),
+                        canteen.pos,
                     )
                     .await?
             }
             None => {
                 self.db
-                    .insert_canteen(&canteen.name, Self::get_position(&canteen.name))
+                    .insert_canteen(&canteen.name, canteen.pos)
                     .await?
             }
         };
         self.db.dissolve_relations(db_canteen, date).await?;
-        let mut position: u32 = 0;
         for line in canteen.lines {
-            position += 1;
             let name = &line.name.clone();
-            if (self.resolve_line(date, line, position).await).is_err() {
+            if (self.resolve_line(date, line).await).is_err() {
                 warn!("Skip line '{}' as it could not be resolved", name);
             }
         }
         Ok(())
     }
 
-    async fn resolve_line(&self, date: Date, line: ParseLine, pos: u32) -> Result<(), DataError> {
+    async fn resolve_line(&self, date: Date, line: ParseLine) -> Result<(), DataError> {
         let line_id = match self.db.get_similar_line(&line.name).await? {
-            Some(similar_line) => self.db.update_line(similar_line, &line.name, pos).await?,
-            None => self.db.insert_line(&line.name, pos).await?,
+            Some(similar_line) => self.db.update_line(similar_line, &line.name, line.pos).await?,
+            None => self.db.insert_line(&line.name, line.pos).await?,
         };
 
         let average = Self::average(line.dishes.iter());
@@ -96,12 +71,6 @@ where
             }
         }
         Ok(())
-    }
-
-    fn get_position(canteen_name: &str) -> u32 {
-        *CANTEEN_POSITIONS
-            .get(canteen_name)
-            .unwrap_or(&DEFAULT_POSITION)
     }
 
     async fn resolve_dish(
@@ -214,6 +183,7 @@ mod test {
         ParseLine {
             name: "test_line".to_string(),
             dishes,
+            pos: 42_u32
         }
     }
 
@@ -221,6 +191,7 @@ mod test {
         ParseCanteen {
             name: "test_canteen".to_string(),
             lines,
+            pos: 42_u32
         }
     }
 
@@ -281,7 +252,7 @@ mod test {
         }
         let line = get_line(dishes);
         assert!(resolver
-            .resolve_line(Utc::now().date_naive(), line, 42_u32)
+            .resolve_line(Utc::now().date_naive(), line)
             .await
             .is_ok());
     }
@@ -296,19 +267,5 @@ mod test {
         let average = RelationResolver::<MealplanManagementDatabaseMock>::average(dishes.iter());
         assert!(450.0 < average);
         assert!(460.0 > average);
-    }
-
-    #[test]
-    fn test_valid_position() {
-        let expected = 10_u32;
-        let name = "Mensa am Adenauerring";
-        assert_eq!(expected, RelationResolver::<MealplanManagementDatabaseMock>::get_position(name));
-    }
-
-    #[test]
-    fn test_invalid_position() {
-        let expected = 1000_u32;
-        let name = "invalid";
-        assert_eq!(expected, RelationResolver::<MealplanManagementDatabaseMock>::get_position(name));
     }
 }
