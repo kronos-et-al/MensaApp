@@ -65,7 +65,6 @@ class Favorites extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemCount: mealPlan.length,
                             itemBuilder: (context, index) {
