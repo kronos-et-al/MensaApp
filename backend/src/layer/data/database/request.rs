@@ -7,7 +7,7 @@ use crate::{
         model::{Canteen, Image, Line, Meal, Side},
         DataError, RequestDataAccess, Result,
     },
-    util::{Additive, Allergen, Date, MealType, Price, Uuid},
+    util::{Additive, Allergen, Date, MealType, Price, Uuid}, null_error,
 };
 
 const MAX_WEEKS_DATA: i64 = 4;
@@ -64,7 +64,7 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_meal(&self, id: Uuid, line_id: Uuid, date: Date) -> Result<Option<Meal>> {
-        let meal = sqlx::query!(
+        sqlx::query!(
             r#"
             SELECT food_id, name, food_type as "meal_type: MealType",
                 price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,
@@ -78,29 +78,27 @@ impl RequestDataAccess for PersistentRequestData {
         )
         .fetch_optional(&self.pool)
         .await?
-        .and_then(|m| {
-            Some(Meal {
-                id: m.food_id?,
+        .map(|m| {
+            Ok(Meal {
+                id: m.food_id.ok_or(null_error!())?,
                 line_id: m.line_id,
                 date: m.date,
-                name: m.name?,
-                meal_type: m.meal_type?,
+                name: m.name.ok_or(null_error!())?,
+                meal_type: m.meal_type.ok_or(null_error!())?,
                 price: Price {
                     price_student: m.price_student as u32,
                     price_employee: m.price_employee as u32,
                     price_guest: m.price_guest as u32,
                     price_pupil: m.price_pupil as u32
                 },
-                frequency: m.frequency? as u32,
-                new: m.new?,
+                frequency: m.frequency.ok_or(null_error!())? as u32,
+                new: m.new.ok_or(null_error!())?,
                 last_served: m.last_served,
                 next_served: m.next_served,
-                average_rating: m.average_rating?,
-                rating_count: m.rating_count? as u32,
+                average_rating: m.average_rating.ok_or(null_error!())?,
+                rating_count: m.rating_count.ok_or(null_error!())? as u32,
             })
-        });
-
-        Ok(meal)
+        }).transpose()
     }
 
     async fn get_meals(&self, line_id: Uuid, date: Date) -> Result<Option<Vec<Meal>>> {

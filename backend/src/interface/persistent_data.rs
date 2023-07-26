@@ -18,9 +18,19 @@ pub enum DataError {
     /// Error occurred during data request or an internal connection fault
     #[error("internal error ocurred: {0}")]
     InternalError(#[from] sqlx::Error),
-    ///
+    /// todo
     #[error("error converting type: {0}")]
     TypeConversionError(#[from] TryFromIntError),
+    /// Unexpectedly got null value from database
+    #[error("unexpectedly got null from database at: {0}")]
+    UnexpectedNullError(String),
+}
+
+#[macro_export]
+macro_rules! null_error {
+    () => {
+        DataError::UnexpectedNullError(format!("{}:{}:{}", file!(), line!(), column!()).to_string())
+    };
 }
 
 #[async_trait]
