@@ -25,6 +25,7 @@ impl CommandDataAccess for PersistentCommandData {
             upvotes, downvotes, id as image_hoster_id, image_id, rank
             FROM image_detail
             WHERE image_id = $1
+            ORDER BY image_id
             "#,
             image_id
         )
@@ -147,7 +148,7 @@ impl CommandDataAccess for PersistentCommandData {
     }
 
     async fn get_api_keys(&self) -> Result<Vec<ApiKey>> {
-        let keys = sqlx::query_as!(ApiKey, "SELECT api_key as key, description FROM api_key")
+        let keys = sqlx::query_as!(ApiKey, "SELECT api_key as key, description FROM api_key ORDER BY api_key")
             .fetch_all(&self.pool)
             .await?;
 

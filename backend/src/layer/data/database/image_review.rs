@@ -21,7 +21,7 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
                 approved, report_count, link_date
             FROM image_detail 
             WHERE food_id in (SELECT food_id from food_plan WHERE serve_date = $1)
-            ORDER BY rank DESC
+            ORDER BY rank DESC, image_id
             LIMIT $2
             ",
             date,
@@ -57,7 +57,7 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
             FROM image_detail 
             WHERE food_id in (SELECT food_id from food_plan WHERE serve_date >= CURRENT_DATE AND serve_date < CURRENT_DATE + 7)
             AND last_verified_date < CURRENT_DATE - 7
-            ORDER BY rank DESC
+            ORDER BY rank DESC, image_id
             LIMIT $1
             ",
             i64::from(n)
@@ -91,7 +91,7 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
                 approved, report_count, link_date
             FROM image_detail
             WHERE last_verified_date < CURRENT_DATE - 7
-            ORDER BY last_verified_date
+            ORDER BY last_verified_date, image_id
             LIMIT $1
             ",
             i64::from(n)
@@ -145,7 +145,7 @@ mod test {
     use chrono::Local;
     use sqlx::PgPool;
 
-    #[sqlx::test(fixtures("meal", "user", "image", "canteen", "line", "food_plan"))]
+    #[sqlx::test(fixtures("meal", "user", "image_review_data", "canteen", "line", "food_plan"))]
     async fn test_get_n_images_by_rank_date(pool: PgPool) {
         let review = PersistentImageReviewData { pool };
         let n = 4;
@@ -176,32 +176,32 @@ mod test {
 
     fn provide_dummy_images() -> Vec<Image> {
         let image1 = Image {
-            id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
-            image_hoster_id: "test".to_string(),
-            url: "www.test.com".to_string(),
-            rank: 0.0,
-            downvotes: 0,
-            upvotes: 0,
-            approved: false,
-            upload_date: Local::now().date_naive(),
-            report_count: 0,
-        };
-        let image2 = Image {
             id: Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap(),
             image_hoster_id: "test2".to_string(),
             url: "www.test2.com".to_string(),
             approved: true,
+            rank: 0.5,
+            downvotes: 0,
+            upvotes: 0,
+            upload_date: Local::now().date_naive(),
+            report_count: 0,
+        };
+        let image2 = Image {
+            id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
+            image_hoster_id: "test".to_string(),
+            url: "www.test.com".to_string(),
+            approved: false,
             ..image1
         };
         let image3 = Image {
-            id: Uuid::parse_str("ea8cce48-a3c7-4f8e-a222-5f3891c13804").unwrap(),
+            id: Uuid::parse_str("68153ab6-ebbf-48f4-b8dd-a9b2a19a5221").unwrap(),
             image_hoster_id: "test2".to_string(),
             url: "www.test2.com".to_string(),
             approved: false,
             ..image2
         };
         let image4 = Image {
-            id: Uuid::parse_str("68153ab6-ebbf-48f4-b8dd-a9b2a19a5221").unwrap(),
+            id: Uuid::parse_str("ea8cce48-a3c7-4f8e-a222-5f3891c13804").unwrap(),
             image_hoster_id: "test2".to_string(),
             url: "www.test2.com".to_string(),
             approved: false,
