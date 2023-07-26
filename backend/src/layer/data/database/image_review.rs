@@ -144,6 +144,8 @@ mod test {
     use super::*;
     use sqlx::PgPool;
 
+    const WRONG_UUID: Uuid = Uuid::from_u128(7u128);
+
     #[sqlx::test(fixtures("meal", "user", "image"))]
     async fn test_get_n_images_by_rank_date(pool: PgPool) {
         let review = PersistentImageReviewData { pool };
@@ -203,5 +205,61 @@ mod test {
             ..image2
         };
         vec![image1, image2, image3, image4]
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_get_n_images_next_week_by_rank_not_checked_last_week(pool: PgPool) {
+        let review = PersistentImageReviewData { pool };
+        let n = 4;
+
+        let n_images_by_rank_date = review.get_n_images_next_week_by_rank_not_checked_last_week(n).await.unwrap();
+        assert!(n_images_by_rank_date.len() <= n.try_into().unwrap());
+        //TODO add positive test
+        assert!(review
+            .get_n_images_next_week_by_rank_not_checked_last_week(u32::MAX)
+            .await
+            .is_err());
+        assert!(review
+            .get_n_images_next_week_by_rank_not_checked_last_week(0)
+            .await
+            .unwrap()
+            .is_empty());
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_get_n_images_by_last_checked_not_checked_last_week(pool: PgPool) {
+        let review = PersistentImageReviewData { pool };
+        let n = 4;
+
+        let n_images_by_rank_date = review.get_n_images_by_last_checked_not_checked_last_week(n).await.unwrap();
+        assert!(n_images_by_rank_date.len() <= n.try_into().unwrap());
+        //TODO add positive test
+        assert!(review
+            .get_n_images_by_last_checked_not_checked_last_week(u32::MAX)
+            .await
+            .is_err());
+        assert!(review
+            .get_n_images_by_last_checked_not_checked_last_week(0)
+            .await
+            .unwrap()
+            .is_empty());
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_delete_image(pool: PgPool) {
+        let review = PersistentImageReviewData { pool };
+        let id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+
+        assert!(review.delete_image(id).await.is_ok());
+        assert!(review.delete_image(WRONG_UUID).await.is_err());
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image"))]
+    async fn test_mark_as_checked(pool: PgPool) {
+        let review = PersistentImageReviewData { pool };
+        let id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+
+        assert!(review.mark_as_checked(id).await.is_ok());
+        assert!(review.mark_as_checked(WRONG_UUID).await.is_err());
     }
 }
