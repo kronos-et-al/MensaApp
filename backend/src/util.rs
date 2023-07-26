@@ -110,7 +110,7 @@ pub enum Additive {
 
 /// This enum lists all the types a meal can be of.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type)]
-#[sqlx(type_name = "food_type", rename_all = "SCREAMING_SNAKE_CASE")]
+#[sqlx(type_name = "meal_type", rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum MealType {
     /// This meal is vegan.
     Vegan,

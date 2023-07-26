@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT canteen_id FROM canteen WHERE name % $1 ORDER BY similarity(name, $1) DESC",
+  "query": "SELECT canteen_id FROM canteen WHERE name % $1 AND similarity(name, $1) >= $2 ORDER BY similarity(name, $1) DESC",
   "describe": {
     "columns": [
       {
@@ -11,12 +11,13 @@
     ],
     "parameters": {
       "Left": [
-        "Text"
+        "Text",
+        "Float4"
       ]
     },
     "nullable": [
       false
     ]
   },
-  "hash": "60ad3f659a605afa264eb8e43e6ada55f80f965dc5d088be9760769b426e6996"
+  "hash": "f92130ff4b1648edab459f0e20f1c1a27c053445cc97147734a8d93adbf442b0"
 }

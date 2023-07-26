@@ -1,6 +1,6 @@
 use std::num::TryFromIntError;
 
-use heck::AsSnakeCase;
+use heck::AsShoutySnakeCase;
 
 use crate::util::{Additive, Allergen, Price};
 
@@ -46,13 +46,13 @@ impl TryFrom<Price> for DatabasePrice {
 impl Allergen {
     #[must_use]
     pub fn to_db_string(self) -> String {
-        format!("{}", AsSnakeCase(format!("{self:?}")))
+        format!("{}", AsShoutySnakeCase(format!("{self:?}")))
     }
 }
 
 impl Additive {
     #[must_use]
     pub fn to_db_string(self) -> String {
-        format!("{}", AsSnakeCase(format!("{self:?}")))
+        format!("{}", AsShoutySnakeCase(format!("{self:?}")))
     }
 }
