@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::iter::Map;
 use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
 use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
 use crate::util::{Date, Uuid};
@@ -60,23 +59,25 @@ where
             None => self.db.insert_canteen(&canteen.name, Self::get_position(&canteen.name)).await?,
         };
         self.db.dissolve_relations(db_canteen, date).await?;
+        let mut position: isize = 0;
         for line in canteen.lines {
+            position = position + 1;
             let name = &line.name.clone();
-            if (self.resolve_line(date, line).await).is_err() {
+            if (self.resolve_line(date, line, u32::from(position)).await).is_err() {
                 warn!("Skip line '{}' as it could not be resolved", name);
             }
         }
         Ok(())
     }
 
-    async fn resolve_line(&self, date: Date, line: ParseLine) -> Result<(), DataError> {
+    async fn resolve_line(&self, date: Date, line: ParseLine, pos: u32) -> Result<(), DataError> {
         let line_id = match self.db.get_similar_line(&line.name).await? {
             Some(similar_line) => {
                 self.db
-                    .update_line(similar_line, &line.name, )
+                    .update_line(similar_line, &line.name, pos)
                     .await?
             }
-            None => self.db.insert_line(&line.name, ).await?,
+            None => self.db.insert_line(&line.name, pos).await?,
         };
 
         let average = Self::average(line.dishes.iter());
@@ -271,7 +272,7 @@ mod test {
         }
         let line = get_line(dishes);
         assert!(resolver
-            .resolve_line(Utc::now().date_naive(), line)
+            .resolve_line(Utc::now().date_naive(), line, 42_u32)
             .await
             .is_ok());
     }
