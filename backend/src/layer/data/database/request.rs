@@ -418,4 +418,36 @@ mod tests {
         assert!(sides.len() == 1);
         assert!(sides[0].name == "zu jedem Gericht reichen wir ein Dessert oder Salat");
     }
+
+    fn provide_dummy_meals() -> Vec<Meal> {
+        let meal1 = Meal {
+            id: Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
+            name: "Geflügel - Cevapcici, Ajvar, Djuvec Reis".to_string(),
+            meal_type: MealType::Unknown,
+            price: Price { price_student: 320, price_employee: 420, price_guest: 460, price_pupil: 355 },
+            last_served: Some(Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap()),
+            next_served: Some(Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap()),
+            frequency: 1,
+            new: true,
+            rating_count: 0,
+            average_rating: 0.0,
+            date: Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap(),
+            line_id: Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(),
+        };
+        let meal2 = Meal {
+            id: Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap(),
+            name: "Geflügel - Cevapcici, Ajvar, Djuvec Reis".to_string(),
+            meal_type: MealType::Unknown,
+            price: Price { price_student: 320, price_employee: 420, price_guest: 460, price_pupil: 355 },
+            last_served: Some(Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap()),
+            next_served: Some(Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap()),
+            frequency: 1,
+            new: true,
+            rating_count: 0,
+            average_rating: 0.0,
+            date: Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap(),
+            line_id: Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(),
+        };
+        vec![meal1, meal2]
+    }
 }
