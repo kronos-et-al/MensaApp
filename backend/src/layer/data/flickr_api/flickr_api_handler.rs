@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use crate::interface::image_hoster::model::ImageMetaData;
 use crate::interface::image_hoster::{ImageHoster, ImageHosterError, Result};

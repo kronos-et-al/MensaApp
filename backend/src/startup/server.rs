@@ -27,8 +27,8 @@ pub type Result<T> = std::result::Result<T, ServerError>;
 #[derive(Debug, Error)]
 pub enum ServerError {
     /// A necessary environment variable was not set.
-    #[error("missing environment variable: {0}")]
-    MissingEnvVar(#[from] VarError),
+    #[error("the following environment variable must be set: {0}")]
+    MissingEnvVar(String, VarError),
     /// Error while creating the mail sender.
     #[error("error while creating mail sender component: {0}")]
     MailError(#[from] MailError),
@@ -59,17 +59,19 @@ impl Server {
     pub async fn run() -> Result<()> {
         Logger::init();
 
+        let config = ConfigReader::default();
+
         // data layer
-        let factory = DataAccessFactory::new(ConfigReader::read_database_info()?).await;
+        let factory = DataAccessFactory::new(config.read_database_info()?).await;
         let command_data = factory.get_command_data_access();
         let image_review_data = factory.get_image_review_data_access();
         let mealplan_management_data = factory.get_mealplan_management_data_access();
         let request_data = factory.get_request_data_access();
 
-        let mail = MailSender::new(ConfigReader::read_mail_info()?)?;
-        let flickr = FlickeApiHandler::new(ConfigReader::read_flickr_info()?);
+        let mail = MailSender::new(config.read_mail_info()?)?;
+        let flickr = FlickeApiHandler::new(config.read_flickr_info()?);
         let flickr = Arc::new(flickr);
-        let parser = SwKaParseManager::new(ConfigReader::read_swka_info()?)?;
+        let parser = SwKaParseManager::new(config.read_swka_info()?)?;
 
         // logic layer
         let command = CommandHandler::new(command_data, mail, flickr.clone()).await?;
@@ -78,9 +80,9 @@ impl Server {
 
         // trigger layer
         let mut graphql =
-            GraphQLServer::new(ConfigReader::read_graphql_info()?, request_data, command);
+            GraphQLServer::new(config.read_graphql_info()?, request_data, command);
         let mut scheduler = Scheduler::new(
-            ConfigReader::read_schedule_info()?,
+            config.read_schedule_info()?,
             image_review,
             mealplan_management,
         )
