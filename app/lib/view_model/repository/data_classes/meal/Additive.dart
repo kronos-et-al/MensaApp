@@ -1,3 +1,4 @@
+/// Enum class for additives
 enum Additive {
   colorant,
   preservingAgents,

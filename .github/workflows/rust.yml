@@ -14,6 +14,12 @@ on:
 env:
   CARGO_TERM_COLOR: always
   FLICKR_PUBLIC_KEY: ${{ secrets.FLICKR_PUBLIC_KEY }}
+  SMTP_SERVER: ${{ vars.SMTP_SERVER }}
+  SMTP_PORT: ${{ vars.SMTP_PORT }}
+  SMTP_USERNAME: ${{ vars.SMTP_USERNAME }}
+  SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+  ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
+
 
 jobs:
   build_rust:

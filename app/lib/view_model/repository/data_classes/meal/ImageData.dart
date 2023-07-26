@@ -1,4 +1,4 @@
-class Image {
+class ImageData {
 
   final String _id;
   final String _url;
@@ -7,7 +7,17 @@ class Image {
   final int _positiveRating;
   final int _negativeRating;
 
-  Image({
+
+
+  /// This constructor creates an image with the committed values.
+  /// @param id The id of the image
+  /// @param url The url of the image
+  /// @param imageRank The rank of the image calculated by the server
+  /// @param individualRating The individual rating of the image
+  /// @param positiveRating The number of positive ratings of the image
+  /// @param negativeRating The number of negative ratings of the image
+  /// @return An image with the committed values
+  ImageData({
     required String id,
     required String url,
     required double imageRank,
