@@ -501,6 +501,34 @@ mod tests {
         assert_eq!(personal_rating, None);
     }
 
+    #[sqlx::test(fixtures("meal", "user", "image", "rating"))]
+    async fn test_get_personal_upvote(pool: PgPool) {
+        let request = PersistentRequestData { pool };
+        let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+        let client_id = Uuid::parse_str("c51d2d81-3547-4f07-af58-ed613c6ece67").unwrap();
+
+        let personal_rating = request.get_personal_upvote(image_id, client_id).await.unwrap();
+        assert!(personal_rating);
+        let personal_rating = request.get_personal_upvote(WRONG_UUID, client_id).await.unwrap();
+        assert!(!personal_rating);
+        let personal_rating = request.get_personal_upvote(image_id, WRONG_UUID).await.unwrap();
+        assert!(!personal_rating);
+    }
+
+    #[sqlx::test(fixtures("meal", "user", "image", "rating"))]
+    async fn test_get_personal_downvote(pool: PgPool) {
+        let request = PersistentRequestData { pool };
+        let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+        let client_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
+
+        let personal_rating = request.get_personal_downvote(image_id, client_id).await.unwrap();
+        assert!(personal_rating);
+        let personal_rating = request.get_personal_downvote(WRONG_UUID, client_id).await.unwrap();
+        assert!(!personal_rating);
+        let personal_rating = request.get_personal_downvote(image_id, WRONG_UUID).await.unwrap();
+        assert!(!personal_rating);
+    }
+
     #[sqlx::test(fixtures("meal", "additive"))]
     async fn test_get_additives(pool: PgPool) {
         let request = PersistentRequestData { pool };
