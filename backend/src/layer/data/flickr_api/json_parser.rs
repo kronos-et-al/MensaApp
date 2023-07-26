@@ -64,7 +64,7 @@ impl JsonParser {
 
         if let Some(license) = license {
             return VALID_LICENSES.contains(&license.as_str());
-        } 
+        }
         false
     }
 
@@ -92,7 +92,12 @@ mod test {
     use crate::interface::image_hoster::model::ImageMetaData;
     use crate::interface::image_hoster::ImageHosterError;
     use crate::layer::data::flickr_api::json_parser::JsonParser;
-    use crate::layer::data::flickr_api::json_structs::*;
+    use crate::layer::data::flickr_api::json_structs::JsonRootError;
+    use crate::layer::data::flickr_api::json_structs::JsonRootLicense;
+    use crate::layer::data::flickr_api::json_structs::JsonRootSizes;
+    use crate::layer::data::flickr_api::json_structs::LicenceHistory;
+    use crate::layer::data::flickr_api::json_structs::Size;
+    use crate::layer::data::flickr_api::json_structs::Sizes;
 
     #[test]
     fn valid_get_size() {
