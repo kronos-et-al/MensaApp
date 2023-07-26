@@ -51,7 +51,8 @@ void main() {
       "image",
       "reportReason",
       "additive",
-      "allergen"
+      "allergen",
+      "mealplanException"
     ], useCountryCode: false, basePath: 'assets/locales', fallbackDir: 'de'),
     missingTranslationHandler: (key, locale) {
       if (kDebugMode) {
