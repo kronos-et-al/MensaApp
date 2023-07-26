@@ -10,6 +10,8 @@ class MealAccordion extends StatelessWidget {
   final MealSideEntry? _sideEntry;
   final MealAccordionInfo _info;
   final Function()? _onTap;
+  final Color? _backgroundColor;
+  final Color? _expandedColor;
 
   /// Creates a new MealAccordion.
   /// @param key The key to identify this widget.
@@ -25,12 +27,16 @@ class MealAccordion extends StatelessWidget {
       MealMainEntry? mainEntry,
       MealSideEntry? sideEntry,
       required MealAccordionInfo info,
-      Function()? onTap})
+      Function()? onTap,
+      Color? backgroundColor,
+      Color? expandedColor})
       : _isExpanded = isExpanded,
         _mainEntry = mainEntry,
         _sideEntry = sideEntry,
         _info = info,
-        _onTap = onTap;
+        _onTap = onTap,
+        _backgroundColor = backgroundColor,
+        _expandedColor = expandedColor;
 
   @override
   Widget build(BuildContext context) {
@@ -38,18 +44,20 @@ class MealAccordion extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4.0),
           color: _isExpanded
-              ? Theme.of(context).colorScheme.surface
-              : Theme.of(context).colorScheme.background,
+              ? _expandedColor ?? Theme.of(context).colorScheme.surface
+              : _backgroundColor ?? Theme.of(context).colorScheme.background,
         ),
         child: Material(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(4.0),
           child: InkWell(
+              splashColor:
+                  Theme.of(context).colorScheme.background.withOpacity(0.1),
               borderRadius: BorderRadius.circular(4.0),
               onTap: _onTap,
               child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                      const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                   child: Column(
                     children: [
                       _mainEntry ?? _sideEntry ?? Container(),

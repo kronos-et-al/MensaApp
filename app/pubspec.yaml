@@ -87,6 +87,8 @@ flutter:
     - assets/icons/allergens/
     - assets/icons/exceptions/
     - assets/icons/navigation/
+    - assets/icons/favorites/
+    - assets/icons/meal/
     - assets/locales/en/
     - assets/locales/de/
   # To add assets to your application, add an assets section, like this:
