@@ -1,7 +1,6 @@
 import 'package:app/view/core/icons/MealIcon.dart';
 import 'package:app/view_model/logic/preference/IPreferenceAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/Side.dart';
-import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -37,26 +36,13 @@ class MealSideEntry extends StatelessWidget {
                     fontWeight: FontWeight.normal, fontSize: 14, height: 1.5)),
           ),
           const SizedBox(width: 8),
-          FutureBuilder<PriceCategory>(
-            future: preferences.getPriceCategory(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(
-                    _priceFormat.format(
-                        _side.price.getPrice(snapshot.requireData) / 100),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      height: 1.5,
-                    ));
-              } else {
-                return const Text('',
-                    style: TextStyle(
-                      fontSize: 14,
-                      height: 1.5,
-                    ));
-              }
-            },
-          )
+          Text(
+              _priceFormat.format(
+                  _side.price.getPrice(preferences.getPriceCategory()) / 100),
+              style: const TextStyle(
+                fontSize: 14,
+                height: 1.5,
+              ))
         ],
       ),
     );
