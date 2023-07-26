@@ -15,14 +15,14 @@ pub enum DataError {
     /// Requested data does not exist
     #[error("the requested item could not be found in the database")]
     NoSuchItem,
-    /// Error occurred during data request or an internal connection fault
+    /// Error occurred during data request or an internal connection fault.
     #[error("internal error ocurred: {0}")]
     InternalError(#[from] sqlx::Error),
     /// todo
     #[error("error converting type: {0}")]
     TypeConversionError(#[from] TryFromIntError),
-    /// Unexpectedly got null value from database
-    #[error("unexpectedly got null from database at: {0}")]
+    /// Unexpectedly got null value from database.
+    #[error("unexpectedly got null from database: {0}")]
     UnexpectedNullError(String),
 }
 
