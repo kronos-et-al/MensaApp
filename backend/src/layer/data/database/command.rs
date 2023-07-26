@@ -181,7 +181,7 @@ mod test {
             id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
             image_hoster_id: "test".to_string(),
             url: "www.test.com".to_string(),
-            rank: 0.0,
+            rank: 0.5,
             downvotes: 0,
             upvotes: 0,
             approved: false,
@@ -328,20 +328,20 @@ mod test {
         let url = "www.test.com";
 
         let images = number_of_images(&pool).await;
-        assert!(command
+        assert!(dbg!(command
             .link_image(
-                user_id,
                 meal_id,
+                user_id,
                 image_hoster_id.to_string(),
                 url.to_string()
             )
-            .await
+            .await)
             .is_ok());
         assert_eq!(number_of_images(&pool).await, images + 1);
         assert!(command
             .link_image(
-                user_id,
                 meal_id,
+                user_id,
                 image_hoster_id.to_string(),
                 url.to_string()
             )
@@ -349,8 +349,8 @@ mod test {
             .is_ok());
         assert!(command
             .link_image(
-                WRONG_UUID,
                 meal_id,
+                WRONG_UUID,
                 image_hoster_id.to_string(),
                 url.to_string()
             )
@@ -358,8 +358,8 @@ mod test {
             .is_err());
         assert!(command
             .link_image(
-                user_id,
                 WRONG_UUID,
+                user_id,
                 image_hoster_id.to_string(),
                 url.to_string()
             )
