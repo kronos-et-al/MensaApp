@@ -3,7 +3,7 @@ use sqlx::{Pool, Postgres};
 
 use crate::{
     interface::persistent_data::{model::Image, ImageReviewDataAccess, Result},
-    util::{Date, Uuid},
+    util::{Date, Uuid}, null_error,
 };
 
 pub struct PersistentImageReviewData {
@@ -13,7 +13,7 @@ pub struct PersistentImageReviewData {
 #[async_trait]
 impl ImageReviewDataAccess for PersistentImageReviewData {
     async fn get_n_images_by_rank_date(&self, n: u32, date: Date) -> Result<Vec<Image>> {
-        let images = sqlx::query!(
+        sqlx::query!(
             "
             SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
                 approved, report_count, link_date
@@ -28,29 +28,27 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
         .fetch_all(&self.pool)
         .await?
         .into_iter()
-        .filter_map(|r| {
-            Some(Image {
-                id: r.image_id?,
-                url: r.url?,
-                image_hoster_id: r.hoster_id?,
-                downvotes: r.downvotes? as _,
-                upvotes: r.upvotes? as _,
-                rank: r.rank?,
-                approved: r.approved?,
-                report_count: r.report_count? as _,
-                upload_date: r.link_date?,
+        .map(|r| {
+            Ok(Image {
+                id: null_error!(r.image_id),
+                url: null_error!(r.url),
+                image_hoster_id: null_error!(r.hoster_id),
+                downvotes: null_error!(r.downvotes) as _,
+                upvotes: null_error!(r.upvotes) as _,
+                rank: null_error!(r.rank),
+                approved: null_error!(r.approved),
+                report_count: null_error!(r.report_count) as _,
+                upload_date: null_error!(r.link_date),
             })
         })
-        .collect();
-
-        Ok(images)
+        .collect::<Result<Vec<_>>>()
     }
 
     async fn get_n_images_next_week_by_rank_not_checked_last_week(
         &self,
         n: u32,
     ) -> Result<Vec<Image>> {
-        let images = sqlx::query!(
+        sqlx::query!(
             "
             SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
                 approved, report_count, link_date
@@ -65,29 +63,27 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
         .fetch_all(&self.pool)
         .await?
         .into_iter()
-        .filter_map(|r| {
-            Some(Image {
-                id: r.image_id?,
-                url: r.url?,
-                image_hoster_id: r.hoster_id?,
-                downvotes: r.downvotes? as _,
-                upvotes: r.upvotes? as _,
-                rank: r.rank?,
-                approved: r.approved?,
-                report_count: r.report_count? as _,
-                upload_date: r.link_date?,
+        .map(|r| {
+            Ok(Image {
+                id: null_error!(r.image_id),
+                url: null_error!(r.url),
+                image_hoster_id: null_error!(r.hoster_id),
+                downvotes: null_error!(r.downvotes) as _,
+                upvotes: null_error!(r.upvotes) as _,
+                rank: null_error!(r.rank),
+                approved: null_error!(r.approved),
+                report_count: null_error!(r.report_count) as _,
+                upload_date: null_error!(r.link_date),
             })
         })
-        .collect();
-
-        Ok(images)
+        .collect::<Result<Vec<_>>>()
     }
 
     async fn get_n_images_by_last_checked_not_checked_last_week(
         &self,
         n: u32,
     ) -> Result<Vec<Image>> {
-        let images = sqlx::query!(
+        sqlx::query!(
             "
             SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
                 approved, report_count, link_date
@@ -101,33 +97,30 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
         .fetch_all(&self.pool)
         .await?
         .into_iter()
-        .filter_map(|r| {
-            Some(Image {
-                id: r.image_id?,
-                url: r.url?,
-                image_hoster_id: r.hoster_id?,
-                downvotes: r.downvotes? as _,
-                upvotes: r.upvotes? as _,
-                rank: r.rank?,
-                approved: r.approved?,
-                report_count: r.report_count? as _,
-                upload_date: r.link_date?,
+        .map(|r| {
+            Ok(Image {
+                id: null_error!(r.image_id),
+                url: null_error!(r.url),
+                image_hoster_id: null_error!(r.hoster_id),
+                downvotes: null_error!(r.downvotes) as _,
+                upvotes: null_error!(r.upvotes) as _,
+                rank: null_error!(r.rank),
+                approved: null_error!(r.approved),
+                report_count: null_error!(r.report_count) as _,
+                upload_date: null_error!(r.link_date),
             })
         })
-        .collect();
-
-        Ok(images)
+        .collect::<Result<Vec<_>>>()
     }
 
     async fn delete_image(&self, id: Uuid) -> Result<()> {
         // Todo on delete cascade?
-        let num_deleted = sqlx::query!(
+        sqlx::query!(
             "DELETE FROM image WHERE image_id = $1 RETURNING image_id",
             id
         )
         .fetch_all(&self.pool)
-        .await?
-        .len();
+        .await?;
 
         Ok(())
     }
