@@ -93,16 +93,10 @@ class FilterPreferences {
   /// @return The allergens that should be inside meals shown on the meal plan
   List<Allergen> get allergens => _allergens;
 
-  /// add a allergen to the list of allergens that should be inside meals shown on the meal plan
-  /// @param allergen The allergen that should be inside meals shown on the meal plan
-  addAllergen(Allergen allergen) {
-    _allergens.add(allergen);
-  }
-
-  /// remove an allergen to the list of allergens that should be inside meals shown on the meal plan
-  /// @param allergen The allergen that should not be inside meals shown on the meal plan
-  removeAllergen(Allergen allergen) {
-    _allergens.remove(allergen);
+  /// change the list of allergens that should be inside meals shown on the meal plan
+  /// @param allergen The list of allergen that should be inside meals shown on the meal plan
+  set allergens(List<Allergen> value) {
+    _allergens = value;
   }
 
   /// returns if the sorting of the meals is ascending or descending

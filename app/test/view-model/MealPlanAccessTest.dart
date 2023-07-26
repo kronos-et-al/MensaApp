@@ -166,8 +166,7 @@ void main() {
   });
 
   setUp(() {
-    when(() => localStorage.getFilterPreferences())
-        .thenAnswer((_) => null);
+    when(() => localStorage.getFilterPreferences()).thenAnswer((_) => null);
     when(() => localStorage.getCanteen()).thenAnswer((_) => canteenID);
     when(() => localStorage.getPriceCategory())
         .thenAnswer((_) => PriceCategory.student);
@@ -215,7 +214,10 @@ void main() {
 
     group("allergens", () {
       test("change allergens er", () async {
-        filter.removeAllergen(Allergen.er);
+        List<Allergen> allergens = _getAllAllergen();
+        allergens.remove(Allergen.er);
+
+        filter.allergens = allergens;
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
@@ -249,8 +251,11 @@ void main() {
       });
 
       test("change allergens er and sn", () async {
-        filter.removeAllergen(Allergen.er);
-        filter.removeAllergen(Allergen.sn);
+        List<Allergen> allergens = _getAllAllergen();
+        allergens.remove(Allergen.er);
+        allergens.remove(Allergen.sn);
+
+        filter.allergens = allergens;
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final returnedMealPlan = switch (await mealPlanAccess.getMealPlan()) {
@@ -270,7 +275,12 @@ void main() {
       });
 
       test("change allergens er, sn and kr", () async {
-        filter.removeAllergen(Allergen.kr);
+        List<Allergen> allergens = _getAllAllergen();
+        allergens.remove(Allergen.er);
+        allergens.remove(Allergen.sn);
+        allergens.remove(Allergen.kr);
+
+        filter.allergens = allergens;
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final returnedMealPlan = switch (await mealPlanAccess.getMealPlan()) {
@@ -290,9 +300,9 @@ void main() {
       });
 
       test("remove filter allergens", () async {
-        filter.addAllergen(Allergen.er);
-        filter.addAllergen(Allergen.sn);
-        filter.addAllergen(Allergen.kr);
+        List<Allergen> allergens = _getAllAllergen();
+
+        filter.allergens = allergens;
 
         await mealPlanAccess.changeFilterPreferences(filter);
 
@@ -388,7 +398,7 @@ void main() {
         await mealPlanAccess.deactivateFilter();
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -403,7 +413,7 @@ void main() {
         await mealPlanAccess.activateFilter();
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -684,7 +694,10 @@ void main() {
       await mealPlanAccess.changeDate(DateTime.now());
 
       filter.setCategoriesVegan();
-      filter.removeAllergen(Allergen.lu);
+      List<Allergen> allergens = _getAllAllergen();
+      allergens.remove(Allergen.lu);
+
+      filter.allergens = allergens;
 
       when(() => localStorage.setFilterPreferences(filter))
           .thenAnswer((_) async {});
@@ -699,4 +712,12 @@ void main() {
       expect(result is FilteredMealException, isTrue);
     });
   });
+}
+
+List<Allergen> _getAllAllergen() {
+  List<Allergen> list = [];
+  for (Allergen allergen in Allergen.values) {
+    list.add(allergen);
+  }
+  return list;
 }
