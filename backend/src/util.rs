@@ -2,6 +2,8 @@
 //!
 //! For a complete list and explanations you can see [here](https://www.sw-ka.de/media/?file=4458listeallergesetzlichausweisungspflichtigenzusatzstoffeundallergenefuerwebsite160218.pdf&download).
 
+use std::fmt::Display;
+
 use async_graphql::Enum;
 
 /// Date type used in multiple places.
@@ -146,6 +148,12 @@ pub enum ReportReason {
     ViolatesRights,
     /// This picture should be removed for some other reason.
     Other,
+}
+
+impl Display for ReportReason {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 /// This struct contains all price classes. All prices are listed in euro.
