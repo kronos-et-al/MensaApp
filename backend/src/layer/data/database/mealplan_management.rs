@@ -352,7 +352,7 @@ mod test {
     #![allow(clippy::unwrap_used)]
 
     use super::*;
-    use crate::util::Allergen::{Se, So, We, ML, Ei};
+    use crate::util::Allergen::{Ei, Se, So, We, ML};
     use chrono::{NaiveDate, Utc};
     use sqlx::PgPool;
     use std::collections::HashMap;
@@ -463,7 +463,7 @@ mod test {
             (
                 Uuid::parse_str("61b27158-817c-4716-bd41-2a8901391ea4").unwrap(),
                 "LINIE GUT & GÜNSTIG",
-                true
+                true,
             ),
             (
                 Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(),
@@ -473,7 +473,7 @@ mod test {
             (
                 Uuid::parse_str("a4956171-a5fc-4c6b-a028-3cb2e5d2bedb").unwrap(),
                 "Linie 4",
-                true
+                true,
             ),
             // No longer 'similar'
             (Uuid::default(), "GUT & GÜNSTIG", false),
@@ -502,9 +502,15 @@ mod test {
 
         let addons: HashMap<&str, (Vec<Additive>, Vec<Allergen>)> = HashMap::from([
             ("f7337122-b018-48ad-b420-6202dc3cb4ff", (vec![], vec![We])),
-            ("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec", (vec![], vec![Ei, ML, We])),
-            ("0a850476-eda4-4fd8-9f93-579eb85b8c25", (vec![], vec![Se, So, We])),
-            ("00000000-0000-0000-0000-000000000000", (vec![], vec![]))
+            (
+                "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
+                (vec![], vec![Ei, ML, We]),
+            ),
+            (
+                "0a850476-eda4-4fd8-9f93-579eb85b8c25",
+                (vec![], vec![Se, So, We]),
+            ),
+            ("00000000-0000-0000-0000-000000000000", (vec![], vec![])),
         ]);
 
         let tests = [
@@ -573,7 +579,7 @@ mod test {
             ("73cf367b-a536-4b49-ad0c-cb984caa9a08", (vec![], vec![])),
             ("836b17fb-cb16-425d-8d3c-c274a9cdbd0c", (vec![], vec![])),
             ("2c662143-eb84-4142-aa98-bd7bdf84c498", (vec![], vec![])),
-            ("00000000-0000-0000-0000-000000000000", (vec![], vec![]))
+            ("00000000-0000-0000-0000-000000000000", (vec![], vec![])),
         ]);
 
         let tests = [

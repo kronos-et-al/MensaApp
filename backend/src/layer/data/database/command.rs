@@ -148,9 +148,12 @@ impl CommandDataAccess for PersistentCommandData {
     }
 
     async fn get_api_keys(&self) -> Result<Vec<ApiKey>> {
-        let keys = sqlx::query_as!(ApiKey, "SELECT api_key as key, description FROM api_key ORDER BY api_key")
-            .fetch_all(&self.pool)
-            .await?;
+        let keys = sqlx::query_as!(
+            ApiKey,
+            "SELECT api_key as key, description FROM api_key ORDER BY api_key"
+        )
+        .fetch_all(&self.pool)
+        .await?;
 
         Ok(keys)
     }
