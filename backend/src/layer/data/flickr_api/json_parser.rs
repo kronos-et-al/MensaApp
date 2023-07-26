@@ -62,7 +62,10 @@ impl JsonParser {
             .max_by_key(|l| l.date_change)
             .map(|entry| &entry.new_license);
 
-        license.is_some_and(|l| VALID_LICENSES.contains(&l.as_str()))
+        if let Some(license) = license {
+            return VALID_LICENSES.contains(&license.as_str());
+        } 
+        false
     }
 
     /// Obtains and determines an error by its error code and message provided by the [`JsonRootError`] struct.
