@@ -132,15 +132,42 @@ mod test {
     async fn test_get_report() {
         let info = get_report_info();
         let report = MailSender::get_report(&info).replace("\r\n", "\n");
-        assert!(!report.contains("{{"), "the template must not contain any formatting");
-        assert!(!report.contains("}}"), "the template must not contain any formatting");
-        assert!(report.contains(info.image_link.as_str()), "the template must contain all of the information from the report info.");
-        assert!(report.contains(info.image_id.to_string().as_str()), "the template must contain all of the information from the report info");
-        assert!(report.contains(info.report_count.to_string().as_str()), "the template must contain all of the information from the report info");
-        assert!(report.contains(info.image_got_hidden.to_string().as_str()), "the template must contain all of the information from the report info");
-        assert!(report.contains(info.positive_rating_count.to_string().as_str()), "the template must contain all of the information from the report info");
-        assert!(report.contains(info.negative_rating_count.to_string().as_str()), "the template must contain all of the information from the report info");
-        assert!(report.contains(info.get_image_rank.to_string().as_str()), "the template must contain all of the information from the report info");
+        assert!(
+            !report.contains("{{"),
+            "the template must not contain any formatting"
+        );
+        assert!(
+            !report.contains("}}"),
+            "the template must not contain any formatting"
+        );
+        assert!(
+            report.contains(info.image_link.as_str()),
+            "the template must contain all of the information from the report info."
+        );
+        assert!(
+            report.contains(info.image_id.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(info.report_count.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(info.image_got_hidden.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(info.positive_rating_count.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(info.negative_rating_count.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(info.get_image_rank.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
     }
 
     #[tokio::test]
