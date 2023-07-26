@@ -288,7 +288,7 @@ mod test {
             .is_some()
     }
 
-    #[sqlx::test(fixtures("meal", "user", "image"))]
+    #[sqlx::test(fixtures("meal", "user", "image_review_data"))]
     async fn test_mark_as_checked(pool: PgPool) {
         let review = PersistentImageReviewData { pool: pool.clone() };
         let id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
