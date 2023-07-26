@@ -70,8 +70,7 @@ impl RequestDataAccess for PersistentRequestData {
             r#"
             SELECT food_id, name, food_type as "meal_type: MealType",
                 price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,
-                average_rating, rating_count,
-                (get_statistic(food_id, serve_date)).*
+                new, frequency, last_served, next_served, average_rating, rating_count
             FROM meal_detail JOIN food_plan USING (food_id)
             WHERE food_id = $1 AND line_id = $2 AND serve_date = $3
             "#,
@@ -117,8 +116,7 @@ impl RequestDataAccess for PersistentRequestData {
             r#"
             SELECT food_id, name, food_type as "meal_type: MealType",
                 price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,
-                average_rating, rating_count,
-                (get_statistic(food_id, serve_date)).*
+                new, frequency, last_served, next_served, average_rating, rating_count
             FROM meal_detail JOIN food_plan USING (food_id)
             WHERE line_id = $1 AND serve_date = $2
             "#,
