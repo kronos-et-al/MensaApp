@@ -120,7 +120,7 @@ mod test {
                 },
             },
         },
-        util::{Uuid, Date},
+        util::{Date, Uuid},
     };
 
     #[tokio::test]
