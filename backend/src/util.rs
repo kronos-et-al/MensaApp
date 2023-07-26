@@ -149,7 +149,7 @@ pub enum ReportReason {
 }
 
 /// This struct contains all price classes. All prices are listed in euro.
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct Price {
     /// Price of the dish for students.
     pub price_student: u32,

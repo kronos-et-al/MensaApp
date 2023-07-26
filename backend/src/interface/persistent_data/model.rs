@@ -34,7 +34,7 @@ pub struct Line {
 }
 
 /// Struct for database-operations. Related to the database entity 'meal'.
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Meal {
     /// Identification of the meal.
     pub id: Uuid,

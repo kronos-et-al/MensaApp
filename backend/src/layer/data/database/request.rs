@@ -310,6 +310,11 @@ mod tests {
         assert_eq!(canteens[0].name, "my favorite canteen"); //TODO: Canteen order
         assert_eq!(canteens[1].name, "second canteen");
         assert_eq!(canteens[2].name, "bad canteen");
+        assert!(request
+            .get_canteen(Uuid::from_u128(7u128))
+            .await
+            .unwrap()
+            .is_none());
     }
 
     #[sqlx::test(fixtures("canteen"))]
@@ -335,6 +340,11 @@ mod tests {
         assert_eq!(lines[0].name, "line 1");
         assert_eq!(lines[1].name, "line 2");
         assert_eq!(lines[2].name, "special line");
+        assert!(request
+            .get_line(Uuid::from_u128(7u128))
+            .await
+            .unwrap()
+            .is_none());
     }
 
     #[sqlx::test(fixtures("canteen", "line"))]
@@ -365,7 +375,7 @@ mod tests {
         let request = PersistentRequestData { pool };
 
         let meal_id_strs = [
-            "73cf367b-a536-4b49-ad0c-cb984caa9a08",
+            "f7337122-b018-48ad-b420-6202dc3cb4ff",
             "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
         ];
         let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
@@ -378,9 +388,28 @@ mod tests {
             }
         }
         dbg!(&meals);
-        assert!(meals.len() == 2);
-        assert!(meals[0].name == "Geflügel - Cevapcici, Ajvar, Djuvec Reis");
-        assert!(meals[1].name == "2 Dampfnudeln mit Vanillesoße");
+        assert_eq!(meals, provide_dummy_meals());
+
+        let meal_id: uuid::Uuid = Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap();
+        assert!(request
+            .get_meal(Uuid::from_u128(7u128), line_id, date)
+            .await
+            .unwrap()
+            .is_none());
+        assert!(request
+            .get_meal(meal_id, Uuid::from_u128(7u128), date)
+            .await
+            .unwrap()
+            .is_none());
+        assert!(request
+            .get_meal(
+                meal_id,
+                line_id,
+                Date::parse_from_str("2023-07-30", "%Y-%m-%d").unwrap()
+            )
+            .await
+            .unwrap()
+            .is_none());
     }
 
     #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
@@ -396,25 +425,31 @@ mod tests {
             .unwrap();
         assert!(meals.is_some(), "data should ba available");
         let meals = meals.unwrap();
-        let meal_names: Vec<&str> = meals.iter().map(|m| m.name.as_str()).collect();
-        assert!(meals.len() == 2);
-        assert!(meal_names.contains(&"Geflügel - Cevapcici, Ajvar, Djuvec Reis"));
-        assert!(meal_names.contains(&"2 Dampfnudeln mit Vanillesoße"));
+        assert_eq!(meals, provide_dummy_meals());
     }
 
     #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_get_sides(pool: PgPool) {
         let request = PersistentRequestData { pool };
+        let date = Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap();
+        let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
 
-        let sides = request
-            .get_sides(
-                Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(),
-                Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap(),
-            )
-            .await
-            .unwrap();
+        let sides = request.get_sides(line_id, date).await.unwrap();
         assert!(sides.len() == 1);
         assert!(sides[0].name == "zu jedem Gericht reichen wir ein Dessert oder Salat");
+        assert!(request
+            .get_sides(Uuid::from_u128(7u128), date)
+            .await
+            .unwrap()
+            .is_empty());
+        assert!(request
+            .get_sides(
+                line_id,
+                Date::parse_from_str("2023-07-30", "%Y-%m-%d").unwrap()
+            )
+            .await
+            .unwrap()
+            .is_empty());
     }
 
     fn provide_dummy_meals() -> Vec<Meal> {
@@ -422,29 +457,26 @@ mod tests {
             id: Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
             name: "Geflügel - Cevapcici, Ajvar, Djuvec Reis".to_string(),
             meal_type: MealType::Unknown,
-            price: Price { price_student: 320, price_employee: 420, price_guest: 460, price_pupil: 355 },
+            price: Price {
+                price_student: 320,
+                price_employee: 420,
+                price_guest: 460,
+                price_pupil: 355,
+            },
             last_served: Some(Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap()),
-            next_served: Some(Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap()),
+            next_served: None,
             frequency: 1,
             new: true,
             rating_count: 0,
-            average_rating: 0.0,
+            average_rating: 2.5,
             date: Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap(),
             line_id: Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(),
         };
         let meal2 = Meal {
             id: Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap(),
-            name: "Geflügel - Cevapcici, Ajvar, Djuvec Reis".to_string(),
-            meal_type: MealType::Unknown,
-            price: Price { price_student: 320, price_employee: 420, price_guest: 460, price_pupil: 355 },
-            last_served: Some(Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap()),
-            next_served: Some(Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap()),
-            frequency: 1,
-            new: true,
-            rating_count: 0,
-            average_rating: 0.0,
-            date: Date::parse_from_str("2023-07-10", "%Y-%m-%d").unwrap(),
-            line_id: Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(),
+            name: "2 Dampfnudeln mit Vanillesoße".to_string(),
+            meal_type: MealType::Vegetarian,
+            ..meal1
         };
         vec![meal1, meal2]
     }
