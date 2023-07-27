@@ -2,7 +2,7 @@ FROM rust:latest as builder
 WORKDIR /usr/src/mensa-app-backend
 COPY . .
 ENV SQLX_OFFLINE=true
-RUN cargo install --path .
+RUN cargo install --path . --profile release
 
 FROM debian:bullseye-slim
 # RUN apt-get update && apt-get install -y extra-runtime-dependencies && rm -rf /var/lib/apt/lists/*
