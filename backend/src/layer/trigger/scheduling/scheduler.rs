@@ -177,7 +177,7 @@ mod tests {
     use crate::layer::trigger::scheduling::mocks::{ImageReviewMock, MensaParseMock};
 
     use super::*;
-    use tracing::Level;
+    // use tracing::Level;
     #[tokio::test]
     async fn test_scheduling() {
         // let subscriber = tracing_subscriber::FmtSubscriber::builder()

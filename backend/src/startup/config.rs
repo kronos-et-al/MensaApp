@@ -86,17 +86,19 @@ impl ConfigReader {
             .collect();
 
         let info = SwKaInfo {
-            base_url: read_var("MENSA_BASE_URL")
-                .unwrap_or("https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/".into()),
+            base_url: read_var("MENSA_BASE_URL").unwrap_or_else(|_| {
+                "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/".into()
+            }),
             client_timeout: timeout,
-            client_user_agent: env::var("USER_AGENT").unwrap_or_default(),
+            client_user_agent: env::var("USER_AGENT")
+                .unwrap_or_else(|_| String::from("MensaKa 0.1")),
             valid_canteens: canteens,
         };
         info!(
             "getting canteen data from {} for canteens {}",
             info.base_url,
             info.valid_canteens.join(", ")
-        ); // todo remove password
+        );
         Ok(info)
     }
 
