@@ -8,11 +8,11 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
 
 class MealRatingDialog {
-  static void show(BuildContext context, String mealTitle, Meal meal) {
+  static void show(BuildContext context, Meal meal) {
     int rating = meal.individualRating ?? 0;
     
     MensaDialog.show(context: context,
-      title: "$mealTitle ${FlutterI18n.translate(context, "ratings.dialogTitle")}",
+      title: "${meal.name} ${FlutterI18n.translate(context, "ratings.dialogTitle")}",
       content: Consumer<IMealAccess>(builder: (context, mealAccess, child) =>
       Column(children: [
         MensaRatingInput(onChanged: (value) {
