@@ -4,5 +4,5 @@ CREATE TYPE meal_type AS ENUM ('VEGAN','VEGETARIAN','BEEF','BEEF_AW','PORK','POR
 CREATE TABLE food (
   food_id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   name text NOT NULL,
-  food_type meal_type NOT NULL
+  food_type meal_type DEFAULT 'UNKNOWN' NOT NULL
 );
