@@ -135,6 +135,9 @@ where
 
     fn average(dishes: Iter<Dish>) -> f64 {
         let len = dishes.len();
+        if len == 0 {
+            return 0.0;
+        }
         let sum: u32 = dishes.map(|dish| dish.price.price_student).sum();
         f64::from(
             sum / u32::try_from(len)
@@ -273,5 +276,9 @@ mod test {
         let average = RelationResolver::<MealplanManagementDatabaseMock>::average(dishes.iter());
         assert!(450.0 < average);
         assert!(460.0 > average);
+
+        let dishes = vec![];
+        let average = RelationResolver::<MealplanManagementDatabaseMock>::average(dishes.iter());
+        assert_eq!(average, 0.0);
     }
 }
