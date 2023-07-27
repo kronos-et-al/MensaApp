@@ -354,7 +354,8 @@ mod test {
 
     use super::*;
     use crate::util::Allergen::{Ei, Se, So, We, ML};
-    use chrono::{NaiveDate, Local};
+    use crate::util::Date;
+    use chrono::Local;
     use sqlx::PgPool;
     use std::collections::HashMap;
     use std::str::FromStr;
@@ -365,7 +366,7 @@ mod test {
 
         let canteen_id = Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap();
         let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
-        let date = NaiveDate::from_str("2023-07-10").unwrap();
+        let date = Date::from_str("2023-07-10").unwrap();
 
         let res = req.dissolve_relations(canteen_id, date).await;
         assert!(res.is_ok());

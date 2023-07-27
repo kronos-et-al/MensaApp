@@ -1,20 +1,16 @@
 //! This crate contains mocks of [`RequestDataAccess`] and [`Command`] for testing.
 
 use async_trait::async_trait;
-use chrono::NaiveDate;
 use uuid::Uuid;
 
-use crate::util::{Additive, Allergen, MealType, Price};
-use crate::{
-    interface::{
-        api_command::{AuthInfo, Command, Result as CommandResult},
-        persistent_data::{
-            model::{Canteen, Image, Line, Meal, Side},
-            RequestDataAccess, Result as DataResult,
-        },
+use crate::interface::{
+    api_command::{AuthInfo, Command, Result as CommandResult},
+    persistent_data::{
+        model::{Canteen, Image, Line, Meal, Side},
+        RequestDataAccess, Result as DataResult,
     },
-    util::{Date, ReportReason},
 };
+use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason};
 
 const INVALID_UUID: &str = "invalid uuid:";
 
@@ -89,8 +85,8 @@ impl RequestDataAccess for RequestDatabaseMock {
                 price_guest: 0,
                 price_pupil: 0,
             },
-            last_served: Option::from(NaiveDate::default()),
-            next_served: Option::from(NaiveDate::default()),
+            last_served: Option::from(Date::default()),
+            next_served: Option::from(Date::default()),
             frequency: 11,
             new: false,
             rating_count: 0,
@@ -113,8 +109,8 @@ impl RequestDataAccess for RequestDatabaseMock {
                 price_guest: 21000,
                 price_pupil: 21,
             },
-            last_served: Option::from(NaiveDate::default()),
-            next_served: Option::from(NaiveDate::default()),
+            last_served: Option::from(Date::default()),
+            next_served: Option::from(Date::default()),
             frequency: 0,
             new: true,
             rating_count: 10,
@@ -133,8 +129,8 @@ impl RequestDataAccess for RequestDatabaseMock {
                 price_guest: 200,
                 price_pupil: 2000,
             },
-            last_served: Option::from(NaiveDate::default()),
-            next_served: Option::from(NaiveDate::default()),
+            last_served: Option::from(Date::default()),
+            next_served: Option::from(Date::default()),
             frequency: 34,
             new: false,
             rating_count: 3,
@@ -153,8 +149,8 @@ impl RequestDataAccess for RequestDatabaseMock {
                 price_guest: 420,
                 price_pupil: 42,
             },
-            last_served: Option::from(NaiveDate::default()),
-            next_served: Option::from(NaiveDate::default()),
+            last_served: Option::from(Date::default()),
+            next_served: Option::from(Date::default()),
             frequency: 10,
             new: false,
             rating_count: 7,
