@@ -1,5 +1,6 @@
 use std::{env, time::Duration};
 
+use async_graphql::InputType;
 use dotenvy::dotenv;
 use tracing::info;
 
@@ -11,7 +12,10 @@ use crate::layer::{
     trigger::{graphql::server::GraphQLServerInfo, scheduling::scheduler::ScheduleInfo},
 };
 
-use super::server::{Result, ServerError};
+use super::{
+    logging::LogInfo,
+    server::{Result, ServerError},
+};
 
 /// Class for reading configuration from environment variables.
 pub struct ConfigReader {}
@@ -24,23 +28,38 @@ impl Default for ConfigReader {
 }
 
 impl ConfigReader {
+    /// Reads the logging configuration from environment variables.
+    /// # Errors
+    /// when the environment variables are not set and no default is provided internally.
+    pub fn read_log_info(&self) -> Result<LogInfo> {
+        let info = LogInfo {
+            log_config: read_var("LOG_CONFIG")?,
+        };
+        info!("using log config: {}", info.log_config);
+        Ok(info)
+    }
+
     /// Reads the config for accessing the database from environment variables.
-    /// If the necessary configurations are not available, an error will be returned.  
+    /// # Errors
+    /// when the environment variables are not set and no default is provided internally.
     pub fn read_database_info(&self) -> Result<DatabaseInfo> {
         let info = DatabaseInfo {
             connection: read_var("DATABASE_URL")?,
         };
-        info!("using database connection: {}", info.connection); // todo remove password
         Ok(info)
     }
 
     /// Reads the config for accessing the mail server from environment variables.
-    /// If the necessary configurations are not available, an error will be returned.  
+    /// # Errors
+    /// when the environment variables are not set and no default is provided internally.  
     pub fn read_mail_info(&self) -> Result<MailInfo> {
         let info = MailInfo {
             admin_email_address: read_var("ADMIN_EMAIL")?,
             smtp_server: read_var("SMTP_SERVER")?,
-            smtp_port: read_var("SMTP_PORT")?.parse().unwrap_or(465),
+            smtp_port: read_var("SMTP_PORT")
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(465),
             username: read_var("SMTP_USERNAME")?,
             password: read_var("SMTP_PASSWORD")?,
         };
@@ -48,7 +67,8 @@ impl ConfigReader {
     }
 
     /// Reads the schedules for regular events from environment variables.
-    /// If the necessary configurations are not available, an error will be returned.  
+    /// # Errors
+    /// when the environment variables are not set and no default is provided internally.
     pub fn read_schedule_info(&self) -> Result<ScheduleInfo> {
         let info = ScheduleInfo {
             full_parse_schedule: env::var("FULL_PARSE_SCHEDULE")
@@ -62,7 +82,8 @@ impl ConfigReader {
     }
 
     /// Reads the config for the flickr api from environment variables.
-    /// If the necessary configurations are not available, an error will be returned.  
+    /// # Errors
+    /// when the environment variables are not set and no default is provided internally.
     pub fn read_flickr_info(&self) -> Result<FlickrInfo> {
         let info = FlickrInfo {
             api_key: read_var("FLICKR_API_KEY")?,
@@ -71,7 +92,8 @@ impl ConfigReader {
     }
 
     /// Reads the config for the homepage of the "Studierendenwerk Karlsruhe" (Sw Ka) and its canteens from environment variables.
-    /// If the necessary configurations are not available, an error will be returned.  
+    /// # Errors
+    /// when the environment variables are not set and no default is provided internally.
     pub fn read_swka_info(&self) -> Result<SwKaInfo> {
         let timeout = env::var("CLIENT_TIMEOUT")
             .ok()
@@ -103,7 +125,8 @@ impl ConfigReader {
     }
 
     /// Reads the config for the graphql web server from environment variables.
-    /// If the necessary configurations are not available, an error will be returned.  
+    /// # Errors
+    /// when the environment variables are not set and no default is provided internally.
     pub fn read_graphql_info(&self) -> Result<GraphQLServerInfo> {
         let info = GraphQLServerInfo {
             port: env::var("HTTP_PORT")

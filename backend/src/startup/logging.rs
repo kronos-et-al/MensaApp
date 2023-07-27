@@ -1,12 +1,18 @@
 use tracing::Level;
 use tracing_subscriber::{EnvFilter, FmtSubscriber};
 
+/// 
+pub struct LogInfo {
+    /// 
+    pub log_config: String,
+}
+
 /// Class for initializing the logging.
 pub struct Logger;
 
 impl Logger {
     // Initializes the logger.
-    pub fn init() {
+    pub fn init(info: LogInfo) {
         // setup logging
         let subscriber = FmtSubscriber::builder()
             .with_max_level(Level::TRACE)

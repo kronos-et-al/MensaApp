@@ -57,9 +57,10 @@ impl Server {
     /// - when the the config could not read environment variables
     /// - when crating a component fails
     pub async fn run() -> Result<()> {
-        Logger::init();
-
         let config = ConfigReader::default();
+        
+        // logging
+        Logger::init(config.read_log_info()?);
 
         // data layer
         let factory = DataAccessFactory::new(config.read_database_info()?).await;
