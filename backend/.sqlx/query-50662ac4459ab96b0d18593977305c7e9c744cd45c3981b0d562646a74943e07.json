@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE line\n            SET name = $2, position = $3\n            WHERE line_id = $1\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "50662ac4459ab96b0d18593977305c7e9c744cd45c3981b0d562646a74943e07"
+}
