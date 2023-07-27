@@ -64,7 +64,7 @@ class _FilterDialogState extends State<FilterDialog> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(FlutterI18n.translate(context, "filter.foodType")),
-                  MensaButtonGroup(
+                  MensaButtonGroup<int>(
                       value: _getValueCategory(_preferences.categories),
                       onChanged: (value) {
                         _setValueCategory(value, _preferences);
@@ -80,29 +80,51 @@ class _FilterDialogState extends State<FilterDialog> {
                       selectedValues: _preferences.allergens,
                       onChanged: (value) {
                         _preferences.allergens = value;
+                        setState(() {
+                          _preferences = _preferences;
+                        });
                       }),
                   Text(FlutterI18n.translate(context, "filter.priceTitle")),
                   MensaSlider(
-                      onChanged: (value) => _preferences.price = value.round(),
+                      onChanged: (value) {
+                        _preferences.price = value.round();
+                        setState(() {
+                          _preferences = _preferences;
+                        });
+                      },
                       value: _preferences.price.toDouble(),
                       min: 0,
-                      max: 10),
+                      max: 1000),
                   MensaSlider(
-                    onChanged: (value) => _preferences.rating = value.round(),
+                    onChanged: (value) {
+                      _preferences.rating = value.round();
+                      setState(() {
+                        _preferences = _preferences;
+                      });
+                    },
                     value: _preferences.rating.toDouble(),
                     min: 1,
-                    max: 1,
+                    max: 5,
                   ),
                   MensaToggle(
-                      onChanged: (value) => _preferences.onlyFavorite = value,
+                      onChanged: (value) {
+                        _preferences.onlyFavorite = value;
+                        setState(() {
+                          _preferences = _preferences;
+                        });
+                      },
                       value: _preferences.onlyFavorite,
                       label: FlutterI18n.translate(
                           context, "filter.favoritesOnlyTitle")),
                   Text(FlutterI18n.translate(context, "filter.frequencyTitle")),
                   MensaButtonGroup(
                       value: _getValueFrequency(_preferences.frequency),
-                      onChanged: (value) =>
-                          _setValueFrequency(value, _preferences),
+                      onChanged: (value) {
+                        _setValueFrequency(value, _preferences);
+                        setState(() {
+                          _preferences = _preferences;
+                        });
+                      },
                       entries: _getAllFrequencyEntries(context)),
                   Text(FlutterI18n.translate(context, "filter.sortByTitle")),
                   Row(
@@ -193,25 +215,36 @@ class _FilterDialogState extends State<FilterDialog> {
     return entries;
   }
 
-  static List<MensaButtonGroupEntry<FoodType>> _getAllFoodTypeEntries(
+  static List<MensaButtonGroupEntry<int>> _getAllFoodTypeEntries(
       BuildContext context) {
-    final List<MensaButtonGroupEntry<FoodType>> entries = [];
+    final List<MensaButtonGroupEntry<int>> entries = [];
 
     entries.add(MensaButtonGroupEntry(
         title: FlutterI18n.translate(context, "filter.foodTypeSectionAll"),
-        value: FoodType.beef));
+        value: 0));
     entries.add(MensaButtonGroupEntry(
         title:
             FlutterI18n.translate(context, "filter.foodTypeSectionVegetarian"),
-        value: FoodType.vegetarian));
+        value: 1));
     entries.add(MensaButtonGroupEntry(
         title: FlutterI18n.translate(context, "filter.foodTypeSectionVegan"),
-        value: FoodType.vegan));
+        value: 2));
 
     return entries;
   }
 
-  static _setValueCategory(FoodType type, FilterPreferences access) {
+  static _setValueCategory(int type, FilterPreferences access) {
+    switch (type) {
+      case 0:
+        access.setAllCategories();
+        return;
+      case 1:
+        access.setCategoriesVegetarian();
+        return;
+      case 2:
+        access.setCategoriesVegan();
+        return;
+    }
     if (type == FoodType.vegan) {
       access.setCategoriesVegan();
       return;
@@ -225,14 +258,16 @@ class _FilterDialogState extends State<FilterDialog> {
     access.setAllCategories();
   }
 
-  static FoodType _getValueCategory(List<FoodType> types) {
-    switch (types.length) {
-      case 1:
-        return FoodType.vegan;
-      case 2:
-        return FoodType.vegetarian;
-      default:
-        return FoodType.beef;
+  static int _getValueCategory(List<FoodType> types) {
+    if (types.contains(FoodType.beef) || types.contains(FoodType.beefAw) || types.contains(FoodType.pork) || types.contains(FoodType.porkAw)) {
+      return 0;
     }
+    if (types.contains(FoodType.vegetarian)) {
+      return 1;
+    }
+    if (types.contains(FoodType.vegan)) {
+      return 2;
+    }
+    return 0;
   }
 }

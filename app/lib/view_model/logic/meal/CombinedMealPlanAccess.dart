@@ -329,6 +329,18 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     notifyListeners();
   }
 
+  @override
+  Future<void> toggleFilter() async {
+    await _doneInitialization;
+
+    if (_activeFilter) {
+      await deactivateFilter();
+    } else {
+      await activateFilter();
+    }
+
+  }
+
   void _changeRatingOfMeal(Meal changedMeal, int rating) {
     for (final mealPlan in _mealPlans) {
       // check if right meal plan

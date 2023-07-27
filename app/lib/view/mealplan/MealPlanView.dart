@@ -92,6 +92,9 @@ class MealPlanView extends StatelessWidget {
                                               padding: EdgeInsets.all(8),
                                               child:
                                                   NavigationFilterOutlinedIcon()),
+                                          onLongPress: () => {
+                                                mealAccess.toggleFilter(),
+                                              },
                                           onTap: () => {
                                                 showDialog(
                                                   context: context,
