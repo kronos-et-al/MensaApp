@@ -58,7 +58,7 @@ impl Server {
     /// - when crating a component fails
     pub async fn run() -> Result<()> {
         let config = ConfigReader::default();
-        
+
         // logging
         Logger::init(config.read_log_info()?);
 

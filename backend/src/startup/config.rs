@@ -1,6 +1,5 @@
 use std::{env, time::Duration};
 
-use async_graphql::InputType;
 use dotenvy::dotenv;
 use tracing::info;
 
@@ -16,6 +15,9 @@ use super::{
     logging::LogInfo,
     server::{Result, ServerError},
 };
+
+const DEFAULT_CANTEENS: &str = "mensa_adenauerring,mensa_gottesaue,mensa_moltke,mensa_x1moltkestrasse,mensa_erzberger,mensa_tiefenbronner,mensa_holzgarten";
+const DEFAULT_BASE_URL: &str = "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/";
 
 /// Class for reading configuration from environment variables.
 pub struct ConfigReader {}
@@ -33,7 +35,8 @@ impl ConfigReader {
     /// when the environment variables are not set and no default is provided internally.
     pub fn read_log_info(&self) -> Result<LogInfo> {
         let info = LogInfo {
-            log_config: read_var("LOG_CONFIG")?,
+            log_config: read_var("LOG_CONFIG")
+                .unwrap_or_else(|_| "warn,mensa_app_backend=info".into()),
         };
         info!("using log config: {}", info.log_config);
         Ok(info)
@@ -101,16 +104,15 @@ impl ConfigReader {
             .unwrap_or(6000);
         let timeout = Duration::from_millis(timeout);
 
-        let canteens = read_var("CANTEENS").unwrap_or("mensa_adenauerring,mensa_gottesaue,mensa_moltke,mensa_x1moltkestrasse,mensa_erzberger,mensa_tiefenbronner,mensa_holzgarten".into())
+        let canteens = read_var("CANTEENS")
+            .unwrap_or_else(|_| DEFAULT_CANTEENS.into())
             .split(',')
             .map(str::trim)
             .map(String::from)
             .collect();
 
         let info = SwKaInfo {
-            base_url: read_var("MENSA_BASE_URL").unwrap_or_else(|_| {
-                "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/".into()
-            }),
+            base_url: read_var("MENSA_BASE_URL").unwrap_or_else(|_| DEFAULT_BASE_URL.into()),
             client_timeout: timeout,
             client_user_agent: env::var("USER_AGENT")
                 .unwrap_or_else(|_| String::from("MensaKa 0.1")),

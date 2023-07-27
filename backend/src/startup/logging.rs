@@ -1,9 +1,8 @@
-use tracing::Level;
 use tracing_subscriber::{EnvFilter, FmtSubscriber};
 
-/// 
+/// Struct containing all configurations available for the logging system.
 pub struct LogInfo {
-    /// 
+    /// Logging specifier following the schema of [https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html]
     pub log_config: String,
 }
 
@@ -13,12 +12,13 @@ pub struct Logger;
 impl Logger {
     // Initializes the logger.
     pub fn init(info: LogInfo) {
-        // setup logging
+        let env_filter = EnvFilter::builder()
+            .parse(info.log_config)
+            .expect("could not parse logging config");
+
         let subscriber = FmtSubscriber::builder()
-            .with_max_level(Level::TRACE)
-            .with_env_filter(EnvFilter::builder().from_env().unwrap())
+            .with_env_filter(env_filter)
             .pretty()
-            // .with_env_filter(EnvFilter::default())
             .finish();
         tracing::subscriber::set_global_default(subscriber)
             .expect("setting default subscriber failed");
