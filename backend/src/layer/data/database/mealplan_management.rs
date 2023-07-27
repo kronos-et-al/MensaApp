@@ -314,8 +314,8 @@ impl PersistentMealplanManagementData {
 
         if is_meal {
             sqlx::query!("INSERT INTO meal(food_id) VALUES ($1)", food_id)
-            .execute(&self.pool)
-            .await?;
+                .execute(&self.pool)
+                .await?;
         }
 
         let allergens: Vec<String> = allergens
