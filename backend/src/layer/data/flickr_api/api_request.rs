@@ -3,7 +3,7 @@ use crate::interface::image_hoster::ImageHosterError;
 use crate::layer::data::flickr_api::json_parser::JsonParser;
 use crate::layer::data::flickr_api::json_structs::{JsonRootError, JsonRootLicense, JsonRootSizes};
 use reqwest::Response;
-use tracing::log::debug;
+use tracing::debug;
 
 pub struct ApiRequest {
     api_key: String,

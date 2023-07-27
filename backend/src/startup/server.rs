@@ -1,4 +1,4 @@
-use std::{sync::Arc, env::VarError, num::ParseIntError};
+use std::{env::VarError, num::ParseIntError, sync::Arc};
 use thiserror::Error;
 use tokio::signal::ctrl_c;
 use tracing::info;
@@ -43,7 +43,7 @@ pub enum ServerError {
     IoError(#[from] std::io::Error),
     // Error parsing integers.
     #[error("could not parsing integer: {0}")]
-    ParseIntError(#[from] ParseIntError)
+    ParseIntError(#[from] ParseIntError),
 }
 
 // Class providing the combined server functions to the outside.
@@ -79,8 +79,7 @@ impl Server {
         let mealplan_management = MealPlanManager::new(mealplan_management_data, parser);
 
         // trigger layer
-        let mut graphql =
-            GraphQLServer::new(config.read_graphql_info()?, request_data, command);
+        let mut graphql = GraphQLServer::new(config.read_graphql_info()?, request_data, command);
         let mut scheduler = Scheduler::new(
             config.read_schedule_info()?,
             image_review,
@@ -97,7 +96,7 @@ impl Server {
         ctrl_c().await?;
 
         info!("shutting down server...");
-        
+
         scheduler.shutdown().await;
         graphql.shutdown().await;
 

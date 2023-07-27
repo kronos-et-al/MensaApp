@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use chrono::Local;
 use futures::future::join_all;
 use thiserror::Error;
-use tracing::log::warn;
+use tracing::warn;
 
 use crate::interface::{
     image_hoster::{ImageHoster, ImageHosterError},
