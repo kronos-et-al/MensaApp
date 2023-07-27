@@ -180,11 +180,11 @@ mod tests {
     use tracing::Level;
     #[tokio::test]
     async fn test_scheduling() {
-        let subscriber = tracing_subscriber::FmtSubscriber::builder()
-            .with_max_level(Level::TRACE)
-            .finish();
-        tracing::subscriber::set_global_default(subscriber)
-            .expect("Setting default subscriber failed");
+        // let subscriber = tracing_subscriber::FmtSubscriber::builder()
+        //     .with_max_level(Level::TRACE)
+        //     .finish();
+        // tracing::subscriber::set_global_default(subscriber)
+        //     .expect("Setting default subscriber failed");
 
         let info = ScheduleInfo {
             full_parse_schedule: "*/1 * * * * *".into(),
