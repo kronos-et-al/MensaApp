@@ -50,6 +50,7 @@ impl SwKaHtmlRequest {
             .get(url)
             .send()
             .await
+            .and_then(reqwest::Response::error_for_status)
             .map_err(|e| ParseError::NoConnectionEstablished(e.to_string()))?;
         debug!("Url request finished: {:?}", resp);
         resp.text()
