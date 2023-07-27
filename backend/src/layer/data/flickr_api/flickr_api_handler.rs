@@ -26,6 +26,7 @@ lazy_static! {
 
 impl FlickeApiHandler {
     #[must_use]
+    #[allow(clippy::missing_const_for_fn)] // cannot be made const because of compiler error`
     pub fn new(info: FlickrInfo) -> Self {
         Self {
             request: ApiRequest::new(info.api_key),
