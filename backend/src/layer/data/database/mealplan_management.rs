@@ -223,7 +223,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Uuid> {
-        self.insert_food(name, meal_type, allergens, additives)
+        self.insert_food(name, meal_type, allergens, additives, true)
             .await
     }
 
@@ -234,7 +234,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Uuid> {
-        self.insert_food(name, meal_type, allergens, additives)
+        self.insert_food(name, meal_type, allergens, additives, false)
             .await
     }
 
@@ -302,6 +302,7 @@ impl PersistentMealplanManagementData {
         meal_type: MealType,
         allergens: &[Allergen],
         additives: &[Additive],
+        is_meal: bool,
     ) -> Result<Uuid> {
         let food_id = sqlx::query_scalar!(
             r#"INSERT INTO food(name, food_type) VALUES ($1, $2) RETURNING food_id"#,
@@ -311,9 +312,11 @@ impl PersistentMealplanManagementData {
         .fetch_one(&self.pool)
         .await?;
 
-        sqlx::query!("INSERT INTO meal(food_id) VALUES ($1)", food_id)
+        if is_meal {
+            sqlx::query!("INSERT INTO meal(food_id) VALUES ($1)", food_id)
             .execute(&self.pool)
             .await?;
+        }
 
         let allergens: Vec<String> = allergens
             .iter()
@@ -687,7 +690,7 @@ mod test {
         let allergens = vec![Allergen::Ca, Allergen::Pa];
 
         let res = req
-            .insert_food(name, meal_type, &allergens, &additives)
+            .insert_food(name, meal_type, &allergens, &additives, true)
             .await;
         //assert!(res.is_ok());
         let food_id = res.unwrap();
