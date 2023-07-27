@@ -1,7 +1,7 @@
 //! This interface allows to execute API commands.
 
 use async_trait::async_trait;
-use std::{error::Error, fmt::Display};
+use std::fmt::Display;
 use thiserror::Error;
 
 use crate::util::{ReportReason, Uuid};
@@ -74,9 +74,6 @@ pub enum CommandError {
     /// Error marking missing authentication.
     #[error("no authentication information provided")]
     NoAuth,
-    /// Error marking something went wrong internally.
-    #[error("internal error ocurred: {0}")]
-    InternalError(#[from] Box<dyn Error + Send + Sync>),
     /// Error marking something went wrong with the data.
     #[error("Data error occurred: {0}")]
     DataError(#[from] DataError),
