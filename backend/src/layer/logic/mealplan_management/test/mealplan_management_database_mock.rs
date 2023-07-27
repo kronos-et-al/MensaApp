@@ -21,7 +21,11 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         Ok(Option::from(gen_random_uuid()))
     }
 
-    async fn get_similar_line(&self, _similar_name: &str, _canteen_id: Uuid) -> Result<Option<Uuid>> {
+    async fn get_similar_line(
+        &self,
+        _similar_name: &str,
+        _canteen_id: Uuid,
+    ) -> Result<Option<Uuid>> {
         Ok(Option::from(gen_random_uuid()))
     }
 

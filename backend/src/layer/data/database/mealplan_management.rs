@@ -492,16 +492,19 @@ mod test {
 
         for (uuid, name, is_similar) in tests {
             println!("Testing values: '{uuid}', '{name}'. Should be similar: {is_similar}");
-            req.get_similar_line(name, canteen_id).await.unwrap().map_or_else(
-                || {
-                    println!("{is_similar}");
-                    assert!(!is_similar);
-                },
-                |res| {
-                    println!("{res}");
-                    assert_eq!(uuid, res);
-                },
-            );
+            req.get_similar_line(name, canteen_id)
+                .await
+                .unwrap()
+                .map_or_else(
+                    || {
+                        println!("{is_similar}");
+                        assert!(!is_similar);
+                    },
+                    |res| {
+                        println!("{res}");
+                        assert_eq!(uuid, res);
+                    },
+                );
         }
     }
 

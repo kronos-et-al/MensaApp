@@ -143,7 +143,10 @@ pub trait ImageReviewDataAccess: Send + Sync {
     /// Returns the first n images sorted by rank which are related to an meal served at the given day.
     async fn get_images_for_date(&self, number_of_images: u32, date: Date) -> Result<Vec<Image>>;
     /// Returns the first n images sorted by rank which are related to an meal served in the next week and which were not validated last week.
-    async fn get_unvalidated_images_for_next_week(&self, number_of_images: u32) -> Result<Vec<Image>>;
+    async fn get_unvalidated_images_for_next_week(
+        &self,
+        number_of_images: u32,
+    ) -> Result<Vec<Image>>;
     /// Returns the first n images sorted by the date of the last validation (asc) which were not validated in the last week.
     async fn get_old_images(&self, number_of_images: u32) -> Result<Vec<Image>>;
     /// Removes an image with all relations from the database.
