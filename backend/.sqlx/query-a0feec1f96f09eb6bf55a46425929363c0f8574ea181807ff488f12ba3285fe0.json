@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT food_id \n            FROM food JOIN meal USING (food_id)\n            WHERE similarity(name, $1) >= $4\n            AND food_id IN (\n                SELECT food_id \n                FROM food_allergen FULL JOIN food USING (food_id)\n                GROUP BY food_id \n\t\t\t\tHAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $2::allergen[] \n\t\t\t\tAND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $2::allergen[]\n            )\n            AND food_id IN (\n                SELECT food_id\n\t\t\t\tFROM food_additive FULL JOIN food USING (food_id)\n\t\t\t\tGROUP BY food_id \n\t\t\t\tHAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $3::additive[] \n\t\t\t\tAND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $3::additive[]\n            )\n            ORDER BY similarity(name, $1) DESC\n            ",
+  "query": "\n            SELECT food_id \n            FROM food JOIN meal USING (food_id)\n            WHERE similarity(name, $1) >= $4\n            AND food_id IN (\n                -- all food_id's with same allergens\n                SELECT food_id \n                FROM food_allergen FULL JOIN food USING (food_id)\n                GROUP BY food_id \n\t\t\t\tHAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $2::allergen[] \n\t\t\t\tAND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $2::allergen[]\n            )\n            AND food_id IN (\n                -- all food_id's with same additives\n                SELECT food_id\n\t\t\t\tFROM food_additive FULL JOIN food USING (food_id)\n\t\t\t\tGROUP BY food_id \n\t\t\t\tHAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $3::additive[] \n\t\t\t\tAND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $3::additive[]\n            )\n            ORDER BY similarity(name, $1) DESC\n            ",
   "describe": {
     "columns": [
       {
@@ -94,5 +94,5 @@
       false
     ]
   },
-  "hash": "5a6dea0864e3c677166e860dfca85559ef149ddd36fbbbcf51938ec6a6fb6fcc"
+  "hash": "a0feec1f96f09eb6bf55a46425929363c0f8574ea181807ff488f12ba3285fe0"
 }
