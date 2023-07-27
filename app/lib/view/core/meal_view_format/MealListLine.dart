@@ -29,7 +29,7 @@ class MealListLine extends StatelessWidget {
               shrinkWrap: true,
               itemCount: _mealPlan.meals.length,
               itemBuilder: (context, index) {
-                return MealListEntry(meal: _mealPlan.meals[index]);
+                return MealListEntry(meal: _mealPlan.meals[index], line: _mealPlan.line,);
               },
             ),
           ],

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// A icon button that is used in the Mensa app.
 class MensaIconButton extends StatelessWidget {
   final void Function() _onPressed;
-  final Icon _icon;
+  final Widget _icon;
 
   /// Creates a new MensaIconButton.
   /// @param key The key to identify this widget.
@@ -11,7 +11,7 @@ class MensaIconButton extends StatelessWidget {
   /// @param icon The icon that is displayed on the button.
   /// @returns A new MensaIconButton.
   const MensaIconButton(
-      {super.key, required void Function() onPressed, required Icon icon})
+      {super.key, required void Function() onPressed, required Widget icon})
       : _onPressed = onPressed,
         _icon = icon;
 
