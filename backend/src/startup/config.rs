@@ -1,6 +1,7 @@
 use std::{env, time::Duration};
 
 use dotenvy::dotenv;
+use tracing::info;
 
 use crate::layer::{
     data::{
@@ -29,6 +30,7 @@ impl ConfigReader {
         let info = DatabaseInfo {
             connection: read_var("DATABASE_URL")?,
         };
+        info!("using database connection: {}", info.connection); // todo remove password
         Ok(info)
     }
 
@@ -77,18 +79,24 @@ impl ConfigReader {
             .unwrap_or(6000);
         let timeout = Duration::from_millis(timeout);
 
-        let canteens = read_var("CANTEENS")?
+        let canteens = read_var("CANTEENS").unwrap_or("mensa_adenauerring,mensa_gottesaue,mensa_moltke,mensa_x1moltkestrasse,mensa_erzberger,mensa_tiefenbronner,mensa_holzgarten".into())
             .split(',')
             .map(str::trim)
             .map(String::from)
             .collect();
 
         let info = SwKaInfo {
-            base_url: read_var("MENSA_BASE_URL")?,
+            base_url: read_var("MENSA_BASE_URL")
+                .unwrap_or("https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/".into()),
             client_timeout: timeout,
             client_user_agent: env::var("USER_AGENT").unwrap_or_default(),
             valid_canteens: canteens,
         };
+        info!(
+            "getting canteen data from {} for canteens {}",
+            info.base_url,
+            info.valid_canteens.join(", ")
+        ); // todo remove password
         Ok(info)
     }
 

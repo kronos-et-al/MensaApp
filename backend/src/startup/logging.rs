@@ -1,5 +1,5 @@
 use tracing::Level;
-use tracing_subscriber::FmtSubscriber;
+use tracing_subscriber::{FmtSubscriber, EnvFilter};
 
 /// Class for initializing the logging.
 pub struct Logger;
@@ -10,7 +10,6 @@ impl Logger {
         // setup logging
         let subscriber = FmtSubscriber::builder()
             .with_max_level(Level::TRACE)
-            .with_writer(std::io::stderr)
             .pretty()
             // .with_env_filter(EnvFilter::default())
             .finish();
