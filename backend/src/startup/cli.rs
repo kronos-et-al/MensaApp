@@ -3,6 +3,7 @@ use colored::Colorize;
 pub const HELP: &[&str] = &["--help", "-h", "-?"];
 pub const MIGRATE: &str = "--migrate";
 
+/// Prints information about the binary and shows available commands.
 pub fn print_help() {
     println!(
         "{}",
