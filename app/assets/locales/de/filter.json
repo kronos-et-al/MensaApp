@@ -6,8 +6,8 @@
   "foodTypeSectionVegan": "Vegan",
   "foodTypeSelectionUnknown": "Keine Angabe",
   "foodTypeSelectionPork": "Schweinefleisch",
-  "foodTypeSelectionCow": "Rindfleisch",
-  "foodTypeSelectionFisch": "Fisch",
+  "foodTypeSelectionBeef": "Rindfleisch",
+  "foodTypeSelectionFish": "Fisch",
 
   "allergensTitle": "Allergene",
   "priceTitle": "Preis",

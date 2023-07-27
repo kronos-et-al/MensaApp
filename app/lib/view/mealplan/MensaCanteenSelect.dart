@@ -34,12 +34,12 @@ class MensaCanteenSelect extends StatelessWidget {
                         child: Text(
                           e.name,
                           style: const TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold),
+                              fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                       )
                     ]))
                 .toList(),
-            icon: const NavigationArrowDownIcon(size: 40),
+            icon: const NavigationArrowDownIcon(size: 32),
             value: _selectedCanteen.id,
             items: _availableCanteens
                 .map((e) => DropdownMenuItem(value: e.id, child: Center(child: Text(e.name))))

@@ -59,7 +59,7 @@ class MealPlanView extends StatelessWidget {
                             as Result<List<MealPlan>, MealPlanException>;
                     return Scaffold(
                         appBar: MensaAppBar(
-                          appBarHeight: kToolbarHeight * 1.25,
+                          appBarHeight: kToolbarHeight,
                           bottom: MealPlanToolbar(
                               child: Padding(
                                   padding:

@@ -16,9 +16,11 @@ class MensaFullscreenDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: _appBar,
-        body: _content ?? Container(),
-        bottomNavigationBar: _actions ?? Container());
+    return Dialog.fullscreen(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        child: Scaffold(
+            appBar: _appBar,
+            body: _content ?? Container(),
+            bottomNavigationBar: _actions ?? Container()));
   }
 }

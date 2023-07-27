@@ -23,20 +23,17 @@ class MensaToggle extends StatelessWidget {
   /// @returns The widget.
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.all(8),
-        child: Row(
-          children: [
-            Switch(value: _value, onChanged: _onChanged),
-            const SizedBox(width: 8),
-            GestureDetector(
-              onTap: () {
-                _onChanged!(!_value);
-              },
-              child:
-                  Text(_label, style: Theme.of(context).textTheme.labelLarge),
-            ),
-          ],
-        ));
+    return Row(
+      children: [
+        GestureDetector(
+            onTap: () {
+              _onChanged!(!_value);
+            },
+            child: Text(_label,
+                style: TextStyle(fontSize: 16))),
+        Spacer(),
+        Switch(value: _value, onChanged: _onChanged),
+      ],
+    );
   }
 }
