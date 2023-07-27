@@ -8,6 +8,8 @@ import 'package:app/view_model/repository/data_classes/settings/PriceCategory.da
 import 'package:app/view_model/repository/interface/ILocalStorage.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/uuid_util.dart';
 
 import '../../view_model/repository/data_classes/filter/Sorting.dart';
 import '../../view_model/repository/data_classes/meal/FoodType.dart';
@@ -23,7 +25,12 @@ class SharedPreferenceAccess implements ILocalStorage {
 
   @override
   String? getClientIdentifier() {
-    final clientIdentifier = _pref.getString('clientIdentifier') ?? "1";
+    String? clientIdentifier = _pref.getString('clientIdentifier');
+    if (clientIdentifier == null) {
+      var uuid = const Uuid();
+      clientIdentifier = uuid.v4();
+      _pref.setString('clientIdentifier', clientIdentifier);
+    }
     return clientIdentifier;
   }
 

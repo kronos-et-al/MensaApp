@@ -19,7 +19,7 @@ class MensaButton extends StatelessWidget {
   /// @returns The widget.
   @override
   Widget build(BuildContext context) {
-    return (MaterialButton(
+    return MaterialButton(
       textColor: Theme.of(context).colorScheme.onSurface,
       color: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(
@@ -30,6 +30,6 @@ class MensaButton extends StatelessWidget {
       onPressed: _onPressed,
       onLongPress: _onLongPressed,
       child: Text(_text),
-    ));
+    );
   }
 }

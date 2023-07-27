@@ -13,7 +13,9 @@ import 'package:app/view/core/information_display/MealSideEntry.dart';
 import 'package:app/view/core/input_components/MensaRatingInput.dart';
 import 'package:app/view/detail_view/MealAccordion.dart';
 import 'package:app/view/detail_view/MealAccordionInfo.dart';
+import 'package:app/view/detail_view/MealRatingDialog.dart';
 import 'package:app/view/detail_view/RatingsOverview.dart';
+import 'package:app/view/detail_view/UploadImageDialog.dart';
 import 'package:app/view_model/logic/favorite/IFavoriteMealAccess.dart';
 import 'package:app/view_model/logic/meal/IMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
@@ -58,13 +60,24 @@ class DetailsPageState extends State<DetailsPage> {
                         onPressed: () => Navigator.of(context).pop(),
                         icon: NavigationBackIcon()),
                     Spacer(),
-                    Consumer<IFavoriteMealAccess>(builder: (context, favoriteMealAccess, child) => MensaIconButton(
-                        onPressed: () => {
-                          favoriteMealAccess.addFavoriteMeal(widget._meal)
-                        },
-                        icon: widget._meal.isFavorite ? FavoriteFilledIcon() : FavoriteOutlinedIcon())),
+                    Consumer<IFavoriteMealAccess>(
+                        builder: (context, favoriteMealAccess, child) =>
+                            MensaIconButton(
+                                onPressed: () => {
+                                      favoriteMealAccess
+                                          .addFavoriteMeal(widget._meal)
+                                    },
+                                icon: widget._meal.isFavorite
+                                    ? FavoriteFilledIcon()
+                                    : FavoriteOutlinedIcon())),
                     MensaIconButton(
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => {
+                              showDialog(
+                                context: context,
+                                builder: (context) =>
+                                    UploadImageDialog(meal: widget._meal),
+                              )
+                            },
                         icon: NavigationAddImageIcon()),
                   ],
                 )),
@@ -183,7 +196,8 @@ class DetailsPageState extends State<DetailsPage> {
                               Row(children: [
                                 MensaRatingInput(
                                   value: widget._meal.individualRating
-                                          ?.toDouble() ?? 0,
+                                          ?.toDouble() ??
+                                      0,
                                   disabled: true,
                                   color:
                                       Theme.of(context).colorScheme.onSurface,
@@ -192,7 +206,17 @@ class DetailsPageState extends State<DetailsPage> {
                                   onChanged: (int) {},
                                 ),
                                 Spacer(),
-                                MensaButton(text: FlutterI18n.translate(context, "ratings.editRating"), onPressed: null,)
+                                MensaButton(
+                                  text: FlutterI18n.translate(
+                                      context, "ratings.editRating"),
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => MealRatingDialog(
+                                            meal: widget._meal),
+                                        barrierDismissible: true);
+                                  },
+                                )
                               ])
                             ],
                           ),

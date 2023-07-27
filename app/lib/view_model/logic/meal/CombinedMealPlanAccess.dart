@@ -209,11 +209,17 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     final mealPlan = await _getMealPlanFromServer();
 
-    if (_mealPlans.isEmpty) {
+
+    if (mealPlan.isEmpty) {
       return "snackbar.refreshMealPlanError";
     }
 
+    _database.updateAll(mealPlan);
+
     _mealPlans = mealPlan;
+
+    await _setNewMealPlan();
+
     await _filterMealPlans();
 
     notifyListeners();

@@ -5,6 +5,7 @@ import 'package:app/view/core/icons/navigation/NavigationGridOutlinedIcon.dart';
 import 'package:app/view/core/icons/navigation/NavigationListOutlinedIcon.dart';
 import 'package:app/view/core/meal_view_format/MealGrid.dart';
 import 'package:app/view/core/meal_view_format/MealList.dart';
+import 'package:app/view/filter/FilterDialog.dart';
 import 'package:app/view/mealplan/MealPlanClosed.dart';
 import 'package:app/view/mealplan/MealPlanDateSelect.dart';
 import 'package:app/view/mealplan/MealPlanError.dart';
@@ -46,7 +47,8 @@ class MealPlanView extends StatelessWidget {
                       );
                     }
                     if (snapshot.hasError) return const MealPlanError();
-                    MealPlanFormat mealPlanFormat = preferenceAccess.getMealPlanFormat();
+                    MealPlanFormat mealPlanFormat =
+                        preferenceAccess.getMealPlanFormat();
                     Canteen selectedCanteen =
                         snapshot.requireData[0] as Canteen;
                     List<Canteen> availableCanteens =
@@ -90,7 +92,13 @@ class MealPlanView extends StatelessWidget {
                                               padding: EdgeInsets.all(8),
                                               child:
                                                   NavigationFilterOutlinedIcon()),
-                                          onTap: () => {})
+                                          onTap: () => {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      FilterDialog(),
+                                                )
+                                              })
                                     ],
                                   ))),
                           child: Padding(

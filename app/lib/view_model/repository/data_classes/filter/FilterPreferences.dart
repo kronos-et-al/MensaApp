@@ -37,7 +37,7 @@ class FilterPreferences {
   })
       : _categories = categories ?? _getAllFoodTypes(),
         _allergens = allergens ?? _getAllAllergen(),
-        _price = price ?? 1000,
+        _price = price ?? 10,
         _rating = rating ?? 0,
         _frequency = frequency ?? _getAllFrequencies(),
         _onlyFavorite = onlyFavorite ?? false,

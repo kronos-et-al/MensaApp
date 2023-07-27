@@ -39,27 +39,17 @@ class SettingsDropdownEntry<T> extends StatelessWidget {
         Text(
           FlutterI18n.translate(context, _heading),
           style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              height: 1.5),
+              fontSize: 14, fontWeight: FontWeight.bold, height: 1.5),
         ),
-        Container(
-            // Container is used to give the dropdown a background color.
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4.0),
-              color: Theme.of(context).colorScheme.surface,
-            ),
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: MensaDropdown<T>(
-                    onChanged: _onChanged,
-                    value: _value,
-                    items: _items),
-                )
-              ]
-            ))
+        Row(children: [
+          Expanded(
+              child: MensaDropdown<T>(
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                onChanged: _onChanged,
+                value: _value,
+                items: _items),
+          )
+        ])
       ],
     );
   }

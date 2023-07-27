@@ -1,7 +1,10 @@
 import 'package:app/view/core/MensaAppBar.dart';
 import 'package:app/view/core/buttons/MensaButton.dart';
+import 'package:app/view/core/buttons/MensaCtaButton.dart';
+import 'package:app/view/core/buttons/MensaIconButton.dart';
 import 'package:app/view/core/dialogs/MensaFullscreenDialog.dart';
 import 'package:app/view/core/icons/allergens/AllergenIcon.dart';
+import 'package:app/view/core/icons/navigation/NavigationBackIcon.dart';
 import 'package:app/view/core/selection_components/MensaSlider.dart';
 import 'package:app/view/core/selection_components/MensaToggle.dart';
 import 'package:app/view/filter/MensaButtonGroup.dart';
@@ -18,96 +21,116 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
 
 // todo padding
-class FilterDialog {
-  static void show(BuildContext context) {
-    FilterPreferences preferences = FilterPreferences();
+class FilterDialog extends StatefulWidget {
+  @override
+  State<FilterDialog> createState() => _FilterDialogState();
+}
 
-    MensaFullscreenDialog.show(
-        context: context,
-        appBar: MensaAppBar(
-            appBarHeight: kToolbarHeight * 1.25,
-            child: Row(
-              children: [
-                // todo icon back
-                Text(
-                  FlutterI18n.translate(context, "filter.filterTitle"),
-                  style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                const Spacer(),
-                // todo temporary disable or enable filter
-              ],
-            )),
-        content: Consumer<IMealAccess>(
-            builder: (context, mealAccess, child) => FutureBuilder(
-                future: mealAccess.getFilterPreferences(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    preferences = snapshot.requireData;
-                  }
+class _FilterDialogState extends State<FilterDialog> {
+  FilterPreferences _preferences = FilterPreferences();
 
-                  // todo Scrollable
-                  return Column(
+  @override
+  Widget build(BuildContext context) {
+    return MensaFullscreenDialog(
+      appBar: MensaAppBar(
+          appBarHeight: kToolbarHeight * 1.25,
+          child: Row(
+            children: [
+              MensaIconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: NavigationBackIcon()),
+              Text(
+                FlutterI18n.translate(context, "filter.filterTitle"),
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const Spacer(),
+              // todo temporary disable or enable filter
+            ],
+          )),
+      content: Consumer<IMealAccess>(
+        builder: (context, mealAccess, child) => FutureBuilder(
+          future: mealAccess.getFilterPreferences(),
+          builder: (BuildContext context, filterPreferences) {
+            if (!filterPreferences.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (filterPreferences.hasError) {
+              return const Center(child: Text("Error"));
+            }
+            _preferences = filterPreferences.requireData;
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(FlutterI18n.translate(context, "filter.foodType")),
+                  MensaButtonGroup(
+                      value: _getValueCategory(_preferences.categories),
+                      onChanged: (value) {
+                        _setValueCategory(value, _preferences);
+                        setState(() {
+                          _preferences = _preferences;
+                        });
+                      },
+                      entries: _getAllFoodTypeEntries(context)),
+                  // todo checkboxes
+                  Text(FlutterI18n.translate(context, "filter.allergensTitle")),
+                  MensaFilterIconCheckboxGroup<Allergen>(
+                      items: _getAllAllergen(context),
+                      selectedValues: _preferences.allergens,
+                      onChanged: (value) {
+                        _preferences.allergens = value;
+                      }),
+                  Text(FlutterI18n.translate(context, "filter.priceTitle")),
+                  MensaSlider(
+                      onChanged: (value) => _preferences.price = value.round(),
+                      value: _preferences.price.toDouble(),
+                      min: 0,
+                      max: 10),
+                  MensaSlider(
+                    onChanged: (value) => _preferences.rating = value.round(),
+                    value: _preferences.rating.toDouble(),
+                    min: 1,
+                    max: 1,
+                  ),
+                  MensaToggle(
+                      onChanged: (value) => _preferences.onlyFavorite = value,
+                      value: _preferences.onlyFavorite,
+                      label: FlutterI18n.translate(
+                          context, "filter.favoritesOnlyTitle")),
+                  Text(FlutterI18n.translate(context, "filter.frequencyTitle")),
+                  MensaButtonGroup(
+                      value: _getValueFrequency(_preferences.frequency),
+                      onChanged: (value) =>
+                          _setValueFrequency(value, _preferences),
+                      entries: _getAllFrequencyEntries(context)),
+                  Text(FlutterI18n.translate(context, "filter.sortByTitle")),
+                  Row(
                     children: [
-                      Text(FlutterI18n.translate(context, "filter.foodType")),
-                      MensaButtonGroup(
-                          value: _getValueCategory(preferences.categories),
-                          onChanged: (value) =>
-                              _setValueCategory(value, preferences),
-                          entries: _getAllFoodTypeEntries(context)),
-                      // todo checkboxes
-                      Text(FlutterI18n.translate(
-                          context, "filter.allergensTitle")),
-                      MensaFilterIconCheckboxGroup<Allergen>(
-                          items: _getAllAllergen(context),
-                          selectedValues: preferences.allergens,
-                          onChanged: (value) {
-                            preferences.allergens = value;
-                          }),
-                      Text(FlutterI18n.translate(context, "filter.priceTitle")),
-                      MensaSlider(
-                          onChanged: (value) => preferences.price = value,
-                          value: preferences.price,
-                          min: "0€",
-                          max: "${FilterPreferences().price}€"),
-                      Text(
-                          FlutterI18n.translate(context, "filter.ratingTitle")),
-                      MensaSlider(
-                          onChanged: (value) => preferences.rating = value,
-                          value: preferences.rating,
-                          min: "5 Sterne",
-                          max: "1 Stern"),
-                      MensaToggle(
-                          onChanged: (value) =>
-                              preferences.onlyFavorite = value,
-                          value: preferences.onlyFavorite,
-                          label: FlutterI18n.translate(
-                              context, "filter.favoritesOnlyTitle")),
-                      Text(FlutterI18n.translate(
-                          context, "filter.frequencyTitle")),
-                      MensaButtonGroup(
-                          value: _getValueFrequency(preferences.frequency),
-                          onChanged: (value) =>
-                              _setValueFrequency(value, preferences),
-                          entries: _getAllFrequencyEntries(context)),
-                      Text(
-                          FlutterI18n.translate(context, "filter.sortByTitle")),
-                      Row(
-                        children: [
-                          // todo SortDropdown in Expanded
-                          // todo Icon for ascending / descending
-                        ],
-                      ),
-                      MensaButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            mealAccess.changeFilterPreferences(preferences);
-                          },
-                          text: FlutterI18n.translate(
-                              context, "filter.storeButton"))
+                      // todo SortDropdown in Expanded
+                      // todo Icon for ascending / descending
                     ],
-                  );
-                })));
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+      actions: Row(
+        children: [
+          Spacer(),
+          MensaCtaButton(
+              onPressed: () {
+                context
+                    .read<IMealAccess>()
+                    .changeFilterPreferences(_preferences);
+                Navigator.of(context).pop();
+              },
+              text: FlutterI18n.translate(context, "filter.apply")),
+        ],
+      ),
+    );
   }
 
   static _setValueFrequency(Frequency frequency, FilterPreferences filter) {

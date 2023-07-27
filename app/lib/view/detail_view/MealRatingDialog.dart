@@ -7,39 +7,64 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
 
-class MealRatingDialog {
-  static void show(BuildContext context, Meal meal) {
-    int rating = meal.individualRating ?? 0;
-    
-    MensaDialog.show(context: context,
-      title: "${meal.name} ${FlutterI18n.translate(context, "ratings.dialogTitle")}",
-      content: Consumer<IMealAccess>(builder: (context, mealAccess, child) =>
-      Column(children: [
-        MensaRatingInput(onChanged: (value) {
-          rating = value;
-        },
-            value: rating as double),
-        Row(children: [
-          const Spacer(),
-          MensaButton(onPressed: () async {
-            final temporalMessage = await mealAccess.updateMealRating(rating, meal);
-            Navigator.pop(context);
+class MealRatingDialog extends StatefulWidget {
+  final Meal _meal;
 
-            if (temporalMessage.isNotEmpty) {
-              final snackBar = SnackBar(
-                content: Text(FlutterI18n.translate(
-                    context, temporalMessage)),
-                backgroundColor: Theme.of(context).colorScheme.onError,
-              );
+  const MealRatingDialog({Key? key, required Meal meal})
+      : _meal = meal,
+        super(key: key);
 
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(snackBar);
-            }
+  @override
+  State<MealRatingDialog> createState() => _MealRatingDialogState();
+}
 
-          },
-              text: FlutterI18n.translate(context, "image.saveRating"))
-        ],)
-      ],))
-    );
+class _MealRatingDialogState extends State<MealRatingDialog> {
+  int? rating;
+
+  @override
+  Widget build(BuildContext context) {
+    Meal meal = widget._meal;
+    rating = rating ?? meal.individualRating ?? 0;
+    return MensaDialog(
+        title:
+            "${meal.name} ${FlutterI18n.translate(context, "ratings.dialogTitle")}",
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            MensaRatingInput(
+                onChanged: (value) {
+                 setState(() {
+                    rating = value;
+                 });
+                },
+                value: rating!.toDouble()),
+          ],
+        ),
+        actions: Row(
+          children: [
+            const Spacer(),
+            MensaButton(
+                onPressed: () async {
+                  final temporalMessage =
+                      await context.read<IMealAccess>().updateMealRating(
+                            rating!,
+                            meal,
+                          );
+                  if (!context.mounted) return;
+                  Navigator.pop(context);
+
+                  if (temporalMessage.isNotEmpty) {
+                    final snackBar = SnackBar(
+                      content:
+                          Text(FlutterI18n.translate(context, temporalMessage)),
+                      backgroundColor: Theme.of(context).colorScheme.onError,
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
+                },
+                text: FlutterI18n.translate(context, "image.saveRating"))
+          ],
+        ));
   }
 }
