@@ -85,5 +85,6 @@ abstract class IMealAccess with ChangeNotifier {
   /// @return The result of the update
   Future<void> deactivateFilter();
 
+  /// This method toggles the activity of a filter.
   Future<void> toggleFilter();
 }
