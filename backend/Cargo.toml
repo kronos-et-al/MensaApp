@@ -34,6 +34,7 @@ sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-native-tls", "postg
 lettre = "0.10.4"
 string_template = "0.2.1"
 lazy_static = "1.4.0"
+colored = "2.0.4"
 
 [dev-dependencies]
 serde_json = "1.0"

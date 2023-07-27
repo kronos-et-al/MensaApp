@@ -4,7 +4,7 @@ use tokio::signal::ctrl_c;
 use tracing::info;
 
 use crate::{
-    interface::{api_command::CommandError, mensa_parser::ParseError},
+    interface::{api_command::CommandError, mensa_parser::ParseError, persistent_data::DataError},
     layer::{
         data::{
             database::factory::DataAccessFactory,
@@ -19,7 +19,7 @@ use crate::{
         },
         trigger::{graphql::server::GraphQLServer, scheduling::scheduler::Scheduler},
     },
-    startup::{config::ConfigReader, logging::Logger},
+    startup::{cli, config::ConfigReader, logging::Logger},
 };
 
 pub type Result<T> = std::result::Result<T, ServerError>;
@@ -44,6 +44,9 @@ pub enum ServerError {
     // Error parsing integers.
     #[error("could not parsing integer: {0}")]
     ParseIntError(#[from] ParseIntError),
+    /// Error from the database.
+    #[error("error from the database: {0}")]
+    DataError(#[from] DataError),
 }
 
 // Class providing the combined server functions to the outside.
@@ -62,8 +65,15 @@ impl Server {
         // logging
         Logger::init(config.read_log_info()?);
 
+        // help text
+        if config.should_print_help() {
+            cli::print_help();
+            return Ok(());
+        }
+
         // data layer
-        let factory = DataAccessFactory::new(config.read_database_info()?).await;
+        let factory =
+            DataAccessFactory::new(config.read_database_info()?, config.should_migrate()).await?;
         let command_data = factory.get_command_data_access();
         let image_review_data = factory.get_image_review_data_access();
         let mealplan_management_data = factory.get_mealplan_management_data_access();

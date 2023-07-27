@@ -12,6 +12,7 @@ use crate::layer::{
 };
 
 use super::{
+    cli::{HELP, MIGRATE},
     logging::LogInfo,
     server::{Result, ServerError},
 };
@@ -30,6 +31,17 @@ impl Default for ConfigReader {
 }
 
 impl ConfigReader {
+    /// Checks program arguments whether a migration should get run.
+    #[must_use]
+    pub fn should_migrate(&self) -> bool {
+        env::args().any(|arg| arg == MIGRATE)
+    }
+
+    #[must_use]
+    pub fn should_print_help(&self) -> bool {
+        env::args().any(|arg| HELP.contains(&arg.as_str()))
+    }
+
     /// Reads the logging configuration from environment variables.
     /// # Errors
     /// when the environment variables are not set and no default is provided internally.
