@@ -149,7 +149,7 @@ mod test {
     use crate::layer::logic::mealplan_management::relation_resolver::RelationResolver;
     use crate::layer::logic::mealplan_management::test::mealplan_management_database_mock::MealplanManagementDatabaseMock;
     use crate::util::{MealType, Price};
-    use chrono::Utc;
+    use chrono::Local;
     use rand::{self, Rng};
     use uuid::Uuid;
 
@@ -228,7 +228,7 @@ mod test {
     #[tokio::test]
     async fn resolve_empty_canteen() {
         let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
-        let res = resolver.resolve(get_empty_canteen(), Utc::now().date_naive());
+        let res = resolver.resolve(get_empty_canteen(), Local::now().date_naive());
         assert!(res.await.is_ok());
     }
 
@@ -242,7 +242,7 @@ mod test {
             rng.gen_range(1..=10),
         ) {
             assert!(resolver
-                .resolve(canteen, Utc::now().date_naive())
+                .resolve(canteen, Local::now().date_naive())
                 .await
                 .is_ok());
         }
@@ -258,7 +258,7 @@ mod test {
         }
         let line = get_line(dishes);
         assert!(resolver
-            .resolve_line(Utc::now().date_naive(), line, Uuid::default())
+            .resolve_line(Local::now().date_naive(), line, Uuid::default())
             .await
             .is_ok());
     }

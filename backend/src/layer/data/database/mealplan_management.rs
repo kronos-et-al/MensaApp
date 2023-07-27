@@ -354,7 +354,7 @@ mod test {
 
     use super::*;
     use crate::util::Allergen::{Ei, Se, So, We, ML};
-    use chrono::{NaiveDate, Utc};
+    use chrono::{NaiveDate, Local};
     use sqlx::PgPool;
     use std::collections::HashMap;
     use std::str::FromStr;
@@ -646,7 +646,7 @@ mod test {
         let req = PersistentMealplanManagementData { pool: pool.clone() };
         let food_id = Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap();
         let line_id = Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap();
-        let date = Utc::now().date_naive();
+        let date = Local::now().date_naive();
         let price = Price {
             price_student: 42,
             price_employee: 420,
