@@ -1,7 +1,6 @@
 use async_trait::async_trait;
 use sqlx::{Pool, Postgres};
 
-use super::types::DatabasePrice;
 use crate::{
     interface::persistent_data::{MealplanManagementDataAccess, Result},
     util::{Additive, Allergen, Date, MealType, Price, Uuid},
@@ -41,10 +40,10 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         .map_err(Into::into)
     }
 
-    async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Uuid>> {
+    async fn get_similar_line(&self, similar_name: &str, canteen_id: Uuid) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
-            "SELECT line_id FROM line WHERE similarity(name, $1) >= $2 ORDER BY similarity(name, $1) DESC",
-            similar_name, THRESHOLD
+            "SELECT line_id FROM line WHERE similarity(name, $1) >= $3 AND canteen_id = $2 ORDER BY similarity(name, $1) DESC",
+            similar_name, canteen_id, THRESHOLD
         )
         .fetch_optional(&self.pool)
         .await
@@ -64,6 +63,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
             FROM food JOIN meal USING (food_id)
             WHERE similarity(name, $1) >= $4
             AND food_id IN (
+                -- all food_id's with same allergens
                 SELECT food_id 
                 FROM food_allergen FULL JOIN food USING (food_id)
                 GROUP BY food_id 
@@ -71,6 +71,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
 				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $2::allergen[]
             )
             AND food_id IN (
+                -- all food_id's with same additives
                 SELECT food_id
 				FROM food_additive FULL JOIN food USING (food_id)
 				GROUP BY food_id 
@@ -110,6 +111,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
             FROM food
             WHERE similarity(name, $1) >= $4 AND food_id NOT IN (SELECT food_id FROM meal)
             AND food_id IN (
+                -- all food_id's with same allergens
                 SELECT food_id 
                 FROM food_allergen FULL JOIN food USING (food_id)
                 GROUP BY food_id 
@@ -117,6 +119,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
 				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $2::allergen[]
             )
             AND food_id IN (
+                -- all food_id's with same additives
                 SELECT food_id
 				FROM food_additive FULL JOIN food USING (food_id)
 				GROUP BY food_id 
@@ -143,38 +146,36 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         .map_err(Into::into)
     }
 
-    async fn update_canteen(&self, uuid: Uuid, name: &str, position: u32) -> Result<Uuid> {
-        sqlx::query_scalar!(
+    async fn update_canteen(&self, uuid: Uuid, name: &str, position: u32) -> Result<()> {
+        sqlx::query!(
             "
             UPDATE canteen
             SET name = $2, position = $3
             WHERE canteen_id = $1
-            RETURNING canteen_id
             ",
             uuid,
             name,
             i32::try_from(position)?
         )
-        .fetch_one(&self.pool)
-        .await
-        .map_err(Into::into)
+        .execute(&self.pool)
+        .await?;
+        Ok(())
     }
 
-    async fn update_line(&self, uuid: Uuid, name: &str, position: u32) -> Result<Uuid> {
-        sqlx::query_scalar!(
+    async fn update_line(&self, uuid: Uuid, name: &str, position: u32) -> Result<()> {
+        sqlx::query!(
             "
             UPDATE line
             SET name = $2, position = $3
             WHERE line_id = $1
-            RETURNING line_id
             ",
             uuid,
             name,
             i32::try_from(position)?
         )
-        .fetch_one(&self.pool)
-        .await
-        .map_err(Into::into)
+        .execute(&self.pool)
+        .await?;
+        Ok(())
     }
 
     async fn update_meal(&self, uuid: Uuid, name: &str) -> Result<()> {
@@ -223,7 +224,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Uuid> {
-        self.insert_food(name, meal_type, allergens, additives)
+        self.insert_food(name, meal_type, allergens, additives, true)
             .await
     }
 
@@ -234,7 +235,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Uuid> {
-        self.insert_food(name, meal_type, allergens, additives)
+        self.insert_food(name, meal_type, allergens, additives, false)
             .await
     }
 
@@ -279,16 +280,19 @@ impl PersistentMealplanManagementData {
         date: Date,
         price: Price,
     ) -> Result<()> {
-        let price: DatabasePrice = price.try_into()?;
         sqlx::query!(
-            "INSERT INTO food_plan (line_id, food_id, serve_date, price_student, price_employee, price_guest, price_pupil) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+            "
+            INSERT INTO food_plan (line_id, food_id, serve_date, 
+                price_student, price_employee, price_guest, price_pupil) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            ",
             line_id,
             food_id,
             date,
-            price.student as _,
-            price.employee as _,
-            price.guest as _,
-            price.pupil as _,
+            i32::try_from(price.price_student)? as _,
+            i32::try_from(price.price_employee)? as _,
+            i32::try_from(price.price_guest)? as _,
+            i32::try_from(price.price_pupil)? as _,
         )
         .execute(&self.pool)
         .await?;
@@ -302,6 +306,7 @@ impl PersistentMealplanManagementData {
         meal_type: MealType,
         allergens: &[Allergen],
         additives: &[Additive],
+        is_meal: bool,
     ) -> Result<Uuid> {
         let food_id = sqlx::query_scalar!(
             r#"INSERT INTO food(name, food_type) VALUES ($1, $2) RETURNING food_id"#,
@@ -311,9 +316,11 @@ impl PersistentMealplanManagementData {
         .fetch_one(&self.pool)
         .await?;
 
-        sqlx::query!("INSERT INTO meal(food_id) VALUES ($1)", food_id)
-            .execute(&self.pool)
-            .await?;
+        if is_meal {
+            sqlx::query!("INSERT INTO meal(food_id) VALUES ($1)", food_id)
+                .execute(&self.pool)
+                .await?;
+        }
 
         let allergens: Vec<String> = allergens
             .iter()
@@ -354,7 +361,8 @@ mod test {
 
     use super::*;
     use crate::util::Allergen::{Ei, Se, So, We, ML};
-    use chrono::{NaiveDate, Utc};
+    use crate::util::Date;
+    use chrono::Local;
     use sqlx::PgPool;
     use std::collections::HashMap;
     use std::str::FromStr;
@@ -365,7 +373,7 @@ mod test {
 
         let canteen_id = Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap();
         let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
-        let date = NaiveDate::from_str("2023-07-10").unwrap();
+        let date = Date::from_str("2023-07-10").unwrap();
 
         let res = req.dissolve_relations(canteen_id, date).await;
         assert!(res.is_ok());
@@ -442,7 +450,7 @@ mod test {
     #[sqlx::test(fixtures("canteen", "similar_line"))]
     async fn test_get_similar_line(pool: PgPool) {
         let req = PersistentMealplanManagementData { pool };
-
+        let canteen_id = Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap();
         let tests = [
             // Identical
             (
@@ -484,16 +492,19 @@ mod test {
 
         for (uuid, name, is_similar) in tests {
             println!("Testing values: '{uuid}', '{name}'. Should be similar: {is_similar}");
-            req.get_similar_line(name).await.unwrap().map_or_else(
-                || {
-                    println!("{is_similar}");
-                    assert!(!is_similar);
-                },
-                |res| {
-                    println!("{res}");
-                    assert_eq!(uuid, res);
-                },
-            );
+            req.get_similar_line(name, canteen_id)
+                .await
+                .unwrap()
+                .map_or_else(
+                    || {
+                        println!("{is_similar}");
+                        assert!(!is_similar);
+                    },
+                    |res| {
+                        println!("{res}");
+                        assert_eq!(uuid, res);
+                    },
+                );
         }
     }
 
@@ -646,7 +657,7 @@ mod test {
         let req = PersistentMealplanManagementData { pool: pool.clone() };
         let food_id = Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap();
         let line_id = Uuid::parse_str("119c55b7-e539-4849-bad1-984efff2aad6").unwrap();
-        let date = Utc::now().date_naive();
+        let date = Local::now().date_naive();
         let price = Price {
             price_student: 42,
             price_employee: 420,
@@ -686,7 +697,7 @@ mod test {
         let allergens = vec![Allergen::Ca, Allergen::Pa];
 
         let res = req
-            .insert_food(name, meal_type, &allergens, &additives)
+            .insert_food(name, meal_type, &allergens, &additives, true)
             .await;
         //assert!(res.is_ok());
         let food_id = res.unwrap();
@@ -800,7 +811,6 @@ mod test {
 
         let res = req.update_canteen(canteen_id, name, pos).await;
         assert!(res.is_ok());
-        let canteen_id = res.unwrap();
 
         let selections = sqlx::query!(
             r#"SELECT name, position FROM canteen WHERE canteen_id = $1"#,
@@ -825,7 +835,6 @@ mod test {
 
         let res = req.update_line(line_id, name, pos).await;
         assert!(res.is_ok());
-        let line_id = res.unwrap();
 
         let selections = sqlx::query!(
             r#"SELECT name, position FROM line WHERE line_id = $1"#,

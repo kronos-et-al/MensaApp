@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE canteen\n            SET name = $2, position = $3\n            WHERE canteen_id = $1\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "4c051fe2956c4266b1cf67079635e93f5b104fd0915a07580081150a233c79f7"
+}

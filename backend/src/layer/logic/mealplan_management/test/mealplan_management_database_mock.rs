@@ -21,7 +21,11 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         Ok(Option::from(gen_random_uuid()))
     }
 
-    async fn get_similar_line(&self, _similar_name: &str) -> Result<Option<Uuid>> {
+    async fn get_similar_line(
+        &self,
+        _similar_name: &str,
+        _canteen_id: Uuid,
+    ) -> Result<Option<Uuid>> {
         Ok(Option::from(gen_random_uuid()))
     }
 
@@ -43,12 +47,12 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         Ok(Option::from(gen_random_uuid()))
     }
 
-    async fn update_canteen(&self, _uuid: Uuid, _name: &str, _position: u32) -> Result<Uuid> {
-        Ok(gen_random_uuid())
+    async fn update_canteen(&self, _uuid: Uuid, _name: &str, _position: u32) -> Result<()> {
+        Ok(())
     }
 
-    async fn update_line(&self, _uuid: Uuid, _name: &str, _position: u32) -> Result<Uuid> {
-        Ok(gen_random_uuid())
+    async fn update_line(&self, _uuid: Uuid, _name: &str, _position: u32) -> Result<()> {
+        Ok(())
     }
 
     async fn update_meal(&self, _uuid: Uuid, _name: &str) -> Result<()> {

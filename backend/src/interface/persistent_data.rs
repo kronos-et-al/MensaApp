@@ -58,7 +58,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 
     /// Determines the line with the most similar name.
     /// Returns the UUID to the similar line.
-    async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Uuid>>;
+    async fn get_similar_line(&self, similar_name: &str, canteen_id: Uuid) -> Result<Option<Uuid>>;
 
     /// Determines the meal with the most similar name, identical allergens and identical additives.
     /// Returns the UUID to the similar meal.
@@ -80,11 +80,11 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 
     /// Updates an existing canteen entity in the database.
     /// Returns the canteen's UUID.
-    async fn update_canteen(&self, uuid: Uuid, name: &str, position: u32) -> Result<Uuid>;
+    async fn update_canteen(&self, uuid: Uuid, name: &str, position: u32) -> Result<()>;
 
     /// Updates an existing line entity in the database.
     /// Returns the line UUID.
-    async fn update_line(&self, uuid: Uuid, name: &str, position: u32) -> Result<Uuid>;
+    async fn update_line(&self, uuid: Uuid, name: &str, position: u32) -> Result<()>;
 
     /// Updates an existing meal entity in the database.
     async fn update_meal(&self, uuid: Uuid, name: &str) -> Result<()>;
@@ -118,7 +118,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         additives: &[Additive],
     ) -> Result<Uuid>;
 
-    /// Adds a meal into the meal plan with the given params.
+    /// Adds a meal into the meal plan for a line at a date by specifying its price.
     async fn add_meal_to_plan(
         &self,
         meal_id: Uuid,
@@ -127,7 +127,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         price: Price,
     ) -> Result<()>;
 
-    /// Adds a side into the meal plan with the given params.
+    /// Adds a side into the meal plan for a line at a date by specifying its price.
     async fn add_side_to_plan(
         &self,
         side_id: Uuid,
@@ -141,17 +141,14 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 /// An interface for image related data. The ImageReview component uses this interface for database access.
 pub trait ImageReviewDataAccess: Send + Sync {
     /// Returns the first n images sorted by rank which are related to an meal served at the given day.
-    async fn get_n_images_by_rank_date(&self, n: u32, date: Date) -> Result<Vec<Image>>;
+    async fn get_images_for_date(&self, number_of_images: u32, date: Date) -> Result<Vec<Image>>;
     /// Returns the first n images sorted by rank which are related to an meal served in the next week and which were not validated last week.
-    async fn get_n_images_next_week_by_rank_not_checked_last_week(
+    async fn get_unvalidated_images_for_next_week(
         &self,
-        n: u32,
+        number_of_images: u32,
     ) -> Result<Vec<Image>>;
     /// Returns the first n images sorted by the date of the last validation (asc) which were not validated in the last week.
-    async fn get_n_images_by_last_checked_not_checked_last_week(
-        &self,
-        n: u32,
-    ) -> Result<Vec<Image>>;
+    async fn get_old_images(&self, number_of_images: u32) -> Result<Vec<Image>>;
     /// Removes an image with all relations from the database.
     async fn delete_image(&self, id: Uuid) -> Result<()>;
     /// Marks all images identified by the given uuids as checked.

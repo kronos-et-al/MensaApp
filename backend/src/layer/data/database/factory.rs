@@ -7,7 +7,7 @@ use super::{
 
 /// Structure containing all information necessary to connect to a database.
 pub struct DatabaseInfo {
-    ///
+    /// Connection string to database of format `postgres://<username>:<password>@<host>:<port>/<database>`.
     pub connection: String,
 }
 
