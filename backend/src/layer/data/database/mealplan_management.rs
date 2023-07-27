@@ -1,7 +1,6 @@
 use async_trait::async_trait;
 use sqlx::{Pool, Postgres};
 
-use super::types::DatabasePrice;
 use crate::{
     interface::persistent_data::{MealplanManagementDataAccess, Result},
     util::{Additive, Allergen, Date, MealType, Price, Uuid},
@@ -283,16 +282,19 @@ impl PersistentMealplanManagementData {
         date: Date,
         price: Price,
     ) -> Result<()> {
-        let price: DatabasePrice = price.try_into()?;
         sqlx::query!(
-            "INSERT INTO food_plan (line_id, food_id, serve_date, price_student, price_employee, price_guest, price_pupil) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+            "
+            INSERT INTO food_plan (line_id, food_id, serve_date, 
+                price_student, price_employee, price_guest, price_pupil) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            ",
             line_id,
             food_id,
             date,
-            price.student as _,
-            price.employee as _,
-            price.guest as _,
-            price.pupil as _,
+            i32::try_from(price.price_student)? as _,
+            i32::try_from(price.price_employee)? as _,
+            i32::try_from(price.price_guest)? as _,
+            i32::try_from(price.price_pupil)? as _,
         )
         .execute(&self.pool)
         .await?;

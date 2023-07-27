@@ -117,12 +117,9 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
 
     async fn delete_image(&self, id: Uuid) -> Result<()> {
         // Todo on delete cascade?
-        sqlx::query!(
-            "DELETE FROM image WHERE image_id = $1 RETURNING image_id",
-            id
-        )
-        .fetch_all(&self.pool)
-        .await?;
+        sqlx::query!("DELETE FROM image WHERE image_id = $1", id)
+            .execute(&self.pool)
+            .await?;
 
         Ok(())
     }

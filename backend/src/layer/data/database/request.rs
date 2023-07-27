@@ -310,7 +310,7 @@ mod tests {
                 .flatten()
                 .collect();
         assert!(canteens.len() == 3);
-        assert_eq!(canteens[0].name, "my favorite canteen"); //TODO: Canteen order
+        assert_eq!(canteens[0].name, "my favorite canteen");
         assert_eq!(canteens[1].name, "second canteen");
         assert_eq!(canteens[2].name, "bad canteen");
         assert!(request.get_canteen(WRONG_UUID).await.unwrap().is_none());
@@ -322,7 +322,7 @@ mod tests {
 
         let canteen = request.get_canteens().await.unwrap();
         assert!(canteen.len() == 3);
-        assert_eq!(canteen[0].name, "my favorite canteen"); //TODO: Canteen order
+        assert_eq!(canteen[0].name, "my favorite canteen");
         assert_eq!(canteen[1].name, "second canteen");
         assert_eq!(canteen[2].name, "bad canteen");
     }
