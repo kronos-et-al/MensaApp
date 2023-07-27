@@ -58,7 +58,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 
     /// Determines the line with the most similar name.
     /// Returns the UUID to the similar line.
-    async fn get_similar_line(&self, similar_name: &str) -> Result<Option<Uuid>>;
+    async fn get_similar_line(&self, similar_name: &str, canteen_id: Uuid) -> Result<Option<Uuid>>;
 
     /// Determines the meal with the most similar name, identical allergens and identical additives.
     /// Returns the UUID to the similar meal.
@@ -80,11 +80,11 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 
     /// Updates an existing canteen entity in the database.
     /// Returns the canteen's UUID.
-    async fn update_canteen(&self, uuid: Uuid, name: &str, position: u32) -> Result<Uuid>;
+    async fn update_canteen(&self, uuid: Uuid, name: &str, position: u32) -> Result<()>;
 
     /// Updates an existing line entity in the database.
     /// Returns the line UUID.
-    async fn update_line(&self, uuid: Uuid, name: &str, position: u32) -> Result<Uuid>;
+    async fn update_line(&self, uuid: Uuid, name: &str, position: u32) -> Result<()>;
 
     /// Updates an existing meal entity in the database.
     async fn update_meal(&self, uuid: Uuid, name: &str) -> Result<()>;

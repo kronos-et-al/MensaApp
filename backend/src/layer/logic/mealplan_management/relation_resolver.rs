@@ -34,7 +34,8 @@ where
             Some(similar_canteen) => {
                 self.db
                     .update_canteen(similar_canteen, &canteen.name, canteen.pos)
-                    .await?
+                    .await?;
+                similar_canteen
             }
             None => self.db.insert_canteen(&canteen.name, canteen.pos).await?,
         };
@@ -54,11 +55,12 @@ where
         line: ParseLine,
         canteen_id: Uuid,
     ) -> Result<(), DataError> {
-        let line_id = match self.db.get_similar_line(&line.name).await? {
+        let line_id = match self.db.get_similar_line(&line.name, canteen_id).await? {
             Some(similar_line) => {
                 self.db
                     .update_line(similar_line, &line.name, line.pos)
-                    .await?
+                    .await?;
+                similar_line
             }
             None => {
                 self.db
