@@ -167,7 +167,7 @@ impl HTMLParser {
         html: &str,
         position: u32,
     ) -> Result<Vec<(Date, ParseCanteen)>, ParseError> {
-        let document = Html::parse_document(html);
+        let document: Html = Html::parse_document(html);
         let root_node = Self::get_root_node(&document)?;
         let dates = Self::get_dates(&root_node).unwrap_or_default();
         let canteen_for_all_days = Self::get_canteen_for_all_days(&root_node, position);

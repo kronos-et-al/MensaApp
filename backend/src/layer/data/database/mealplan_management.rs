@@ -64,6 +64,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
             FROM food JOIN meal USING (food_id)
             WHERE similarity(name, $1) >= $4
             AND food_id IN (
+                -- all food_id's with same allergens
                 SELECT food_id 
                 FROM food_allergen FULL JOIN food USING (food_id)
                 GROUP BY food_id 
@@ -71,6 +72,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
 				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $2::allergen[]
             )
             AND food_id IN (
+                -- all food_id's with same additives
                 SELECT food_id
 				FROM food_additive FULL JOIN food USING (food_id)
 				GROUP BY food_id 
@@ -110,6 +112,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
             FROM food
             WHERE similarity(name, $1) >= $4 AND food_id NOT IN (SELECT food_id FROM meal)
             AND food_id IN (
+                -- all food_id's with same allergens
                 SELECT food_id 
                 FROM food_allergen FULL JOIN food USING (food_id)
                 GROUP BY food_id 
@@ -117,6 +120,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
 				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $2::allergen[]
             )
             AND food_id IN (
+                -- all food_id's with same additives
                 SELECT food_id
 				FROM food_additive FULL JOIN food USING (food_id)
 				GROUP BY food_id 
