@@ -110,7 +110,6 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
     }
 
     async fn delete_image(&self, id: Uuid) -> Result<()> {
-        // Todo on delete cascade?
         sqlx::query!("DELETE FROM image WHERE image_id = $1", id)
             .execute(&self.pool)
             .await?;
@@ -256,7 +255,7 @@ mod test {
         ]
     }
 
-    #[sqlx::test(fixtures("meal", "image_review_data"))]
+    #[sqlx::test(fixtures("meal", "image_review_data", "image_additions"))]
     async fn test_delete_image(pool: PgPool) {
         let review = PersistentImageReviewData { pool: pool.clone() };
         let id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
