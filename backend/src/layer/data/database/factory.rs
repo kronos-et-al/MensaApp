@@ -24,6 +24,7 @@ const MAX_DB_CONNECTIONS: u32 = 20;
 impl DataAccessFactory {
     /// Creates a new factory object for the database access instances.
     /// On creation, a connection to the database is established.
+    /// If wished, database migrations can be applied to create the wanted relations.
     /// # Errors
     /// if a migrations should, but could not run
     pub async fn new(info: DatabaseInfo, should_migrate: bool) -> Result<Self> {
