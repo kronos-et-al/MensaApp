@@ -14,7 +14,6 @@ on:
 env:
   CARGO_TERM_COLOR: always
   DATABASE_URL: "postgres://postgres:password@postgres/mensa_app"
-  FLICKR_PUBLIC_KEY: ${{ secrets.FLICKR_PUBLIC_KEY }}
   FLICKR_API_KEY: ${{ secrets.FLICKR_PUBLIC_KEY }}
   SMTP_SERVER: ${{ vars.SMTP_SERVER }}
   SMTP_PORT: ${{ vars.SMTP_PORT }}

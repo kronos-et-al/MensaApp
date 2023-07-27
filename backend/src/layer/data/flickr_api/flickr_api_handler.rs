@@ -12,7 +12,7 @@ pub struct FlickrInfo {
     pub api_key: String,
 }
 
-pub struct FlickeApiHandler {
+pub struct FlickrApiHandler {
     request: ApiRequest,
 }
 
@@ -24,7 +24,7 @@ lazy_static! {
         Regex::new(r"(https://flic.kr/p/)([\d\w]+)").expect("regex creation failed");
 }
 
-impl FlickeApiHandler {
+impl FlickrApiHandler {
     #[must_use]
     #[allow(clippy::missing_const_for_fn)] // cannot be made const because of compiler error`
     pub fn new(info: FlickrInfo) -> Self {
@@ -51,7 +51,7 @@ impl FlickeApiHandler {
 }
 
 #[async_trait]
-impl ImageHoster for FlickeApiHandler {
+impl ImageHoster for FlickrApiHandler {
     /// This method validates an url to an image hosted at flickr.com.
     /// # Errors
     /// If the url can't be compiled an [`ImageHosterError::FormatNotFound`] will be returned.<br>
@@ -118,19 +118,19 @@ where
 mod test {
     #![allow(clippy::unwrap_used)]
     use crate::interface::image_hoster::ImageHosterError;
-    use crate::layer::data::flickr_api::flickr_api_handler::FlickeApiHandler;
+    use crate::layer::data::flickr_api::flickr_api_handler::FlickrApiHandler;
 
     #[test]
     fn valid_determine_photo_id() {
         let valid_url = "https://flic.kr/p/2oRguN3";
-        let res = FlickeApiHandler::determine_photo_id(valid_url).unwrap();
+        let res = FlickrApiHandler::determine_photo_id(valid_url).unwrap();
         assert_eq!(res, "2oRguN3");
     }
 
     #[test]
     fn empty_determine_photo_id() {
         let valid_url = "";
-        let res = FlickeApiHandler::determine_photo_id(valid_url)
+        let res = FlickrApiHandler::determine_photo_id(valid_url)
             .err()
             .unwrap();
         assert_eq!(
@@ -144,7 +144,7 @@ mod test {
     #[test]
     fn invalid_determine_photo_id() {
         let valid_url = "https://flic.kr/p/";
-        let res = FlickeApiHandler::determine_photo_id(valid_url)
+        let res = FlickrApiHandler::determine_photo_id(valid_url)
             .err()
             .unwrap();
         assert_eq!(

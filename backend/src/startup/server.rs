@@ -8,7 +8,7 @@ use crate::{
     layer::{
         data::{
             database::factory::DataAccessFactory,
-            flickr_api::flickr_api_handler::FlickeApiHandler,
+            flickr_api::flickr_api_handler::FlickrApiHandler,
             mail::mail_sender::{MailError, MailSender},
             swka_parser::swka_parse_manager::SwKaParseManager,
         },
@@ -80,7 +80,7 @@ impl Server {
         let request_data = factory.get_request_data_access();
 
         let mail = MailSender::new(config.read_mail_info()?)?;
-        let flickr = FlickeApiHandler::new(config.read_flickr_info()?);
+        let flickr = FlickrApiHandler::new(config.read_flickr_info()?);
         let flickr = Arc::new(flickr);
         let parser = SwKaParseManager::new(config.read_swka_info()?)?;
 

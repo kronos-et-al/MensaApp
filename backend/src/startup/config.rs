@@ -19,6 +19,13 @@ use super::{
 
 const DEFAULT_CANTEENS: &str = "mensa_adenauerring,mensa_gottesaue,mensa_moltke,mensa_x1moltkestrasse,mensa_erzberger,mensa_tiefenbronner,mensa_holzgarten";
 const DEFAULT_BASE_URL: &str = "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/";
+const DEFAULT_UPDATE_PARSE_SCHEDULE: &str = "0 */15 10-15 * * *";
+const DEFAULT_NIGHTLY_SCHEDULE: &str = "0 0 2 * * *";
+const DEFAULT_LOG_CONFIG: &str = "warn,mensa_app_backend=info";
+const DEFAULT_USER_AGENT: &str = "MensaKa 0.1";
+const DEFAULT_CLIENT_TIMEOUT: u64 = 6000;
+const DEFAULT_HTTP_PORT: u16 = 80;
+const DEFAULT_SMTP_PORT: u16 = 465;
 
 /// Class for reading configuration from environment variables.
 pub struct ConfigReader {}
@@ -47,8 +54,7 @@ impl ConfigReader {
     /// when the environment variables are not set and no default is provided internally.
     pub fn read_log_info(&self) -> Result<LogInfo> {
         let info = LogInfo {
-            log_config: read_var("LOG_CONFIG")
-                .unwrap_or_else(|_| "warn,mensa_app_backend=info".into()),
+            log_config: read_var("LOG_CONFIG").unwrap_or_else(|_| DEFAULT_LOG_CONFIG.into()),
         };
         info!("using log config: {}", info.log_config);
         Ok(info)
@@ -74,7 +80,7 @@ impl ConfigReader {
             smtp_port: read_var("SMTP_PORT")
                 .ok()
                 .and_then(|v| v.parse().ok())
-                .unwrap_or(465),
+                .unwrap_or(DEFAULT_SMTP_PORT),
             username: read_var("SMTP_USERNAME")?,
             password: read_var("SMTP_PASSWORD")?,
         };
@@ -87,11 +93,11 @@ impl ConfigReader {
     pub fn read_schedule_info(&self) -> Result<ScheduleInfo> {
         let info = ScheduleInfo {
             full_parse_schedule: env::var("FULL_PARSE_SCHEDULE")
-                .unwrap_or_else(|_| "0 0 2 * * *".into()),
+                .unwrap_or_else(|_| DEFAULT_NIGHTLY_SCHEDULE.into()),
             update_parse_schedule: env::var("UPDATE_PARSE_SCHEDULE")
-                .unwrap_or_else(|_| "0 */15 10-15 * * *".into()),
+                .unwrap_or_else(|_| DEFAULT_UPDATE_PARSE_SCHEDULE.into()),
             image_review_schedule: env::var("IMAGE_REVIEW_SCHEDULE")
-                .unwrap_or_else(|_| "0 0 2 * * *".into()),
+                .unwrap_or_else(|_| DEFAULT_NIGHTLY_SCHEDULE.into()),
         };
         Ok(info)
     }
@@ -113,7 +119,7 @@ impl ConfigReader {
         let timeout = env::var("CLIENT_TIMEOUT")
             .ok()
             .and_then(|s| s.parse().ok())
-            .unwrap_or(6000);
+            .unwrap_or(DEFAULT_CLIENT_TIMEOUT);
         let timeout = Duration::from_millis(timeout);
 
         let canteens = read_var("CANTEENS")
@@ -127,7 +133,7 @@ impl ConfigReader {
             base_url: read_var("MENSA_BASE_URL").unwrap_or_else(|_| DEFAULT_BASE_URL.into()),
             client_timeout: timeout,
             client_user_agent: env::var("USER_AGENT")
-                .unwrap_or_else(|_| String::from("MensaKa 0.1")),
+                .unwrap_or_else(|_| String::from(DEFAULT_USER_AGENT)),
             valid_canteens: canteens,
         };
         info!(
@@ -146,7 +152,7 @@ impl ConfigReader {
             port: env::var("HTTP_PORT")
                 .ok()
                 .and_then(|p| p.parse().ok())
-                .unwrap_or(80),
+                .unwrap_or(DEFAULT_HTTP_PORT),
         };
         Ok(info)
     }
