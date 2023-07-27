@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use heck::AsShoutySnakeCase;
+
 use crate::util::{ReportReason, Uuid};
 
 #[derive(Clone)]
@@ -43,7 +45,7 @@ impl CommandType {
     pub(super) fn get_bytes(&self) -> Vec<u8> {
         match self {
             Self::ReportImage { image_id, reason } => {
-                [image_id.as_bytes(), reason.to_string().as_bytes()].concat()
+                [image_id.as_bytes(), reason.to_auth_string().as_bytes()].concat()
             }
             Self::AddUpvote { image_id }
             | Self::AddDownvote { image_id }
@@ -54,5 +56,11 @@ impl CommandType {
             }
             Self::AddImage { meal_id, url } => [meal_id.as_bytes(), url.as_bytes()].concat(),
         }
+    }
+}
+
+impl ReportReason {
+    fn to_auth_string(self) -> String {
+        format!("{}", AsShoutySnakeCase(format!("{self:?}")))
     }
 }

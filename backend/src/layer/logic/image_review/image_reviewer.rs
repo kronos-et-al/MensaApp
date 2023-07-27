@@ -63,20 +63,20 @@ where
 
         let images_by_rank_date = self
             .data_access
-            .get_n_images_by_rank_date(NUMBER_OF_IMAGES_TO_CHECK, today)
+            .get_images_for_date(NUMBER_OF_IMAGES_TO_CHECK, today)
             .await?;
         self.review_images(images_by_rank_date).await;
 
         let images_next_week_by_rank_not_checked_last_week = self
             .data_access
-            .get_n_images_next_week_by_rank_not_checked_last_week(NUMBER_OF_IMAGES_TO_CHECK)
+            .get_unvalidated_images_for_next_week(NUMBER_OF_IMAGES_TO_CHECK)
             .await?;
         self.review_images(images_next_week_by_rank_not_checked_last_week)
             .await;
 
         let images_by_last_checked_not_checked_last_week = self
             .data_access
-            .get_n_images_by_last_checked_not_checked_last_week(NUMBER_OF_IMAGES_TO_CHECK)
+            .get_old_images(NUMBER_OF_IMAGES_TO_CHECK)
             .await?;
         self.review_images(images_by_last_checked_not_checked_last_week)
             .await;
@@ -120,26 +120,21 @@ mod test {
                 },
             },
         },
-        util::Uuid,
+        util::{Date, Uuid},
     };
 
     #[tokio::test]
     async fn test_full_review() {
         let image_reviewer = get_image_reviewer();
         assert!(image_reviewer.try_start_image_review().await.is_ok());
-        assert!(image_reviewer.data_access.get_n_images_by_rank_date_calls() == 1);
+        assert!(image_reviewer.data_access.get_images_for_date_calls() == 1);
         assert!(
             image_reviewer
                 .data_access
-                .get_n_images_next_week_by_rank_not_checked_last_week_calls()
+                .get_unvalidated_images_for_next_week_calls()
                 == 1
         );
-        assert!(
-            image_reviewer
-                .data_access
-                .get_n_images_by_last_checked_not_checked_last_week_calls()
-                == 1
-        );
+        assert!(image_reviewer.data_access.get_old_images_calls() == 1);
     }
 
     #[tokio::test]
@@ -194,6 +189,9 @@ mod test {
             rank: 0.0,
             upvotes: 0,
             downvotes: 0,
+            approved: false,
+            upload_date: Date::default(),
+            report_count: 0,
         }
     }
 

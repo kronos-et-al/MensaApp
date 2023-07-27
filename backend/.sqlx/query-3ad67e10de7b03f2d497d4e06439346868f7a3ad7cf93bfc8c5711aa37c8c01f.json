@@ -1,0 +1,58 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO food_allergen(food_id, allergen) VALUES ($1, UNNEST($2::allergen[]))",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        {
+          "Custom": {
+            "name": "_allergen",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "allergen",
+                  "kind": {
+                    "Enum": [
+                      "CA",
+                      "DI",
+                      "EI",
+                      "ER",
+                      "FI",
+                      "GE",
+                      "HF",
+                      "HA",
+                      "KA",
+                      "KR",
+                      "LU",
+                      "MA",
+                      "ML",
+                      "PA",
+                      "PE",
+                      "PI",
+                      "QU",
+                      "RO",
+                      "SA",
+                      "SE",
+                      "SF",
+                      "SN",
+                      "SO",
+                      "WA",
+                      "WE",
+                      "WT",
+                      "LA",
+                      "GL"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "3ad67e10de7b03f2d497d4e06439346868f7a3ad7cf93bfc8c5711aa37c8c01f"
+}

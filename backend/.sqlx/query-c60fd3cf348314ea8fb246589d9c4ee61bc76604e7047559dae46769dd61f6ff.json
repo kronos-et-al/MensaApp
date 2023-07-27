@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO image_rating (user_id, image_id, rating) VALUES ($1, $2, -1)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "c60fd3cf348314ea8fb246589d9c4ee61bc76604e7047559dae46769dd61f6ff"
+}

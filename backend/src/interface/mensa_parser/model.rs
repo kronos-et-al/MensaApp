@@ -9,6 +9,8 @@ pub struct ParseCanteen {
     pub name: String,
     /// All the [lines](ParseLine) situated within the canteen.
     pub lines: Vec<ParseLine>,
+    /// Position/Ranking of the canteen
+    pub pos: u32,
 }
 
 /// Line struct containing all information of a line and their meals. Contains raw data.
@@ -18,6 +20,8 @@ pub struct ParseLine {
     pub name: String,
     /// All [dishes](Dish) served at this [canteen](ParseCanteen) at a particular day.
     pub dishes: Vec<Dish>,
+    /// Position/Ranking of the line
+    pub pos: u32,
 }
 
 /// Dish struct containing all information of a meal or side.

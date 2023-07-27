@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE image SET currently_visible = false WHERE image_id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "5506a0fb04c0223ffef1654dbbecf8952bab7f9a4a88f7e6186a25dbd1d4edc0"
+}

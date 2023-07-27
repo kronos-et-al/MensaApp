@@ -5,6 +5,7 @@ use crate::util::{self, Date};
 use util::{MealType, Uuid};
 
 /// Struct to storage related data. Contains all api-key related information.
+#[derive(Debug, PartialEq, Eq)]
 pub struct ApiKey {
     /// The api-key
     pub key: String,
@@ -13,6 +14,7 @@ pub struct ApiKey {
 }
 
 /// Struct for database-operations. Related to the database entity 'canteen'.
+#[derive(Debug)]
 pub struct Canteen {
     /// Identification of the canteen
     pub id: Uuid,
@@ -21,6 +23,7 @@ pub struct Canteen {
 }
 
 /// Struct for database-operations. Related to the database entity 'line'.
+#[derive(Debug)]
 pub struct Line {
     /// Identification of the line
     pub id: Uuid,
@@ -31,6 +34,7 @@ pub struct Line {
 }
 
 /// Struct for database-operations. Related to the database entity 'meal'.
+#[derive(Debug, PartialEq)]
 pub struct Meal {
     /// Identification of the meal.
     pub id: Uuid,
@@ -59,6 +63,7 @@ pub struct Meal {
 }
 
 /// This structure is used for database operations. This side structure is based on the database entities 'food', 'foodAllergen' and 'foodAdditive'.
+#[derive(Debug, PartialEq, Eq)]
 pub struct Side {
     /// Identification of the side.
     pub id: Uuid,
@@ -70,7 +75,7 @@ pub struct Side {
     pub price: Price,
 }
 
-#[derive(Default)]
+#[derive(Debug, Default, PartialEq, Clone)]
 /// This structure is used for database operations. This image structure is based on the database entity 'image'.
 pub struct Image {
     /// Database-identification of the image.
@@ -85,22 +90,10 @@ pub struct Image {
     pub upvotes: u32,
     /// Amount of downvotes for the image.
     pub downvotes: u32,
-}
-
-#[derive(Clone)]
-pub struct ImageInfo {
     /// True if an administrator validated the image.
     pub approved: bool,
     /// Upload date of the image.
     pub upload_date: Date,
     /// Amount of open report request related to that image.
     pub report_count: u32,
-    /// Direct link to the image on the image hoster website.
-    pub image_url: String,
-    /// Amount of upvotes for the image.
-    pub positive_rating_count: u32,
-    /// Amount of downvotes for the image.
-    pub negative_rating_count: u32,
-    /// Rank of the image. Used for sorting und prioritizing an image.
-    pub image_rank: f32,
 }

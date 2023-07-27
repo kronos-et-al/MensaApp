@@ -1,0 +1,30 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO image_report (image_id, user_id, reason) VALUES ($1, $2, $3)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        {
+          "Custom": {
+            "name": "report_reason",
+            "kind": {
+              "Enum": [
+                "OFFENSIVE",
+                "ADVERT",
+                "NO_MEAL",
+                "WRONG_MEAL",
+                "VIOLATES_RIGHTS",
+                "OTHER"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "c4ce85949b42f7e2cbcfce60f0ac09b51d3c01f7ec9472a9fe321f10a494797a"
+}

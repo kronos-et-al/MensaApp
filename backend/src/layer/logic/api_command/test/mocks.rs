@@ -9,7 +9,7 @@ use crate::{
             model::ImageMetaData, ImageHoster, ImageHosterError, Result as ImageResult,
         },
         persistent_data::{
-            model::{ApiKey, ImageInfo},
+            model::{ApiKey, Image},
             CommandDataAccess, DataError, Result as DataResult,
         },
     },
@@ -26,15 +26,17 @@ pub struct CommandDatabaseMock;
 #[async_trait]
 impl CommandDataAccess for CommandDatabaseMock {
     /// Returns the ImageInfo struct of image.
-    async fn get_image_info(&self, _image_id: Uuid) -> DataResult<ImageInfo> {
-        let info = ImageInfo {
+    async fn get_image_info(&self, _image_id: Uuid) -> DataResult<Image> {
+        let info = Image {
             approved: false,
             upload_date: Date::default(),
             report_count: 100,
-            image_url: String::new(),
-            positive_rating_count: 200,
-            negative_rating_count: 2000,
-            image_rank: 0.1,
+            url: String::new(),
+            upvotes: 200,
+            downvotes: 2000,
+            rank: 0.1,
+            id: Uuid::default(),
+            image_hoster_id: String::new(),
         };
         Ok(info)
     }
