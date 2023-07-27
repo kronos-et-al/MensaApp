@@ -133,6 +133,8 @@ const PRICE_TYPE_COUNT: usize = 4;
 
 const SELECTOR_PARSE_E_MSG: &str = "Error while parsing Selector string";
 const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
+const INVALID_ROOT_NODE_MESSAGE: &str =
+    "could not find mensa root node. this could mean a wrong webpage got loaded";
 
 /// A static class, that transforms html files into datatypes, that can be used for further processing using the `HTMLParser::transform` function.
 pub struct HTMLParser;
@@ -167,7 +169,7 @@ impl HTMLParser {
         html: &str,
         position: u32,
     ) -> Result<Vec<(Date, ParseCanteen)>, ParseError> {
-        let document: Html = Html::parse_document(html);
+        let document = Html::parse_document(html);
         let root_node = Self::get_root_node(&document)?;
         let dates = Self::get_dates(&root_node).unwrap_or_default();
         let canteen_for_all_days = Self::get_canteen_for_all_days(&root_node, position);
@@ -188,7 +190,10 @@ impl HTMLParser {
             .select(&ROOT_NODE_CLASS_SELECTOR)
             .next()
             .ok_or_else(|| {
-                ParseError::InvalidHtmlDocument(format!("{:?}", *ROOT_NODE_CLASS_SELECTOR))
+                ParseError::InvalidHtmlDocument(format!(
+                    "{INVALID_ROOT_NODE_MESSAGE}: {:?}",
+                    *ROOT_NODE_CLASS_SELECTOR
+                ))
             })
     }
 

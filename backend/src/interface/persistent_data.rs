@@ -4,6 +4,7 @@ pub mod model;
 use crate::interface::persistent_data::model::{ApiKey, Canteen, Image, Line, Meal, Side};
 use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason, Uuid};
 use async_trait::async_trait;
+use sqlx::migrate::MigrateError;
 use std::num::TryFromIntError;
 use thiserror::Error;
 
@@ -24,6 +25,9 @@ pub enum DataError {
     /// Unexpectedly got null value from database.
     #[error("unexpectedly got null from database: {0}")]
     UnexpectedNullError(String),
+    /// Database migration could not be run.
+    #[error("error while running database migration: {0}")]
+    MigrateError(#[from] MigrateError),
 }
 
 /// Extracts a value from an option by returning an [`DataError::UnexpectedNullError`] using [`std::ops::Try`] (`?`).

@@ -6,7 +6,7 @@ use crate::layer::logic::mealplan_management::relation_resolver::RelationResolve
 use crate::util::Date;
 use async_trait::async_trait;
 use chrono::Local;
-use tracing::log::{debug, warn};
+use tracing::{debug, warn};
 
 pub struct MealPlanManager<Parser, DataAccess>
 where

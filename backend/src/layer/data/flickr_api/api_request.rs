@@ -3,7 +3,7 @@ use crate::interface::image_hoster::ImageHosterError;
 use crate::layer::data::flickr_api::json_parser::JsonParser;
 use crate::layer::data::flickr_api::json_structs::{JsonRootError, JsonRootLicense, JsonRootSizes};
 use reqwest::Response;
-use tracing::log::debug;
+use tracing::debug;
 
 pub struct ApiRequest {
     api_key: String,
@@ -120,7 +120,7 @@ mod test {
 
     fn get_api_key() -> String {
         dotenv().ok();
-        env::var("FLICKR_PUBLIC_KEY").expect("FLICKR_PUBLIC_KEY should be set in the .env!")
+        env::var("FLICKR_API_KEY").expect("FLICKR_API_KEY should be set in the .env!")
     }
 
     fn get_api_request() -> ApiRequest {

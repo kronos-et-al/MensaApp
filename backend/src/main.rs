@@ -1,5 +1,4 @@
-use mensa_app_backend::run_backend;
-
-fn main() {
-    run_backend();
+#[tokio::main]
+async fn main() {
+    mensa_app_backend::Server::run().await.unwrap();
 }

@@ -2,7 +2,7 @@
 #![allow(dead_code)]
 use crate::layer::data::swka_parser::swka_html_request::SwKaHtmlRequest;
 use crate::layer::data::swka_parser::swka_link_creator::SwKaLinkCreator;
-use crate::layer::data::swka_parser::swka_parse_manager::ParseInfo;
+use crate::layer::data::swka_parser::swka_parse_manager::SwKaInfo;
 use std::time::Duration;
 
 #[must_use]
@@ -34,8 +34,8 @@ pub fn get_client_user_agent() -> String {
 }
 
 #[must_use]
-pub fn get_parse_info() -> ParseInfo {
-    ParseInfo {
+pub fn get_parse_info() -> SwKaInfo {
+    SwKaInfo {
         base_url: get_base_url(),
         valid_canteens: get_mensa_names(),
         client_timeout: get_client_timeout(),

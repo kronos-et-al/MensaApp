@@ -10,7 +10,7 @@ use async_trait::async_trait;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
-pub struct ParseInfo {
+pub struct SwKaInfo {
     pub base_url: String,
     pub valid_canteens: Vec<String>,
     pub client_timeout: std::time::Duration,
@@ -27,7 +27,7 @@ impl SwKaParseManager {
     /// Method for creating a [`SwKaParseManager`] instance.
     /// # Errors
     /// If the request client creation fails an error 'll be returned.
-    pub fn new(parse_info: ParseInfo) -> Result<Self, ParseError> {
+    pub fn new(parse_info: SwKaInfo) -> Result<Self, ParseError> {
         Ok(Self {
             link_creator: SwKaLinkCreator::new(
                 parse_info.base_url.clone(),

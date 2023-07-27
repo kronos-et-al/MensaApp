@@ -1,12 +1,14 @@
+use std::sync::Arc;
+
 use crate::interface::image_hoster::model::ImageMetaData;
-use crate::interface::image_hoster::{ImageHoster, ImageHosterError};
+use crate::interface::image_hoster::{ImageHoster, ImageHosterError, Result};
 use crate::layer::data::flickr_api::api_request::ApiRequest;
 use async_trait::async_trait;
 use lazy_static::lazy_static;
 use regex::Regex;
 
 #[derive(Debug)]
-pub struct HosterInfo {
+pub struct FlickrInfo {
     pub api_key: String,
 }
 
@@ -24,16 +26,17 @@ lazy_static! {
 
 impl FlickrApiHandler {
     #[must_use]
-    pub fn new(info: &HosterInfo) -> Self {
+    #[allow(clippy::missing_const_for_fn)] // cannot be made const because of compiler error`
+    pub fn new(info: FlickrInfo) -> Self {
         Self {
-            request: ApiRequest::new(info.api_key.clone()),
+            request: ApiRequest::new(info.api_key),
         }
     }
 
     // URL TYPE 1: https://www.flickr.com/photos/gerdavs/52310534489/ <- remove last '/'
     // URL TYPE 2: https://flic.kr/p/2oRguN3
     // Both cases: Split with '/' and get last member (= photo_id).
-    fn determine_photo_id(mut url: &str) -> Result<&str, ImageHosterError> {
+    fn determine_photo_id(mut url: &str) -> Result<&str> {
         if !SHORT_URL_REGEX.is_match(url) && !LONG_URL_REGEX.is_match(url) {
             return Err(ImageHosterError::FormatNotFound(format!(
                 "this url format is not supported: '{url}'"
@@ -58,7 +61,7 @@ impl ImageHoster for FlickrApiHandler {
     /// More error information is described here: [`ImageHosterError`].
     /// # Return
     /// If the image exists, the [`ImageMetaData`] struct will be returned.
-    async fn validate_url(&self, url: &str) -> Result<ImageMetaData, ImageHosterError> {
+    async fn validate_url(&self, url: &str) -> Result<ImageMetaData> {
         let photo_id = Self::determine_photo_id(url)?;
         self.request.flickr_photos_get_sizes(photo_id).await
     }
@@ -68,7 +71,7 @@ impl ImageHoster for FlickrApiHandler {
     /// True if the image exists. False if not.
     /// # Errors
     /// If errors occur, that not decide weather the image exists or not, they will be returned.
-    async fn check_existence(&self, photo_id: &str) -> Result<bool, ImageHosterError> {
+    async fn check_existence(&self, photo_id: &str) -> Result<bool> {
         let res = self.request.flickr_photos_get_sizes(photo_id).await;
         match res {
             Ok(_) => Ok(true),
@@ -88,8 +91,26 @@ impl ImageHoster for FlickrApiHandler {
     /// True if the image is published under a valid license. False if not.
     /// # Errors
     /// If any error occurs, it will be returned.
-    async fn check_licence(&self, photo_id: &str) -> Result<bool, ImageHosterError> {
+    async fn check_licence(&self, photo_id: &str) -> Result<bool> {
         self.request.flickr_photos_license_check(photo_id).await
+    }
+}
+
+#[async_trait]
+impl<T> ImageHoster for Arc<T>
+where
+    T: ImageHoster,
+{
+    async fn validate_url(&self, url: &str) -> Result<ImageMetaData> {
+        self.validate_url(url).await
+    }
+
+    async fn check_existence(&self, image_id: &str) -> Result<bool> {
+        self.check_existence(image_id).await
+    }
+
+    async fn check_licence(&self, image_id: &str) -> Result<bool> {
+        self.check_licence(image_id).await
     }
 }
 

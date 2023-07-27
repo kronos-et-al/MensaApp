@@ -45,6 +45,14 @@ To make development easier, these can also be defined textually in a `.env` file
     This runs a postgres database as a docker container.
     To setup all relations install `cargo install sqlx-cli` and run `cargo sqlx mig run`.
 
-3. After adding a query in rust code, make sure to run `cargo sqlx prepare` to safe the database format for offline usage so compilation can be successful even if no database is present.
 
-4. If you want to reset the database (because you changed the migrations) run `sqlx database reset`
+1. After adding a query in rust code, make sure to run `cargo sqlx prepare` to safe the database format for offline usage so compilation can be successful even if no database is present.
+
+2. After adding a query in rust code, make sure to run `cargo sqlx prepare` to safe the database format for offline usage so compilation can be successful even if no database is present.
+
+3. If you want to reset the database (because you changed the migrations) run `sqlx database reset`
+
+
+### Docker
+
+to build the docker container, run `docker build . -t kronos-et-al/mensa-app:0.1`.
