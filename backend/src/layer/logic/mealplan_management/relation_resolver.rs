@@ -134,15 +134,11 @@ where
     }
 
     fn average(dishes: Iter<Dish>) -> f64 {
-        let len = dishes.len();
-        if len == 0 {
-            return 0.0;
-        }
+        let len = u32::try_from(dishes.len())
+            .expect("RelationResolver.average: usize could not be casted to u32");
         let sum: u32 = dishes.map(|dish| dish.price.price_student).sum();
-        f64::from(
-            sum / u32::try_from(len)
-                .expect("RelationResolver.average: usize could not be casted to u32"),
-        )
+
+        f64::from(sum.checked_div(len).unwrap_or_default())
     }
 }
 
@@ -279,6 +275,6 @@ mod test {
 
         let dishes = vec![];
         let average = RelationResolver::<MealplanManagementDatabaseMock>::average(dishes.iter());
-        assert_eq!(average, 0.0);
+        assert!((average - 0.0).abs() < f64::EPSILON);
     }
 }
