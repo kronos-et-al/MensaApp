@@ -14,7 +14,7 @@ pub struct PersistentImageReviewData {
 #[async_trait]
 #[allow(clippy::missing_panics_doc)] // necessary because sqlx macro sometimes create unreachable panics?
 impl ImageReviewDataAccess for PersistentImageReviewData {
-    async fn get_n_images_by_rank_date(&self, n: u32, date: Date) -> Result<Vec<Image>> {
+    async fn get_images_for_date(&self, n: u32, date: Date) -> Result<Vec<Image>> {
         sqlx::query!(
             "
             SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
@@ -46,10 +46,7 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
         .collect::<Result<Vec<_>>>()
     }
 
-    async fn get_n_images_next_week_by_rank_not_checked_last_week(
-        &self,
-        n: u32,
-    ) -> Result<Vec<Image>> {
+    async fn get_unvalidated_images_for_next_week(&self, n: u32) -> Result<Vec<Image>> {
         sqlx::query!(
             "
             SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
@@ -81,10 +78,7 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
         .collect::<Result<Vec<_>>>()
     }
 
-    async fn get_n_images_by_last_checked_not_checked_last_week(
-        &self,
-        n: u32,
-    ) -> Result<Vec<Image>> {
+    async fn get_old_images(&self, n: u32) -> Result<Vec<Image>> {
         sqlx::query!(
             "
             SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
@@ -116,7 +110,6 @@ impl ImageReviewDataAccess for PersistentImageReviewData {
     }
 
     async fn delete_image(&self, id: Uuid) -> Result<()> {
-        // Todo on delete cascade?
         sqlx::query!("DELETE FROM image WHERE image_id = $1", id)
             .execute(&self.pool)
             .await?;
@@ -143,75 +136,65 @@ mod test {
     use sqlx::PgPool;
 
     #[sqlx::test(fixtures("meal", "image_review_data", "canteen", "line", "food_plan"))]
-    async fn test_get_n_images_by_rank_date(pool: PgPool) {
+    async fn test_get_images_for_date(pool: PgPool) {
         let review = PersistentImageReviewData { pool };
         let n = 100;
         let date = Local::now().date_naive();
 
-        let images = review.get_n_images_by_rank_date(n, date).await.unwrap();
+        let images = review.get_images_for_date(n, date).await.unwrap();
         assert_eq!(images, provide_dummy_images()[0]);
 
         let n = 2;
-        let images = review.get_n_images_by_rank_date(n, date).await.unwrap();
+        let images = review.get_images_for_date(n, date).await.unwrap();
         assert!(images.len() <= n.try_into().unwrap());
         assert!(review
-            .get_n_images_by_rank_date(0, date)
+            .get_images_for_date(0, date)
             .await
             .unwrap()
             .is_empty());
         assert!(review
-            .get_n_images_by_rank_date(n, Date::default())
+            .get_images_for_date(n, Date::default())
             .await
             .unwrap()
             .is_empty());
     }
 
     #[sqlx::test(fixtures("meal", "image_review_data", "canteen", "line", "food_plan"))]
-    async fn test_get_n_images_next_week_by_rank_not_checked_last_week(pool: PgPool) {
+    async fn test_get_unvalidated_images_for_next_week(pool: PgPool) {
         let review = PersistentImageReviewData { pool };
         let n = 100;
 
         let images = review
-            .get_n_images_next_week_by_rank_not_checked_last_week(n)
+            .get_unvalidated_images_for_next_week(n)
             .await
             .unwrap();
         assert_eq!(images, provide_dummy_images()[1]);
 
         let n = 2;
         let images = review
-            .get_n_images_next_week_by_rank_not_checked_last_week(n)
+            .get_unvalidated_images_for_next_week(n)
             .await
             .unwrap();
         assert!(images.len() <= n.try_into().unwrap());
         assert!(review
-            .get_n_images_next_week_by_rank_not_checked_last_week(0)
+            .get_unvalidated_images_for_next_week(0)
             .await
             .unwrap()
             .is_empty());
     }
 
     #[sqlx::test(fixtures("meal", "image_review_data", "canteen", "line", "food_plan"))]
-    async fn test_get_n_images_by_last_checked_not_checked_last_week(pool: PgPool) {
+    async fn test_get_old_images(pool: PgPool) {
         let review = PersistentImageReviewData { pool };
         let n = 100;
 
-        let images = review
-            .get_n_images_by_last_checked_not_checked_last_week(n)
-            .await
-            .unwrap();
+        let images = review.get_old_images(n).await.unwrap();
         assert_eq!(images, provide_dummy_images()[2]);
 
         let n = 2;
-        let images = review
-            .get_n_images_by_last_checked_not_checked_last_week(n)
-            .await
-            .unwrap();
+        let images = review.get_old_images(n).await.unwrap();
         assert!(images.len() <= n.try_into().unwrap());
-        assert!(review
-            .get_n_images_by_last_checked_not_checked_last_week(0)
-            .await
-            .unwrap()
-            .is_empty());
+        assert!(review.get_old_images(0).await.unwrap().is_empty());
     }
 
     fn provide_dummy_images() -> [Vec<Image>; 3] {
@@ -272,7 +255,7 @@ mod test {
         ]
     }
 
-    #[sqlx::test(fixtures("meal", "image_review_data"))]
+    #[sqlx::test(fixtures("meal", "image_review_data", "image_additions"))]
     async fn test_delete_image(pool: PgPool) {
         let review = PersistentImageReviewData { pool: pool.clone() };
         let id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
