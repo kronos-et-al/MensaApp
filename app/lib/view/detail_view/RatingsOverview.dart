@@ -14,7 +14,9 @@ class RatingsOverview extends StatelessWidget {
   /// @param key The key to identify this widget.
   /// @param meal The meal to display the ratings for.
   /// @return A new RatingsOverview.
-  RatingsOverview({super.key, required Meal meal, Color? backgroundColor}) : _meal = meal, _backgroundColor = backgroundColor;
+  RatingsOverview({super.key, required Meal meal, Color? backgroundColor})
+      : _meal = meal,
+        _backgroundColor = backgroundColor;
 
   @override
   Widget build(BuildContext context) {

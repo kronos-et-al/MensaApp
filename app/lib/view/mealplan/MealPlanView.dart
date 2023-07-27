@@ -24,6 +24,8 @@ import 'package:flutter_i18n/widgets/I18nText.dart';
 import 'package:provider/provider.dart';
 
 class MealPlanView extends StatelessWidget {
+  const MealPlanView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<IPreferenceAccess>(

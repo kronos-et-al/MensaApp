@@ -1,4 +1,4 @@
-import 'package:app/view/core/icons/navigation/NavigationArrowDownIcon.dart';
+  import 'package:app/view/core/icons/navigation/NavigationArrowDownIcon.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:flutter/material.dart';
 
