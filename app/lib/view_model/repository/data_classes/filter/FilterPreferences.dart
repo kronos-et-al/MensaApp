@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import 'Sorting.dart';
 import 'Frequency.dart';
 import '../meal/Allergen.dart';
@@ -23,20 +25,19 @@ class FilterPreferences {
   /// @param onlyFavorite Only favorite meals are to be displayed.
   /// @param sortedBy The value which sorts the meals.
   /// @param ascending The order in which the meals are displayed.
-  FilterPreferences({
-    List<FoodType>? categories,
-    List<Allergen>? allergens,
-    int? price,
-    int? rating,
-    List<Frequency>? frequency,
-    bool? onlyFavorite,
-    Sorting? sortedBy,
-    bool? ascending
-  })
+  FilterPreferences(
+      {List<FoodType>? categories,
+      List<Allergen>? allergens,
+      int? price,
+      int? rating,
+      List<Frequency>? frequency,
+      bool? onlyFavorite,
+      Sorting? sortedBy,
+      bool? ascending})
       : _categories = categories ?? _getAllFoodTypes(),
         _allergens = allergens ?? _getAllAllergen(),
-        _price = price ?? 10,
-        _rating = rating ?? 0,
+        _price = price ?? 1000,
+        _rating = rating ?? 1,
         _frequency = frequency ?? _getAllFrequencies(),
         _onlyFavorite = onlyFavorite ?? false,
         _sortedBy = sortedBy ?? Sorting.line,
@@ -91,16 +92,10 @@ class FilterPreferences {
   /// @return The allergens that should be inside meals shown on the meal plan
   List<Allergen> get allergens => _allergens;
 
-  /// add a allergen to the list of allergens that should be inside meals shown on the meal plan
-  /// @param allergen The allergen that should be inside meals shown on the meal plan
-  addAllergen(Allergen allergen) {
-    _allergens.add(allergen);
-  }
-
-  /// remove an allergen to the list of allergens that should be inside meals shown on the meal plan
-  /// @param allergen The allergen that should not be inside meals shown on the meal plan
-  removeAllergen(Allergen allergen) {
-    _allergens.remove(allergen);
+  /// change the list of allergens that should be inside meals shown on the meal plan
+  /// @param allergen The list of allergen that should be inside meals shown on the meal plan
+  set allergens(List<Allergen> value) {
+    _allergens = value;
   }
 
   /// returns if the sorting of the meals is ascending or descending
@@ -142,6 +137,7 @@ class FilterPreferences {
     _frequency = [Frequency.newMeal];
   }
 
+  // todo wollen wir hier auch neue Gerichte?
   /// only rare meals are to be shown
   setRareFrequency() {
     _frequency = [Frequency.rare];
@@ -198,4 +194,29 @@ class FilterPreferences {
     }
     return list;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FilterPreferences &&
+          runtimeType == other.runtimeType &&
+          listEquals(_categories, other._categories) &&
+          listEquals(_allergens, other._allergens) &&
+          _price == other._price &&
+          _rating == other._rating &&
+          listEquals(_frequency, other._frequency) &&
+          _onlyFavorite == other._onlyFavorite &&
+          _sortedBy == other._sortedBy &&
+          _ascending == other._ascending;
+
+  @override
+  int get hashCode =>
+      _categories.hashCode ^
+      _allergens.hashCode ^
+      _price.hashCode ^
+      _rating.hashCode ^
+      _frequency.hashCode ^
+      _onlyFavorite.hashCode ^
+      _sortedBy.hashCode ^
+      _ascending.hashCode;
 }

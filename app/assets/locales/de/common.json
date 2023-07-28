@@ -1,3 +1,6 @@
 {
-
+  "settings": "Einstellungen",
+  "favorites": "Favoriten",
+  "mealPlan": "Speiseplan",
+  "noFavorites": "Es sind keine Favoriten vorhanden."
 }

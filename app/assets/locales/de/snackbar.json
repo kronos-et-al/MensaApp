@@ -1,0 +1,11 @@
+{
+  "updateRatingSuccess": "Die Bewertung wurde erfolgreich aktualisiert.",
+  "updateRatingError": "Die Bewertung konnte nicht übernommen werden. Bitte versuchen Sie es später erneut.",
+  "refreshMealPlanError": "Der Speiseplan konnte nicht aktualisiert werden. Bitte versuchen Sie es später erneut.",
+
+  "voteError": "Die Bewertung konnte nicht übernommen werden. Bitte versuchen Sie es später erneut.",
+  "linkImageSuccess": "Das Bild wurde erfolgreich verlinkt.",
+  "linkImageError": "Das Bild konnte nicht verlinkt werden. Bitte versuchen Sie es später erneut.",
+  "reportImageSuccess": "Das Bild wurde erfolgreich gemeldet.",
+  "reportImageError": "Das Bild konnte nicht gemeldet werden. Bitte versuchen Sie es später erneut."
+}

@@ -12,7 +12,11 @@ class MensaCtaButton extends StatelessWidget {
   /// @param onLongPressed The function that is called when the button is long pressed.
   /// @param text The text that is displayed on the button.
   /// @returns A new MensaCtaButton.
-  const MensaCtaButton({super.key, required onPressed, onLongPressed, required text}): _onPressed = onPressed, _onLongPressed = onLongPressed, _text = text;
+  const MensaCtaButton(
+      {super.key, required onPressed, onLongPressed, required text})
+      : _onPressed = onPressed,
+        _onLongPressed = onLongPressed,
+        _text = text;
 
   /// Builds the widget.
   /// @param context The context in which the widget is built.
@@ -29,7 +33,8 @@ class MensaCtaButton extends StatelessWidget {
       highlightElevation: 0,
       onPressed: _onPressed,
       onLongPress: _onLongPressed,
-      child: Text(_text),
+      child: Text(_text,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
     ));
   }
 }

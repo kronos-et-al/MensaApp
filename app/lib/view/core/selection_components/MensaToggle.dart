@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 /// A toggle that is used in the Mensa app.
 class MensaToggle extends StatelessWidget {
-
   final void Function(bool)? _onChanged;
   final bool _value;
   final String _label;
@@ -13,25 +12,27 @@ class MensaToggle extends StatelessWidget {
   /// @param value The current value.
   /// @param label The label of the toggle.
   /// @returns A new MensaToggle.
-  const MensaToggle({super.key, required onChanged, required value, required label}): _onChanged = onChanged, _value = value, _label = label;
+  const MensaToggle(
+      {super.key, required onChanged, required value, required label})
+      : _onChanged = onChanged,
+        _value = value,
+        _label = label;
 
   /// Builds the widget.
   /// @param context The context in which the widget is built.
   /// @returns The widget.
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: const EdgeInsets.all(8), child: Row(
+    return Row(
       children: [
-        Switch(value: _value, onChanged: _onChanged),
-        const SizedBox(width: 8),
         GestureDetector(
-          onTap: () {
-            _onChanged!(!_value);
-          },
-          child: Text(_label, style: Theme.of(context).textTheme.labelLarge),
-        ),
+            onTap: () {
+              _onChanged!(!_value);
+            },
+            child: Text(_label, style: TextStyle(fontSize: 16))),
+        Spacer(),
+        Switch(value: _value, onChanged: _onChanged),
       ],
-    ));
+    );
   }
-
 }

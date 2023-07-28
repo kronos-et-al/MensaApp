@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'AllergenIcon.dart';
+import 'IAllergenIcon.dart';
 
 /// This widget is used to display the icon for Kamut
-class AllergenKamutIcon extends AllergenIcon {
-  const AllergenKamutIcon(
-      {super.key, super.width, super.height, super.color});
+class AllergenKamutIcon extends IAllergenIcon {
+  const AllergenKamutIcon({super.key, super.width, super.height, super.color});
 
   @override
   Widget build(BuildContext context) {
