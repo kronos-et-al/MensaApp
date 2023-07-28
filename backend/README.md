@@ -54,5 +54,6 @@ To make development easier, these can also be defined textually in a `.env` file
 
 
 ### Docker
-
-to build the docker container, run `docker build . -t kronos-et-al/mensa-app:0.1`.
+1. To build the docker container, run `docker build . -t ghcr.io/kronos-et-al/mensa-app:<verion>` where `<version>` is of format `x.y` or `pre_x.y` for pre-releases.
+2. To deploy to ghc login using `docker login ghcr.io -u <username> --password-stdin` and provide access token with necessary permission.
+3. Publish using `docker push ghcr.io/kronos-et-al/mensa-app:<version>`

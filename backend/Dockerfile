@@ -19,4 +19,4 @@ ENV SMTP_PASSWORD=
 ENV ADMIN_EMAIL=
 ENV FLICKR_API_KEY=
 
-CMD ["mensa-app-backend"]
+ENTRYPOINT ["mensa-app-backend"]

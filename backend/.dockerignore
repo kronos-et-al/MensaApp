@@ -1,6 +1,2 @@
-*
-
-!src
-!Cargo.toml
-!Cargo.lock
-!.sqlx
+target
+.env
