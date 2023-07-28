@@ -197,12 +197,6 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       return Future.value(Failure(ClosedCanteenException("canteen closed")));
     }
 
-    _mealPlans.forEach((element) {
-      element.meals.forEach((element) {
-        print(element.name);
-      });
-    });
-
     if (!_activeFilter) {
       return Future.value(Success(_mealPlans));
     }
