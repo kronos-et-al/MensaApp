@@ -100,7 +100,7 @@ class MensaApp extends StatelessWidget {
               ],
               child: Consumer<IPreferenceAccess>(
                 builder: (context, preferenceAccess, child) => MaterialApp(
-                    title: 'Mensa App',
+                    title: 'Mensa KA',
                     themeMode: (() {
                       switch (preferenceAccess.getColorScheme()) {
                         case MensaColorScheme.light:

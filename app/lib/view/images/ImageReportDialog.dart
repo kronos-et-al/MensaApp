@@ -30,55 +30,62 @@ class _ImageReportState extends State<ImageReportDialog> {
   @override
   Widget build(BuildContext context) {
     return MensaDialog(
-      title: FlutterI18n.translate(context, "image.reportImageTitle"),
-      content: Consumer<IImageAccess>(
-          builder: (context, imageAccess, child) => Column(
-                children: [
-                  Text(FlutterI18n.translate(
-                      context, "image.reportDescription")),
-                  Row(
-                    children: [
-                      Expanded(
-                          child: MensaDropdown(
-                        onChanged: (value) {
-                          if (value != null) {
-                            _reason = value;
-                          }
-                        },
-                        value: _reason,
-                        items: _getReportCategoryEntries(context),
-                      ))
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Spacer(),
-                      MensaButton(
-                          onPressed: () async {
-                            final temporalMessage = await imageAccess
-                                .reportImage(widget._image, _reason);
-                            if (!context.mounted) return;
-                            Navigator.pop(context);
-
-                            if (temporalMessage.isNotEmpty) {
-                              final snackBar = SnackBar(
-                                content: Text(FlutterI18n.translate(
-                                    context, temporalMessage)),
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.onError,
-                              );
-
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
+        title: FlutterI18n.translate(context, "image.reportImageTitle"),
+        content: Consumer<IImageAccess>(
+            builder: (context, imageAccess, child) => Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(FlutterI18n.translate(
+                        context, "image.reportDescription")),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: MensaDropdown(
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _reason = value;
+                              });
                             }
                           },
-                          text: FlutterI18n.translate(
-                              context, "image.reportButton")),
-                    ],
-                  )
-                ],
-              )),
-    );
+                          value: _reason,
+                          items: _getReportCategoryEntries(context),
+                        ))
+                      ],
+                    ),
+                  ],
+                ))),
+        actions: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Row(
+              children: [
+                const Spacer(),
+                MensaButton(
+                    onPressed: () async {
+                      var temporalMessage = await context
+                          .read<IImageAccess>()
+                          .reportImage(widget._image, _reason);
+                      if (!context.mounted) return;
+                      Navigator.pop(context);
+
+                      if (temporalMessage.isNotEmpty) {
+                        final snackBar = SnackBar(
+                          content: Text(
+                              FlutterI18n.translate(context, temporalMessage)),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.onError,
+                        );
+
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      }
+                    },
+                    text: FlutterI18n.translate(context, "image.reportButton")),
+              ],
+            )));
   }
 
   List<MensaDropdownEntry<ReportCategory>> _getReportCategoryEntries(

@@ -32,43 +32,48 @@ class _MealRatingDialogState extends State<MealRatingDialog> {
     return MensaDialog(
         title:
             "${meal.name} ${FlutterI18n.translate(context, "ratings.dialogTitle")}",
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            MensaRatingInput(
-                onChanged: (value) {
-                 setState(() {
-                    rating = value;
-                 });
-                },
-                value: rating!.toDouble()),
-          ],
-        ),
-        actions: Row(
-          children: [
-            const Spacer(),
-            MensaButton(
-                onPressed: () async {
-                  final temporalMessage =
-                      await context.read<IMealAccess>().updateMealRating(
-                            rating!,
-                            meal,
-                          );
-                  if (!context.mounted) return;
-                  Navigator.pop(context);
+        content: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                MensaRatingInput(
+                    onChanged: (value) {
+                      setState(() {
+                        rating = value;
+                      });
+                    },
+                    value: rating!.toDouble()),
+              ],
+            )),
+        actions: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Row(
+              children: [
+                const Spacer(),
+                MensaButton(
+                    onPressed: () async {
+                      final temporalMessage =
+                          await context.read<IMealAccess>().updateMealRating(
+                                rating!,
+                                meal,
+                              );
+                      if (!context.mounted) return;
+                      Navigator.pop(context);
 
-                  if (temporalMessage.isNotEmpty) {
-                    final snackBar = SnackBar(
-                      content:
-                          Text(FlutterI18n.translate(context, temporalMessage)),
-                      backgroundColor: Theme.of(context).colorScheme.onError,
-                    );
+                      if (temporalMessage.isNotEmpty) {
+                        final snackBar = SnackBar(
+                          content: Text(
+                              FlutterI18n.translate(context, temporalMessage)),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.onError,
+                        );
 
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  }
-                },
-                text: FlutterI18n.translate(context, "image.saveRating"))
-          ],
-        ));
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      }
+                    },
+                    text: FlutterI18n.translate(context, "ratings.saveRating"))
+              ],
+            )));
   }
 }
