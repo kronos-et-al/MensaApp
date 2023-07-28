@@ -33,7 +33,10 @@ class MealGridEntry extends StatelessWidget {
             child: GestureDetector(
                 onTap: () => {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => DetailsPage(meal: _meal, line: _line,)))
+                          builder: (context) => DetailsPage(
+                                meal: _meal,
+                                line: _line,
+                              )))
                     },
                 child: Container(
                   decoration: BoxDecoration(

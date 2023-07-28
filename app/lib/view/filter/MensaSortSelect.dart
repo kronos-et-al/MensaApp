@@ -6,6 +6,7 @@ import 'package:app/view/core/selection_components/MensaDropdownEntry.dart';
 import 'package:app/view/filter/MensaSortSelectEntry.dart';
 import 'package:flutter/material.dart';
 
+/// This widget is used to display a sort select.
 class MensaSortSelect<T> extends StatelessWidget {
   final List<MensaSortSelectEntry<T>> _entries;
   final T _selectedEntry;
@@ -13,6 +14,14 @@ class MensaSortSelect<T> extends StatelessWidget {
   final Function(T) _onEntrySelected;
   final Function(SortDirection) _onSortDirectionSelected;
 
+  /// Creates a new sort select.
+  /// @param key The key to identify this widget.
+  /// @param entries The entries to display.
+  /// @param selectedEntry The selected entry.
+  /// @param sortDirection The sort direction.
+  /// @param onEntrySelected The function to call when an entry is selected.
+  /// @param onSortDirectionSelected The function to call when the sort direction is selected.
+  /// @returns A new sort select.
   const MensaSortSelect(
       {super.key,
       required List<MensaSortSelectEntry<T>> entries,
@@ -30,15 +39,16 @@ class MensaSortSelect<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: MensaDropdown(
-            onChanged: (v) => _onEntrySelected(v),
-            value: _selectedEntry,
-            items: _entries
-                .map((e) => MensaDropdownEntry(
-                      value: e.value,
-                      label: e.label,
-                    ))
-                .toList())),
+        Expanded(
+            child: MensaDropdown(
+                onChanged: (v) => _onEntrySelected(v),
+                value: _selectedEntry,
+                items: _entries
+                    .map((e) => MensaDropdownEntry(
+                          value: e.value,
+                          label: e.label,
+                        ))
+                    .toList())),
         const SizedBox(
           width: 8,
         ),

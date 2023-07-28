@@ -26,7 +26,8 @@ class MensaFilterIconCheckboxGroup<T> extends StatelessWidget {
     double width = MediaQuery.of(context).size.width;
     return Wrap(
         runAlignment: WrapAlignment.center,
-        spacing: ((width - ((width % 80) * 80)) / (width % 80 - 1) + 1).floorToDouble(),
+        spacing: ((width - ((width % 80) * 80)) / (width % 80 - 1) + 1)
+            .floorToDouble(),
         runSpacing: 8,
         children: _items
             .map((e) => e.build(context, _selectedValues.contains(e.value), () {

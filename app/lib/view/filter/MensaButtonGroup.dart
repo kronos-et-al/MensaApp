@@ -31,7 +31,8 @@ class MensaButtonGroup<T> extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
               color: Theme.of(context).colorScheme.surface, width: 1)),
-      child: IntrinsicHeight(child: Row(
+      child: IntrinsicHeight(
+          child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: _entries
             .map((e) => e.build(context, e.value == _value, _onChanged))

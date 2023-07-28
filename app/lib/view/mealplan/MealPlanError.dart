@@ -5,7 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
 
+/// This widget is used to display the exception for no connection to the server.
 class MealPlanError extends StatelessWidget {
+  /// Creates a no connection widget.
+  /// @param key The key to identify this widget.
+  /// @return a widget that displays the exception for no connection to the server
   const MealPlanError({super.key});
 
   @override

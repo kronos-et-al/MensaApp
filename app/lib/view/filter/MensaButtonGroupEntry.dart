@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 /// This class represents a single entry in a MensaButtonGroup.
 class MensaButtonGroupEntry<T> {
   final String _title;
+
+  /// The value of the entry.
   final T value;
 
   /// Creates a new MensaButtonGroupEntry.

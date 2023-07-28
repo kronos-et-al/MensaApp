@@ -19,8 +19,7 @@ class MealGridLine extends StatelessWidget {
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
         child: Text(_mealPlan.line.name,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 16)),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
       ),
       LayoutBuilder(
           builder: (context, constraints) => SingleChildScrollView(

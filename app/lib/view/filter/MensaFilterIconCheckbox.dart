@@ -23,7 +23,7 @@ class MensaFilterIconCheckbox<T> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4.0),
         border: Border.all(
-          width: 2,
+            width: 2,
             color: active
                 ? Theme.of(context).colorScheme.primary
                 : Theme.of(context).colorScheme.surface),

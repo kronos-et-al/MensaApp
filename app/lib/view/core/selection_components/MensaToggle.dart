@@ -29,8 +29,7 @@ class MensaToggle extends StatelessWidget {
             onTap: () {
               _onChanged!(!_value);
             },
-            child: Text(_label,
-                style: TextStyle(fontSize: 16))),
+            child: Text(_label, style: TextStyle(fontSize: 16))),
         Spacer(),
         Switch(value: _value, onChanged: _onChanged),
       ],

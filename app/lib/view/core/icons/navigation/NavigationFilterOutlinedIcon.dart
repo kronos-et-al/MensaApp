@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// This widget is used to display the icon for Wheat
+/// This widget is used to display the icon for the filter
 class NavigationFilterOutlinedIcon extends StatelessWidget {
   final double? _size;
   final Color? _color;
 
-  const NavigationFilterOutlinedIcon({super.key, double size = 24, Color? color})
+  /// This widget is used to display the icon for the filter
+  /// @param key is the key of the widget
+  /// @param size is the size of the icon
+  /// @param color is the color of the icon
+  /// @returns a [NavigationFilterOutlinedIcon] widget
+  const NavigationFilterOutlinedIcon(
+      {super.key, double size = 24, Color? color})
       : _size = size,
         _color = color;
 

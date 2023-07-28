@@ -22,11 +22,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
 
+/// This widget is used to display the details of a meal.
 class DetailsPage extends StatefulWidget {
   final Meal _meal;
   final Line? _line;
 
-  DetailsPage({super.key, required Meal meal, Line? line})
+  /// Creates a new DetailsPage.
+  /// @param key The key to identify this widget.
+  /// @param meal The meal to display.
+  /// @param line The line of the meal.
+  /// @returns A new DetailsPage.
+  const DetailsPage({super.key, required Meal meal, Line? line})
       : _meal = meal,
         _line = line;
 

@@ -7,9 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
 
+/// This widget is used to display a dialog to rate a meal.
 class MealRatingDialog extends StatefulWidget {
   final Meal _meal;
 
+  /// Creates a new MealRatingDialog.
+  /// @param key The key to identify this widget.
+  /// @param meal The meal to rate.
   const MealRatingDialog({Key? key, required Meal meal})
       : _meal = meal,
         super(key: key);

@@ -24,7 +24,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/widgets/I18nText.dart';
 import 'package:provider/provider.dart';
 
+/// This class is the view for the meal plan.
 class MealPlanView extends StatelessWidget {
+  /// Creates a new meal plan view.
+  /// @param key The key to identify this widget.
+  /// @returns A new meal plan view.
   const MealPlanView({super.key});
 
   @override
@@ -56,7 +60,9 @@ class MealPlanView extends StatelessWidget {
                     Result<List<MealPlan>, MealPlanException> mealPlans =
                         snapshot.requireData[3]
                             as Result<List<MealPlan>, MealPlanException>;
-                    if (availableCanteens.indexWhere((element) => element.id == selectedCanteen.id) == -1) {
+                    if (availableCanteens.indexWhere(
+                            (element) => element.id == selectedCanteen.id) ==
+                        -1) {
                       mealAccess.changeCanteen(availableCanteens[0]);
                     }
                     return Scaffold(

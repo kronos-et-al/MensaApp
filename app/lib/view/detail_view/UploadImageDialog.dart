@@ -9,11 +9,15 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 
+/// This widget is used to display a dialog to upload an image.
 class UploadImageDialog extends StatelessWidget {
   final Meal _meal;
-
   final TextEditingController _textFieldController = TextEditingController();
 
+  /// Creates a new UploadImageDialog.
+  /// @param key The key to identify this widget.
+  /// @param meal The meal to upload an image for.
+  /// @returns A new UploadImageDialog.
   UploadImageDialog({Key? key, required Meal meal})
       : _meal = meal,
         super(key: key);

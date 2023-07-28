@@ -5,11 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:intl/intl.dart';
 
+/// This widget is used to select a date for the meal plan.
 class MealPlanDateSelect extends StatelessWidget {
   final DateTime _date;
   final Function(DateTime) _onDateChanged;
 
-  MealPlanDateSelect(
+  /// Creates a new meal plan date select.
+  /// @param key The key to identify this widget.
+  /// @param date The date to display.
+  /// @param onDateChanged The function to call when the date changes.
+  /// @returns A new meal plan date select.
+  const MealPlanDateSelect(
       {super.key,
       required DateTime date,
       required Function(DateTime) onDateChanged})
@@ -18,7 +24,8 @@ class MealPlanDateSelect extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DateFormat dateFormat = DateFormat('E dd.MM.yyyy', FlutterI18n.currentLocale(context)?.languageCode);
+    DateFormat dateFormat = DateFormat(
+        'E dd.MM.yyyy', FlutterI18n.currentLocale(context)?.languageCode);
     return Row(children: [
       MensaTapable(
         child: const Padding(
