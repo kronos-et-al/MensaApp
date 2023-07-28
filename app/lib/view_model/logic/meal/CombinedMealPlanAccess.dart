@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 
 import '../../repository/data_classes/meal/Side.dart';
 
+/// This class is the interface for the access to the meal data. The access can be done via the database or the server.
 class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   final ILocalStorage _preferences;
   final IServerAccess _api;
@@ -28,19 +29,23 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   bool _noDataYet = false;
   bool _activeFilter = true;
 
-
   late PriceCategory _priceCategory;
 
   // waits until _init() is finished initializing
   late Future _doneInitialization;
 
+  /// Stores the access to the api and database and loads the meal plan.
+  /// @param preferences The access to the local storage.
+  /// @param api The access to the api.
+  /// @param database The access to the database.
+  /// @return A new instance of the class.
   CombinedMealPlanAccess(this._preferences, this._api, this._database) {
     _doneInitialization = _init();
   }
 
   Future<void> _init() async {
-    _displayedDate = DateTime.timestamp();
-    _filter = await _preferences.getFilterPreferences() ?? FilterPreferences();
+    _displayedDate = DateTime.now();
+    _filter = _preferences.getFilterPreferences() ?? FilterPreferences();
     _priceCategory = _preferences.getPriceCategory() ?? PriceCategory.student;
 
     // get canteen from string
@@ -82,7 +87,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     // get meal plans form server
     List<MealPlan> mealPlans = switch (await _api.updateAll()) {
       Success(value: final mealplan) => mealplan,
-      Failure(exception: final exception) => _convertMealPlanExceptionToMealPlan(exception)
+      Failure(exception: final exception) =>
+        _convertMealPlanExceptionToMealPlan(exception)
     };
 
     // update all if connection to server is successful
@@ -92,6 +98,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     // filter meal plans
     await _filterMealPlans();
+    await _setNewMealPlan();
   }
 
   @override
@@ -190,6 +197,12 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       return Future.value(Failure(ClosedCanteenException("canteen closed")));
     }
 
+    _mealPlans.forEach((element) {
+      element.meals.forEach((element) {
+        print(element.name);
+      });
+    });
+
     if (!_activeFilter) {
       return Future.value(Success(_mealPlans));
     }
@@ -209,11 +222,16 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     final mealPlan = await _getMealPlanFromServer();
 
-    if (_mealPlans.isEmpty) {
+    if (mealPlan.isEmpty) {
       return "snackbar.refreshMealPlanError";
     }
 
+    await _database.updateAll(mealPlan);
+
     _mealPlans = mealPlan;
+
+    await _setNewMealPlan();
+
     await _filterMealPlans();
 
     notifyListeners();
@@ -321,6 +339,17 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     _activeFilter = false;
     notifyListeners();
+  }
+
+  @override
+  Future<void> toggleFilter() async {
+    await _doneInitialization;
+
+    if (_activeFilter) {
+      await deactivateFilter();
+    } else {
+      await activateFilter();
+    }
   }
 
   void _changeRatingOfMeal(Meal changedMeal, int rating) {

@@ -7,6 +7,7 @@ import 'package:app/view_model/repository/interface/ILocalStorage.dart';
 import 'package:flutter/foundation.dart';
 
 // todo muss vor Combined Meal Plan Access initialisiert werden
+/// This class accesses preferences that are stored locally.
 class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
   final ILocalStorage _access;
 
@@ -15,6 +16,9 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
   late PriceCategory _priceCategory;
   late MealPlanFormat _mealPlanFormat;
 
+  /// Stores the access to the local storage and loads the values that are stored therepreferencs.
+  /// @param access The access to the local storage.
+  /// @return A new instance of the class.
   PreferenceAccess(this._access) {
     _init();
   }

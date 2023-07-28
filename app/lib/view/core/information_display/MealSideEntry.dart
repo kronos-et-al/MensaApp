@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 /// Displays a Side Dish.
 class MealSideEntry extends StatelessWidget {
   final Side _side;
+
   // TODO use locale
   final NumberFormat _priceFormat =
       NumberFormat.currency(locale: 'de_DE', symbol: '€');

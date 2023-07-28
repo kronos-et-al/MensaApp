@@ -26,4 +26,3 @@ final class Failure<S, E extends Exception> extends Result<S, E> {
   /// The value of the failure.
   final E exception;
 }
-

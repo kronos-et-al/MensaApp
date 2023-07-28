@@ -18,11 +18,11 @@ class MensaSlider extends StatelessWidget {
   /// @returns A new MensaSlider.
   const MensaSlider(
       {super.key,
-      required onChanged,
-      required value,
-      min = 0.0,
-      max = 1.0,
-      divisions})
+      required Function(double)? onChanged,
+      required double value,
+      double min = 0.0,
+      double max = 1.0,
+      int? divisions})
       : _onChanged = onChanged,
         _value = value,
         _min = min,

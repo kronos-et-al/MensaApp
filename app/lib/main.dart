@@ -3,7 +3,6 @@ import 'package:app/model/api_server/config.dart';
 import 'package:app/model/database/SQLiteDatabaseAccess.dart';
 import 'package:app/model/local_storage/SharedPreferenceAccess.dart';
 import 'package:app/view/core/MainPage.dart';
-import 'package:app/view/mealplan/MealPlanView.dart';
 import 'package:app/view_model/logic/favorite/FavoriteMealAccess.dart';
 import 'package:app/view_model/logic/favorite/IFavoriteMealAccess.dart';
 import 'package:app/view_model/logic/image/IImageAccess.dart';
@@ -23,6 +22,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// The main function of the app.
 void main() {
   final FlutterI18nDelegate delegate = FlutterI18nDelegate(
     translationLoader: NamespaceFileTranslationLoader(namespaces: [
@@ -52,9 +52,14 @@ void main() {
   ));
 }
 
+/// The main app widget.
 class MensaApp extends StatelessWidget {
   final FlutterI18nDelegate _delegate;
 
+  /// Creates a new [MensaApp]
+  /// [delegate] is the [FlutterI18nDelegate] used for localization.
+  /// [key] is the key of the widget.
+  /// @returns a new [MensaApp]
   const MensaApp({super.key, required FlutterI18nDelegate delegate})
       : _delegate = delegate;
 
@@ -95,96 +100,60 @@ class MensaApp extends StatelessWidget {
               ],
               child: Consumer<IPreferenceAccess>(
                 builder: (context, preferenceAccess, child) => MaterialApp(
-                  title: 'Mensa App',
-                  themeMode: (() {
-                    switch (preferenceAccess.getColorScheme()) {
-                      case MensaColorScheme.light:
-                        return ThemeMode.light;
-                      case MensaColorScheme.dark:
-                        return ThemeMode.dark;
-                      case MensaColorScheme.system:
-                        return ThemeMode.system;
-                    }
-                  }()),
-                  localizationsDelegates: [
-                    _delegate,
-                    ...GlobalMaterialLocalizations.delegates,
-                    GlobalWidgetsLocalizations.delegate,
-                  ],
-                  supportedLocales: const [
-                    Locale('de'),
-                  ],
-                  theme: ThemeData(
-                    useMaterial3: true,
-                    brightness: Brightness.light,
-                    colorScheme: const ColorScheme(
-                        brightness: Brightness.light,
-                        primary: Color(0xFF7AAC2B),
-                        onPrimary: Color(0xFFFFFFFF),
-                        secondary: Color(0xFF7AAC2B),
-                        onSecondary: Color(0xFFFFFFFF),
-                        error: Color(0xFFD32F2F),
-                        onError: Color(0xFFFFFFFF),
-                        background: Color(0xFFFFFFFF),
-                        onBackground: Color(0xFF000000),
-                        surface: Color(0xFFF6F6F6),
-                        onSurface: Color(0xFF000000)),
-                  ),
-                  darkTheme: ThemeData(
-                    useMaterial3: true,
-                    brightness: Brightness.dark,
-                    colorScheme: const ColorScheme(
-                        brightness: Brightness.dark,
-                        primary: Color(0xFF7AAC2B),
-                        onPrimary: Color(0xFFFFFFFF),
-                        secondary: Color(0xFF7AAC2B),
-                        onSecondary: Color(0xFFFFFFFF),
-                        error: Color(0xFFD32F2F),
-                        onError: Color(0xFFFFFFFF),
-                        background: Color(0xFF1E1E1E),
-                        onBackground: Color(0xFFFFFFFF),
-                        surface: Color(0xFF333333),
-                        surfaceTint: Color(0xFF202020),
-                        onSurface: Color(0xFFFFFFFF)),
-                  ),
-                  home: MainPage()
-                ),
+                    title: 'Mensa KA',
+                    themeMode: (() {
+                      switch (preferenceAccess.getColorScheme()) {
+                        case MensaColorScheme.light:
+                          return ThemeMode.light;
+                        case MensaColorScheme.dark:
+                          return ThemeMode.dark;
+                        case MensaColorScheme.system:
+                          return ThemeMode.system;
+                      }
+                    }()),
+                    localizationsDelegates: [
+                      _delegate,
+                      ...GlobalMaterialLocalizations.delegates,
+                      GlobalWidgetsLocalizations.delegate,
+                    ],
+                    supportedLocales: const [
+                      Locale('de'),
+                    ],
+                    theme: ThemeData(
+                      useMaterial3: true,
+                      brightness: Brightness.light,
+                      colorScheme: const ColorScheme(
+                          brightness: Brightness.light,
+                          primary: Color(0xFF7AAC2B),
+                          onPrimary: Color(0xFFFFFFFF),
+                          secondary: Color(0xFF7AAC2B),
+                          onSecondary: Color(0xFFFFFFFF),
+                          error: Color(0xFFD32F2F),
+                          onError: Color(0xFFFFFFFF),
+                          background: Color(0xFFFFFFFF),
+                          onBackground: Color(0xFF000000),
+                          surface: Color(0xFFF6F6F6),
+                          onSurface: Color(0xFF000000)),
+                    ),
+                    darkTheme: ThemeData(
+                      useMaterial3: true,
+                      brightness: Brightness.dark,
+                      colorScheme: const ColorScheme(
+                          brightness: Brightness.dark,
+                          primary: Color(0xFF7AAC2B),
+                          onPrimary: Color(0xFFFFFFFF),
+                          secondary: Color(0xFF7AAC2B),
+                          onSecondary: Color(0xFFFFFFFF),
+                          error: Color(0xFFD32F2F),
+                          onError: Color(0xFFFFFFFF),
+                          background: Color(0xFF1E1E1E),
+                          onBackground: Color(0xFFFFFFFF),
+                          surface: Color(0xFF333333),
+                          surfaceTint: Color(0xFF202020),
+                          onSurface: Color(0xFFFFFFFF)),
+                    ),
+                    home: MainPage()),
               ));
         });
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Container(
-        color: Theme.of(context).colorScheme.background,
-        child: SafeArea(
-            child: Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          body: MealPlanView(),
-        )));
   }
 }

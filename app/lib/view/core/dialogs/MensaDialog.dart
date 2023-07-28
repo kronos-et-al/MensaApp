@@ -1,32 +1,40 @@
 import 'package:flutter/material.dart';
 
-class MensaDialog {
-  static void show(
-      {required BuildContext context,
-      required String title,
-      Widget? content,
-      Widget? actions,
-      bool? barrierDismissible}) {
-    showDialog(
-      context: context,
-      useSafeArea: true,
-      barrierDismissible: barrierDismissible ?? true,
-      builder: (BuildContext context) {
-        return Dialog(
-            backgroundColor: Theme.of(context).colorScheme.background,
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Text(title,
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold))),
-                  if (content != null) content,
-                  if (actions != null) actions
-                ]));
-      },
-    );
+/// This widget is used to display a dialog.
+class MensaDialog extends StatelessWidget {
+  final String _title;
+  final Widget? _content;
+  final Widget? _actions;
+
+  /// Creates a dialog.
+  /// @param key The key to use for this widget.
+  /// @param title The title to display.
+  /// @param content The content to display.
+  /// @param actions The actions to display.
+  /// @returns a widget that displays a dialog
+  const MensaDialog(
+      {super.key, required String title, Widget? content, Widget? actions})
+      : _title = title,
+        _content = content,
+        _actions = actions;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4.0)),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                  child: Text(_title,
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold))),
+              _content ?? Container(),
+              _actions ?? Container(),
+            ]));
   }
 }

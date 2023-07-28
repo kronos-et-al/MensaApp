@@ -1,6 +1,5 @@
 /// This class represents an image of a meal.
 class ImageData {
-
   final String _id;
   final String _url;
   final double _imageRank;

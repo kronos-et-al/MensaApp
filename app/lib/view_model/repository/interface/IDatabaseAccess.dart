@@ -17,7 +17,8 @@ abstract class IDatabaseAccess {
   /// @param date The date of the mealplan
   /// @param canteen The canteen of the mealplan
   /// @return The mealplan of the committed date of the committed canteen or an error
-  Future<Result<List<MealPlan>, MealPlanException>> getMealPlan(DateTime date, Canteen canteen);
+  Future<Result<List<MealPlan>, MealPlanException>> getMealPlan(
+      DateTime date, Canteen canteen);
 
   /// This method returns a favorite meal.
   /// @param id The id of the meal

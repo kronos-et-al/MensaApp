@@ -10,7 +10,11 @@ class AllergenPeanutsIcon extends IAllergenIcon {
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset('assets/icons/allergens/er.svg',
-        width: width, height: height, colorFilter: ColorFilter.mode(color, BlendMode.srcIn),);
+    return SvgPicture.asset(
+      'assets/icons/allergens/er.svg',
+      width: width,
+      height: height,
+      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+    );
   }
 }

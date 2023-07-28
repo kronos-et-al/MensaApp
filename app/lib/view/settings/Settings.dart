@@ -13,7 +13,11 @@ import 'package:provider/provider.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
+/// This class is the settings page of the mensa app.
 class Settings extends StatelessWidget {
+  /// Creates a new settings page.
+  /// @param key The key to identify this widget.
+  /// @returns A new settings page.
   Settings({super.key}) {
     WidgetsFlutterBinding.ensureInitialized();
   }
@@ -21,124 +25,145 @@ class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<IPreferenceAccess>(
-        builder: (context, storage, child) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            child: Scaffold(
+        builder: (context, storage, child) => Scaffold(
               appBar: MensaAppBar(
-                appBarHeight: kToolbarHeight * 1.25,
-                child: Text(
+                appBarHeight: kToolbarHeight,
+                child: Center(
+                    child: Text(
                   FlutterI18n.translate(context, "common.settings"),
                   style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold),
-                ),
+                      fontSize: 20, fontWeight: FontWeight.bold),
+                )),
               ),
               body: SingleChildScrollView(
-                child: Column(children: [
-                  SettingsDropdownEntry<MensaColorScheme>(
-                      onChanged: (value) {
-                        if (value != null &&
-                            value != storage.getColorScheme()) {
-                          storage.setColorScheme(value);
-                        }
-                      },
-                      value: storage.getColorScheme(),
-                      items: _getColorSchemeEntries(context),
-                      heading: "settings.colorScheme"),
-                  SettingsDropdownEntry<PriceCategory>(
-                      onChanged: (value) {
-                        if (value != null &&
-                            value != storage.getPriceCategory()) {
-                          storage.setPriceCategory(value);
-                        }
-                      },
-                      value: storage.getPriceCategory(),
-                      items: _getPriceCategoryEntries(context),
-                      heading: "settings.priceCategory"),
-                  SettingsSection(heading: "settings.about", children: [
-                    Row(
-                      children: [
+                child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Column(children: [
+                      SettingsDropdownEntry<MensaColorScheme>(
+                          onChanged: (value) {
+                            if (value != null &&
+                                value != storage.getColorScheme()) {
+                              storage.setColorScheme(value);
+                            }
+                          },
+                          value: storage.getColorScheme(),
+                          items: _getColorSchemeEntries(context),
+                          heading: "settings.colorScheme"),
+                      const SizedBox(height: 16),
+                      SettingsDropdownEntry<PriceCategory>(
+                          onChanged: (value) {
+                            if (value != null &&
+                                value != storage.getPriceCategory()) {
+                              storage.setPriceCategory(value);
+                            }
+                          },
+                          value: storage.getPriceCategory(),
+                          items: _getPriceCategoryEntries(context),
+                          heading: "settings.priceCategory"),
+                      const SizedBox(height: 16),
+                      SettingsSection(heading: "settings.about", children: [
+                        Row(
+                          children: [
+                            Text(FlutterI18n.translate(
+                                context, "settings.version")),
+                            const Spacer(),
+                            FutureBuilder(
+                                future:
+                                    Future.wait([PackageInfo.fromPlatform()]),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData || snapshot.hasError) {
+                                    return const Text("42.3.141");
+                                  }
+                                  final PackageInfo info =
+                                      snapshot.requireData[0];
+                                  return Text(info.version);
+                                })
+                          ],
+                        ),
+                        const SizedBox(height: 8),
                         Text(
-                            FlutterI18n.translate(context, "settings.version")),
-                        const Spacer(),
-                        FutureBuilder(
-                            future: Future.wait([PackageInfo.fromPlatform()]),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData || snapshot.hasError) {
-                                return const Text("42.3.141");
-                              }
-                              final PackageInfo info = snapshot.requireData[0];
-                              return Text(info.version);
-                            })
-                      ],
-                    ),
-                    Text(FlutterI18n.translate(context, "settings.licence")),
-                    Row(
-                      children: [
-                        Expanded(child: MensaLink(
-                            onPressed: () => _launchUrl(Uri.parse(
-                                'https://github.com/kronos-et-al/MensaApp')),
-                            text: FlutterI18n.translate(
-                                context, "settings.gitHubLink")),)
-                      ],
-                    )
-                  ]),
-                  SettingsSection(
-                      heading: "settings.legalInformation",
-                      children: [
+                            FlutterI18n.translate(context, "settings.licence")),
+                        const SizedBox(height: 8),
                         Row(
                           children: [
                             Expanded(
                               child: MensaLink(
                                   onPressed: () => _launchUrl(Uri.parse(
-                                      'https://docs.flutter.io/flutter/services/UrlLauncher-class.html')),
+                                      'https://github.com/kronos-et-al/MensaApp')),
                                   text: FlutterI18n.translate(
-                                      context, "settings.privacyPolicy")),
+                                      context, "settings.gitHubLink")),
                             )
                           ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(child: MensaLink(
-                                onPressed: () => _launchUrl(Uri.parse(
-                                    'https://docs.flutter.io/flutter/services/UrlLauncher-class.html')),
-                                text: FlutterI18n.translate(
-                                    context, "settings.contactDetails")),)
-                          ],
                         )
-                      ])
-                ]),
+                      ]),
+                      const SizedBox(height: 16),
+                      SettingsSection(
+                          heading: "settings.legalInformation",
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: MensaLink(
+                                      onPressed: () => _launchUrl(Uri.parse(
+                                          'https://docs.flutter.io/flutter/services/UrlLauncher-class.html')),
+                                      text: FlutterI18n.translate(
+                                          context, "settings.privacyPolicy")),
+                                )
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: MensaLink(
+                                      onPressed: () => _launchUrl(Uri.parse(
+                                          'https://docs.flutter.io/flutter/services/UrlLauncher-class.html')),
+                                      text: FlutterI18n.translate(
+                                          context, "settings.contactDetails")),
+                                )
+                              ],
+                            )
+                          ])
+                    ])),
               ),
-            )));
+            ));
   }
 
-  // todo add padding
-
+  /// Launches the given url.
+  /// @param url The url to launch.
   Future<void> _launchUrl(Uri url) async {
-    if (!await launchUrl(url)) {
+    // todo: throw Exception is not that good
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch $url');
     }
   }
 
-  List<MensaDropdownEntry<MensaColorScheme>> _getColorSchemeEntries(BuildContext context) {
+  List<MensaDropdownEntry<MensaColorScheme>> _getColorSchemeEntries(
+      BuildContext context) {
     List<MensaDropdownEntry<MensaColorScheme>> entries = [];
 
     for (final value in MensaColorScheme.values) {
-      entries.add(
-          MensaDropdownEntry(value: value, label: FlutterI18n.translate(context, "mensaColorScheme.${value.name}")));
+      entries.add(MensaDropdownEntry(
+          value: value,
+          label: FlutterI18n.translate(
+              context, "mensaColorScheme.${value.name}")));
     }
 
     return entries;
   }
 
-  List<MensaDropdownEntry<PriceCategory>> _getPriceCategoryEntries(BuildContext context) {
+  List<MensaDropdownEntry<PriceCategory>> _getPriceCategoryEntries(
+      BuildContext context) {
     List<MensaDropdownEntry<PriceCategory>> entries = [];
 
     for (final value in PriceCategory.values) {
-      entries
-          .add(MensaDropdownEntry(value: value, label: FlutterI18n.translate(context, "priceCategory.${value.name}")));
+      entries.add(MensaDropdownEntry(
+          value: value,
+          label:
+              FlutterI18n.translate(context, "priceCategory.${value.name}")));
     }
 
     return entries;
   }
 }
-

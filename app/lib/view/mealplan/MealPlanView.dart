@@ -5,6 +5,7 @@ import 'package:app/view/core/icons/navigation/NavigationGridOutlinedIcon.dart';
 import 'package:app/view/core/icons/navigation/NavigationListOutlinedIcon.dart';
 import 'package:app/view/core/meal_view_format/MealGrid.dart';
 import 'package:app/view/core/meal_view_format/MealList.dart';
+import 'package:app/view/filter/FilterDialog.dart';
 import 'package:app/view/mealplan/MealPlanClosed.dart';
 import 'package:app/view/mealplan/MealPlanDateSelect.dart';
 import 'package:app/view/mealplan/MealPlanError.dart';
@@ -23,7 +24,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/widgets/I18nText.dart';
 import 'package:provider/provider.dart';
 
+/// This class is the view for the meal plan.
 class MealPlanView extends StatelessWidget {
+  /// Creates a new meal plan view.
+  /// @param key The key to identify this widget.
+  /// @returns A new meal plan view.
+  const MealPlanView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<IPreferenceAccess>(
@@ -37,14 +44,14 @@ class MealPlanView extends StatelessWidget {
                     mealAccess.getMealPlan(),
                   ], eagerError: true),
                   builder: (context, snapshot) {
-                    print(snapshot.data.toString());
                     if (!snapshot.hasData) {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
                     }
                     if (snapshot.hasError) return const MealPlanError();
-                    MealPlanFormat mealPlanFormat = preferenceAccess.getMealPlanFormat();
+                    MealPlanFormat mealPlanFormat =
+                        preferenceAccess.getMealPlanFormat();
                     Canteen selectedCanteen =
                         snapshot.requireData[0] as Canteen;
                     List<Canteen> availableCanteens =
@@ -53,9 +60,14 @@ class MealPlanView extends StatelessWidget {
                     Result<List<MealPlan>, MealPlanException> mealPlans =
                         snapshot.requireData[3]
                             as Result<List<MealPlan>, MealPlanException>;
+                    if (availableCanteens.indexWhere(
+                            (element) => element.id == selectedCanteen.id) ==
+                        -1) {
+                      mealAccess.changeCanteen(availableCanteens[0]);
+                    }
                     return Scaffold(
                         appBar: MensaAppBar(
-                          appBarHeight: kToolbarHeight * 1.25,
+                          appBarHeight: kToolbarHeight,
                           bottom: MealPlanToolbar(
                               child: Padding(
                                   padding:
@@ -88,7 +100,16 @@ class MealPlanView extends StatelessWidget {
                                               padding: EdgeInsets.all(8),
                                               child:
                                                   NavigationFilterOutlinedIcon()),
-                                          onTap: () => {})
+                                          onLongPress: () => {
+                                                mealAccess.toggleFilter(),
+                                              },
+                                          onTap: () => {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      FilterDialog(),
+                                                )
+                                              })
                                     ],
                                   ))),
                           child: Padding(
@@ -121,55 +142,20 @@ class MealPlanView extends StatelessWidget {
                                 exception:
                                 if (exception.exception
                                     is NoConnectionException) {
-                                  return SingleChildScrollView(
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    child: SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: const MealPlanError()),
-                                  );
+                                  return const MealPlanError();
                                 }
                                 if (exception.exception is NoDataException) {
-                                  return SingleChildScrollView(
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    child: SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: const MealPlanNoData()),
-                                  );
+                                  return const MealPlanNoData();
                                 }
                                 if (exception.exception
                                     is ClosedCanteenException) {
-                                  return SingleChildScrollView(
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    child: SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: const MealPlanClosed()),
-                                  );
+                                  return const MealPlanClosed();
                                 }
                                 if (exception.exception
                                     is FilteredMealException) {
-                                  return SingleChildScrollView(
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    child: SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: const MealPlanFilter()),
-                                  );
+                                  return const MealPlanFilter();
                                 }
-                                return SingleChildScrollView(
-                                  physics:
-                                      const AlwaysScrollableScrollPhysics(),
-                                  child: SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height,
-                                      child: const MealPlanError()),
-                                );
+                                return const MealPlanError();
                             }
                           }()),
                         ));

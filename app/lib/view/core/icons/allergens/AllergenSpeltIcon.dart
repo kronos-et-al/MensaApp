@@ -3,8 +3,7 @@ import 'IAllergenIcon.dart';
 
 /// This widget is used to display the icon for Spelt
 class AllergenSpeltIcon extends IAllergenIcon {
-  const AllergenSpeltIcon(
-      {super.key, super.width, super.height, super.color});
+  const AllergenSpeltIcon({super.key, super.width, super.height, super.color});
 
   @override
   Widget build(BuildContext context) {

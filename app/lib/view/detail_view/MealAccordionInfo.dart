@@ -1,6 +1,7 @@
 import 'package:app/view_model/repository/data_classes/meal/Additive.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 
 /// This class is used to display the allergens and additives of a meal.
 class MealAccordionInfo extends StatelessWidget {
@@ -27,21 +28,23 @@ class MealAccordionInfo extends StatelessWidget {
         SizedBox(height: 8),
         const Text(
           "Allergene:",
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         ..._allergens.map((e) => Row(
               children: [
                 const Text("• "),
-                Expanded(child: Text(e.name)),
+                Expanded(child: I18nText("allergen.${e.name}")),
               ],
             )),
         SizedBox(height: 8),
         const Text(
           "Zusatzstoffe:",
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         ..._additives.map((e) => Row(
               children: [
                 const Text("• "),
-                Expanded(child: Text(e.name)),
+                Expanded(child: I18nText("additive.${e.name}")),
               ],
             )),
       ],

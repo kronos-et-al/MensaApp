@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 
+/// A custom AppBar that is used in the Mensa app.
 class MensaAppBar extends StatelessWidget implements PreferredSizeWidget {
   final PreferredSizeWidget? _bottom;
   final Widget _child;
   final double _appBarHeight;
 
+  /// Creates a new MensaAppBar.
+  /// @param key The key to identify this widget.
+  /// @param bottom The bottom widget.
+  /// @param appBarHeight The height of the AppBar.
+  /// @param child The child widget.
+  /// @returns A new MensaAppBar.
   MensaAppBar(
       {super.key,
       PreferredSizeWidget? bottom,
@@ -32,8 +39,7 @@ class MensaAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 class _PreferredAppBarSize extends Size {
   _PreferredAppBarSize(this.appBarHeight, this.bottomHeight)
-      : super.fromHeight(
-            appBarHeight + (bottomHeight ?? 0));
+      : super.fromHeight(appBarHeight + (bottomHeight ?? 0));
 
   final double appBarHeight;
   final double? bottomHeight;

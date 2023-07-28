@@ -8,12 +8,15 @@ import 'package:intl/intl.dart';
 class RatingsOverview extends StatelessWidget {
   final Meal _meal;
   final NumberFormat _numberFormat = NumberFormat("#0.0#", "de_DE");
+  final Color? _backgroundColor;
 
   /// Creates a new RatingsOverview.
   /// @param key The key to identify this widget.
   /// @param meal The meal to display the ratings for.
   /// @return A new RatingsOverview.
-  RatingsOverview({super.key, required Meal meal}) : _meal = meal;
+  RatingsOverview({super.key, required Meal meal, Color? backgroundColor})
+      : _meal = meal,
+        _backgroundColor = backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +25,14 @@ class RatingsOverview extends StatelessWidget {
           textAlign: TextAlign.left,
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurface,
-            fontSize: 18,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           )),
       const SizedBox(height: 8),
       Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+          color: _backgroundColor ?? Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(4),
         ),
         child: Column(

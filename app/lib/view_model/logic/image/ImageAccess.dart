@@ -5,10 +5,13 @@ import 'package:app/view_model/repository/data_classes/settings/ReportCategory.d
 import 'package:app/view_model/repository/interface/IServerAccess.dart';
 import 'package:flutter/material.dart';
 
-// todo string for error and success
+/// This class is the interface for the access to the image data. The access can be done via server.
 class ImageAccess extends ChangeNotifier implements IImageAccess {
   final IServerAccess _api;
 
+  /// Stores the access to the server.
+  /// @param api The access to the server.
+  /// @return A new instance of the class.
   ImageAccess(this._api);
 
   @override
@@ -63,7 +66,8 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
   }
 
   @override
-  Future<String> reportImage(ImageData image, ReportCategory reportReason) async {
+  Future<String> reportImage(
+      ImageData image, ReportCategory reportReason) async {
     final result = await _api.reportImage(image, reportReason);
 
     if (!result) {

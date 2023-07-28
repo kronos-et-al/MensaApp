@@ -11,7 +11,14 @@ abstract class IAllergenIcon extends StatelessWidget {
   /// @param width The width of the icon.
   /// @param height The height of the icon.
   /// @param color The color of the icon.
-  const IAllergenIcon({super.key, double width = 24, double height = 24, Color color = Colors.black}): _width = width, _height = height, _color = color;
+  const IAllergenIcon(
+      {super.key,
+      double width = 24,
+      double height = 24,
+      Color color = Colors.black})
+      : _width = width,
+        _height = height,
+        _color = color;
 
   /// Returns the color of the icon.
   Color get color => _color;

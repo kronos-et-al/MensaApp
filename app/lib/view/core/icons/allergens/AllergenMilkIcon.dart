@@ -5,12 +5,15 @@ import 'IAllergenIcon.dart';
 
 /// This widget is used to display the icon for Milk
 class AllergenMilkIcon extends IAllergenIcon {
-  const AllergenMilkIcon(
-      {super.key, super.width, super.height, super.color});
+  const AllergenMilkIcon({super.key, super.width, super.height, super.color});
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset('assets/icons/allergens/ml.svg',
-        width: width, height: height, colorFilter: ColorFilter.mode(color, BlendMode.srcIn),);
+    return SvgPicture.asset(
+      'assets/icons/allergens/ml.svg',
+      width: width,
+      height: height,
+      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+    );
   }
 }

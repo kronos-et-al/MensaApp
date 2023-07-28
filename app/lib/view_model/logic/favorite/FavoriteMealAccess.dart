@@ -1,9 +1,9 @@
-
 import 'package:app/view_model/logic/favorite/IFavoriteMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/interface/IDatabaseAccess.dart';
 import 'package:flutter/material.dart';
 
+/// This class is the interface for the access to the favorite meals data that are stored in the database.
 class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
   final IDatabaseAccess _database;
 
@@ -12,6 +12,9 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
   // waits until _init() is finished initializing
   late Future _doneInitialization;
 
+  /// Stores the access to the database and loads the values that are stored there.
+  /// @param database The access to the database.
+  /// @return A new instance of the class.
   FavoriteMealAccess(this._database) {
     _doneInitialization = _init();
   }
@@ -43,7 +46,8 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
   @override
   Future<bool> isFavoriteMeal(Meal meal) async {
     await _doneInitialization;
-    return Future.value(_favorites.map((favorite) => favorite.id).contains(meal.id));
+    return Future.value(
+        _favorites.map((favorite) => favorite.id).contains(meal.id));
   }
 
   @override
@@ -59,5 +63,4 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
     meal.deleteFavorite();
     notifyListeners();
   }
-
 }

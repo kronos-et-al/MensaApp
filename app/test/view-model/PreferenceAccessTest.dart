@@ -23,20 +23,20 @@ void main () {
   });
 
   group("initialization", () {
-    test("client identifier", () async {
-      expect(await preferences.getClientIdentifier(), "");
+    test("client identifier", () {
+      expect(preferences.getClientIdentifier(), "");
     });
 
-    test("color scheme", () async {
+    test("color scheme", () {
       expect(preferences.getColorScheme(), MensaColorScheme.system);
     });
 
-    test("meal plan format", () async {
-      expect(await preferences.getMealPlanFormat(), MealPlanFormat.grid);
+    test("meal plan format", () {
+      expect(preferences.getMealPlanFormat(), MealPlanFormat.grid);
     });
 
-    test("price category", () async {
-      expect(await preferences.getPriceCategory(), PriceCategory.student);
+    test("price category", () {
+      expect(preferences.getPriceCategory(), PriceCategory.student);
     });
   });
 
@@ -47,7 +47,7 @@ void main () {
 
       await preferences.setClientIdentifier(string);
       verify(() => localStorage.setClientIdentifier(string)).called(1);
-      expect(await preferences.getClientIdentifier(), string);
+      expect(preferences.getClientIdentifier(), string);
     });
 
     test("set Color Scheme", () async {
@@ -65,7 +65,7 @@ void main () {
 
       await preferences.setMealPlanFormat(format);
       verify(() => localStorage.setMealPlanFormat(format)).called(1);
-      expect(await preferences.getMealPlanFormat(), format);
+      expect(preferences.getMealPlanFormat(), format);
     });
 
     test("set Price Category", () async {
@@ -74,7 +74,7 @@ void main () {
 
       await preferences.setPriceCategory(price);
       verify(() => localStorage.setPriceCategory(price)).called(1);
-      expect(await preferences.getPriceCategory(), price);
+      expect(preferences.getPriceCategory(), price);
     });
   });
 
@@ -86,20 +86,20 @@ void main () {
 
     preferencesPredefined = PreferenceAccess(localStorage);
 
-    test("client identifier", () async {
-      expect(await preferencesPredefined.getClientIdentifier(), "42");
+    test("client identifier", () {
+      expect(preferencesPredefined.getClientIdentifier(), "42");
     });
 
-    test("color scheme", () async {
+    test("color scheme", () {
       expect(preferencesPredefined.getColorScheme(), MensaColorScheme.light);
     });
 
-    test("meal plan format", () async {
-      expect(await preferencesPredefined.getMealPlanFormat(), MealPlanFormat.list);
+    test("meal plan format", () {
+      expect(preferencesPredefined.getMealPlanFormat(), MealPlanFormat.list);
     });
 
-    test("price category", () async {
-      expect(await preferencesPredefined.getPriceCategory(), PriceCategory.employee);
+    test("price category", () {
+      expect(preferencesPredefined.getPriceCategory(), PriceCategory.employee);
     });
   });
 

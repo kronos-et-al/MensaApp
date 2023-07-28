@@ -31,15 +31,18 @@ class MensaDropdown<T> extends StatelessWidget {
   /// @returns The widget.
   @override
   Widget build(BuildContext context) {
-    return Container( // Container is used to give the dropdown a background color.
+    return Container(
+        // Container is used to give the dropdown a background color.
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4.0),
           color: _backgroundColor ?? Theme.of(context).colorScheme.surface,
         ),
         child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: DropdownButtonHideUnderline( // DropdownButtonHideUnderline is used to hide the underline of the dropdown.
+            child: DropdownButtonHideUnderline(
+                // DropdownButtonHideUnderline is used to hide the underline of the dropdown.
                 child: DropdownButton<T>(
+              dropdownColor: Theme.of(context).colorScheme.surface,
               elevation: 0,
               borderRadius: BorderRadius.circular(4.0),
               value: _value,

@@ -15,7 +15,7 @@
   "ml": "Milch / Laktose",
   "pa": "Paranüsse",
   "pe": "Pekannüsse",
-  "pl": "Pistazie",
+  "pi": "Pistazie",
   "qu": "Queenslandnüsse / Macadamianüsse",
   "ro": "Roggen und Gluten aus Roggen",
   "sa": "Sesam",
@@ -26,6 +26,6 @@
   "wa": "Walnüsse",
   "we": "Weizen und Gluten aus Weizen",
   "wt": "Weichtiere",
-  "la": "mit tierischem Lab",
-  "gl": "mit Gelatine"
+  "la": "tierisches Lab",
+  "gl": "Gelatine"
 }

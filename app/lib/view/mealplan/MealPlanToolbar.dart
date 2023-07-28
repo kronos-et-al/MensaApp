@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 
+/// This class represents the toolbar of the meal plan.
 class MealPlanToolbar extends StatelessWidget implements PreferredSizeWidget {
   final Widget _child;
   final double _toolBarHeight;
 
-  MealPlanToolbar({super.key, double toolBarHeight = kToolbarHeight, required Widget child})
+  /// Creates a new meal plan toolbar.
+  /// @param key The key to identify this widget.
+  /// @param toolBarHeight The height of the toolbar.
+  /// @param child The child of the toolbar.
+  /// @returns A new meal plan toolbar.
+  MealPlanToolbar(
+      {super.key, double toolBarHeight = kToolbarHeight, required Widget child})
       : _toolBarHeight = toolBarHeight,
         preferredSize = _PreferredAppBarSize(toolBarHeight),
         _child = child;
@@ -23,8 +30,7 @@ class MealPlanToolbar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class _PreferredAppBarSize extends Size {
-  _PreferredAppBarSize(this.appBarHeight)
-      : super.fromHeight(appBarHeight);
+  _PreferredAppBarSize(this.appBarHeight) : super.fromHeight(appBarHeight);
 
   final double appBarHeight;
 }
