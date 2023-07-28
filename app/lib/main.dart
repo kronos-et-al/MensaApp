@@ -23,6 +23,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// The main function of the app.
 void main() {
   final FlutterI18nDelegate delegate = FlutterI18nDelegate(
     translationLoader: NamespaceFileTranslationLoader(namespaces: [
@@ -52,9 +53,14 @@ void main() {
   ));
 }
 
+/// The main app widget.
 class MensaApp extends StatelessWidget {
   final FlutterI18nDelegate _delegate;
 
+  /// Creates a new [MensaApp]
+  /// [delegate] is the [FlutterI18nDelegate] used for localization.
+  /// [key] is the key of the widget.
+  /// @returns a new [MensaApp]
   const MensaApp({super.key, required FlutterI18nDelegate delegate})
       : _delegate = delegate;
 
@@ -95,60 +101,59 @@ class MensaApp extends StatelessWidget {
               ],
               child: Consumer<IPreferenceAccess>(
                 builder: (context, preferenceAccess, child) => MaterialApp(
-                  title: 'Mensa App',
-                  themeMode: (() {
-                    switch (preferenceAccess.getColorScheme()) {
-                      case MensaColorScheme.light:
-                        return ThemeMode.light;
-                      case MensaColorScheme.dark:
-                        return ThemeMode.dark;
-                      case MensaColorScheme.system:
-                        return ThemeMode.system;
-                    }
-                  }()),
-                  localizationsDelegates: [
-                    _delegate,
-                    ...GlobalMaterialLocalizations.delegates,
-                    GlobalWidgetsLocalizations.delegate,
-                  ],
-                  supportedLocales: const [
-                    Locale('de'),
-                  ],
-                  theme: ThemeData(
-                    useMaterial3: true,
-                    brightness: Brightness.light,
-                    colorScheme: const ColorScheme(
-                        brightness: Brightness.light,
-                        primary: Color(0xFF7AAC2B),
-                        onPrimary: Color(0xFFFFFFFF),
-                        secondary: Color(0xFF7AAC2B),
-                        onSecondary: Color(0xFFFFFFFF),
-                        error: Color(0xFFD32F2F),
-                        onError: Color(0xFFFFFFFF),
-                        background: Color(0xFFFFFFFF),
-                        onBackground: Color(0xFF000000),
-                        surface: Color(0xFFF6F6F6),
-                        onSurface: Color(0xFF000000)),
-                  ),
-                  darkTheme: ThemeData(
-                    useMaterial3: true,
-                    brightness: Brightness.dark,
-                    colorScheme: const ColorScheme(
-                        brightness: Brightness.dark,
-                        primary: Color(0xFF7AAC2B),
-                        onPrimary: Color(0xFFFFFFFF),
-                        secondary: Color(0xFF7AAC2B),
-                        onSecondary: Color(0xFFFFFFFF),
-                        error: Color(0xFFD32F2F),
-                        onError: Color(0xFFFFFFFF),
-                        background: Color(0xFF1E1E1E),
-                        onBackground: Color(0xFFFFFFFF),
-                        surface: Color(0xFF333333),
-                        surfaceTint: Color(0xFF202020),
-                        onSurface: Color(0xFFFFFFFF)),
-                  ),
-                  home: MainPage()
-                ),
+                    title: 'Mensa App',
+                    themeMode: (() {
+                      switch (preferenceAccess.getColorScheme()) {
+                        case MensaColorScheme.light:
+                          return ThemeMode.light;
+                        case MensaColorScheme.dark:
+                          return ThemeMode.dark;
+                        case MensaColorScheme.system:
+                          return ThemeMode.system;
+                      }
+                    }()),
+                    localizationsDelegates: [
+                      _delegate,
+                      ...GlobalMaterialLocalizations.delegates,
+                      GlobalWidgetsLocalizations.delegate,
+                    ],
+                    supportedLocales: const [
+                      Locale('de'),
+                    ],
+                    theme: ThemeData(
+                      useMaterial3: true,
+                      brightness: Brightness.light,
+                      colorScheme: const ColorScheme(
+                          brightness: Brightness.light,
+                          primary: Color(0xFF7AAC2B),
+                          onPrimary: Color(0xFFFFFFFF),
+                          secondary: Color(0xFF7AAC2B),
+                          onSecondary: Color(0xFFFFFFFF),
+                          error: Color(0xFFD32F2F),
+                          onError: Color(0xFFFFFFFF),
+                          background: Color(0xFFFFFFFF),
+                          onBackground: Color(0xFF000000),
+                          surface: Color(0xFFF6F6F6),
+                          onSurface: Color(0xFF000000)),
+                    ),
+                    darkTheme: ThemeData(
+                      useMaterial3: true,
+                      brightness: Brightness.dark,
+                      colorScheme: const ColorScheme(
+                          brightness: Brightness.dark,
+                          primary: Color(0xFF7AAC2B),
+                          onPrimary: Color(0xFFFFFFFF),
+                          secondary: Color(0xFF7AAC2B),
+                          onSecondary: Color(0xFFFFFFFF),
+                          error: Color(0xFFD32F2F),
+                          onError: Color(0xFFFFFFFF),
+                          background: Color(0xFF1E1E1E),
+                          onBackground: Color(0xFFFFFFFF),
+                          surface: Color(0xFF333333),
+                          surfaceTint: Color(0xFF202020),
+                          onSurface: Color(0xFFFFFFFF)),
+                    ),
+                    home: MainPage()),
               ));
         });
   }
