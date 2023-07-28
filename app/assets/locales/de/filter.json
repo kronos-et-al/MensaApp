@@ -8,17 +8,18 @@
   "foodTypeSelectionPork": "Schweinefleisch",
   "foodTypeSelectionBeef": "Rindfleisch",
   "foodTypeSelectionFish": "Fisch",
-
   "allergensTitle": "Allergene",
-  "priceTitle": "Preis",
-  "ratingTitle": "Bewertung",
+  "priceTitle": "Preis (maximal)",
+  "ratingTitle": "Bewertung (mindestens)",
   "favoritesOnlyTitle": "Nur Favoriten anzeigen",
   "sortByTitle": "Sortiert nach",
-
   "frequencyTitle": "Häufigkeit",
   "frequencySectionAll": "Alles",
   "frequencySectionRare": "Selten",
   "frequencySectionNew": "Neu",
-
+  "priceMin": "0€",
+  "priceMax": "10€",
+  "ratingMin": "1 Stern",
+  "ratingMax": "5 Sterne",
   "storeButton": "Übernehmen"
 }

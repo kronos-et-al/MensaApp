@@ -1,4 +1,4 @@
-  import 'package:app/view/core/icons/navigation/NavigationArrowDownIcon.dart';
+import 'package:app/view/core/icons/navigation/NavigationArrowDownIcon.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:flutter/material.dart';
 
@@ -20,6 +20,7 @@ class MensaCanteenSelect extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonHideUnderline(
         child: DropdownButton(
+            dropdownColor: Theme.of(context).colorScheme.surface,
             selectedItemBuilder: (context) => _availableCanteens
                 .map((e) => Row(children: [
                       SizedBox(
@@ -42,7 +43,8 @@ class MensaCanteenSelect extends StatelessWidget {
             icon: const NavigationArrowDownIcon(size: 32),
             value: _selectedCanteen.id,
             items: _availableCanteens
-                .map((e) => DropdownMenuItem(value: e.id, child: Center(child: Text(e.name))))
+                .map((e) => DropdownMenuItem(
+                    value: e.id, child: Center(child: Text(e.name))))
                 .toList(),
             onChanged: (value) => _onCanteenSelected(_availableCanteens
                 .firstWhere((element) => element.id == value))));

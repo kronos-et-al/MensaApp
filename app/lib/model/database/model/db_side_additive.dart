@@ -24,7 +24,7 @@ class DBSideAdditive implements DatabaseModel {
   }
 
   static DBSideAdditive fromMap(Map<String, dynamic> map) {
-    return DBSideAdditive(map[columnSideID], map[columnAdditive]);
+    return DBSideAdditive(map[columnSideID], Additive.values.byName(map[columnAdditive]));
   }
 
   /// The string to create a table for an additive of a side.

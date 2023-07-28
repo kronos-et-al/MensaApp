@@ -19,12 +19,12 @@ class DBMealAllergen implements DatabaseModel {
   Map<String, dynamic> toMap() {
     return {
       columnMealID: _mealID,
-      columnAllergen: _allergen
+      columnAllergen: _allergen.name
     };
   }
 
   static DBMealAllergen fromMap(Map<String, dynamic> map) {
-    return DBMealAllergen(map[columnMealID], map[columnAllergen]);
+    return DBMealAllergen(map[columnMealID], Allergen.values.byName(map[columnAllergen]));
   }
 
   /// The string to create a table for an allergen of a meal.

@@ -61,11 +61,17 @@ class MealAccordion extends StatelessWidget {
                   child: Column(
                     children: [
                       _mainEntry ?? _sideEntry ?? Container(),
-                      _isExpanded
-                          ? Padding(
-                              padding: const EdgeInsets.only(left: 40),
-                              child: _info)
-                          : Container(),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: _isExpanded
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(left: 40),
+                                      child: _info)
+                                  : Container()),
+                        ],
+                      ),
+                      _isExpanded ? const SizedBox(height: 4) : Container(),
                     ],
                   ))),
         ));

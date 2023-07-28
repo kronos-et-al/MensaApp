@@ -19,7 +19,7 @@ class DBMealAdditive implements DatabaseModel {
   Map<String, dynamic> toMap() {
     return {
       columnMealID: _mealID,
-      columnAdditive: _additive
+      columnAdditive: _additive.name
     };
   }
 

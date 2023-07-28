@@ -9,9 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
 
+// TODO statefull machen
 class ImageReportDialog extends StatelessWidget {
   ReportCategory _reason = ReportCategory.other;
-  late ImageData _image;
+  late final ImageData _image;
 
   ImageReportDialog({super.key, required ImageData image}) : _image = image;
 
@@ -45,6 +46,7 @@ class ImageReportDialog extends StatelessWidget {
                           onPressed: () async {
                             final temporalMessage =
                                 await imageAccess.reportImage(_image, _reason);
+                            if (!context.mounted) return;
                             Navigator.pop(context);
 
                             if (temporalMessage.isNotEmpty) {

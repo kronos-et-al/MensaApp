@@ -29,7 +29,7 @@ class MensaCtaButton extends StatelessWidget {
       highlightElevation: 0,
       onPressed: _onPressed,
       onLongPress: _onLongPressed,
-      child: Text(_text),
+      child: Text(_text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
     ));
   }
 }

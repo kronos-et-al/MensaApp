@@ -181,15 +181,18 @@ class _FilterDialogState extends State<FilterDialog> {
                       const SizedBox(
                         height: 8,
                       ),
-                      MensaFilterIconCheckboxGroup<Allergen>(
-                          items: _getAllAllergen(context),
-                          selectedValues: _preferences.allergens,
-                          onChanged: (value) {
-                            _preferences.allergens = value;
-                            setState(() {
-                              _preferences = _preferences;
-                            });
-                          }),
+                      Row(children: [
+                        Expanded(
+                            child: MensaFilterIconCheckboxGroup<Allergen>(
+                                items: _getAllAllergen(context),
+                                selectedValues: _preferences.allergens,
+                                onChanged: (value) {
+                                  _preferences.allergens = value;
+                                  setState(() {
+                                    _preferences = _preferences;
+                                  });
+                                }))
+                      ]),
                       const SizedBox(
                         height: 16,
                       ),
@@ -220,7 +223,7 @@ class _FilterDialogState extends State<FilterDialog> {
                           min: 0,
                           max: 1000),
                       Text(
-                        FlutterI18n.translate(context, "filter.titleRating"),
+                        FlutterI18n.translate(context, "filter.ratingTitle"),
                         style: _headingTextStyle,
                       ),
                       const SizedBox(

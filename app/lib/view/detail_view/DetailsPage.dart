@@ -1,6 +1,5 @@
 import 'package:app/view/core/MensaAppBar.dart';
 import 'package:app/view/core/buttons/MensaButton.dart';
-import 'package:app/view/core/buttons/MensaCtaButton.dart';
 import 'package:app/view/core/buttons/MensaIconButton.dart';
 import 'package:app/view/core/icons/favorites/FavoriteFilledIcon.dart';
 import 'package:app/view/core/icons/favorites/FavoriteOutlinedIcon.dart';
@@ -17,7 +16,6 @@ import 'package:app/view/detail_view/MealRatingDialog.dart';
 import 'package:app/view/detail_view/RatingsOverview.dart';
 import 'package:app/view/detail_view/UploadImageDialog.dart';
 import 'package:app/view_model/logic/favorite/IFavoriteMealAccess.dart';
-import 'package:app/view_model/logic/meal/IMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:flutter/material.dart';
@@ -158,8 +156,8 @@ class DetailsPageState extends State<DetailsPage> {
                                             : themeData.colorScheme.background,
                                         sideEntry: MealSideEntry(side: e),
                                         info: MealAccordionInfo(
-                                            additives: e.additives ?? [],
-                                            allergens: e.allergens ?? []),
+                                            additives: e.additives,
+                                            allergens: e.allergens),
                                         isExpanded: expandedAccordionIndex ==
                                             widget._meal.sides!.indexOf(e) + 1,
                                         onTap: () => setState(() =>

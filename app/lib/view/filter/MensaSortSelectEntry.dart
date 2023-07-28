@@ -1,6 +1,3 @@
-import 'package:app/view/core/selection_components/MensaDropdown.dart';
-import 'package:flutter/cupertino.dart';
-
 class MensaSortSelectEntry<T> {
   final T value;
   final String label;
