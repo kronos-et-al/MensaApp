@@ -30,6 +30,7 @@ import 'model/db_side.dart';
 import 'model/db_side_additive.dart';
 import 'model/db_side_allergen.dart';
 
+/// This class accesses the database and uses it as local storage.
 class SQLiteDatabaseAccess implements IDatabaseAccess {
   static List<String> _getDatabaseBuilder() {
     return [
@@ -51,6 +52,8 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   static final SQLiteDatabaseAccess _databaseAccess =
       SQLiteDatabaseAccess._internal();
 
+  /// Returns the singleton instance of this class.
+  /// @returns the singleton instance of this class
   factory SQLiteDatabaseAccess() {
     return _databaseAccess;
   }
@@ -154,7 +157,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         return DatabaseTransformer.fromDBMealPlan(dbMealPlan, dbLine, dbCanteen!, meals);
       }));
       return Success(mealPlans);*/
-      int i =0;
+      int i = 0;
       List<MealPlan?> mealPlans = List.filled(result.length, null);
       for (DBMealPlan dbMealPlan
           in result.map((plan) => DBMealPlan.fromMap(plan))) {
@@ -227,7 +230,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     var db = await database;
     var result = await db.query(DBMealPlan.tableName,
         where:
-        '${DBMealPlan.columnLineID} = ? AND ${DBMealPlan.columnDate} = ?',
+            '${DBMealPlan.columnLineID} = ? AND ${DBMealPlan.columnDate} = ?',
         whereArgs: [mealPlan.line.id, mealPlan.date.toString()]);
     if (result.isNotEmpty) return 0;
     /*var result = await db.query(DBMealPlan.tableName,
