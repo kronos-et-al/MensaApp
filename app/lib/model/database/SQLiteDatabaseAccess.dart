@@ -331,6 +331,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     }
   }
 
+  // todo unused
   Future<DBSide?> _getDBSide(String sideID) async {
     var db = await database;
     var result = await db.query(DBSide.tableName,
@@ -356,6 +357,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     return result.map((sideRow) => DBSide.fromMap(sideRow)).toList();
   }
 
+  // todo unused
   Future<DBImage?> _getDBImage(String imageID) async {
     var db = await database;
     var result = await db.query(DBImage.tableName,
@@ -385,6 +387,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     }
   }
 
+  // todo unused
   Future<DBFavorite?> _getDBFavorite(String favoriteID) async {
     var db = await database;
     var result = await db.query(DBFavorite.tableName,
@@ -439,6 +442,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
 
   @override
   Future<DateTime?> getFavoriteMealsDate(Meal meal) {
+    // todo what did he do?
     return Future.value(DateTime.now());
   }
 
