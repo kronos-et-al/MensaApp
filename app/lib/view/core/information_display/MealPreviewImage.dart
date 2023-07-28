@@ -1,4 +1,5 @@
 import 'package:app/view/core/buttons/MensaButton.dart';
+import 'package:app/view/images/MealImageDialog.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,7 @@ class MealPreviewImage extends StatelessWidget {
   final double? _height;
   final double? _width;
   final Function? _onUploadButtonPressed;
+  final void Function()? _onImagePressed;
 
   /// Creates a MealPreviewImage.
   /// @param meal The Meal to display.
@@ -20,6 +22,8 @@ class MealPreviewImage extends StatelessWidget {
   /// @param height The height of the image.
   /// @param width The width of the image.
   /// @param key The key to use for this widget.
+  /// @param onUploadButtonPressed The function to call when the upload button is pressed.
+  /// @param onImagePressed The function to call when the image is pressed.
   /// @return A MealPreviewImage.
   const MealPreviewImage(
       {super.key,
@@ -30,14 +34,16 @@ class MealPreviewImage extends StatelessWidget {
       BorderRadius? borderRadius,
       double? height,
       double? width,
-      Function? onUploadButtonPressed})
+      Function? onUploadButtonPressed,
+      void Function()? onImagePressed})
       : _meal = meal,
         _enableUploadButton = enableUploadButton,
         _enableFavoriteButton = enableFavoriteButton,
         _borderRadius = borderRadius ?? const BorderRadius.all(Radius.zero),
         _height = height,
         _width = width,
-        _onUploadButtonPressed = onUploadButtonPressed;
+        _onUploadButtonPressed = onUploadButtonPressed,
+        _onImagePressed = onImagePressed;
 
   @override
   Widget build(BuildContext context) {
@@ -85,29 +91,34 @@ class MealPreviewImage extends StatelessWidget {
                               color: Theme.of(context).colorScheme.secondary))),
               ])));
     } else {
-      return Container(
-          width: _width,
-          height: _height,
-          decoration: BoxDecoration(
-            borderRadius: _borderRadius,
-            image: DecorationImage(
-              image: NetworkImage(_meal.images!.first.url),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Stack(children: [
-            if (_enableFavoriteButton && _meal.isFavorite)
-              Align(
-                  alignment: const Alignment(1.0, -1.0),
-                  child: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: Icon(
-                          _meal.isFavorite
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          size: 24,
-                          color: Theme.of(context).colorScheme.secondary))),
-          ]));
+      return Material(
+          child: InkWell(
+              onTap: _onImagePressed,
+              child: Container(
+                  width: _width,
+                  height: _height,
+                  decoration: BoxDecoration(
+                    borderRadius: _borderRadius,
+                    image: DecorationImage(
+                      image: NetworkImage(_meal.images!.first.url),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: Stack(children: [
+                    if (_enableFavoriteButton && _meal.isFavorite)
+                      Align(
+                          alignment: const Alignment(1.0, -1.0),
+                          child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Icon(
+                                  _meal.isFavorite
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  size: 24,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .secondary))),
+                  ]))));
     }
   }
 }

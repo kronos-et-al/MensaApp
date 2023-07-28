@@ -53,6 +53,13 @@ class MealGridEntry extends StatelessWidget {
                         meal: _meal,
                         height: 180,
                         displayFavorite: true,
+                        onImagePressed: () => {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => DetailsPage(
+                                        meal: _meal,
+                                        line: _line,
+                                      )))
+                            },
                         borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(8),
                             topRight: Radius.circular(8))),
