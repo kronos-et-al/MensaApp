@@ -25,16 +25,15 @@ class FilterPreferences {
   /// @param onlyFavorite Only favorite meals are to be displayed.
   /// @param sortedBy The value which sorts the meals.
   /// @param ascending The order in which the meals are displayed.
-  FilterPreferences({
-    List<FoodType>? categories,
-    List<Allergen>? allergens,
-    int? price,
-    int? rating,
-    List<Frequency>? frequency,
-    bool? onlyFavorite,
-    Sorting? sortedBy,
-    bool? ascending
-  })
+  FilterPreferences(
+      {List<FoodType>? categories,
+      List<Allergen>? allergens,
+      int? price,
+      int? rating,
+      List<Frequency>? frequency,
+      bool? onlyFavorite,
+      Sorting? sortedBy,
+      bool? ascending})
       : _categories = categories ?? _getAllFoodTypes(),
         _allergens = allergens ?? _getAllAllergen(),
         _price = price ?? 1000,
