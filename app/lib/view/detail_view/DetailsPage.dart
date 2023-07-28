@@ -15,6 +15,7 @@ import 'package:app/view/detail_view/MealAccordionInfo.dart';
 import 'package:app/view/detail_view/MealRatingDialog.dart';
 import 'package:app/view/detail_view/RatingsOverview.dart';
 import 'package:app/view/detail_view/UploadImageDialog.dart';
+import 'package:app/view/images/MealImageDialog.dart';
 import 'package:app/view_model/logic/favorite/IFavoriteMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
@@ -49,15 +50,15 @@ class DetailsPageState extends State<DetailsPage> {
           appBar: MensaAppBar(
             appBarHeight: kToolbarHeight * 1.25,
             child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     MensaIconButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        icon: NavigationBackIcon()),
-                    Spacer(),
+                        icon: const NavigationBackIcon()),
+                    const Spacer(),
                     Consumer<IFavoriteMealAccess>(
                         builder: (context, favoriteMealAccess, child) =>
                             MensaIconButton(
@@ -66,8 +67,8 @@ class DetailsPageState extends State<DetailsPage> {
                                           .addFavoriteMeal(widget._meal)
                                     },
                                 icon: widget._meal.isFavorite
-                                    ? FavoriteFilledIcon()
-                                    : FavoriteOutlinedIcon())),
+                                    ? const FavoriteFilledIcon()
+                                    : const FavoriteOutlinedIcon())),
                     MensaIconButton(
                         onPressed: () => {
                               showDialog(
@@ -76,23 +77,23 @@ class DetailsPageState extends State<DetailsPage> {
                                     UploadImageDialog(meal: widget._meal),
                               )
                             },
-                        icon: NavigationAddImageIcon()),
+                        icon: const NavigationAddImageIcon()),
                   ],
                 )),
           ),
           body: Column(
             children: [
               Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 28),
+                  padding: const EdgeInsets.symmetric(horizontal: 28),
                   child: Row(children: [
                     Expanded(
                         child: Text(
                       widget._meal.name,
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
                     ))
                   ])),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Expanded(
                   child: Container(
                       color: themeData.brightness == Brightness.light
@@ -100,8 +101,8 @@ class DetailsPageState extends State<DetailsPage> {
                           : themeData.colorScheme.surface,
                       child: SingleChildScrollView(
                         child: Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,23 +110,35 @@ class DetailsPageState extends State<DetailsPage> {
                               widget._line != null
                                   ? Row(
                                       children: [
-                                        Padding(
+                                        const Padding(
                                           padding: EdgeInsets.all(8),
                                           child: MealLineIcon(),
                                         ),
                                         Text(
                                           widget._line!.name,
-                                          style: TextStyle(fontSize: 16),
+                                          style: const TextStyle(fontSize: 16),
                                         )
                                       ],
                                     )
-                                  : SizedBox(),
-                              SizedBox(height: 8),
+                                  : const SizedBox(),
+                              const SizedBox(height: 8),
                               MealPreviewImage(
+                                  enableUploadButton: true,
+                                  onUploadButtonPressed: () => showDialog(
+                                        context: context,
+                                        builder: (context) => UploadImageDialog(
+                                            meal: widget._meal),
+                                      ),
+                                  onImagePressed: () => showDialog(
+                                        context: context,
+                                        builder: (context) => MealImageDialog(
+                                          images: widget._meal.images ?? [],
+                                        ),
+                                      ),
                                   borderRadius: BorderRadius.circular(4),
                                   meal: widget._meal,
                                   height: 250),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               MealAccordion(
                                 backgroundColor:
                                     themeData.brightness == Brightness.light
@@ -172,7 +185,7 @@ class DetailsPageState extends State<DetailsPage> {
                                                         1),
                                       ))
                                   .toList(),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               RatingsOverview(
                                 meal: widget._meal,
                                 backgroundColor:
@@ -180,7 +193,7 @@ class DetailsPageState extends State<DetailsPage> {
                                         ? themeData.colorScheme.surface
                                         : themeData.colorScheme.background,
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               Text(
                                   FlutterI18n.translate(
                                       context, "ratings.titlePersonalRating"),
@@ -203,7 +216,7 @@ class DetailsPageState extends State<DetailsPage> {
                                   max: 5,
                                   onChanged: (int) {},
                                 ),
-                                Spacer(),
+                                const Spacer(),
                                 MensaButton(
                                   text: FlutterI18n.translate(
                                       context, "ratings.editRating"),

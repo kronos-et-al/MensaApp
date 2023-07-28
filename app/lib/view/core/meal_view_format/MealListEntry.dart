@@ -51,6 +51,10 @@ class MealListEntry extends StatelessWidget {
                         meal: _meal,
                         height: 86,
                         width: 86,
+                        onImagePressed: () => {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => DetailsPage(meal: _meal, line: _line,)))
+                        },
                         displayFavorite: true,
                         borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(8),
