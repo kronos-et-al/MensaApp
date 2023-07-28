@@ -3,6 +3,24 @@ Backend application for providing and synchronizing meal plan data of the cantee
 
 [^1]: https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/
 
+
+## Deploy using Docker
+The docker container can be run using 
+```
+docker run \
+    -p 80:80
+    -e DATABASE_URL="postgres://<db user>:<db password>@<db host>:<db port>/<db name>"
+    -e SMTP_SERVER=<domain of mail server> \
+    -e SMTP_PORT=<port of mail server> \
+    -e SMTP_USERNAME=<username of mail server> \
+    -e SMTP_PASSWORD=<password of mail server> \
+    -e ADMIN_EMAIL=<email address admin notofocations should be send to> \
+    -e FLICKR_API_KEY=<flickr public api key> \
+    ghcr.io/kronos-et-al/mensa-app
+```
+
+Running the container requires a postgres database, connection to a mail server and a flickr api key.
+
 ## Building
 - Run `cargo fmt` to format all code files.
 - Run `cargo clippy` to check for errors and recommendations.

@@ -5,7 +5,7 @@
 **Application for communication and collective exchange of
 menu information in university catering facilities.**
 
-| 🚧        | This project is still in a very early state and WIP!       |
+| 🚧        | This project is still in a early state and WIP!       |
 |------------|:-----------------------------------------------------------|
 
 
