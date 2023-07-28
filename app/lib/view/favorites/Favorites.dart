@@ -11,18 +11,17 @@ class Favorites extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<IFavoriteMealAccess>(
-        builder: (context, favoriteAccess, child) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-              child: FutureBuilder(
+        builder: (context, favoriteAccess, child) => FutureBuilder(
                 future: Future.wait([favoriteAccess.getFavoriteMeals()]),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData || snapshot.hasError) {
+                    print(snapshot.error);
                     return Scaffold(
                         appBar: MensaAppBar(
-                          appBarHeight: kToolbarHeight * 1.25,
-                          child: Text(FlutterI18n.translate(
-                              context, "common.favorites")),
-                        ),
+                          appBarHeight: kToolbarHeight,
+                          child: Center(child: Text(FlutterI18n.translate(
+                              context, "common.favorites"), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        )),
                         body: const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [],
@@ -31,12 +30,12 @@ class Favorites extends StatelessWidget {
 
                   final mealPlan = snapshot.requireData[0];
                   MensaAppBar appBar = MensaAppBar(
-                    appBarHeight: kToolbarHeight * 1.25,
-                    child: Text(
+                    appBarHeight: kToolbarHeight,
+                    child: Center(child: Text(
                       FlutterI18n.translate(context, "common.favorites"),
                       style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    )),
                   );
 
                   if (mealPlan.isEmpty) {
@@ -45,13 +44,11 @@ class Favorites extends StatelessWidget {
                         body: Center(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 FlutterI18n.translate(
                                     context, "common.noFavorites"),
-                                style: DefaultTextStyle.of(context)
-                                    .style
-                                    .apply(fontSizeFactor: 1.5),
                                 textAlign: TextAlign.center,
                               )
                             ],
@@ -75,6 +72,6 @@ class Favorites extends StatelessWidget {
                       ));
                 },
               ),
-            ));
+            );
   }
 }

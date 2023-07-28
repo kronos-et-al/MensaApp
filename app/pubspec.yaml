@@ -88,6 +88,7 @@ flutter:
     - assets/icons/exceptions/
     - assets/icons/navigation/
     - assets/icons/favorites/
+    - assets/icons/filter/
     - assets/icons/meal/
     - assets/locales/en/
     - assets/locales/de/

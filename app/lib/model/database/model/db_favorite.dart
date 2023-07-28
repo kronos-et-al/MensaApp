@@ -33,7 +33,7 @@ class DBFavorite implements DatabaseModel {
       columnFavoriteID: _favoriteID,
       columnLineID: _lineID,
       columnLastDate: _lastDate,
-      columnFoodType: _foodType,
+      columnFoodType: _foodType.name,
       columnPriceStudent: _priceStudent,
       columnPriceEmployee: _priceEmployee,
       columnPricePupil: _pricePupil,
@@ -42,7 +42,7 @@ class DBFavorite implements DatabaseModel {
   }
 
   static DBFavorite fromMap(Map<String, dynamic> map) {
-    return DBFavorite(map[columnFavoriteID], map[columnLineID], map[columnLastDate], map[columnFoodType], map[columnPriceStudent], map[columnPriceEmployee], map[columnPricePupil], map[columnPriceGuest]);
+    return DBFavorite(map[columnFavoriteID], map[columnLineID], map[columnLastDate], FoodType.values.byName(map[columnFoodType]), map[columnPriceStudent], map[columnPriceEmployee], map[columnPricePupil], map[columnPriceGuest]);
   }
 
   /// The string to create a table for a favorite.

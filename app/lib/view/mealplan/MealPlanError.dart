@@ -17,31 +17,34 @@ class MealPlanError extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const ErrorExceptionIcon(size: 48),
+                    const SizedBox(height: 16),
                     Text(
                       FlutterI18n.translate(
                           context, "mealplanException.noConnectionException"),
-                      style: DefaultTextStyle.of(context)
-                          .style
-                          .apply(fontSizeFactor: 1.5),
+                      style: const TextStyle(fontSize: 16),
                       textAlign: TextAlign.center,
                     ),
+                    const SizedBox(height: 16),
                     MensaButton(
                         onPressed: () async {
                           // Mach das einfach als lokale Variable
                           final temporalMessage =
                               await mealAccess.refreshMealplan() ?? "";
+                          if (!context.mounted) return;
                           if (temporalMessage.isNotEmpty) {
                             final snackBar = SnackBar(
                               content: Text(FlutterI18n.translate(
                                   context, temporalMessage)),
-                              backgroundColor: Theme.of(context).colorScheme.onError,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.onError,
                             );
 
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(snackBar);
                           }
                         },
-                        text: FlutterI18n.translate(context, "mealplanException.noConnectionButton")),
+                        text: FlutterI18n.translate(
+                            context, "mealplanException.noConnectionButton")),
                   ]),
             ));
   }

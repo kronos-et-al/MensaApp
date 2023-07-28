@@ -10,15 +10,18 @@ class MealPlanNoData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+    return Center(
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
           const NoDataExceptionIcon(size: 48),
+          const SizedBox(height: 16),
           Text(
             FlutterI18n.translate(context, "mealplanException.noDataException"),
-            style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1.5),
+            style: const TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
-        ]);
+        ]));
   }
 }

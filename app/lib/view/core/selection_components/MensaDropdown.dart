@@ -40,6 +40,7 @@ class MensaDropdown<T> extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: DropdownButtonHideUnderline( // DropdownButtonHideUnderline is used to hide the underline of the dropdown.
                 child: DropdownButton<T>(
+                  dropdownColor: Theme.of(context).colorScheme.surface,
               elevation: 0,
               borderRadius: BorderRadius.circular(4.0),
               value: _value,

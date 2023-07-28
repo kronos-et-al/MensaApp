@@ -21,8 +21,8 @@ class MealListLine extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              child: Text(_mealPlan.line.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, height: 1.5)),
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+              child: Text(_mealPlan.line.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             ),
             ListView.builder(
               physics: const NeverScrollableScrollPhysics(),

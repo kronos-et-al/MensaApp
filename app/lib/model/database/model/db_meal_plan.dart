@@ -28,7 +28,8 @@ class DBMealPlan implements DatabaseModel {
   }
   
   static DBMealPlan fromMap(Map<String, dynamic> map) {
-    return DBMealPlan(map[columnMealPlanID], map[columnLineID], map[columnDate], map[columnIsClosed]);
+    print(map[columnIsClosed]);
+    return DBMealPlan(map[columnMealPlanID], map[columnLineID], map[columnDate], map[columnIsClosed] == 1);
   }
 
   /// The string to create a table for a meal plan.

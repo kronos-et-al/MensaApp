@@ -17,10 +17,10 @@ class MealGridLine extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
         child: Text(_mealPlan.line.name,
             style: const TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 20, height: 1.5)),
+                fontWeight: FontWeight.bold, fontSize: 16)),
       ),
       LayoutBuilder(
           builder: (context, constraints) => SingleChildScrollView(

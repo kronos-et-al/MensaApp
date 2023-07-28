@@ -40,7 +40,6 @@ class MealPlanView extends StatelessWidget {
                     mealAccess.getMealPlan(),
                   ], eagerError: true),
                   builder: (context, snapshot) {
-                    print(snapshot.data.toString());
                     if (!snapshot.hasData) {
                       return const Center(
                         child: CircularProgressIndicator(),
@@ -57,9 +56,12 @@ class MealPlanView extends StatelessWidget {
                     Result<List<MealPlan>, MealPlanException> mealPlans =
                         snapshot.requireData[3]
                             as Result<List<MealPlan>, MealPlanException>;
+                    if (availableCanteens.indexWhere((element) => element.id == selectedCanteen.id) == -1) {
+                      mealAccess.changeCanteen(availableCanteens[0]);
+                    }
                     return Scaffold(
                         appBar: MensaAppBar(
-                          appBarHeight: kToolbarHeight * 1.25,
+                          appBarHeight: kToolbarHeight,
                           bottom: MealPlanToolbar(
                               child: Padding(
                                   padding:
@@ -134,55 +136,20 @@ class MealPlanView extends StatelessWidget {
                                 exception:
                                 if (exception.exception
                                     is NoConnectionException) {
-                                  return SingleChildScrollView(
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    child: SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: const MealPlanError()),
-                                  );
+                                  return const MealPlanError();
                                 }
                                 if (exception.exception is NoDataException) {
-                                  return SingleChildScrollView(
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    child: SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: const MealPlanNoData()),
-                                  );
+                                  return const MealPlanNoData();
                                 }
                                 if (exception.exception
                                     is ClosedCanteenException) {
-                                  return SingleChildScrollView(
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    child: SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: const MealPlanClosed()),
-                                  );
+                                  return const MealPlanClosed();
                                 }
                                 if (exception.exception
                                     is FilteredMealException) {
-                                  return SingleChildScrollView(
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    child: SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: const MealPlanFilter()),
-                                  );
+                                  return const MealPlanFilter();
                                 }
-                                return SingleChildScrollView(
-                                  physics:
-                                      const AlwaysScrollableScrollPhysics(),
-                                  child: SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height,
-                                      child: const MealPlanError()),
-                                );
+                                return const MealPlanError();
                             }
                           }()),
                         ));

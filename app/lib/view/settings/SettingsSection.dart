@@ -25,9 +25,9 @@ class SettingsSection extends StatelessWidget {
           FlutterI18n.translate(context, _heading),
           style: const TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.bold,
-              height: 1.5),
+              fontWeight: FontWeight.bold),
         ),
+        const SizedBox(height: 8),
         ..._children
       ],
     );

@@ -46,7 +46,7 @@ class DBMeal implements DatabaseModel {
       columnMealID: _mealID,
       columnMealPlanID: _mealPlanID,
       columnName: _name,
-      columnFoodType: _foodType,
+      columnFoodType: _foodType.name,
       columnPriceStudent: _priceStudent,
       columnPriceEmployee: _priceEmployee,
       columnPricePupil: _pricePupil,
@@ -56,12 +56,12 @@ class DBMeal implements DatabaseModel {
       columnAverageRating: _averageRating,
       columnLastServed: _lastServed,
       columnNextServed: _nextServed,
-      columnRelativeFrequency: _relativeFrequency
+      columnRelativeFrequency: _relativeFrequency.name
     };
   }
 
   static DBMeal fromMap(Map<String, dynamic> map) {
-    return DBMeal(map[columnMealID], map[columnMealPlanID], map[columnName], map[columnFoodType], map[columnPriceStudent], map[columnPriceEmployee], map[columnPricePupil], map[columnPriceGuest], map[columnIndividualRating], map[columnNumberOfRatings], map[columnAverageRating], map[columnLastServed], map[columnNextServed], map[columnRelativeFrequency]);
+    return DBMeal(map[columnMealID], map[columnMealPlanID], map[columnName], FoodType.values.byName(map[columnFoodType]), map[columnPriceStudent], map[columnPriceEmployee], map[columnPricePupil], map[columnPriceGuest], map[columnIndividualRating], map[columnNumberOfRatings], map[columnAverageRating], map[columnLastServed], map[columnNextServed], Frequency.values.byName(map[columnRelativeFrequency]));
   }
 
   static String initTable() {

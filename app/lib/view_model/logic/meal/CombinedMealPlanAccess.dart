@@ -39,8 +39,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   }
 
   Future<void> _init() async {
-    _displayedDate = DateTime.timestamp();
-    _filter = await _preferences.getFilterPreferences() ?? FilterPreferences();
+    _displayedDate = DateTime.now();
+    _filter = _preferences.getFilterPreferences() ?? FilterPreferences();
     _priceCategory = _preferences.getPriceCategory() ?? PriceCategory.student;
 
     // get canteen from string
@@ -92,6 +92,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     // filter meal plans
     await _filterMealPlans();
+    await _setNewMealPlan();
   }
 
   @override
@@ -190,6 +191,12 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       return Future.value(Failure(ClosedCanteenException("canteen closed")));
     }
 
+    _mealPlans.forEach((element) {
+      element.meals.forEach((element) {
+        print(element.name);
+      });
+    });
+
     if (!_activeFilter) {
       return Future.value(Success(_mealPlans));
     }
@@ -214,7 +221,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       return "snackbar.refreshMealPlanError";
     }
 
-    _database.updateAll(mealPlan);
+    await _database.updateAll(mealPlan);
 
     _mealPlans = mealPlan;
 

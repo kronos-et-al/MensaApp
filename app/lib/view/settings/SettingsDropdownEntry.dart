@@ -39,8 +39,9 @@ class SettingsDropdownEntry<T> extends StatelessWidget {
         Text(
           FlutterI18n.translate(context, _heading),
           style: const TextStyle(
-              fontSize: 14, fontWeight: FontWeight.bold, height: 1.5),
+              fontSize: 16, fontWeight: FontWeight.bold),
         ),
+        const SizedBox(height: 8),
         Row(children: [
           Expanded(
               child: MensaDropdown<T>(
