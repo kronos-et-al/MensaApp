@@ -5,8 +5,8 @@ use crate::interface::persistent_data::MealplanManagementDataAccess;
 use crate::layer::logic::mealplan_management::relation_resolver::RelationResolver;
 use crate::util::Date;
 use async_trait::async_trait;
-use chrono::Utc;
-use tracing::log::{debug, warn};
+use chrono::Local;
+use tracing::{debug, warn};
 
 pub struct MealPlanManager<Parser, DataAccess>
 where
@@ -51,7 +51,7 @@ where
     /// If during resolving an error occurs, the resolver stops and a log will be displayed.<br>
     /// Each successful resolving process is also logged.
     async fn start_update_parsing(&self) {
-        let today = Utc::now().date_naive();
+        let today = Local::now().date_naive();
         match self.parser.parse(today).await {
             Ok(parse_canteens) => {
                 self.start_resolving(parse_canteens, today).await;

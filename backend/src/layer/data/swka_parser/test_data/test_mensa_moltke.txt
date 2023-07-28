@@ -56,6 +56,7 @@
                             env_score: 3,
                         },
                     ],
+                    pos: 0,
                 },
                 ParseLine {
                     name: "Wahlessen 2",
@@ -146,10 +147,12 @@
                             env_score: 3,
                         },
                     ],
+                    pos: 1,
                 },
                 ParseLine {
                     name: "Aktionstheke",
                     dishes: [],
+                    pos: 2,
                 },
                 ParseLine {
                     name: "Gut & Günstig",
@@ -205,6 +208,7 @@
                             env_score: 2,
                         },
                     ],
+                    pos: 3,
                 },
                 ParseLine {
                     name: "Buffet",
@@ -229,10 +233,12 @@
                             env_score: 0,
                         },
                     ],
+                    pos: 4,
                 },
                 ParseLine {
                     name: "Schnitzelbar",
                     dishes: [],
+                    pos: 5,
                 },
                 ParseLine {
                     name: "[Kœri]werk",
@@ -301,8 +307,10 @@
                             env_score: 0,
                         },
                     ],
+                    pos: 6,
                 },
             ],
+            pos: 42,
         },
     ),
     (
@@ -362,6 +370,7 @@
                             env_score: 3,
                         },
                     ],
+                    pos: 0,
                 },
                 ParseLine {
                     name: "Wahlessen 2",
@@ -434,10 +443,12 @@
                             env_score: 3,
                         },
                     ],
+                    pos: 1,
                 },
                 ParseLine {
                     name: "Aktionstheke",
                     dishes: [],
+                    pos: 2,
                 },
                 ParseLine {
                     name: "Gut & Günstig",
@@ -496,6 +507,7 @@
                             env_score: 3,
                         },
                     ],
+                    pos: 3,
                 },
                 ParseLine {
                     name: "Buffet",
@@ -520,10 +532,12 @@
                             env_score: 0,
                         },
                     ],
+                    pos: 4,
                 },
                 ParseLine {
                     name: "Schnitzelbar",
                     dishes: [],
+                    pos: 5,
                 },
                 ParseLine {
                     name: "[Kœri]werk",
@@ -592,8 +606,10 @@
                             env_score: 0,
                         },
                     ],
+                    pos: 6,
                 },
             ],
+            pos: 42,
         },
     ),
     (
@@ -653,6 +669,7 @@
                             env_score: 3,
                         },
                     ],
+                    pos: 0,
                 },
                 ParseLine {
                     name: "Wahlessen 2",
@@ -739,10 +756,12 @@
                             env_score: 3,
                         },
                     ],
+                    pos: 1,
                 },
                 ParseLine {
                     name: "Aktionstheke",
                     dishes: [],
+                    pos: 2,
                 },
                 ParseLine {
                     name: "Gut & Günstig",
@@ -802,6 +821,7 @@
                             env_score: 3,
                         },
                     ],
+                    pos: 3,
                 },
                 ParseLine {
                     name: "Buffet",
@@ -826,10 +846,12 @@
                             env_score: 0,
                         },
                     ],
+                    pos: 4,
                 },
                 ParseLine {
                     name: "Schnitzelbar",
                     dishes: [],
+                    pos: 5,
                 },
                 ParseLine {
                     name: "[Kœri]werk",
@@ -898,8 +920,10 @@
                             env_score: 0,
                         },
                     ],
+                    pos: 6,
                 },
             ],
+            pos: 42,
         },
     ),
     (
@@ -959,6 +983,7 @@
                             env_score: 3,
                         },
                     ],
+                    pos: 0,
                 },
                 ParseLine {
                     name: "Wahlessen 2",
@@ -1051,10 +1076,12 @@
                             env_score: 3,
                         },
                     ],
+                    pos: 1,
                 },
                 ParseLine {
                     name: "Aktionstheke",
                     dishes: [],
+                    pos: 2,
                 },
                 ParseLine {
                     name: "Gut & Günstig",
@@ -1117,6 +1144,7 @@
                             env_score: 2,
                         },
                     ],
+                    pos: 3,
                 },
                 ParseLine {
                     name: "Buffet",
@@ -1141,10 +1169,12 @@
                             env_score: 0,
                         },
                     ],
+                    pos: 4,
                 },
                 ParseLine {
                     name: "Schnitzelbar",
                     dishes: [],
+                    pos: 5,
                 },
                 ParseLine {
                     name: "[Kœri]werk",
@@ -1213,8 +1243,10 @@
                             env_score: 0,
                         },
                     ],
+                    pos: 6,
                 },
             ],
+            pos: 42,
         },
     ),
     (
@@ -1274,6 +1306,7 @@
                             env_score: 3,
                         },
                     ],
+                    pos: 0,
                 },
                 ParseLine {
                     name: "Wahlessen 2",
@@ -1346,10 +1379,12 @@
                             env_score: 3,
                         },
                     ],
+                    pos: 1,
                 },
                 ParseLine {
                     name: "Aktionstheke",
                     dishes: [],
+                    pos: 2,
                 },
                 ParseLine {
                     name: "Gut & Günstig",
@@ -1405,6 +1440,7 @@
                             env_score: 0,
                         },
                     ],
+                    pos: 3,
                 },
                 ParseLine {
                     name: "Buffet",
@@ -1429,16 +1465,20 @@
                             env_score: 0,
                         },
                     ],
+                    pos: 4,
                 },
                 ParseLine {
                     name: "Schnitzelbar",
                     dishes: [],
+                    pos: 5,
                 },
                 ParseLine {
                     name: "[Kœri]werk",
                     dishes: [],
+                    pos: 6,
                 },
             ],
+            pos: 42,
         },
     ),
 ]

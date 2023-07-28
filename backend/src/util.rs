@@ -5,7 +5,6 @@
 use std::fmt::Display;
 
 use async_graphql::Enum;
-use heck::AsShoutySnakeCase;
 
 /// Date type used in multiple places.
 pub type Date = chrono::NaiveDate;
@@ -14,7 +13,8 @@ pub type Date = chrono::NaiveDate;
 pub type Uuid = uuid::Uuid;
 
 /// This enum lists every possible allergen a meal can have.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type)]
+#[sqlx(type_name = "allergen", rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Allergen {
     /// This meal contains cashews.
     Ca,
@@ -75,7 +75,8 @@ pub enum Allergen {
 }
 
 /// This enum lists every possible additive a meal can have.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type)]
+#[sqlx(type_name = "additive", rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Additive {
     /// This meal contains colorants.
     Colorant,
@@ -110,7 +111,8 @@ pub enum Additive {
 }
 
 /// This enum lists all the types a meal can be of.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type)]
+#[sqlx(type_name = "meal_type", rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum MealType {
     /// This meal is vegan.
     Vegan,
@@ -131,7 +133,8 @@ pub enum MealType {
 }
 
 /// This enum lists all the predetermined reasons a image can be reported for.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type)]
+#[sqlx(type_name = "report_reason", rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ReportReason {
     /// This picture shows offensive content.
     Offensive,
@@ -149,12 +152,12 @@ pub enum ReportReason {
 
 impl Display for ReportReason {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", AsShoutySnakeCase(format!("{self:?}")))
+        write!(f, "{self:?}")
     }
 }
 
 /// This struct contains all price classes. All prices are listed in euro.
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct Price {
     /// Price of the dish for students.
     pub price_student: u32,

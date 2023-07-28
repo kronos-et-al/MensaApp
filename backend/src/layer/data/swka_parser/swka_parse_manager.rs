@@ -10,7 +10,7 @@ use async_trait::async_trait;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
-pub struct ParseInfo {
+pub struct SwKaInfo {
     pub base_url: String,
     pub valid_canteens: Vec<String>,
     pub client_timeout: std::time::Duration,
@@ -27,7 +27,7 @@ impl SwKaParseManager {
     /// Method for creating a [`SwKaParseManager`] instance.
     /// # Errors
     /// If the request client creation fails an error 'll be returned.
-    pub fn new(parse_info: ParseInfo) -> Result<Self, ParseError> {
+    pub fn new(parse_info: SwKaInfo) -> Result<Self, ParseError> {
         Ok(Self {
             link_creator: SwKaLinkCreator::new(
                 parse_info.base_url.clone(),
@@ -46,8 +46,17 @@ impl SwKaParseManager {
     ) -> Result<HashMap<Date, Vec<ParseCanteen>>, ParseError> {
         let mut map: HashMap<Date, Vec<ParseCanteen>> = HashMap::new();
 
-        for html in self.request.get_html_strings(urls).await? {
-            for (date, canteen) in self.html_parser.transform(&html)? {
+        for (position, html) in self
+            .request
+            .get_html_strings(urls)
+            .await?
+            .iter()
+            .enumerate()
+        {
+            for (date, canteen) in self.html_parser.transform(
+                html,
+                u32::try_from(position).expect("u32 could not be casted from usize"),
+            )? {
                 map.entry(date).or_default().push(canteen);
             }
         }

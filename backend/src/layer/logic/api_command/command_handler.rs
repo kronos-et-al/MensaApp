@@ -6,7 +6,7 @@ use crate::{
         admin_notification::{AdminNotification, ImageReportInfo},
         api_command::{AuthInfo, Command, CommandError, Result},
         image_hoster::ImageHoster,
-        persistent_data::{model::ImageInfo, CommandDataAccess},
+        persistent_data::{model::Image, CommandDataAccess},
     },
     layer::logic::api_command::auth::{authenticator::Authenticator, command_type::CommandType},
     util::{Date, ReportReason, Uuid},
@@ -55,7 +55,7 @@ where
         })
     }
 
-    fn will_be_hidden(image: &ImageInfo) -> bool {
+    fn will_be_hidden(image: &Image) -> bool {
         Self::days_since(image.upload_date) <= 30
             && image.report_count > Self::get_report_barrier(image.upload_date)
     }
@@ -108,11 +108,11 @@ where
                 reason,
                 image_id,
                 image_got_hidden: will_be_hidden,
-                image_link: info.image_url,
+                image_link: info.url,
                 report_count: info.report_count,
-                positive_rating_count: info.positive_rating_count,
-                negative_rating_count: info.negative_rating_count,
-                get_image_rank: info.image_rank,
+                positive_rating_count: info.upvotes,
+                negative_rating_count: info.downvotes,
+                get_image_rank: info.rank,
             };
 
             self.admin_notification
@@ -406,9 +406,9 @@ mod test {
     async fn get_handler() -> Result<
         CommandHandler<CommandDatabaseMock, CommandAdminNotificationMock, CommandImageHosterMock>,
     > {
-        let command_data = CommandDatabaseMock::default();
-        let admin_notification = CommandAdminNotificationMock::default();
-        let image_hoster = CommandImageHosterMock::default();
+        let command_data = CommandDatabaseMock;
+        let admin_notification = CommandAdminNotificationMock;
+        let image_hoster = CommandImageHosterMock;
         CommandHandler::new(command_data, admin_notification, image_hoster).await
     }
 }

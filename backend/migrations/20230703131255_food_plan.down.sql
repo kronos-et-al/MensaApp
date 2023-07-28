@@ -2,4 +2,5 @@
 
 DROP TABLE food_plan;
 
+
 DROP DOMAIN price;

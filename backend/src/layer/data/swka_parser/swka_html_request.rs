@@ -4,7 +4,7 @@ use crate::interface::mensa_parser::ParseError;
 use futures::future::join_all;
 use reqwest::Client;
 use std::time::Duration;
-use tracing::log::debug;
+use tracing::debug;
 
 pub struct SwKaHtmlRequest {
     client: Client,
@@ -50,6 +50,7 @@ impl SwKaHtmlRequest {
             .get(url)
             .send()
             .await
+            .and_then(reqwest::Response::error_for_status)
             .map_err(|e| ParseError::NoConnectionEstablished(e.to_string()))?;
         debug!("Url request finished: {:?}", resp);
         resp.text()

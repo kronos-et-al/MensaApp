@@ -12,7 +12,4 @@ pub mod layer;
 pub mod startup;
 pub mod util;
 
-/// Runs the Mensa-App backend.
-pub fn run_backend() {
-    println!("Hello MensaApp!");
-}
+pub use startup::server::Server;

@@ -1,0 +1,58 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT allergen as \"allergen: Allergen\" FROM food_allergen WHERE food_id = $1 ORDER BY allergen",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "allergen: Allergen",
+        "type_info": {
+          "Custom": {
+            "name": "allergen",
+            "kind": {
+              "Enum": [
+                "CA",
+                "DI",
+                "EI",
+                "ER",
+                "FI",
+                "GE",
+                "HF",
+                "HA",
+                "KA",
+                "KR",
+                "LU",
+                "MA",
+                "ML",
+                "PA",
+                "PE",
+                "PI",
+                "QU",
+                "RO",
+                "SA",
+                "SE",
+                "SF",
+                "SN",
+                "SO",
+                "WA",
+                "WE",
+                "WT",
+                "LA",
+                "GL"
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "e389f033438b384fafce3fd5e6bdc67324c20ff43060700180922b9136078ea4"
+}

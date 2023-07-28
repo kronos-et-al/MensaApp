@@ -1,7 +1,6 @@
 use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
-use crate::interface::persistent_data::model::Line;
 use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
-use crate::util::Date;
+use crate::util::{Date, Uuid};
 use std::slice::Iter;
 use tracing::warn;
 
@@ -34,32 +33,47 @@ where
         let db_canteen = match self.db.get_similar_canteen(&canteen.name).await? {
             Some(similar_canteen) => {
                 self.db
-                    .update_canteen(similar_canteen.id, &canteen.name)
-                    .await?
+                    .update_canteen(similar_canteen, &canteen.name, canteen.pos)
+                    .await?;
+                similar_canteen
             }
-            None => self.db.insert_canteen(&canteen.name).await?,
+            None => self.db.insert_canteen(&canteen.name, canteen.pos).await?,
         };
-        self.db.dissolve_relations(db_canteen, date).await;
+        self.db.dissolve_relations(db_canteen, date).await?;
         for line in canteen.lines {
             let name = &line.name.clone();
-            if (self.resolve_line(line, date).await).is_err() {
+            if (self.resolve_line(date, line, db_canteen).await).is_err() {
                 warn!("Skip line '{}' as it could not be resolved", name);
             }
         }
         Ok(())
     }
 
-    async fn resolve_line(&self, line: ParseLine, date: Date) -> Result<(), DataError> {
-        let db_line = match self.db.get_similar_line(&line.name).await? {
-            Some(similar_line) => self.db.update_line(similar_line.id, &line.name).await?,
-            None => self.db.insert_line(&line.name).await?,
+    async fn resolve_line(
+        &self,
+        date: Date,
+        line: ParseLine,
+        canteen_id: Uuid,
+    ) -> Result<(), DataError> {
+        let line_id = match self.db.get_similar_line(&line.name, canteen_id).await? {
+            Some(similar_line) => {
+                self.db
+                    .update_line(similar_line, &line.name, line.pos)
+                    .await?;
+                similar_line
+            }
+            None => {
+                self.db
+                    .insert_line(canteen_id, &line.name, line.pos)
+                    .await?
+            }
         };
 
         let average = Self::average(line.dishes.iter());
 
         for dish in line.dishes {
             let name = &dish.name.clone();
-            if (self.resolve_dish(&db_line, dish, date, average).await).is_err() {
+            if (self.resolve_dish(line_id, date, dish, average).await).is_err() {
                 warn!("Skip dish '{}' as it could not be resolved", name);
             }
         }
@@ -68,9 +82,9 @@ where
 
     async fn resolve_dish(
         &self,
-        db_line: &Line,
-        dish: Dish,
+        line_id: Uuid,
         date: Date,
+        dish: Dish,
         average: f64,
     ) -> Result<(), DataError> {
         let similar_meal_result = self
@@ -85,36 +99,32 @@ where
         // Case 1.1: A similar side and meal could be found. Uncommon case.
         // Case 1.2: Or just a meal could be found.
         if let Some(similar_meal) = similar_meal_result {
+            self.db.update_meal(similar_meal, &dish.name).await?;
             self.db
-                .update_meal(similar_meal.id, db_line.id, date, &dish.name, dish.price)
+                .add_meal_to_plan(similar_meal, line_id, date, dish.price)
                 .await?;
         // Case 2: A similar side could be found.
         } else if let Some(similar_side) = similar_side_result {
+            self.db.update_side(similar_side, &dish.name).await?;
             self.db
-                .update_side(similar_side.id, db_line.id, date, &dish.name, dish.price)
+                .add_side_to_plan(similar_side, line_id, date, dish.price)
                 .await?;
         // Case 3: No similar meal could be found. Dish needs to be determined.
         } else if Self::is_side(dish.price.price_student, average, &dish.name) {
+            let side_id = self
+                .db
+                .insert_side(&dish.name, dish.meal_type, &dish.allergens, &dish.additives)
+                .await?;
             self.db
-                .insert_side(
-                    &dish.name,
-                    dish.meal_type,
-                    dish.price,
-                    date,
-                    &dish.allergens,
-                    &dish.additives,
-                )
+                .add_side_to_plan(side_id, line_id, date, dish.price)
                 .await?;
         } else {
+            let meal_id = self
+                .db
+                .insert_meal(&dish.name, dish.meal_type, &dish.allergens, &dish.additives)
+                .await?;
             self.db
-                .insert_meal(
-                    &dish.name,
-                    dish.meal_type,
-                    dish.price,
-                    date,
-                    &dish.allergens,
-                    &dish.additives,
-                )
+                .add_meal_to_plan(meal_id, line_id, date, dish.price)
                 .await?;
         };
         Ok(())
@@ -126,12 +136,11 @@ where
     }
 
     fn average(dishes: Iter<Dish>) -> f64 {
-        let len = dishes.len();
+        let len = u32::try_from(dishes.len())
+            .expect("RelationResolver.average: usize could not be casted to u32");
         let sum: u32 = dishes.map(|dish| dish.price.price_student).sum();
-        f64::from(
-            sum / u32::try_from(len)
-                .expect("RelationResolver.average: usize could not be casted to u32"),
-        )
+
+        f64::from(sum.checked_div(len).unwrap_or_default())
     }
 }
 
@@ -141,8 +150,9 @@ mod test {
     use crate::layer::logic::mealplan_management::relation_resolver::RelationResolver;
     use crate::layer::logic::mealplan_management::test::mealplan_management_database_mock::MealplanManagementDatabaseMock;
     use crate::util::{MealType, Price};
-    use chrono::Utc;
+    use chrono::Local;
     use rand::{self, Rng};
+    use uuid::Uuid;
 
     fn get_dish() -> Dish {
         Dish {
@@ -180,6 +190,7 @@ mod test {
         ParseLine {
             name: "test_line".to_string(),
             dishes,
+            pos: 42_u32,
         }
     }
 
@@ -187,6 +198,7 @@ mod test {
         ParseCanteen {
             name: "test_canteen".to_string(),
             lines,
+            pos: 42_u32,
         }
     }
 
@@ -217,7 +229,7 @@ mod test {
     #[tokio::test]
     async fn resolve_empty_canteen() {
         let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
-        let res = resolver.resolve(get_empty_canteen(), Utc::now().date_naive());
+        let res = resolver.resolve(get_empty_canteen(), Local::now().date_naive());
         assert!(res.await.is_ok());
     }
 
@@ -231,7 +243,7 @@ mod test {
             rng.gen_range(1..=10),
         ) {
             assert!(resolver
-                .resolve(canteen, Utc::now().date_naive())
+                .resolve(canteen, Local::now().date_naive())
                 .await
                 .is_ok());
         }
@@ -247,7 +259,7 @@ mod test {
         }
         let line = get_line(dishes);
         assert!(resolver
-            .resolve_line(line, Utc::now().date_naive())
+            .resolve_line(Local::now().date_naive(), line, Uuid::default())
             .await
             .is_ok());
     }
@@ -262,5 +274,9 @@ mod test {
         let average = RelationResolver::<MealplanManagementDatabaseMock>::average(dishes.iter());
         assert!(450.0 < average);
         assert!(460.0 > average);
+
+        let dishes = vec![];
+        let average = RelationResolver::<MealplanManagementDatabaseMock>::average(dishes.iter());
+        assert!((average - 0.0).abs() < f64::EPSILON);
     }
 }

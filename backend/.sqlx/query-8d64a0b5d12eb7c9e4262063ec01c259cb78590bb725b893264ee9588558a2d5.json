@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM image_rating WHERE user_id = $1 AND image_id = $2 AND rating = 1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "8d64a0b5d12eb7c9e4262063ec01c259cb78590bb725b893264ee9588558a2d5"
+}

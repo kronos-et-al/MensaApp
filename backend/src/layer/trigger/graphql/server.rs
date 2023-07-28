@@ -118,7 +118,7 @@ impl GraphQLServer {
         };
 
         self.state = State::Running(Box::pin(shutdown));
-        info!("Started graphql server listening on {}.", socket);
+        info!("Started graphql server listening on http://{}.", socket);
     }
 
     /// Stops the GraphQL server.
