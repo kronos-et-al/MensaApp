@@ -3,8 +3,7 @@ import 'IAllergenIcon.dart';
 
 /// This widget is used to display the icon for Lupin
 class AllergenLupinIcon extends IAllergenIcon {
-  const AllergenLupinIcon(
-      {super.key, super.width, super.height, super.color});
+  const AllergenLupinIcon({super.key, super.width, super.height, super.color});
 
   @override
   Widget build(BuildContext context) {

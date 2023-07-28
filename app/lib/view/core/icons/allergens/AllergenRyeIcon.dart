@@ -3,8 +3,7 @@ import 'IAllergenIcon.dart';
 
 /// This widget is used to display the icon for Rye
 class AllergenRyeIcon extends IAllergenIcon {
-  const AllergenRyeIcon(
-      {super.key, super.width, super.height, super.color});
+  const AllergenRyeIcon({super.key, super.width, super.height, super.color});
 
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 
+/// This widget is used to display a dialog.
 class MensaDialog extends StatelessWidget {
   final String _title;
   final Widget? _content;
   final Widget? _actions;
 
+  /// Creates a dialog.
+  /// @param key The key to use for this widget.
+  /// @param title The title to display.
+  /// @param content The content to display.
+  /// @param actions The actions to display.
+  /// @returns a widget that displays a dialog
   const MensaDialog(
       {super.key, required String title, Widget? content, Widget? actions})
       : _title = title,

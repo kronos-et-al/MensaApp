@@ -5,12 +5,15 @@ import 'IAllergenIcon.dart';
 
 /// This widget is used to display the icon for Barley
 class AllergenBarleyIcon extends IAllergenIcon {
-  const AllergenBarleyIcon(
-      {super.key, super.width, super.height, super.color});
+  const AllergenBarleyIcon({super.key, super.width, super.height, super.color});
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset('assets/icons/allergens/ge.svg',
-        width: width, height: height, colorFilter: ColorFilter.mode(color, BlendMode.srcIn),);
+    return SvgPicture.asset(
+      'assets/icons/allergens/ge.svg',
+      width: width,
+      height: height,
+      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+    );
   }
 }
