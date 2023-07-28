@@ -221,7 +221,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       return "snackbar.refreshMealPlanError";
     }
 
-    _database.updateAll(mealPlan);
+    await _database.updateAll(mealPlan);
 
     _mealPlans = mealPlan;
 
