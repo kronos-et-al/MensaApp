@@ -10,11 +10,17 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
 
 // TODO statefull machen
-class ImageReportDialog extends StatelessWidget {
-  ReportCategory _reason = ReportCategory.other;
-  late final ImageData _image;
+class ImageReportDialog extends StatefulWidget {
+  final ImageData _image;
 
-  ImageReportDialog({super.key, required ImageData image}) : _image = image;
+  const ImageReportDialog({super.key, required ImageData image}) : _image = image;
+
+  @override
+  State<StatefulWidget> createState() => _ImageReportState();
+}
+
+class _ImageReportState extends State<ImageReportDialog> {
+  ReportCategory _reason = ReportCategory.other;
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +28,13 @@ class ImageReportDialog extends StatelessWidget {
       title: FlutterI18n.translate(context, "image.reportImageTitle"),
       content: Consumer<IImageAccess>(
           builder: (context, imageAccess, child) => Column(
+            children: [
+              Text(FlutterI18n.translate(
+                  context, "image.reportDescription")),
+              Row(
                 children: [
-                  Text(FlutterI18n.translate(
-                      context, "image.reportDescription")),
-                  Row(
-                    children: [
-                      Expanded(
-                          child: MensaDropdown(
+                  Expanded(
+                      child: MensaDropdown(
                         onChanged: (value) {
                           if (value != null) {
                             _reason = value;
@@ -37,36 +43,36 @@ class ImageReportDialog extends StatelessWidget {
                         value: _reason,
                         items: _getReportCategoryEntries(context),
                       ))
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Spacer(),
-                      MensaButton(
-                          onPressed: () async {
-                            final temporalMessage =
-                                await imageAccess.reportImage(_image, _reason);
-                            if (!context.mounted) return;
-                            Navigator.pop(context);
-
-                            if (temporalMessage.isNotEmpty) {
-                              final snackBar = SnackBar(
-                                content: Text(FlutterI18n.translate(
-                                    context, temporalMessage)),
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.onError,
-                              );
-
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
-                            }
-                          },
-                          text: FlutterI18n.translate(
-                              context, "image.reportButton")),
-                    ],
-                  )
                 ],
-              )),
+              ),
+              Row(
+                children: [
+                  const Spacer(),
+                  MensaButton(
+                      onPressed: () async {
+                        final temporalMessage =
+                        await imageAccess.reportImage(widget._image, _reason);
+                        if (!context.mounted) return;
+                        Navigator.pop(context);
+
+                        if (temporalMessage.isNotEmpty) {
+                          final snackBar = SnackBar(
+                            content: Text(FlutterI18n.translate(
+                                context, temporalMessage)),
+                            backgroundColor:
+                            Theme.of(context).colorScheme.onError,
+                          );
+
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(snackBar);
+                        }
+                      },
+                      text: FlutterI18n.translate(
+                          context, "image.reportButton")),
+                ],
+              )
+            ],
+          )),
     );
   }
 
