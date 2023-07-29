@@ -13,16 +13,17 @@ void main () {
   late PreferenceAccess preferences;
   late PreferenceAccess preferencesPredefined;
 
-  setUp(() async {
-    when(() => localStorage.getClientIdentifier()).thenAnswer((_) => null);
+  group("initialization", () {
+    when(() => localStorage.getClientIdentifier()).thenReturn(null);
     when(() => localStorage.getColorScheme()).thenAnswer((_) => null);
     when(() => localStorage.getPriceCategory()).thenAnswer((_) => null);
     when(() => localStorage.getMealPlanFormat()).thenAnswer((_) => null);
 
-    preferences = PreferenceAccess(localStorage);
-  });
+    when(() => localStorage.setPriceCategory(PriceCategory.student))
+        .thenAnswer((_) async {});
 
-  group("initialization", () {
+    preferences = PreferenceAccess(localStorage);
+
     test("client identifier", () {
       expect(preferences.getClientIdentifier(), "");
     });
@@ -83,6 +84,9 @@ void main () {
     when(() => localStorage.getColorScheme()).thenAnswer((_) => MensaColorScheme.light);
     when(() => localStorage.getPriceCategory()).thenAnswer((_) => PriceCategory.employee);
     when(() => localStorage.getMealPlanFormat()).thenAnswer((_) => MealPlanFormat.list);
+
+    when(() => localStorage.setPriceCategory(PriceCategory.student))
+        .thenAnswer((_) async {});
 
     preferencesPredefined = PreferenceAccess(localStorage);
 
