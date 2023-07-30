@@ -1,5 +1,4 @@
 import 'package:app/view/core/buttons/MensaButton.dart';
-import 'package:app/view/images/MealImageDialog.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:flutter/material.dart';
 

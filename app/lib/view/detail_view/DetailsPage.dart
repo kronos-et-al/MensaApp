@@ -220,7 +220,7 @@ class DetailsPageState extends State<DetailsPage> {
                                       Theme.of(context).colorScheme.onSurface,
                                   size: 20,
                                   max: 5,
-                                  onChanged: (int) {},
+                                  onChanged: (value) {},
                                 ),
                                 const Spacer(),
                                 MensaButton(

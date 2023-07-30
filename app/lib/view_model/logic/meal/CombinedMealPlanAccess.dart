@@ -290,7 +290,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     await _doneInitialization;
 
     bool changed = await _updateFavorites();
-    final category = await _preferences.getPriceCategory();
+    final category = _preferences.getPriceCategory();
 
     // check if changed
     if (category != null && category != _priceCategory) {

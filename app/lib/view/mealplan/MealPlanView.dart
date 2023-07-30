@@ -107,7 +107,7 @@ class MealPlanView extends StatelessWidget {
                                                 showDialog(
                                                   context: context,
                                                   builder: (context) =>
-                                                      FilterDialog(),
+                                                      const FilterDialog(),
                                                 )
                                               })
                                     ],

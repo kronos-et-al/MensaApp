@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:app/model/database/model/database_model.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';

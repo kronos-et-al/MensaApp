@@ -30,7 +30,7 @@ class MensaCanteenSelect extends StatelessWidget {
             dropdownColor: Theme.of(context).colorScheme.surface,
             selectedItemBuilder: (context) => _availableCanteens
                 .map((e) => Row(children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 40,
                       ),
                       Container(

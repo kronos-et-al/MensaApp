@@ -25,7 +25,7 @@ class MealAccordionInfo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         const Text(
           "Allergene:",
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -36,7 +36,7 @@ class MealAccordionInfo extends StatelessWidget {
                 Expanded(child: I18nText("allergen.${e.name}")),
               ],
             )),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         const Text(
           "Zusatzstoffe:",
           style: TextStyle(fontWeight: FontWeight.bold),

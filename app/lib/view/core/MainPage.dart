@@ -30,8 +30,8 @@ class _MainPageState extends State<MainPage> {
           body: IndexedStack(
             index: _selectedIndex,
             children: [
-              MealPlanView(),
-              Favorites(),
+              const MealPlanView(),
+              const Favorites(),
               Settings(),
             ],
           ),
@@ -42,15 +42,15 @@ class _MainPageState extends State<MainPage> {
             onTap: (index) => setState(() => _selectedIndex = index),
             items: [
               BottomNavigationBarItem(
-                icon: NavigationMealPlanIcon(),
+                icon: const NavigationMealPlanIcon(),
                 label: FlutterI18n.translate(context, "common.mealPlan"),
               ),
               BottomNavigationBarItem(
-                icon: NavigationFavoritesIcon(),
+                icon: const NavigationFavoritesIcon(),
                 label: FlutterI18n.translate(context, "common.favorites"),
               ),
               BottomNavigationBarItem(
-                icon: NavigationSettingsIcon(),
+                icon: const NavigationSettingsIcon(),
                 label: FlutterI18n.translate(context, "common.settings"),
               ),
             ],

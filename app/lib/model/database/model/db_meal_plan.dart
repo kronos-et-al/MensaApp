@@ -46,7 +46,6 @@ class DBMealPlan implements DatabaseModel {
   /// @param map The map to create the instance from.
   /// @returns A new instance of a meal plan.
   static DBMealPlan fromMap(Map<String, dynamic> map) {
-    print(map[columnIsClosed]);
     return DBMealPlan(map[columnMealPlanID], map[columnLineID], map[columnDate],
         map[columnIsClosed] == 1);
   }
