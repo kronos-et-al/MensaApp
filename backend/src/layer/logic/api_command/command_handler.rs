@@ -35,7 +35,7 @@ where
     /// A function that creates a new [`CommandHandler`]
     ///
     /// # Errors
-    /// Returns an error, if the api keys could not be gotten from [`command_data`]
+    /// Returns an error, if the api keys could not be gotten from `command_data`
     pub async fn new(
         command_data: DataAccess,
         admin_notification: Notify,

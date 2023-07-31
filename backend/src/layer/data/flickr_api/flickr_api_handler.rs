@@ -57,7 +57,7 @@ impl ImageHoster for FlickrApiHandler {
     /// If the url can't be compiled an [`ImageHosterError::FormatNotFound`] will be returned.<br>
     /// If the connection to flickr couldn't be established [`ImageHosterError::NotConnected`] will be returned.<br>
     /// If the flickr api isn't available [`ImageHosterError::ServiceUnavailable`] will be returned.<br>
-    /// If some response couldn't be decode by this server [`ImageHosterError::DecodeFailed`] will be returned.<br>
+    /// If some response couldn't be decode by this server [`ImageHosterError::JsonDecodeFailed`] will be returned.<br>
     /// More error information is described here: [`ImageHosterError`].
     /// # Return
     /// If the image exists, the [`ImageMetaData`] struct will be returned.

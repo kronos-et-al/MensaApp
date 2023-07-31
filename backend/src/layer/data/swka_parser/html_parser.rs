@@ -162,7 +162,7 @@ impl HTMLParser {
     /// # Errors
     ///
     /// Will return a [`ParseError`], when either one of the following cases occurs (in order of appearance):
-    ///     1. If there is no node in the document, that has a class called [`ROOT_NODE_CLASS_SELECTOR`]. This indicates that a wrong html file was passed.
+    ///     1. If there is no node in the document, that has a class called [`static@ROOT_NODE_CLASS_SELECTOR`]. This indicates that a wrong html file was passed.
     ///     2. If the number of dates does not match the number of days for which data exists. This case is more for completeness and should never occur
     pub fn transform(
         &self,
