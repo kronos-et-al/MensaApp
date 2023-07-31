@@ -55,6 +55,8 @@ jobs:
       run: |
         rustup component add rustfmt
         cargo fmt --check
+    - name: Check docs
+      run: RUSTDOCFLAGS="-D warnings" cargo doc
     - name: Setup database
       run: |
         cargo install sqlx-cli --no-default-features --features native-tls,postgres
