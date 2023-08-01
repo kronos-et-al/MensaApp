@@ -23,8 +23,6 @@ class SettingsDropdownEntry<T> extends StatelessWidget {
         _heading = heading;
 
   /// Builds the widget.
-  /// @param context The context in which the widget is built.
-  /// @returns The widget.
   @override
   Widget build(BuildContext context) {
     return Column(

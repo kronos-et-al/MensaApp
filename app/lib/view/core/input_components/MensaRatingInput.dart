@@ -27,8 +27,6 @@ class MensaRatingInput extends StatelessWidget {
         _size = size;
 
   /// Builds the widget.
-  /// @param context The context in which the widget is built.
-  /// @returns The widget.
   @override
   Widget build(BuildContext context) {
     return Row(

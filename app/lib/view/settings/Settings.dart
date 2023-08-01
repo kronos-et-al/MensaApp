@@ -129,7 +129,6 @@ class Settings extends StatelessWidget {
   }
 
   /// Launches the given url.
-  /// @param url The url to launch.
   Future<void> _launchUrl(Uri url) async {
     // todo: throw Exception is not that good
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
