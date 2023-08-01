@@ -24,3 +24,16 @@ impl Logger {
             .expect("setting default subscriber failed");
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{LogInfo, Logger};
+
+    #[test]
+    fn test_logger_init() {
+        let info = LogInfo {
+            log_config: "trace".into(),
+        };
+        Logger::init(info);
+    }
+}
