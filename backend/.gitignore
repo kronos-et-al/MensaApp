@@ -12,3 +12,6 @@ target/
 
 # environment variable file
 .env
+
+# test coverage
+lcov.info
