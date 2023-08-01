@@ -41,16 +41,7 @@ class DBFavorite implements DatabaseModel {
   /// The name of the column for the price for guests.
   static const String columnPriceGuest = 'priceGuest';
 
-  /// Creates a new instance of a favorite.
-  /// @param _favoriteID The id of the favorite.
-  /// @param _lineID The id of the line.
-  /// @param _lastDate The last date of the favorite.
-  /// @param _foodType The food type of the favorite.
-  /// @param _priceStudent The price for students.
-  /// @param _priceEmployee The price for employees.
-  /// @param _pricePupil The price for pupils.
-  /// @param _priceGuest The price for guests.
-  /// @returns A new instance of a favorite.
+  /// Creates a new instance of a favorite as it is represented in the database.
   DBFavorite(
       this._favoriteID,
       this._lineID,
@@ -76,8 +67,6 @@ class DBFavorite implements DatabaseModel {
   }
 
   /// Creates a favorite from a map.
-  /// @param map The map to create a favorite from.
-  /// @returns A new instance of a favorite.
   static DBFavorite fromMap(Map<String, dynamic> map) {
     return DBFavorite(
         map[columnFavoriteID],
@@ -91,7 +80,6 @@ class DBFavorite implements DatabaseModel {
   }
 
   /// The string to create a table for a favorite.
-  /// @returns The string to create a table for a favorite.
   static String initTable() {
     return '''
     CREATE TABLE $tableName (
@@ -108,35 +96,27 @@ class DBFavorite implements DatabaseModel {
   ''';
   }
 
-  /// This method returns the price for guests.
-  /// @returns The price for guests.
+  /// Returns the price for guests.
   int get priceGuest => _priceGuest;
 
-  /// This method returns the price for pupils.
-  /// @returns The price for pupils.
+  /// Returns the price for pupils.
   int get pricePupil => _pricePupil;
 
-  /// This method returns the price for employees.
-  /// @returns The price for employees.
+  /// Returns the price for employees.
   int get priceEmployee => _priceEmployee;
 
-  /// This method returns the price for students.
-  /// @returns The price for students.
+  /// Returns the price for students.
   int get priceStudent => _priceStudent;
 
-  /// This method returns the food type of the favorite.
-  /// @returns The food type of the favorite.
+  /// Returns the food type of the favorite.
   FoodType get foodType => _foodType;
 
-  /// This method returns the last date of the favorite.
-  /// @returns The last date of the favorite.
+  /// Returns the last date of the favorite.
   String get lastDate => _lastDate;
 
-  /// This method returns the id of the line.
-  /// @returns The id of the line.
+  /// Returns the id of the line.
   String get lineID => _lineID;
 
-  /// This method returns the id of the favorite.
-  /// @returns The id of the favorite.
+  /// Returns the id of the favorite.
   String get favoriteID => _favoriteID;
 }

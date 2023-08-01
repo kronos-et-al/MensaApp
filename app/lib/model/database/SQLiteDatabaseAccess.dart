@@ -52,7 +52,6 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
       SQLiteDatabaseAccess._internal();
 
   /// Returns the singleton instance of this class.
-  /// @returns the singleton instance of this class
   factory SQLiteDatabaseAccess() {
     return _databaseAccess;
   }

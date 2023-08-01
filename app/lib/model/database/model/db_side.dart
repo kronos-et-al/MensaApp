@@ -41,16 +41,7 @@ class DBSide implements DatabaseModel {
   /// The name of the column for the price for guests.
   static const String columnPriceGuest = 'priceGuest';
 
-  /// Creates a new instance of a side.
-  /// @param _sideID The id of the side.
-  /// @param _mealID The id of the meal.
-  /// @param _name The name of the side.
-  /// @param _foodType The food type of the side.
-  /// @param _priceStudent The price for students.
-  /// @param _priceEmployee The price for employees.
-  /// @param _pricePupil The price for pupils.
-  /// @param _priceGuest The price for guests.
-  /// @returns A new instance of a side.
+  /// Creates a new instance of a side as it is represented in the Database.
   DBSide(
       this._sideID,
       this._mealID,
@@ -76,8 +67,6 @@ class DBSide implements DatabaseModel {
   }
 
   /// Creates a side from a map.
-  /// @param map The map to create the side from.
-  /// @returns The created side.
   static DBSide fromMap(Map<String, dynamic> map) {
     return DBSide(
         map[columnSideID],
@@ -91,7 +80,6 @@ class DBSide implements DatabaseModel {
   }
 
   /// The string to create a table for a side.
-  /// @returns The string to create a table for a side.
   static String initTable() {
     return '''
     CREATE TABLE $tableName (
@@ -108,35 +96,27 @@ class DBSide implements DatabaseModel {
   ''';
   }
 
-  /// This method returns the price for a guest.
-  /// @returns The price for a guest.
+  /// Returns the price for a guest.
   int get priceGuest => _priceGuest;
 
-  /// This method returns the price for a pupil.
-  /// @returns The price for a pupil.
+  /// Returns the price for a pupil.
   int get pricePupil => _pricePupil;
 
-  /// This method returns the price for an employee.
-  /// @returns The price for an employee.
+  /// Returns the price for an employee.
   int get priceEmployee => _priceEmployee;
 
-  /// This method returns the price for a student.
-  /// @returns The price for a student.
+  /// Returns the price for a student.
   int get priceStudent => _priceStudent;
 
-  /// This method returns the food type of the side.
-  /// @returns The food type of the side.
+  /// Returns the food type of the side.
   FoodType get foodType => _foodType;
 
-  /// This method returns the name of the side.
-  /// @returns The name of the side.
+  /// Returns the name of the side.
   String get name => _name;
 
-  /// This method returns the id of the meal.
-  /// @returns The id of the meal.
+  /// Returns the id of the meal.
   String get mealID => _mealID;
 
-  /// This method returns the id of the side.
-  /// @returns The id of the side.
+  /// Returns the id of the side.
   String get sideID => _sideID;
 }
