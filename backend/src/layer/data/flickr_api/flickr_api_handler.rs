@@ -124,8 +124,8 @@ mod test {
 
     use async_trait::async_trait;
 
-    use crate::interface::image_hoster::{ImageHosterError, ImageHoster, Result};
     use crate::interface::image_hoster::model::ImageMetaData;
+    use crate::interface::image_hoster::{ImageHoster, ImageHosterError, Result};
     use crate::layer::data::flickr_api::flickr_api_handler::FlickrApiHandler;
 
     #[test]
@@ -171,14 +171,14 @@ mod test {
             async fn validate_url(&self, _url: &str) -> Result<ImageMetaData> {
                 Ok(ImageMetaData {
                     id: "id".into(),
-                    image_url: "url".into()
+                    image_url: "url".into(),
                 })
             }
-        
+
             async fn check_existence(&self, _image_id: &str) -> Result<bool> {
                 Ok(true)
             }
-        
+
             async fn check_licence(&self, _image_id: &str) -> Result<bool> {
                 Ok(true)
             }
@@ -189,7 +189,5 @@ mod test {
         arc.check_existence("image_id").await.unwrap();
         arc.check_licence("image_id").await.unwrap();
         arc.validate_url("url").await.unwrap();
-
-
     }
 }
