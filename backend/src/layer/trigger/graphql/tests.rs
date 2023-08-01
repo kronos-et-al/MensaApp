@@ -1,7 +1,7 @@
 #![cfg(test)]
 #![allow(clippy::unwrap_used)]
 
-use async_graphql::{EmptySubscription, Schema};
+use async_graphql::{EmptySubscription, Request, Schema};
 
 use crate::layer::trigger::graphql::mutation::MutationRoot;
 use crate::layer::trigger::graphql::query::QueryRoot;
@@ -10,7 +10,14 @@ use crate::layer::trigger::graphql::util::{AuthHeader, CommandBox, DataBox};
 
 use super::mock::{CommandMock, RequestDatabaseMock};
 
+const VALID_AUTH_HEDAER: &str = "Mensa MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=";
+
 async fn test_gql_request(request: &'static str) {
+    let request: Request = request.into();
+    let auth = VALID_AUTH_HEDAER.to_string()
+        as AuthHeader;
+    let request = request.data(auth);
+
     let schema = construct_schema(RequestDatabaseMock, CommandMock);
     let response = schema.execute(request).await;
     assert!(response.is_ok(), "request returned {:?}", response.errors);
@@ -333,7 +340,7 @@ async fn test_get_auth_info_correct() {
         .data(Box::new(RequestDatabaseMock) as DataBox)
         .data(Box::new(CommandMock) as CommandBox)
         .data(
-            "Mensa MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=".to_string()
+            VALID_AUTH_HEDAER.to_string()
                 as AuthHeader,
         )
         .finish();
