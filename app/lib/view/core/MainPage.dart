@@ -10,8 +10,6 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 /// This widget is used to display the main page of the app.
 class MainPage extends StatefulWidget {
   /// Creates a new MainPage widget.
-  /// @param key The key to identify this widget.
-  /// @returns A new MainPage widget.
   const MainPage({super.key});
 
   @override

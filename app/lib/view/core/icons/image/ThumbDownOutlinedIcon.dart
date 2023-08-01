@@ -7,10 +7,6 @@ class ThumbDownOutlinedIcon extends StatelessWidget {
   final Color? _color;
 
   /// Creates a new thumb down icon.
-  /// @param key The key to identify this widget.
-  /// @param size The size of the icon.
-  /// @param color The color of the icon.
-  /// @return a widget that displays the icon for a thumb down
   const ThumbDownOutlinedIcon({super.key, double size = 24, Color? color})
       : _size = size,
         _color = color;

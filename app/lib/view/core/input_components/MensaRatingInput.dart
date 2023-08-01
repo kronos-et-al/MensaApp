@@ -11,13 +11,6 @@ class MensaRatingInput extends StatelessWidget {
   final double _size;
 
   /// Creates a new MensaRatingInput.
-  /// @param key The key to identify this widget.
-  /// @param onChanged The function that is called when the rating is changed.
-  /// @param value The current rating.
-  /// @param max The maximum rating.
-  /// @param color The color of the stars.
-  /// @param disabled Whether the input is disabled.
-  /// @returns A new MensaRatingInput.
   const MensaRatingInput(
       {super.key,
       required Function(int) onChanged,

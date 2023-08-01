@@ -14,10 +14,6 @@ class MealGridEntry extends StatelessWidget {
   final double _width;
 
   /// Creates a MealGridEntry.
-  /// @param meal The Meal to display.
-  /// @param width The width of the entry.
-  /// @param key The key to use for this widget.
-  /// @return A MealGridEntry.
   const MealGridEntry(
       {super.key, required Meal meal, Line? line, required double width})
       : _meal = meal,

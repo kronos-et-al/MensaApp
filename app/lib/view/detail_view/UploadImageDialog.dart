@@ -15,9 +15,6 @@ class UploadImageDialog extends StatelessWidget {
   final TextEditingController _textFieldController = TextEditingController();
 
   /// Creates a new UploadImageDialog.
-  /// @param key The key to identify this widget.
-  /// @param meal The meal to upload an image for.
-  /// @returns A new UploadImageDialog.
   UploadImageDialog({Key? key, required Meal meal})
       : _meal = meal,
         super(key: key);

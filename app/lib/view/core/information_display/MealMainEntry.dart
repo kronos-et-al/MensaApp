@@ -14,9 +14,6 @@ class MealMainEntry extends StatelessWidget {
       NumberFormat.currency(locale: 'de_DE', symbol: '€');
 
   /// Creates a MealMainEntry.
-  /// @param meal The Meal to display.
-  /// @param key The key to use for this widget.
-  /// @return A MealMainEntry.
   MealMainEntry({Key? key, required Meal meal})
       : _meal = meal,
         super(key: key);

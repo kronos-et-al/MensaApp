@@ -11,12 +11,6 @@ class SettingsDropdownEntry<T> extends StatelessWidget {
   final String _heading;
 
   /// Creates a new MensaDropdown with heading.
-  /// @param key The key to identify this widget.
-  /// @param onChanged The function that is called when the value changes.
-  /// @param value The value that is currently selected.
-  /// @param items The items that can be selected.
-  /// @param heading The heading of the dropdown.
-  /// @returns A new MensaDropdown with heading.
   const SettingsDropdownEntry(
       {super.key,
       required Function(T?)? onChanged,

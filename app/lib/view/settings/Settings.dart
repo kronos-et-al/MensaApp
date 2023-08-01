@@ -16,8 +16,6 @@ import 'package:url_launcher/url_launcher.dart';
 /// This class is the settings page of the mensa app.
 class Settings extends StatelessWidget {
   /// Creates a new settings page.
-  /// @param key The key to identify this widget.
-  /// @returns A new settings page.
   Settings({super.key}) {
     WidgetsFlutterBinding.ensureInitialized();
   }

@@ -3,6 +3,7 @@ import 'IAllergenIcon.dart';
 
 /// This widget is used to display the icon for cashews.
 class AllergenCashewsIcon extends IAllergenIcon {
+  /// Creates an new cashews icon.
   const AllergenCashewsIcon(
       {super.key, super.width, super.height, super.color});
 

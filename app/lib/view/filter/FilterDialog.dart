@@ -26,8 +26,6 @@ import 'package:provider/provider.dart';
 /// This widget is used to display the filter dialog.
 class FilterDialog extends StatefulWidget {
   /// Creates a new filter dialog.
-  /// @param key The key to identify this widget.
-  /// @return a widget that displays the filter dialog
   const FilterDialog({super.key});
 
   @override

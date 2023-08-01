@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'IAllergenIcon.dart';
 
-/// This widget is used to display the icon for Lupin
+/// This widget is used to display the icon for lupin
 class AllergenLupinIcon extends IAllergenIcon {
+  /// Creates an new lupin icon.
   const AllergenLupinIcon({super.key, super.width, super.height, super.color});
 
   @override
