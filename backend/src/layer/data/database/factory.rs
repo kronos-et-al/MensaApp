@@ -74,3 +74,40 @@ impl DataAccessFactory {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+
+    use dotenvy::dotenv;
+    use sqlx::migrate::MigrateDatabase;
+
+    use crate::layer::data::database::factory::{DataAccessFactory, DatabaseInfo};
+
+    #[tokio::test]
+    async fn test_factory() {
+        dotenv().ok();
+        let mut connection = std::env::var("DATABASE_URL").expect("test needs DATABASE_URL set");
+        connection.push_str("_test");
+
+        sqlx::Postgres::create_database(&connection)
+            .await
+            .expect("failed to create test database");
+
+        let info = DatabaseInfo {
+            connection: connection.clone(),
+        };
+        let factory = DataAccessFactory::new(info, true)
+            .await
+            .expect("faild to access test database");
+        let _ = factory.get_command_data_access();
+        let _ = factory.get_image_review_data_access();
+        let _ = factory.get_mealplan_management_data_access();
+        let _ = factory.get_request_data_access();
+
+        std::mem::drop(factory); // drop database connection
+
+        sqlx::Postgres::drop_database(&connection)
+            .await
+            .expect("failed to delete test database");
+    }
+}
