@@ -3,8 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'IAllergenIcon.dart';
 
-/// This widget is used to display the icon for Hazelnuts
+/// This widget is used to display the icon for hazelnuts
 class AllergenHazelnutsIcon extends IAllergenIcon {
+  /// Creates an new hazelnuts icon.
   const AllergenHazelnutsIcon(
       {super.key, super.width, super.height, super.color});
 

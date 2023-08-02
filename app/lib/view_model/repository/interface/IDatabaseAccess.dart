@@ -9,46 +9,37 @@ import '../error_handling/Result.dart';
 /// This is an interface to the database of the client.
 abstract class IDatabaseAccess {
   /// This method updates all mealplans with the committed mealplans.
-  /// @param mealplans The mealplans that should be updated
-  /// @return The result of the update
   Future<void> updateAll(List<MealPlan> mealplans);
 
-  /// This method returns the mealplan of the committed date of the committed canteen.
-  /// @param date The date of the mealplan
-  /// @param canteen The canteen of the mealplan
-  /// @return The mealplan of the committed date of the committed canteen or an error
+  /// Returns the [MealPlan] of the committed date of the committed canteen.
+  /// If the mealplan does not exists, it returns an [MealPlanException].
   Future<Result<List<MealPlan>, MealPlanException>> getMealPlan(
       DateTime date, Canteen canteen);
 
-  /// This method returns a favorite meal.
-  /// @param id The id of the meal
-  /// @return The favorite meal with the committed id or an error
+  /// Returns the favorite meal with the committed id.
+  /// If the [Meal] is not a favorite, it returns an [Exception].
   Future<Result<Meal, Exception>> getMealFavorite(String id);
 
-  /// This method returns a favorite meals line.
-  /// @param the meal whose line is requested
-  /// @return the line that once offered the meal
+  /// Returns the line of the committed favorite meal.
+  /// If the [Meal] is not a favorite, it returns 'null'.
   Future<Line?> getFavoriteMealsLine(Meal meal);
 
-  /// this method returns a favorite meals date.
-  /// @param the meal whose date is requested
-  /// @return the date that once had offered the meal
+  /// Returns the date the committed favorite meal was served.
+  /// If the [Meal] is not a favorite, it returns 'null'.
   Future<DateTime?> getFavoriteMealsDate(Meal meal);
 
-  /// This method adds a favorite. If the favorite does already exists, it does nothing.
-  /// @param meal The meal that should be added as favorite
-  /// @return The result of the update
+  /// This method adds a favorite.
+  /// If the favorite does already exists, it does nothing.
   Future<void> addFavorite(Meal meal);
 
-  /// This method removes a favorite. If the favorite does not exists, it does nothing.
-  /// @param meal The meal that should be removed as favorite
-  /// @return The result of the update
+  /// This method removes a favorite.
+  /// If the favorite does not exists, it does nothing.
   Future<void> deleteFavorite(Meal meal);
 
-  /// This method returns all Favorites.
-  /// @return all Favorites
+  /// Returns all Favorites.
   Future<List<Meal>> getFavorites();
 
   /// This method returns the canteen with the committed id.
-  Future<Canteen> getCanteenById(String id);
+  /// If no canteen with the committed id exists, it returns 'null'.
+  Future<Canteen?> getCanteenById(String id);
 }

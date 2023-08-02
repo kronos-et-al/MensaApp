@@ -6,11 +6,7 @@ class NavigationArrowDownIcon extends StatelessWidget {
   final double? _size;
   final Color? _color;
 
-  /// This widget is used to display the icon for an arrow to the left
-  /// @param key is the key of the widget
-  /// @param size is the size of the icon
-  /// @param color is the color of the icon
-  /// @returns a [NavigationArrowDownIcon] widget
+  /// This widget is used to display the icon for an arrow to the left.
   const NavigationArrowDownIcon({super.key, double size = 24, Color? color})
       : _size = size,
         _color = color;

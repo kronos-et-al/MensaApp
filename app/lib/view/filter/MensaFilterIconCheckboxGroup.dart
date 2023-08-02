@@ -8,10 +8,6 @@ class MensaFilterIconCheckboxGroup<T> extends StatelessWidget {
   final Function(List<T>) _onChanged;
 
   /// Creates a MensaFilterIconCheckboxGroup widget.
-  /// @param key The key to use for this widget.
-  /// @param items The items to display.
-  /// @param selectedValues The values that are currently selected.
-  /// @param onChanged The function to call when the selection changes.
   const MensaFilterIconCheckboxGroup(
       {super.key,
       required List<MensaFilterIconCheckbox<T>> items,

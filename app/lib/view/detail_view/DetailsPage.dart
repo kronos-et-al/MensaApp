@@ -29,10 +29,6 @@ class DetailsPage extends StatefulWidget {
   final Line? _line;
 
   /// Creates a new DetailsPage.
-  /// @param key The key to identify this widget.
-  /// @param meal The meal to display.
-  /// @param line The line of the meal.
-  /// @returns A new DetailsPage.
   const DetailsPage({super.key, required Meal meal, Line? line})
       : _meal = meal,
         _line = line;
@@ -220,7 +216,7 @@ class DetailsPageState extends State<DetailsPage> {
                                       Theme.of(context).colorScheme.onSurface,
                                   size: 20,
                                   max: 5,
-                                  onChanged: (int) {},
+                                  onChanged: (value) {},
                                 ),
                                 const Spacer(),
                                 MensaButton(

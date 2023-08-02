@@ -16,8 +16,6 @@ class SharedPreferenceAccess implements ILocalStorage {
   final SharedPreferences _pref;
 
   /// This constructor creates a new instance of the shared preference access.
-  /// @param _pref The shared preferences.
-  /// @return A new instance of the shared preference access.
   SharedPreferenceAccess(this._pref);
 
   @override

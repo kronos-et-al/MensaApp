@@ -3,26 +3,22 @@ class Canteen {
   final String _id;
   final String _name;
 
-  /// This constructor creates a new canteen.
-  /// @param id The id of the canteen
-  /// @param name The name of the canteen
-  /// @return A new canteen
+  /// constructor that creates a new canteen.
+  ///
+  /// The required values are the [id] and the [name] of the canteen.
   Canteen({
     required String id,
     required String name,
   })  : _id = id,
         _name = name;
 
-  /// This method returns the id of the canteen.
-  /// @return The id of the canteen
+  /// Returns the id of the canteen.
   String get id => _id;
 
-  /// This method returns the name of the canteen.
-  /// @return The name of the canteen
+  /// Returns the name of the canteen.
   String get name => _name;
 
-  /// This method returns all attributes needed for the database.
-  /// @return All attributes needed for the database
+  /// Returns all attributes as a map.
   Map<String, dynamic> toMap() {
     return {
       'canteenID': _id,

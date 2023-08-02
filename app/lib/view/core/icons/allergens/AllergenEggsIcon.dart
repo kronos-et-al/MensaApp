@@ -3,8 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'IAllergenIcon.dart';
 
-/// This widget is used to display the icon for Eggs
+/// This widget is used to display the icon for eggs
 class AllergenEggsIcon extends IAllergenIcon {
+  /// Creates an new eggs icon.
   const AllergenEggsIcon({super.key, super.width, super.height, super.color});
 
   @override

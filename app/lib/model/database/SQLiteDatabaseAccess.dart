@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:app/model/database/model/database_model.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
@@ -53,7 +52,6 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
       SQLiteDatabaseAccess._internal();
 
   /// Returns the singleton instance of this class.
-  /// @returns the singleton instance of this class
   factory SQLiteDatabaseAccess() {
     return _databaseAccess;
   }

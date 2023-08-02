@@ -8,8 +8,6 @@ import 'package:provider/provider.dart';
 /// This widget is used to display the favorites.
 class Favorites extends StatelessWidget {
   /// Creates a new Favorites widget.
-  /// @param key The key to identify this widget.
-  /// @returns A new Favorites widget.
   const Favorites({super.key});
 
   @override
@@ -19,7 +17,6 @@ class Favorites extends StatelessWidget {
         future: Future.wait([favoriteAccess.getFavoriteMeals()]),
         builder: (context, snapshot) {
           if (!snapshot.hasData || snapshot.hasError) {
-            print(snapshot.error);
             return Scaffold(
                 appBar: MensaAppBar(
                     appBarHeight: kToolbarHeight,
