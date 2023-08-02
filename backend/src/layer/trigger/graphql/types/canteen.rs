@@ -21,7 +21,6 @@ impl Canteen {
     /// Provides the lines of the canteen.
     #[instrument(skip(ctx))]
     async fn lines(&self, ctx: &Context<'_>) -> Result<Vec<Line>> {
-        trace!(TRACE_QUERY_MESSAGE);
         let data = ctx.get_data_access();
         let lines = data
             .get_lines(self.id)
