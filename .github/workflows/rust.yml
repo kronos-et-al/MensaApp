@@ -73,6 +73,9 @@ jobs:
   test:
     name:                       coverage
     runs-on:                    ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
     container:
       image:                    xd009642/tarpaulin:develop-nightly
       options:                  --security-opt seccomp=unconfined
