@@ -848,4 +848,196 @@ mod test {
         assert_eq!(selection.name, name);
         assert_eq!(selection.position as u32, pos);
     }
+
+    #[sqlx::test(fixtures("meal"))]
+    async fn test_update_meal(pool: PgPool) {
+        let data = PersistentMealplanManagementData { pool: pool.clone() };
+
+        // test meal updated
+        let food_uuid = Uuid::try_from("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
+        let name = "mealy";
+
+        let ok = data.update_meal(food_uuid, name).await.is_ok();
+        assert!(ok);
+
+        let actual_name =
+            sqlx::query_scalar!("SELECT name FROM food where food_id = $1", food_uuid)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+        assert_eq!(&actual_name, name);
+    }
+
+    #[sqlx::test(fixtures("meal"))]
+    async fn test_update_side(pool: PgPool) {
+        let data = PersistentMealplanManagementData { pool: pool.clone() };
+        let name = "side";
+
+        // test side changed
+        let side_uuid = Uuid::try_from("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap();
+        let ok = data.update_side(side_uuid, name).await.is_ok();
+        assert!(ok);
+
+        let actual_name =
+            sqlx::query_scalar!("SELECT name FROM food where food_id = $1", side_uuid)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+        assert_eq!(&actual_name, name);
+    }
+
+    #[sqlx::test()]
+    async fn test_insert_meal(pool: PgPool) {
+        let data = PersistentMealplanManagementData { pool: pool.clone() };
+        let name = "mealy";
+
+        let allergens = &[Allergen::Ca, Allergen::Di];
+        let additives = &[Additive::Alcohol];
+        let id = data
+            .insert_meal(name, MealType::Beef, allergens, additives)
+            .await
+            .expect("meal should be successfully inserted");
+
+        let food = sqlx::query!(
+            r#"SELECT name, food_type as "food_type: MealType" FROM food JOIN meal USING (food_id) where food_id = $1"#,
+            id
+        )
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+        assert_eq!(&food.name, name);
+        assert_eq!(food.food_type, MealType::Beef);
+
+        let actual_allergens = sqlx::query_scalar!(
+            r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1"#,
+            id
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
+        assert_eq!(&actual_allergens, allergens);
+
+        let actual_additives = sqlx::query_scalar!(
+            r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1"#,
+            id
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
+        assert_eq!(&actual_additives, additives);
+    }
+
+    #[sqlx::test]
+    async fn test_insert_side(pool: PgPool) {
+        let data = PersistentMealplanManagementData { pool: pool.clone() };
+        let name = "side";
+
+        let allergens = &[Allergen::Ca, Allergen::Di];
+        let additives = &[Additive::Alcohol];
+        let id = data
+            .insert_side(name, MealType::Beef, allergens, additives)
+            .await
+            .expect("meal should be successfully inserted");
+
+        let food = sqlx::query!(
+            r#"SELECT name, food_type as "food_type: MealType" FROM food where food_id = $1"#,
+            id
+        )
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+        assert_eq!(&food.name, name);
+        assert_eq!(food.food_type, MealType::Beef);
+
+        // not a main dish => side
+        let result = sqlx::query!("SELECT * from meal WHERE food_id = $1", id)
+            .fetch_all(&pool)
+            .await
+            .unwrap();
+        assert!(result.is_empty());
+
+        let actual_allergens = sqlx::query_scalar!(
+            r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1"#,
+            id
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
+        assert_eq!(&actual_allergens, allergens);
+
+        let actual_additives = sqlx::query_scalar!(
+            r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1"#,
+            id
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
+        assert_eq!(&actual_additives, additives);
+    }
+
+    #[sqlx::test(fixtures("canteen", "line", "meal"))]
+    async fn test_add_meal_to_plan(pool: PgPool) {
+        let data = PersistentMealplanManagementData { pool: pool.clone() };
+
+        let meal_id = Uuid::try_from("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
+        let line_id = Uuid::try_from("61b27158-817c-4716-bd41-2a8901391ea4").unwrap();
+        let price = Price {
+            price_student: 1,
+            price_employee: 2,
+            price_guest: 3,
+            price_pupil: 4,
+        };
+        let date = Date::from_ymd_opt(2020, 10, 30).unwrap();
+        data.add_meal_to_plan(meal_id, line_id, date, price)
+            .await
+            .expect("meal should be added to plan");
+
+        let record = sqlx::query!(
+            "SELECT * FROM food_plan WHERE food_id = $1 AND line_id = $2",
+            meal_id,
+            line_id
+        )
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+
+        assert_eq!(date, record.serve_date);
+        assert_eq!(price.price_student, record.price_student as u32);
+        assert_eq!(price.price_employee, record.price_employee as u32);
+        assert_eq!(price.price_guest, record.price_guest as u32);
+        assert_eq!(price.price_pupil, record.price_pupil as u32);
+    }
+    
+    #[sqlx::test(fixtures("canteen", "line", "meal"))]
+    async fn test_add_side_to_plan(pool: PgPool) {
+        let data = PersistentMealplanManagementData { pool: pool.clone() };
+
+        let side_id = Uuid::try_from("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap();
+        let line_id = Uuid::try_from("61b27158-817c-4716-bd41-2a8901391ea4").unwrap();
+        let price = Price {
+            price_student: 1,
+            price_employee: 2,
+            price_guest: 3,
+            price_pupil: 4,
+        };
+        let date = Date::from_ymd_opt(2020, 10, 30).unwrap();
+        data.add_side_to_plan(side_id, line_id, date, price)
+            .await
+            .expect("meal should be added to plan");
+
+        let record = sqlx::query!(
+            "SELECT * FROM food_plan WHERE food_id = $1 AND line_id = $2",
+            side_id,
+            line_id
+        )
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+
+        assert_eq!(date, record.serve_date);
+        assert_eq!(price.price_student, record.price_student as u32);
+        assert_eq!(price.price_employee, record.price_employee as u32);
+        assert_eq!(price.price_guest, record.price_guest as u32);
+        assert_eq!(price.price_pupil, record.price_pupil as u32);
+    }
 }
