@@ -1,0 +1,70 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM image WHERE image_id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "image_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "user_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "food_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "link_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 6,
+        "name": "last_verified_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 7,
+        "name": "approved",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 8,
+        "name": "currently_visible",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "3776df88c1f3c6d115fda668797657af8695c3919b281827a768aa0471965fd2"
+}

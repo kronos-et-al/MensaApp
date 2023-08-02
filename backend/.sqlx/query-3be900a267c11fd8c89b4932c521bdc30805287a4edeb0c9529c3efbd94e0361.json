@@ -1,0 +1,32 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM meal_rating",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "user_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "food_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "rating",
+        "type_info": "Int2"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "3be900a267c11fd8c89b4932c521bdc30805287a4edeb0c9529c3efbd94e0361"
+}
