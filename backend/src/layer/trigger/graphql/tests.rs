@@ -10,12 +10,12 @@ use crate::layer::trigger::graphql::util::{AuthHeader, CommandBox, DataBox};
 
 use super::mock::{CommandMock, RequestDatabaseMock};
 
-const VALID_AUTH_HEDAER: &str = "Mensa MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=";
+const VALID_AUTH_HEDAER: &str =
+    "Mensa MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=";
 
 async fn test_gql_request(request: &'static str) {
     let request: Request = request.into();
-    let auth = VALID_AUTH_HEDAER.to_string()
-        as AuthHeader;
+    let auth = VALID_AUTH_HEDAER.to_string() as AuthHeader;
     let request = request.data(auth);
 
     let schema = construct_schema(RequestDatabaseMock, CommandMock);
@@ -339,10 +339,7 @@ async fn test_get_auth_info_correct() {
     let schema = Schema::build(QueryRoot, MutationRoot, EmptySubscription)
         .data(Box::new(RequestDatabaseMock) as DataBox)
         .data(Box::new(CommandMock) as CommandBox)
-        .data(
-            VALID_AUTH_HEDAER.to_string()
-                as AuthHeader,
-        )
+        .data(VALID_AUTH_HEDAER.to_string() as AuthHeader)
         .finish();
     let response = schema.execute(request).await;
     assert!(response.is_ok(), "request returned {:?}", response.errors);
