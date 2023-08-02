@@ -107,7 +107,6 @@ where
 
 #[cfg(test)]
 mod test {
-    use tracing::info;
     use tracing_test::traced_test;
 
     use crate::{
@@ -134,7 +133,7 @@ mod test {
             ImageHosterMock::default(),
         );
         image_reviewer.start_image_review().await;
-        
+
         logs_assert(|lines: &[&str]| {
             assert!(lines.is_empty());
             Ok(())
