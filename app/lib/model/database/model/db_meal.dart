@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:app/model/database/model/database_model.dart';
 
 import '../../../view_model/repository/data_classes/filter/Frequency.dart';
@@ -133,7 +135,7 @@ class DBMeal implements DatabaseModel {
         map[columnPriceGuest],
         map[columnIndividualRating],
         map[columnNumberOfRatings],
-        map[columnAverageRating],
+        _checkDouble(map[columnAverageRating]) ?? 0,
         map[columnLastServed],
         map[columnNextServed],
         Frequency.values.byName(map[columnRelativeFrequency]));
@@ -144,7 +146,7 @@ class DBMeal implements DatabaseModel {
   static String initTable() {
     return '''
     CREATE TABLE $tableName (
-      $columnMealID TEXT PRIMARY KEY,
+      $columnMealID TEXT NOT NULL,
       $columnMealPlanID TEXT NOT NULL,
       $columnName TEXT NOT NULL,
       $columnFoodType TEXT NOT NULL,
@@ -158,7 +160,8 @@ class DBMeal implements DatabaseModel {
       $columnLastServed TEXT NOT NULL,
       $columnNextServed TEXT,
       $columnRelativeFrequency TEXT,
-      FOREIGN KEY($columnMealPlanID) REFERENCES ${DBMealPlan.tableName}(${DBMealPlan.columnMealPlanID})
+      FOREIGN KEY($columnMealPlanID) REFERENCES ${DBMealPlan.tableName}(${DBMealPlan.columnMealPlanID}),
+      PRIMARY KEY($columnMealPlanID, $columnMealID)
     )
   ''';
   }
@@ -218,4 +221,11 @@ class DBMeal implements DatabaseModel {
   /// This method is used to get the meal id.
   /// @return The meal id.
   String get mealID => _mealID;
+
+  static double? _checkDouble(dynamic value) {
+    if(value is double) return value;
+    if(value is int) return value.toDouble();
+    if(value is String) return double.tryParse(value);
+    return null;
+  }
 }

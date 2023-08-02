@@ -25,7 +25,7 @@ class DBSideAdditive implements DatabaseModel {
 
   @override
   Map<String, dynamic> toMap() {
-    return {columnSideID: _sideID, columnAdditive: _additive};
+    return {columnSideID: _sideID, columnAdditive: _additive.name};
   }
 
   /// Creates a new instance of a side additive from a map.

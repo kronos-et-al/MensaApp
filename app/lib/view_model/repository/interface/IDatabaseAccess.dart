@@ -51,4 +51,7 @@ abstract class IDatabaseAccess {
 
   /// This method returns the canteen with the committed id.
   Future<Canteen> getCanteenById(String id);
+
+  /// This method returns all canteens or null if no canteen is stored.
+  Future<List<Canteen>?> getCanteens();
 }

@@ -67,7 +67,7 @@ class DBSide implements DatabaseModel {
       columnSideID: _sideID,
       columnMealID: _mealID,
       columnName: _name,
-      columnFoodType: _foodType,
+      columnFoodType: _foodType.name,
       columnPriceStudent: _priceStudent,
       columnPriceEmployee: _priceEmployee,
       columnPricePupil: _pricePupil,
@@ -83,7 +83,7 @@ class DBSide implements DatabaseModel {
         map[columnSideID],
         map[columnMealID],
         map[columnName],
-        map[columnFoodType],
+        FoodType.values.byName(map[columnFoodType]),
         map[columnPriceStudent],
         map[columnPriceEmployee],
         map[columnPricePupil],
@@ -95,7 +95,7 @@ class DBSide implements DatabaseModel {
   static String initTable() {
     return '''
     CREATE TABLE $tableName (
-      $columnSideID TEXT PRIMARY KEY,
+      $columnSideID TEXT NOT NULL,
       $columnMealID TEXT NOT NULL,
       $columnName TEXT NOT NULL,
       $columnFoodType TEXT NOT NULL,
@@ -103,7 +103,8 @@ class DBSide implements DatabaseModel {
       $columnPriceEmployee INTEGER NOT NULL CHECK($columnPriceEmployee >= 0),
       $columnPricePupil INTEGER NOT NULL CHECK($columnPricePupil >= 0),
       $columnPriceGuest INTEGER NOT NULL CHECK($columnPriceGuest >= 0),
-      FOREIGN KEY($columnMealID) REFERENCES ${DBMeal.tableName}(${DBMeal.columnMealID})
+      FOREIGN KEY($columnMealID) REFERENCES ${DBMeal.tableName}(${DBMeal.columnMealID}),
+      PRIMARY KEY($columnSideID, $columnMealID)
     )
   ''';
   }

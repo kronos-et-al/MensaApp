@@ -41,6 +41,10 @@ class GraphQlServerAccess implements IServerAccess {
 
   GraphQlServerAccess._(this._clientId, String server, this._apiKey) {
     _client = GraphQLClient(
+        defaultPolicies: DefaultPolicies(
+          query: Policies(fetch: FetchPolicy.networkOnly),
+          mutate: Policies(fetch: FetchPolicy.networkOnly),
+        ),
         link: AuthLink(getToken: () => _currentAuth).concat(HttpLink(server)),
         cache: GraphQLCache());
     _authenticate(""); // provide default authentication with client id
@@ -126,7 +130,7 @@ class GraphQlServerAccess implements IServerAccess {
     final result = await _client.mutate$LinkImage(Options$Mutation$LinkImage(
         variables:
             Variables$Mutation$LinkImage(imageUrl: url, mealId: meal.id)));
-
+    print(result);
     return result.parsedData?.addImage ?? false;
   }
 
@@ -179,6 +183,7 @@ class GraphQlServerAccess implements IServerAccess {
       final date = today.add(Duration(days: offset));
       final result = await _client.query$GetMealPlanForDay(
           Options$Query$GetMealPlanForDay(
+            fetchPolicy: FetchPolicy.networkOnly,
               variables: Variables$Query$GetMealPlanForDay(
                   date: _dateFormat.format(date))));
 
@@ -206,6 +211,7 @@ class GraphQlServerAccess implements IServerAccess {
   Future<Result<Meal, Exception>> getMeal(
       Meal meal, Line line, DateTime date) async {
     final result = await _client.query$GetMeal(Options$Query$GetMeal(
+      fetchPolicy: FetchPolicy.networkOnly,
         variables: Variables$Query$GetMeal(
             date: _dateFormat.format(date), mealId: meal.id, lineId: line.id)));
 
@@ -227,6 +233,7 @@ class GraphQlServerAccess implements IServerAccess {
       Canteen canteen, DateTime date) async {
     final result = await _client.query$GetCanteenDate(
         Options$Query$GetCanteenDate(
+          fetchPolicy: FetchPolicy.networkOnly,
             variables: Variables$Query$GetCanteenDate(
                 canteenId: canteen.id, date: _dateFormat.format(date))));
 
@@ -234,6 +241,8 @@ class GraphQlServerAccess implements IServerAccess {
     if (exception != null) {
       return Failure(NoConnectionException(exception.toString()));
     }
+
+    print(result.parsedData?.getCanteen);
 
     final mealPlan = _convertMealPlan(
         [result.parsedData?.getCanteen].nonNulls.toList(), date);

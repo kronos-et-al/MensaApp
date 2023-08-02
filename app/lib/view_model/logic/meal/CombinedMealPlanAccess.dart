@@ -84,6 +84,13 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       Failure() => []
     };
 
+    if (_mealPlans.isNotEmpty) {
+      print("meal plans from database");
+      await _filterMealPlans();
+      await _setNewMealPlan();
+      return;
+    }
+
     // get meal plans form server
     List<MealPlan> mealPlans = switch (await _api.updateAll()) {
       Success(value: final mealplan) => mealplan,
@@ -197,11 +204,11 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       return Future.value(Failure(ClosedCanteenException("canteen closed")));
     }
 
-    _mealPlans.forEach((element) {
-      element.meals.forEach((element) {
+    for (var element in _mealPlans) {
+      for (var element in element.meals) {
         print(element.name);
-      });
-    });
+      }
+    }
 
     if (!_activeFilter) {
       return Future.value(Success(_mealPlans));
@@ -221,6 +228,12 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     await _doneInitialization;
 
     final mealPlan = await _getMealPlanFromServer();
+
+    for (var element in mealPlan) {
+      for (var element in element.meals) {
+        print('fetched data: ${element.toMap()}');
+      }
+    }
 
     if (mealPlan.isEmpty) {
       return "snackbar.refreshMealPlanError";
@@ -264,7 +277,9 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   Future<List<Canteen>> getAvailableCanteens() async {
     await _doneInitialization;
 
-    return await _api.getCanteens() ?? List<Canteen>.empty();
+    return (await _database.getCanteens()) ??
+        (await _api.getCanteens()) ??
+        List<Canteen>.empty();
   }
 
   @override
@@ -296,7 +311,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     await _doneInitialization;
 
     bool changed = await _updateFavorites();
-    final category = await _preferences.getPriceCategory();
+    final category = _preferences.getPriceCategory();
 
     // check if changed
     if (category != null && category != _priceCategory) {
