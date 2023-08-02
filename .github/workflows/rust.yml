@@ -86,6 +86,8 @@ jobs:
       - name:                   Generate code coverage
         run: |
           cargo +nightly tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
+        env:
+          SQLX_OFFLINE: true
 
       - name:                   Upload to codecov.io
         uses:                   codecov/codecov-action@v2
