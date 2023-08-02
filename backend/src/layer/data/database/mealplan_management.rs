@@ -1007,7 +1007,7 @@ mod test {
         assert_eq!(price.price_guest, record.price_guest as u32);
         assert_eq!(price.price_pupil, record.price_pupil as u32);
     }
-    
+
     #[sqlx::test(fixtures("canteen", "line", "meal"))]
     async fn test_add_side_to_plan(pool: PgPool) {
         let data = PersistentMealplanManagementData { pool: pool.clone() };
