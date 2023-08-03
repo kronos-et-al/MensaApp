@@ -100,7 +100,7 @@ mod test {
     use crate::layer::data::flickr_api::json_structs::Sizes;
 
     #[test]
-    fn valid_get_size() {
+    fn test_valid_get_size() {
         let valid_sizes = JsonRootSizes {
             sizes: Sizes {
                 size: vec![
@@ -126,7 +126,7 @@ mod test {
     }
 
     #[test]
-    fn fallback_get_size() {
+    fn test_fallback_get_size() {
         let fallback_sizes = JsonRootSizes {
             sizes: Sizes {
                 size: vec![
@@ -152,7 +152,7 @@ mod test {
     }
 
     #[test]
-    fn invalid_get_size() {
+    fn test_invalid_get_size() {
         let invalid_sizes = JsonRootSizes {
             sizes: Sizes {
                 size: vec![Size {
@@ -168,7 +168,7 @@ mod test {
     }
 
     #[test]
-    fn valid_check_license() {
+    fn test_valid_check_license() {
         let valid_licenses = JsonRootLicense {
             license_history: vec![
                 LicenceHistory {
@@ -185,7 +185,7 @@ mod test {
     }
 
     #[test]
-    fn valid_parse_error() {
+    fn test_valid_parse_error() {
         let valid_error = JsonRootError {
             stat: String::new(),
             code: 0,
@@ -196,7 +196,7 @@ mod test {
     }
 
     #[test]
-    fn invalid_parse_error() {
+    fn test_invalid_parse_error() {
         let invalid_error = JsonRootError {
             stat: String::new(),
             code: 42,

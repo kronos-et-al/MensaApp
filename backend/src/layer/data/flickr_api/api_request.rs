@@ -1,4 +1,3 @@
-use axum::Json;
 use crate::interface::image_hoster::model::ImageMetaData;
 use crate::interface::image_hoster::ImageHosterError;
 use crate::layer::data::flickr_api::json_parser::JsonParser;
@@ -62,8 +61,6 @@ impl ApiRequest {
         }
     }
 
-
-
     /// This method is used to request image license information for the given `photo_id` from the flickr api.
     /// # Errors
     /// If the request could not be decoded ([`ImageHosterError::DecodeFailed`],
@@ -125,7 +122,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn valid_request_sizes() {
+    async fn test_valid_request_sizes() {
         let expected = "https://live.staticflickr.com/65535/53066073286_9fcebfc95f_b.jpg";
         let res = get_api_request()
             .flickr_photos_get_sizes("2oRguN3")
@@ -135,7 +132,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn invalid_request_sizes() {
+    async fn test_invalid_request_sizes() {
         let res = get_api_request()
             .flickr_photos_get_sizes("If it is it, it is it; if it is it is it, it is")
             .await;
@@ -143,14 +140,14 @@ mod test {
     }
 
     #[tokio::test]
-    async fn valid_error_request() {
+    async fn test_valid_error_request() {
         let expected = ImageHosterError::PhotoNotFound;
         let res = get_api_request().flickr_photos_get_sizes("42").await;
         assert_eq!(expected, res.unwrap_err());
     }
 
     #[tokio::test]
-    async fn invalid_license_request() {
+    async fn test_invalid_license_request() {
         let res = get_api_request()
             .flickr_photos_license_check("If it is it, it is it; if it is it is it, it is")
             .await;
@@ -158,7 +155,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn valid_check_license_request() {
+    async fn test_valid_check_license_request() {
         let res = get_api_request()
             .flickr_photos_license_check("52310534489")
             .await
@@ -167,7 +164,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn error_check_license_invalid_photo() {
+    async fn test_error_check_license_invalid_photo() {
         // FlickrApi responses with code 0 but documents code 1...
         // Only the flickr.photos.licenses.getLicenseHistory request has this issue.
         // See: https://www.flickr.com/services/api/flickr.photos.licenses.getLicenseHistory.html
