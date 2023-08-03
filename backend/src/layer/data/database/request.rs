@@ -127,7 +127,7 @@ impl RequestDataAccess for PersistentRequestData {
                 new, frequency, last_served, next_served, average_rating, rating_count
             FROM meal_detail JOIN food_plan USING (food_id)
             WHERE line_id = $1 AND serve_date = $2
-            ORDER BY food_id
+            ORDER BY price_student DESC, food_type DESC, food_id
             "#,
             line_id,
             date
@@ -667,6 +667,6 @@ mod tests {
             meal_type: MealType::Unknown,
             ..meal1
         };
-        vec![meal1, meal2]
+        vec![meal2, meal1]
     }
 }
