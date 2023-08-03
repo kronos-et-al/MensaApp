@@ -379,8 +379,8 @@ mod tests {
         let request = PersistentRequestData { pool };
 
         let meal_id_strs = [
-            "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
             "f7337122-b018-48ad-b420-6202dc3cb4ff",
+            "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
         ];
         let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
         let date = Local::now().date_naive();
