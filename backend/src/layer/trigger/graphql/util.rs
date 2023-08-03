@@ -40,6 +40,7 @@ const AUTH_TYPE: &str = "Mensa";
 const AUTH_SEPARATOR: char = ':';
 
 /// Parses and decodes the auth header into an [`AuthInfo`]
+#[must_use]
 pub fn read_auth_from_header(header: &str) -> AuthInfo {
     let (auth_type, codeword) = header.split_once(' ')?;
 
