@@ -26,7 +26,7 @@ lazy_static! {
 
 impl FlickrApiHandler {
     #[must_use]
-    #[allow(clippy::missing_const_for_fn)] // cannot be made const because of compiler error`
+    #[allow(clippy::missing_const_for_fn)]
     pub fn new(info: FlickrInfo) -> Self {
         Self {
             request: ApiRequest::new(info.api_key),
@@ -121,13 +121,21 @@ where
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
+
+    use std::env;
     use std::sync::Arc;
 
     use async_trait::async_trait;
+    use dotenvy::dotenv;
 
     use crate::interface::image_hoster::model::ImageMetaData;
     use crate::interface::image_hoster::{ImageHoster, ImageHosterError, Result};
-    use crate::layer::data::flickr_api::flickr_api_handler::FlickrApiHandler;
+    use crate::layer::data::flickr_api::flickr_api_handler::{FlickrApiHandler, FlickrInfo};
+
+    fn get_api_key() -> String {
+        dotenv().ok();
+        env::var("FLICKR_API_KEY").expect("FLICKR_API_KEY should be set in the .env!")
+    }
 
     #[test]
     fn test_valid_determine_short_photo_id() {
@@ -137,29 +145,29 @@ mod test {
     }
 
     #[test]
-    fn test_valid_determine_long_photo_id() {
-        let valid_url = "https://www.flickr.com/photos/198319418@N06/53077317043/";
+    fn test_valid_determine_long1_photo_id() {
+        let valid_url = "https://www.flickr.com/photos/198319418@N06/53077317043";
         let res = FlickrApiHandler::determine_photo_id(valid_url).unwrap();
         assert_eq!(res, "53077317043");
     }
 
     #[test]
-    fn test_empty_determine_photo_id() {
-        let valid_url = "";
-        let res = FlickrApiHandler::determine_photo_id(valid_url)
-            .err()
-            .unwrap();
-        assert_eq!(
-            res,
-            ImageHosterError::FormatNotFound(format!(
-                "this url format is not supported: '{valid_url}'"
-            ))
-        );
+    fn test_valid_determine_long2_photo_id() {
+        let valid_url = "https://www.flickr.com/photos/gerdavs/52310534489/";
+        let res = FlickrApiHandler::determine_photo_id(valid_url).unwrap();
+        assert_eq!(res, "52310534489");
     }
 
     #[test]
     fn test_invalid_determine_photo_id() {
-        let valid_url = "https://flic.kr/p/";
+        let valid_url = "https://www.flickr.com/photos/gerdavs/";
+        let res = FlickrApiHandler::determine_photo_id(valid_url);
+        assert!(res.is_err());
+    }
+
+    #[test]
+    fn test_empty_determine_photo_id() {
+        let valid_url = "";
         let res = FlickrApiHandler::determine_photo_id(valid_url)
             .err()
             .unwrap();
@@ -197,5 +205,30 @@ mod test {
         arc.check_existence("image_id").await.unwrap();
         arc.check_licence("image_id").await.unwrap();
         arc.validate_url("url").await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_validate_url() {
+        let handler = FlickrApiHandler::new(FlickrInfo {
+            api_key: get_api_key(),
+        });
+        let url = "https://www.flickr.com/photos/198319418@N06/53077317043";
+        assert!(handler.validate_url(url).await.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_check_license() {
+        let handler = FlickrApiHandler::new(FlickrInfo {
+            api_key: get_api_key(),
+        });
+        assert!(handler.check_licence("53077317043").await.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_check_existence() {
+        let handler = FlickrApiHandler::new(FlickrInfo {
+            api_key: get_api_key(),
+        });
+        assert!(handler.check_existence("53077317043").await.is_ok());
     }
 }
