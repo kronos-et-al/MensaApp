@@ -92,11 +92,22 @@ jobs:
     steps:
       - name:                   Checkout repository
         uses:                   actions/checkout@v2
-
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Setup database
+        run: |
+          cargo install sqlx-cli --no-default-features --features native-tls,postgres
+          cargo sqlx database setup
       - name:                   Generate code coverage
         run: |
           cargo +nightly tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
-
       - name:                   Upload to codecov.io
         uses:                   codecov/codecov-action@v2
         with:
