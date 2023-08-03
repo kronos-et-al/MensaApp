@@ -227,14 +227,14 @@ mod test {
     }
 
     #[tokio::test]
-    async fn resolve_empty_canteen() {
+    async fn test_resolve_empty_canteen() {
         let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
         let res = resolver.resolve(get_empty_canteen(), Local::now().date_naive());
         assert!(res.await.is_ok());
     }
 
     #[tokio::test]
-    async fn resolve_canteens() {
+    async fn test_resolve_canteens() {
         let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
         let mut rng = rand::thread_rng();
         for canteen in get_canteens(
@@ -250,7 +250,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn resolve_line_with_rand_dishes() {
+    async fn test_resolve_line_with_rand_dishes() {
         let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
         let mut rng = rand::thread_rng();
         let mut dishes = Vec::new();
@@ -262,6 +262,12 @@ mod test {
             .resolve_line(Local::now().date_naive(), line, Uuid::default())
             .await
             .is_ok());
+    }
+
+    #[test]
+    fn test_is_side() {
+        let res = RelationResolver::<MealplanManagementDatabaseMock>::is_side(400_u32, 400_f64, "name");
+        assert!(!res);
     }
 
     #[test]

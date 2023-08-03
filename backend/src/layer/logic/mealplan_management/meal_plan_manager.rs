@@ -88,13 +88,13 @@ mod test {
     use crate::layer::logic::mealplan_management::test::mealplan_management_database_mock::MealplanManagementDatabaseMock;
 
     #[tokio::test]
-    async fn valid_start_update_parsing() {
+    async fn test_valid_start_update_parsing() {
         let manager = MealPlanManager::new(MealplanManagementDatabaseMock, MealPlanParserMock);
         manager.start_update_parsing().await;
     }
 
     #[tokio::test]
-    async fn valid_start_full_parsing() {
+    async fn test_valid_start_full_parsing() {
         let manager = MealPlanManager::new(MealplanManagementDatabaseMock, MealPlanParserMock);
         manager.start_full_parsing().await;
     }
