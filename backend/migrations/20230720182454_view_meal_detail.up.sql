@@ -2,7 +2,7 @@
 CREATE VIEW meal_detail AS (
     SELECT meal.*, COALESCE(stat.new, true) as new,
 		COALESCE(stat.frequency, 0) as frequency, stat.last_served, stat.next_served,
-		COALESCE(rating.average_rating, 5.0/2) as average_rating, COALESCE(rating.rating_count, 0) as rating_count
+		COALESCE(rating.average_rating, 0) as average_rating, COALESCE(rating.rating_count, 0) as rating_count
 	FROM (
         -- meal
         SELECT *
