@@ -1,11 +1,11 @@
-use crate::layer::trigger::graphql::util::{ApiUtil, TRACE_QUERY_MESSAGE};
+use crate::layer::trigger::graphql::util::ApiUtil;
 use crate::util::MealType;
 use crate::{
     interface::persistent_data::model,
     util::{Additive, Allergen, Date, Uuid},
 };
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-use tracing::{instrument, trace};
+use tracing::{instrument};
 
 use super::line::Line;
 use super::{image::Image, price::Price, side::Side};

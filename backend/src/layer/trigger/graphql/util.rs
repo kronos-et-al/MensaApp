@@ -1,4 +1,4 @@
-use std::ops::Deref;
+
 
 use async_graphql::Context;
 
@@ -33,9 +33,9 @@ impl<'a> ApiUtil for Context<'a> {
     }
 
     fn get_auth_info(&self) -> AuthInfo {
-        self.data_opt::<AuthHeader>()
-            .map(Deref::deref)
-            .and_then(read_auth_from_header)
+        self.data::<AuthInfo>()
+            .iter()
+            .find_map(|i| (*i).clone())
     }
 }
 
@@ -45,7 +45,8 @@ pub const TRACE_QUERY_MESSAGE: &str = "incoming query request";
 const AUTH_TYPE: &str = "Mensa";
 const AUTH_SEPARATOR: char = ':';
 
-fn read_auth_from_header(header: &str) -> AuthInfo {
+/// Parses and decodes the auth header into an [`AuthInfo`]
+pub fn read_auth_from_header(header: &str) -> AuthInfo {
     debug!(auth_header = header, "requested AuthInfo");
     let (auth_type, codeword) = header.split_once(' ')?;
 
@@ -73,6 +74,7 @@ fn read_auth_from_header(header: &str) -> AuthInfo {
 
 #[cfg(test)]
 mod tests {
+    #![allow(clippy::unwrap_used)]
 
     use super::*;
 
@@ -114,5 +116,12 @@ mod tests {
         let header = "Mensa MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=";
         let auth_info = read_auth_from_header(header);
         assert!(auth_info.is_some(), "could not read auth header");
+
+        let expected_auth_info = Some(InnerAuthInfo {
+            client_id: Uuid::try_from("1d75d380-cf07-4edb-9046-a2d981bc219d").unwrap(),
+            api_ident: "abc".into(),
+            hash: "123".into(),
+        });
+        assert_eq!(expected_auth_info, auth_info);
     }
 }

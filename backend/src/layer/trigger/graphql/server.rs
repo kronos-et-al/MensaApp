@@ -22,14 +22,18 @@ use axum::{
     Extension, Router, Server,
 };
 use tokio::sync::Notify;
-use tracing::info;
+use tracing::{debug, info, info_span, Instrument};
 
-use crate::interface::{api_command::Command, persistent_data::RequestDataAccess};
+use crate::interface::{
+    api_command::{AuthInfo, Command},
+    persistent_data::RequestDataAccess,
+};
+
 
 use super::{
     mutation::MutationRoot,
     query::QueryRoot,
-    util::{AuthHeader, CommandBox, DataBox},
+    util::{read_auth_from_header, CommandBox, DataBox},
 };
 
 type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
@@ -164,14 +168,42 @@ async fn graphql_handler(
     schema: Extension<GraphQLSchema>,
     request: GraphQLRequest,
 ) -> GraphQLResponse {
-    let request = request.into_inner().data(
-        headers
-            .get("Authorization")
-            .and_then(|h| h.to_str().ok())
-            .unwrap_or("")
-            .to_string() as AuthHeader,
+    let auth_header = headers
+        .get("Authorization")
+        .and_then(|h| h.to_str().ok())
+        .unwrap_or("")
+        .to_string();
+
+    let auth_info = read_auth_from_header(&auth_header);
+    let auth_info_string = auth_info
+        .as_ref()
+        .map_or("no auth info provided".into(), ToString::to_string);
+    
+    let request = request.into_inner().data(auth_info as AuthInfo);
+
+    let span = info_span!(
+        "incoming graphql request",
+        variables = %request.variables,
+        auth_info = auth_info_string
     );
-    schema.execute(request).await.into()
+
+    async {
+        let response = schema.execute(request).await;
+        if response.is_err() {
+            debug!(
+                "Error handling request: {}",
+                response
+                    .errors
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            );
+        }
+        response.into()
+    }
+    .instrument(span)
+    .await
 }
 
 #[cfg(test)]

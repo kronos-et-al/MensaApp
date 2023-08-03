@@ -1,9 +1,9 @@
-use crate::layer::trigger::graphql::util::TRACE_QUERY_MESSAGE;
+
 use crate::{
     interface::persistent_data::model, layer::trigger::graphql::util::ApiUtil, util::Uuid,
 };
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-use tracing::{instrument, trace};
+use tracing::{instrument};
 
 use super::line::Line;
 
