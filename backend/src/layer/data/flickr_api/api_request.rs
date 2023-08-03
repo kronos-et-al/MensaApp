@@ -54,7 +54,10 @@ impl ApiRequest {
                 if length < 100 {
                     Err(self.determine_error(resp).await)
                 } else {
-                    let root = resp.json::<JsonRootSizes>().await.map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))?;
+                    let root = resp
+                        .json::<JsonRootSizes>()
+                        .await
+                        .map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))?;
                     Ok(JsonParser::parse_get_sizes(&root, photo_id)?)
                 }
             }
@@ -85,7 +88,10 @@ impl ApiRequest {
                 if length < 100 {
                     Err(self.determine_error(resp).await)
                 } else {
-                    let root = resp.json::<JsonRootLicense>().await.map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))?;
+                    let root = resp
+                        .json::<JsonRootLicense>()
+                        .await
+                        .map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))?;
                     Ok(JsonParser::check_license(&root))
                 }
             }
@@ -93,9 +99,11 @@ impl ApiRequest {
     }
 
     async fn determine_error(&self, response: Response) -> ImageHosterError {
-        match response.json::<JsonRootError>()
+        match response
+            .json::<JsonRootError>()
             .await
-            .map_err(|err| ImageHosterError::JsonDecodeFailed(err.to_string())) {
+            .map_err(|err| ImageHosterError::JsonDecodeFailed(err.to_string()))
+        {
             Ok(root) => JsonParser::parse_error(&root),
             Err(err) => err,
         }

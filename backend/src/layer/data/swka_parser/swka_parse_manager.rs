@@ -103,10 +103,10 @@ impl MealplanParser for SwKaParseManager {
 mod test {
     #![allow(clippy::unwrap_used)]
 
-    use chrono::Local;
     use crate::interface::mensa_parser::MealplanParser;
     use crate::layer::data::swka_parser::swka_parse_manager::SwKaParseManager;
     use crate::layer::data::swka_parser::test::const_test_data as test_util;
+    use chrono::Local;
 
     fn get_valid_urls() -> Vec<String> {
         vec![

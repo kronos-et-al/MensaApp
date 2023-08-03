@@ -75,10 +75,10 @@ impl SwKaLinkCreator {
 mod tests {
     #![allow(clippy::unwrap_used)]
 
-    use chrono::Local;
     use crate::layer::data::swka_parser::swka_link_creator::SwKaLinkCreator;
     use crate::layer::data::swka_parser::test::const_test_data as test_util;
     use crate::util::Date;
+    use chrono::Local;
 
     const URLS_FOR_NEXT_WEEKS: [&str; 28] = [
         "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28",
@@ -137,6 +137,9 @@ mod tests {
 
     #[test]
     fn test_get_todays_date() {
-        assert_eq!(Local::now().date_naive(), SwKaLinkCreator::get_todays_date());
+        assert_eq!(
+            Local::now().date_naive(),
+            SwKaLinkCreator::get_todays_date()
+        );
     }
 }

@@ -266,7 +266,8 @@ mod test {
 
     #[test]
     fn test_is_side() {
-        let res = RelationResolver::<MealplanManagementDatabaseMock>::is_side(400_u32, 400_f64, "name");
+        let res =
+            RelationResolver::<MealplanManagementDatabaseMock>::is_side(400_u32, 400_f64, "name");
         assert!(!res);
     }
 
