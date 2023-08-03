@@ -75,6 +75,8 @@ impl SwKaLinkCreator {
 mod tests {
     #![allow(clippy::unwrap_used)]
 
+    use chrono::Local;
+    use crate::layer::data::swka_parser::swka_link_creator::SwKaLinkCreator;
     use crate::layer::data::swka_parser::test::const_test_data as test_util;
     use crate::util::Date;
 
@@ -131,5 +133,10 @@ mod tests {
         let date = Date::from_ymd_opt(2023, 7, 10).unwrap();
         let result = test_util::get_creator().get_all_urls_for_next_weeks_from_date(date);
         assert_eq!(result, URLS_FOR_NEXT_WEEKS);
+    }
+
+    #[test]
+    fn test_get_todays_date() {
+        assert_eq!(Local::now().date_naive(), SwKaLinkCreator::get_todays_date());
     }
 }

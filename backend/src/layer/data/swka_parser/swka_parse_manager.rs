@@ -102,6 +102,9 @@ impl MealplanParser for SwKaParseManager {
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
+
+    use chrono::Local;
+    use crate::interface::mensa_parser::MealplanParser;
     use crate::layer::data::swka_parser::swka_parse_manager::SwKaParseManager;
     use crate::layer::data::swka_parser::test::const_test_data as test_util;
 
@@ -117,7 +120,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn sort_and_parse_canteens_with_valid_urls() {
+    async fn test_sort_and_parse_canteens_with_valid_urls() {
         let manager = SwKaParseManager::new(test_util::get_parse_info()).unwrap();
         let result = manager
             .parse_and_sort_canteens_by_days(get_valid_urls())
@@ -126,11 +129,23 @@ mod test {
     }
 
     #[tokio::test]
-    async fn sort_and_parse_canteens_with_invalid_urls() {
+    async fn test_sort_and_parse_canteens_with_invalid_urls() {
         let manager = SwKaParseManager::new(test_util::get_parse_info()).unwrap();
         let mut urls = get_valid_urls();
         urls.push(String::from("invalid"));
         let result = manager.parse_and_sort_canteens_by_days(urls).await;
         assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_parse() {
+        let manager = SwKaParseManager::new(test_util::get_parse_info()).unwrap();
+        assert!(manager.parse(Local::now().date_naive()).await.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_parse_all() {
+        let manager = SwKaParseManager::new(test_util::get_parse_info()).unwrap();
+        assert!(manager.parse_all().await.is_ok());
     }
 }
