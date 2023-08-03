@@ -18,7 +18,7 @@ pub struct FlickrApiHandler {
 
 lazy_static! {
     static ref LONG_URL_REGEX: Regex =
-        Regex::new(r"(https://www.flickr.com/photos/)(\w+)/(\d+)([/]{0,1})")
+        Regex::new(r"(https://www.flickr.com/photos/)([\d\w@]+)/(\d+)([/]{0,1})")
             .expect("regex creation failed");
     static ref SHORT_URL_REGEX: Regex =
         Regex::new(r"(https://flic.kr/p/)([\d\w]+)").expect("regex creation failed");
@@ -33,7 +33,8 @@ impl FlickrApiHandler {
         }
     }
 
-    // URL TYPE 1: https://www.flickr.com/photos/gerdavs/52310534489/ <- remove last '/'
+    // URL TYPE 1.1: https://www.flickr.com/photos/gerdavs/52310534489/ <- remove last '/'
+    // URL TYPE 1.2: https://www.flickr.com/photos/198319418@N06/53077317043 <- remove last '/'
     // URL TYPE 2: https://flic.kr/p/2oRguN3
     // Both cases: Split with '/' and get last member (= photo_id).
     fn determine_photo_id(mut url: &str) -> Result<&str> {
@@ -129,14 +130,21 @@ mod test {
     use crate::layer::data::flickr_api::flickr_api_handler::FlickrApiHandler;
 
     #[test]
-    fn valid_determine_photo_id() {
+    fn test_valid_determine_short_photo_id() {
         let valid_url = "https://flic.kr/p/2oRguN3";
         let res = FlickrApiHandler::determine_photo_id(valid_url).unwrap();
         assert_eq!(res, "2oRguN3");
     }
 
     #[test]
-    fn empty_determine_photo_id() {
+    fn test_valid_determine_long_photo_id() {
+        let valid_url = "https://www.flickr.com/photos/198319418@N06/53077317043/";
+        let res = FlickrApiHandler::determine_photo_id(valid_url).unwrap();
+        assert_eq!(res, "53077317043");
+    }
+
+    #[test]
+    fn test_empty_determine_photo_id() {
         let valid_url = "";
         let res = FlickrApiHandler::determine_photo_id(valid_url)
             .err()
@@ -150,7 +158,7 @@ mod test {
     }
 
     #[test]
-    fn invalid_determine_photo_id() {
+    fn test_invalid_determine_photo_id() {
         let valid_url = "https://flic.kr/p/";
         let res = FlickrApiHandler::determine_photo_id(valid_url)
             .err()
