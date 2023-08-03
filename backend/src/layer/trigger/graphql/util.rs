@@ -3,8 +3,6 @@
 use async_graphql::Context;
 
 use base64::{engine::general_purpose, Engine};
-use tracing::debug;
-
 use crate::{
     interface::{
         api_command::{AuthInfo, Command, InnerAuthInfo},
@@ -47,7 +45,6 @@ const AUTH_SEPARATOR: char = ':';
 
 /// Parses and decodes the auth header into an [`AuthInfo`]
 pub fn read_auth_from_header(header: &str) -> AuthInfo {
-    debug!(auth_header = header, "requested AuthInfo");
     let (auth_type, codeword) = header.split_once(' ')?;
 
     if auth_type != AUTH_TYPE {
