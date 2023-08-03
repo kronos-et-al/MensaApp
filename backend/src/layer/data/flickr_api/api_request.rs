@@ -1,3 +1,4 @@
+use axum::Json;
 use crate::interface::image_hoster::model::ImageMetaData;
 use crate::interface::image_hoster::ImageHosterError;
 use crate::layer::data::flickr_api::json_parser::JsonParser;
@@ -47,17 +48,21 @@ impl ApiRequest {
             "{BASE_URL}{GET_SIZES}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{FORMAT}",
             api_key = self.api_key,
         );
-        match self
-            .request_url(url)
-            .await?
-            .json::<JsonRootSizes>()
-            .await
-            .map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))
-        {
-            Ok(root) => Ok(JsonParser::parse_get_sizes(&root, photo_id)?),
-            Err(e) => Err(self.determine_error(url, e).await),
+        let resp = self.request_url(url).await?;
+        match resp.content_length() {
+            None => Err(self.determine_error(resp).await),
+            Some(length) => {
+                if length < 100 {
+                    Err(self.determine_error(resp).await)
+                } else {
+                    let root = resp.json::<JsonRootSizes>().await.map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))?;
+                    Ok(JsonParser::parse_get_sizes(&root, photo_id)?)
+                }
+            }
         }
     }
+
+
 
     /// This method is used to request image license information for the given `photo_id` from the flickr api.
     /// # Errors
@@ -77,34 +82,24 @@ impl ApiRequest {
             api_key = self.api_key
         );
         let resp = self.request_url(url).await?;
-        match resp
-            .json::<JsonRootLicense>()
-            .await
-            .map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))
-        {
-            Ok(licenses) => Ok(JsonParser::check_license(&licenses)),
-            Err(e) => Err(self.determine_error(url, e).await),
+        match resp.content_length() {
+            None => Err(self.determine_error(resp).await),
+            Some(length) => {
+                if length < 100 {
+                    Err(self.determine_error(resp).await)
+                } else {
+                    let root = resp.json::<JsonRootLicense>().await.map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))?;
+                    Ok(JsonParser::check_license(&root))
+                }
+            }
         }
     }
 
-    async fn determine_error(&self, url: &String, e: ImageHosterError) -> ImageHosterError {
-        if std::mem::discriminant(&e)
-            != std::mem::discriminant(&ImageHosterError::JsonDecodeFailed(String::new()))
-        {
-            return e;
-        }
-        match self.request_url(url).await {
-            Ok(res) => {
-                let error_root = match res
-                    .json::<JsonRootError>()
-                    .await
-                    .map_err(|err| ImageHosterError::JsonDecodeFailed(err.to_string()))
-                {
-                    Ok(root) => root,
-                    Err(err) => return err,
-                };
-                JsonParser::parse_error(&error_root)
-            }
+    async fn determine_error(&self, response: Response) -> ImageHosterError {
+        match response.json::<JsonRootError>()
+            .await
+            .map_err(|err| ImageHosterError::JsonDecodeFailed(err.to_string())) {
+            Ok(root) => JsonParser::parse_error(&root),
             Err(err) => err,
         }
     }
