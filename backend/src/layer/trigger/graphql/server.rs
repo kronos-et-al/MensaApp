@@ -29,7 +29,6 @@ use crate::interface::{
     persistent_data::RequestDataAccess,
 };
 
-
 use super::{
     mutation::MutationRoot,
     query::QueryRoot,
@@ -178,7 +177,7 @@ async fn graphql_handler(
     let auth_info_string = auth_info
         .as_ref()
         .map_or("no auth info provided".into(), ToString::to_string);
-    
+
     let request = request.into_inner().data(auth_info as AuthInfo);
 
     let span = info_span!(

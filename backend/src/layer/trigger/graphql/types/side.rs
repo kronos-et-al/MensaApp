@@ -1,4 +1,3 @@
-
 use crate::util::MealType;
 use crate::{
     interface::persistent_data::model,
@@ -6,7 +5,7 @@ use crate::{
     util::{Additive, Allergen, Uuid},
 };
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-use tracing::{instrument};
+use tracing::instrument;
 
 use super::price::Price;
 

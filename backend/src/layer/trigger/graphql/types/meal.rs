@@ -5,7 +5,7 @@ use crate::{
     util::{Additive, Allergen, Date, Uuid},
 };
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-use tracing::{instrument};
+use tracing::instrument;
 
 use super::line::Line;
 use super::{image::Image, price::Price, side::Side};

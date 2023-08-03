@@ -328,7 +328,7 @@ async fn test_get_auth_info() {
         }
       }
     "#;
-    
+
     let auth_info = Some(InnerAuthInfo {
         client_id: Uuid::try_from("1d75d380-cf07-4edb-9046-a2d981bc219d").unwrap(),
         api_ident: "abc".into(),

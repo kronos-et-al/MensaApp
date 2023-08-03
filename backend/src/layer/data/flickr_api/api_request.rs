@@ -88,8 +88,7 @@ impl ApiRequest {
     }
 
     async fn determine_error(&self, url: &String, e: ImageHosterError) -> ImageHosterError {
-        if !matches!(e, ImageHosterError::JsonDecodeFailed(_)) 
-        {
+        if !matches!(e, ImageHosterError::JsonDecodeFailed(_)) {
             return e;
         }
 

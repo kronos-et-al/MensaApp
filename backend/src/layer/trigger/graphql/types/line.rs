@@ -1,11 +1,10 @@
-
 use crate::{
     interface::persistent_data::model,
     layer::trigger::graphql::util::ApiUtil,
     util::{Date, Uuid},
 };
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-use tracing::{instrument};
+use tracing::instrument;
 
 use super::{canteen::Canteen, meal::Meal};
 

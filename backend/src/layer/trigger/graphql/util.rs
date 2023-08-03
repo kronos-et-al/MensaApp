@@ -1,8 +1,5 @@
-
-
 use async_graphql::Context;
 
-use base64::{engine::general_purpose, Engine};
 use crate::{
     interface::{
         api_command::{AuthInfo, Command, InnerAuthInfo},
@@ -10,6 +7,7 @@ use crate::{
     },
     util::Uuid,
 };
+use base64::{engine::general_purpose, Engine};
 
 pub type DataBox = Box<dyn RequestDataAccess + Sync + Send + 'static>;
 pub type CommandBox = Box<dyn Command + Sync + Send + 'static>;
@@ -31,9 +29,7 @@ impl<'a> ApiUtil for Context<'a> {
     }
 
     fn get_auth_info(&self) -> AuthInfo {
-        self.data::<AuthInfo>()
-            .iter()
-            .find_map(|i| (*i).clone())
+        self.data::<AuthInfo>().iter().find_map(|i| (*i).clone())
     }
 }
 
