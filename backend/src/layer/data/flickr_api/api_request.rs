@@ -177,7 +177,7 @@ mod test {
         // Only the flickr.photos.licenses.getLicenseHistory request has this issue.
         // See: https://www.flickr.com/services/api/flickr.photos.licenses.getLicenseHistory.html
         // To let this test pass, we use ImageHosterError::ServiceUnavailable even if ImageHosterError::PhotoNotFound is the right one.
-        let expected = ImageHosterError::ServiceUnavailable;
+        let expected = ImageHosterError::PhotoNotFound;
         let res = get_api_request().flickr_photos_license_check("42").await;
         let err =
             res.expect_err("error_check_license_invalid_photo test failed as res isn't an error");
