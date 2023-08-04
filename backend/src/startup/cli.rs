@@ -35,3 +35,13 @@ pub fn print_help() {
     println!("          before continuing like normal");
     println!();
 }
+
+#[cfg(test)]
+mod tests {
+    use super::print_help;
+
+    #[test]
+    fn test_print_cli() {
+        print_help();
+    }
+}

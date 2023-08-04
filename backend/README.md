@@ -78,5 +78,5 @@ To make development easier, these can also be defined textually in a `.env` file
 
 
 ## Testing
-To show test coverage, you need to install `cargo install cargo-llvm-cov`. Then you can run `cargo llvm-cov --lcov --output-path lcov.info` to generate coverage info.
+To show test coverage, you need to install `cargo install cargo-tarpaulin`. Then you can run `cargo tarpaulin --out Lcov` to generate coverage info.
 to view these information, you can install the VSCode plugin "Coverage Gutters". It should work out of the box with the installed files.

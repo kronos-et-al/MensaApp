@@ -24,3 +24,22 @@ impl Logger {
             .expect("setting default subscriber failed");
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use rusty_fork::rusty_fork_test;
+
+    use super::{LogInfo, Logger};
+
+    // put in separate process to allow setting subscriber to avoid conflict with `traced_test`s
+    rusty_fork_test! {
+        #[test]
+        fn test_logger_init() {
+            let info = LogInfo {
+                log_config: "trace".into(),
+            };
+            Logger::init(info);
+        }
+
+    }
+}
