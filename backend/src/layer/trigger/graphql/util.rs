@@ -11,7 +11,6 @@ use base64::{engine::general_purpose, Engine};
 
 pub type DataBox = Box<dyn RequestDataAccess + Sync + Send + 'static>;
 pub type CommandBox = Box<dyn Command + Sync + Send + 'static>;
-pub type AuthHeader = String;
 
 pub trait ApiUtil {
     fn get_command(&self) -> &(dyn Command + Sync + Send);

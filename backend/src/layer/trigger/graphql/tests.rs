@@ -12,13 +12,8 @@ use crate::util::Uuid;
 
 use super::mock::{CommandMock, RequestDatabaseMock};
 
-const VALID_AUTH_HEDAER: &str =
-    "Mensa MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=";
-
 async fn test_gql_request(request: &'static str) {
     let request: Request = request.into();
-    let auth = VALID_AUTH_HEDAER.to_string() as AuthHeader;
-    let request = request.data(auth);
 
     let schema = construct_schema(RequestDatabaseMock, CommandMock);
     let response = schema.execute(request).await;
