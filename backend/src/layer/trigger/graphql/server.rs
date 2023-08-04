@@ -171,7 +171,7 @@ async fn graphql_handler(
     let auth_header = headers
         .get(AUTHORIZATION)
         .and_then(|h| h.to_str().ok())
-        .unwrap_or("")
+        .unwrap_or_default()
         .to_string();
 
     let auth_info = read_auth_from_header(&auth_header);
@@ -211,6 +211,7 @@ mod tests {
     #![allow(clippy::unwrap_used)]
 
     use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
+    use reqwest::header::AUTHORIZATION;
     use serial_test::serial;
 
     use crate::layer::trigger::graphql::{
@@ -243,6 +244,7 @@ mod tests {
         let client = reqwest::Client::new();
         let resp = client
             .post(format!("http://localhost:{TEST_PORT}"))
+            .header(AUTHORIZATION, "Mensa MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=")
             .body(test_request)
             .send()
             .await
