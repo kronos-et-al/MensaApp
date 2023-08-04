@@ -116,11 +116,14 @@ impl MailSender {
 mod test {
     #![allow(clippy::unwrap_used)]
     use crate::{
-        interface::admin_notification::ImageReportInfo, layer::data::mail::mail_info::MailInfo,
-        layer::data::mail::mail_sender::MailSender, util::Uuid,
+        interface::admin_notification::{AdminNotification, ImageReportInfo},
+        layer::data::mail::mail_info::MailInfo,
+        layer::data::mail::mail_sender::MailSender,
+        util::Uuid,
     };
     use dotenvy;
     use std::env::{self, VarError};
+    use tracing_test::traced_test;
 
     const SMTP_SERVER_ENV_NAME: &str = "SMTP_SERVER";
     const SMTP_PORT_ENV_NAME: &str = "SMTP_PORT";
@@ -171,7 +174,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn test_notify_admin_image_report() {
+    async fn test_try_notify_admin_image_report() {
         let mail_info = get_mail_info().unwrap();
         let mail_sender = MailSender::new(mail_info).unwrap();
         assert!(mail_sender.mailer.test_connection().unwrap());
@@ -180,6 +183,22 @@ mod test {
         assert!(mail_sender
             .try_notify_admin_image_report(&report_info)
             .is_ok());
+    }
+
+    #[tokio::test]
+    #[traced_test]
+    async fn test_notify_admin_iamge_report() {
+        let mail_info = get_mail_info().unwrap();
+        let mail_sender = MailSender::new(mail_info).unwrap();
+        assert!(mail_sender.mailer.test_connection().unwrap());
+        let report_info = get_report_info();
+        mail_sender.notify_admin_image_report(report_info).await;
+
+        logs_assert(|s| {
+            assert!(s.iter().filter(|l| !l.contains("INFO")).count() == 0);
+            assert!(s.iter().filter(|l| l.contains("INFO")).count() == 1);
+            Ok(())
+        });
     }
 
     fn get_report_info() -> ImageReportInfo {

@@ -107,8 +107,10 @@ where
 
 #[cfg(test)]
 mod test {
+    use tracing_test::traced_test;
+
     use crate::{
-        interface::persistent_data::model::Image,
+        interface::{image_review::ImageReviewScheduling, persistent_data::model::Image},
         layer::logic::image_review::{
             image_reviewer::ImageReviewer,
             test::{
@@ -122,6 +124,21 @@ mod test {
         },
         util::{Date, Uuid},
     };
+
+    #[tokio::test]
+    #[traced_test]
+    async fn test_start_image_review() {
+        let image_reviewer = ImageReviewer::new(
+            ImageReviewDatabaseMock::default(),
+            ImageHosterMock::default(),
+        );
+        image_reviewer.start_image_review().await;
+
+        logs_assert(|lines: &[&str]| {
+            assert!(lines.is_empty());
+            Ok(())
+        });
+    }
 
     #[tokio::test]
     async fn test_full_review() {
