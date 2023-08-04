@@ -3,7 +3,9 @@ use crate::interface::image_hoster::model::ImageMetaData;
 use crate::interface::image_hoster::ImageHosterError;
 use crate::layer::data::flickr_api::json_parser::JsonParser;
 use reqwest::Response;
+use serde::de::DeserializeOwned;
 use tracing::debug;
+use crate::layer::data::flickr_api::json_structs::{JsonRootError, JsonRootLicense, JsonRootSizes};
 
 pub struct ApiRequest {
     api_key: String,
@@ -47,11 +49,8 @@ impl ApiRequest {
             "{BASE_URL}{GET_SIZES}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{FORMAT}",
             api_key = self.api_key,
         );
-        let bytes = self.request_url(url).await?.bytes().await?;
-        match serde_json::from_slice(&bytes) {
-            Ok(root) => JsonParser::parse_get_sizes(root, photo_id),
-            Err(_) => Err(self.determine_error(&bytes).await)
-        }
+        let bytes = self.request_url(url).await?.bytes().await.map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))?;
+        Self::json_to_struct::<JsonRootSizes>(&bytes).map_or_else(|_| Err(Self::determine_error(&bytes)), |root| JsonParser::parse_get_sizes(&root, photo_id))
     }
 
     /// This method is used to request image license information for the given `photo_id` from the flickr api.
@@ -71,19 +70,20 @@ impl ApiRequest {
             "{BASE_URL}{GET_LICENCE_HISTORY}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{FORMAT}",
             api_key = self.api_key
         );
-        let bytes = self.request_url(url).await?.bytes().await?;
-        match serde_json::from_slice(&bytes) {
-            Ok(root) => Ok(JsonParser::check_license(root)),
-            Err(_) => Err(self.determine_error(&bytes).await)
-        }
+        let bytes = self.request_url(url).await?.bytes().await.map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))?;
+        Self::json_to_struct::<JsonRootLicense>(&bytes).map_or_else(|_| Err(Self::determine_error(&bytes)), |root| Ok(JsonParser::check_license(&root)))
     }
 
 
-    async fn determine_error(&self, bytes: &Bytes) -> ImageHosterError {
-        match serde_json::from_slice(bytes) {
+    fn determine_error(bytes: &Bytes) -> ImageHosterError {
+        match Self::json_to_struct::<JsonRootError>(bytes) {
             Ok(root) => JsonParser::parse_error(&root),
             Err(e) => ImageHosterError::JsonDecodeFailed(e.to_string()),
         }
+    }
+
+    fn json_to_struct<T: DeserializeOwned>(bytes: &Bytes) -> Result<T, ImageHosterError> {
+        serde_json::from_slice(bytes).map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))
     }
 }
 
