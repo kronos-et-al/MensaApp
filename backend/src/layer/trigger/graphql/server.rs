@@ -21,6 +21,7 @@ use axum::{
     routing::get,
     Extension, Router, Server,
 };
+use reqwest::header::AUTHORIZATION;
 use tokio::sync::Notify;
 use tracing::{debug, info, info_span, Instrument};
 
@@ -168,7 +169,7 @@ async fn graphql_handler(
     request: GraphQLRequest,
 ) -> GraphQLResponse {
     let auth_header = headers
-        .get("Authorization")
+        .get(AUTHORIZATION)
         .and_then(|h| h.to_str().ok())
         .unwrap_or("")
         .to_string();
