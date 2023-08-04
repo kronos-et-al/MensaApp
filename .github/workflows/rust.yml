@@ -62,7 +62,7 @@ jobs:
     - name: Check linter warnings
       run: | 
           rustup component add clippy
-          cargo clippy -- -D warnings
+          cargo clippy --all-targets -- -D warnings
     - name: Check prepared sql query information
       run: cargo sqlx prepare --check
     - name: Build
