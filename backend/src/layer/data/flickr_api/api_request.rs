@@ -1,7 +1,7 @@
+use axum::body::Bytes;
 use crate::interface::image_hoster::model::ImageMetaData;
 use crate::interface::image_hoster::ImageHosterError;
 use crate::layer::data::flickr_api::json_parser::JsonParser;
-use crate::layer::data::flickr_api::json_structs::{JsonRootError, JsonRootLicense, JsonRootSizes};
 use reqwest::Response;
 use tracing::debug;
 
@@ -47,20 +47,10 @@ impl ApiRequest {
             "{BASE_URL}{GET_SIZES}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{FORMAT}",
             api_key = self.api_key,
         );
-        let resp = self.request_url(url).await?;
-        match resp.content_length() {
-            None => Err(self.determine_error(resp).await),
-            Some(length) => {
-                if length < 100 {
-                    Err(self.determine_error(resp).await)
-                } else {
-                    let root = resp
-                        .json::<JsonRootSizes>()
-                        .await
-                        .map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))?;
-                    Ok(JsonParser::parse_get_sizes(&root, photo_id)?)
-                }
-            }
+        let bytes = self.request_url(url).await?.bytes().await?;
+        match serde_json::from_slice(&bytes) {
+            Ok(root) => JsonParser::parse_get_sizes(root, photo_id),
+            Err(_) => Err(self.determine_error(&bytes).await)
         }
     }
 
@@ -81,31 +71,18 @@ impl ApiRequest {
             "{BASE_URL}{GET_LICENCE_HISTORY}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{FORMAT}",
             api_key = self.api_key
         );
-        let resp = self.request_url(url).await?;
-        match resp.content_length() {
-            None => Err(self.determine_error(resp).await),
-            Some(length) => {
-                if length < 100 {
-                    Err(self.determine_error(resp).await)
-                } else {
-                    let root = resp
-                        .json::<JsonRootLicense>()
-                        .await
-                        .map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))?;
-                    Ok(JsonParser::check_license(&root))
-                }
-            }
+        let bytes = self.request_url(url).await?.bytes().await?;
+        match serde_json::from_slice(&bytes) {
+            Ok(root) => Ok(JsonParser::check_license(root)),
+            Err(_) => Err(self.determine_error(&bytes).await)
         }
     }
 
-    async fn determine_error(&self, response: Response) -> ImageHosterError {
-        match response
-            .json::<JsonRootError>()
-            .await
-            .map_err(|err| ImageHosterError::JsonDecodeFailed(err.to_string()))
-        {
+
+    async fn determine_error(&self, bytes: &Bytes) -> ImageHosterError {
+        match serde_json::from_slice(bytes) {
             Ok(root) => JsonParser::parse_error(&root),
-            Err(err) => err,
+            Err(e) => ImageHosterError::JsonDecodeFailed(e.to_string()),
         }
     }
 }
