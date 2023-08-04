@@ -107,8 +107,16 @@ impl RequestDataAccess for PersistentRequestData {
         // If date too far into the future, return `None`.
         // This should probably be inside the logic layer which currently does not exists for request.
         let today = Local::now().date_naive();
-        let age = today - date;
-        if age.num_weeks() > MAX_WEEKS_DATA {
+        let duration_until = date - today;
+        if duration_until.num_weeks() > MAX_WEEKS_DATA {
+            return Ok(None);
+        }
+
+        // If date is to far in the past, return `None`.
+        let first_date = sqlx::query_scalar!("SELECT MIN(serve_date) FROM food_plan")
+            .fetch_one(&self.pool)
+            .await?;
+        if first_date.map_or(true, |first_date| first_date > date) {
             return Ok(None);
         }
 
@@ -119,7 +127,7 @@ impl RequestDataAccess for PersistentRequestData {
                 new, frequency, last_served, next_served, average_rating, rating_count
             FROM meal_detail JOIN food_plan USING (food_id)
             WHERE line_id = $1 AND serve_date = $2
-            ORDER BY food_id
+            ORDER BY price_student DESC, food_type DESC, food_id
             "#,
             line_id,
             date
@@ -284,6 +292,7 @@ impl RequestDataAccess for PersistentRequestData {
 mod tests {
     #![allow(clippy::unwrap_used)]
     use super::*;
+    use chrono::Duration;
     use futures::future;
     use sqlx::PgPool;
 
@@ -370,8 +379,8 @@ mod tests {
         let request = PersistentRequestData { pool };
 
         let meal_id_strs = [
-            "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
             "f7337122-b018-48ad-b420-6202dc3cb4ff",
+            "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
         ];
         let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
         let date = Local::now().date_naive();
@@ -406,16 +415,30 @@ mod tests {
     async fn test_get_meals(pool: PgPool) {
         let request = PersistentRequestData { pool };
 
+        let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
+
         let meals = request
-            .get_meals(
-                Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(),
-                Local::now().date_naive(),
-            )
+            .get_meals(line_id, Local::now().date_naive())
             .await
             .unwrap();
         assert!(meals.is_some(), "data should ba available");
         let meals = meals.unwrap();
         assert_eq!(meals, provide_dummy_meals());
+
+        let meals_in_future = request
+            .get_meals(
+                line_id,
+                Local::now().date_naive() + Duration::weeks(MAX_WEEKS_DATA + 1),
+            )
+            .await
+            .unwrap();
+        assert!(meals_in_future.is_none());
+
+        let meals_in_past = request
+            .get_meals(line_id, Local::now().date_naive() - Duration::days(1))
+            .await
+            .unwrap();
+        assert!(meals_in_past.is_none());
     }
 
     #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
@@ -634,7 +657,7 @@ mod tests {
             frequency: 0,
             new: true,
             rating_count: 0,
-            average_rating: 2.5,
+            average_rating: 0.0,
             date: Local::now().date_naive(),
             line_id: Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap(),
         };
@@ -644,6 +667,6 @@ mod tests {
             meal_type: MealType::Unknown,
             ..meal1
         };
-        vec![meal1, meal2]
+        vec![meal2, meal1]
     }
 }
