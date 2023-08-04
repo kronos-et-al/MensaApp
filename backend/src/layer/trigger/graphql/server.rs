@@ -244,7 +244,10 @@ mod tests {
         let client = reqwest::Client::new();
         let resp = client
             .post(format!("http://localhost:{TEST_PORT}"))
-            .header(AUTHORIZATION, "Mensa MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=")
+            .header(
+                AUTHORIZATION,
+                "Mensa MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=",
+            )
             .body(test_request)
             .send()
             .await
