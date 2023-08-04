@@ -4,6 +4,7 @@ use crate::interface::image_hoster::model::ImageMetaData;
 use crate::interface::image_hoster::{ImageHoster, ImageHosterError, Result};
 use crate::layer::data::flickr_api::api_request::ApiRequest;
 use async_trait::async_trait;
+use bs58::{decode, encode};
 use lazy_static::lazy_static;
 use regex::Regex;
 
@@ -38,29 +39,31 @@ impl FlickrApiHandler {
     // URL TYPE 2: https://flic.kr/p/2oRguN3
     // Both cases: Split with '/' and get last member (= photo_id).
     fn determine_photo_id(mut url: &str) -> Result<&str> {
-        if !SHORT_URL_REGEX.is_match(url) && !LONG_URL_REGEX.is_match(url) {
-            return Err(ImageHosterError::FormatNotFound(format!(
+        return if !SHORT_URL_REGEX.is_match(url) && !LONG_URL_REGEX.is_match(url) {
+            Err(ImageHosterError::FormatNotFound(format!(
                 "this url format is not supported: '{url}'"
-            )));
-        }
-        url = url.trim_end_matches('/');
-        let splits = url.split('/');
-        if SHORT_URL_REGEX.is_match(url) {
-            let id = splits.last().ok_or_else(|| {
-                ImageHosterError::FormatNotFound(format!("this url format is not supported: '{url}'"))
-            });
-            match bs58::decode(id)
-                .with_alphabet(bs58::Alphabet::RIPPLE)
-                .into_string() {
-                Ok(decoded) => decoded,
-                Err(e) => Err(ImageHosterError::FormatNotFound(e.to_string()))
-            }
+            )))
         } else {
-            splits.last().ok_or_else(|| {
-                ImageHosterError::FormatNotFound(format!("this url format is not supported: '{url}'"))
-            })
-        }
+            url = url.trim_end_matches('/');
+            let splits = url.split('/');
+            let id = splits.last().ok_or_else(|| {
+                ImageHosterError::FormatNotFound(format!(
+                    "this url format is not supported: '{url}'"
+                ))
+            });
 
+            if SHORT_URL_REGEX.is_match(url) {
+                let vec_res = bs58::decode(id.unwrap())
+                    .with_alphabet(bs58::Alphabet::RIPPLE)
+                    .into_vec();
+                match vec_res {
+                    Ok(vec) => Ok(std::str::from_utf8(vec.as_slice()).unwrap()),
+                    Err(e) => Err(ImageHosterError::FormatNotFound(e.to_string()))
+                }
+            } else {
+                id
+            }
+        };
     }
 }
 
