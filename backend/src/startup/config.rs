@@ -161,3 +161,22 @@ impl ConfigReader {
 fn read_var(var: &str) -> Result<String> {
     env::var(var).map_err(|e| ServerError::MissingEnvVar(var.to_string(), e))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::ConfigReader;
+
+    #[test]
+    fn test_conf_reader() {
+        let reader = ConfigReader::default();
+        reader.read_database_info().ok();
+        reader.read_flickr_info().ok();
+        reader.read_graphql_info().ok();
+        reader.read_log_info().ok();
+        reader.read_mail_info().ok();
+        reader.read_schedule_info().ok();
+        reader.read_swka_info().ok();
+        let _ = reader.should_migrate();
+        let _ = reader.should_print_help();
+    }
+}
