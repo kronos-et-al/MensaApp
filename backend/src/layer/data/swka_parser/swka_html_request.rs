@@ -4,7 +4,7 @@ use crate::interface::mensa_parser::ParseError;
 use futures::future::join_all;
 use reqwest::Client;
 use std::time::Duration;
-use tracing::debug;
+use tracing::trace;
 
 pub struct SwKaHtmlRequest {
     client: Client,
@@ -52,7 +52,7 @@ impl SwKaHtmlRequest {
             .await
             .and_then(reqwest::Response::error_for_status)
             .map_err(|e| ParseError::NoConnectionEstablished(e.to_string()))?;
-        debug!("Url request finished: {:?}", resp);
+        trace!("loaded mensa page at {}", resp.url());
         resp.text()
             .await
             .map_err(|e| ParseError::DecodeFailed(e.to_string()))

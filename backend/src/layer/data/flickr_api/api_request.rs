@@ -3,7 +3,7 @@ use crate::interface::image_hoster::ImageHosterError;
 use crate::layer::data::flickr_api::json_parser::JsonParser;
 use crate::layer::data::flickr_api::json_structs::{JsonRootError, JsonRootLicense, JsonRootSizes};
 use reqwest::Response;
-use tracing::debug;
+use tracing::trace;
 
 pub struct ApiRequest {
     api_key: String,
@@ -28,7 +28,6 @@ impl ApiRequest {
         let res = reqwest::get(url)
             .await
             .map_err(|e| ImageHosterError::NotConnected(e.to_string()))?;
-        debug!("request_url finished with response: {:?}", res);
         Ok(res)
     }
 
@@ -47,9 +46,9 @@ impl ApiRequest {
             "{BASE_URL}{GET_SIZES}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{FORMAT}",
             api_key = self.api_key,
         );
-        match self
-            .request_url(url)
-            .await?
+        let response = self.request_url(url).await?;
+        trace!("successfully send request `{GET_SIZES}` to flickr for image {photo_id}");
+        match response
             .json::<JsonRootSizes>()
             .await
             .map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))
@@ -77,6 +76,7 @@ impl ApiRequest {
             api_key = self.api_key
         );
         let resp = self.request_url(url).await?;
+        trace!("successfully send request `{GET_LICENCE_HISTORY}` to flickr for image {photo_id}");
         match resp
             .json::<JsonRootLicense>()
             .await
@@ -88,11 +88,10 @@ impl ApiRequest {
     }
 
     async fn determine_error(&self, url: &String, e: ImageHosterError) -> ImageHosterError {
-        if std::mem::discriminant(&e)
-            != std::mem::discriminant(&ImageHosterError::JsonDecodeFailed(String::new()))
-        {
+        if !matches!(e, ImageHosterError::JsonDecodeFailed(_)) {
             return e;
         }
+
         match self.request_url(url).await {
             Ok(res) => {
                 let error_root = match res
