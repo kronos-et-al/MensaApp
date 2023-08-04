@@ -45,9 +45,22 @@ impl FlickrApiHandler {
         }
         url = url.trim_end_matches('/');
         let splits = url.split('/');
-        splits.last().ok_or_else(|| {
-            ImageHosterError::FormatNotFound(format!("this url format is not supported: '{url}'"))
-        })
+        if SHORT_URL_REGEX.is_match(url) {
+            let id = splits.last().ok_or_else(|| {
+                ImageHosterError::FormatNotFound(format!("this url format is not supported: '{url}'"))
+            });
+            match bs58::decode(id)
+                .with_alphabet(bs58::Alphabet::RIPPLE)
+                .into_string() {
+                Ok(decoded) => decoded,
+                Err(e) => Err(ImageHosterError::FormatNotFound(e.to_string()))
+            }
+        } else {
+            splits.last().ok_or_else(|| {
+                ImageHosterError::FormatNotFound(format!("this url format is not supported: '{url}'"))
+            })
+        }
+
     }
 }
 
