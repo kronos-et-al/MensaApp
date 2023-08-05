@@ -41,30 +41,41 @@ impl FlickrApiHandler {
     // Both cases: Split with '/' and get last member (= photo_id).
     fn determine_photo_id(url: &str) -> Result<String> {
         if LONG_URL_REGEX.is_match(url) || SHORT_URL_REGEX.is_match(url) {
-            let id = url.trim_end_matches('/').split('/').last().map(String::from).ok_or_else(|| {
-                ImageHosterError::FormatNotFound(format!(
-                    "this url format is not supported: '{url}'"
-                ))
-            })?;
+            let id = url
+                .trim_end_matches('/')
+                .split('/')
+                .last()
+                .map(String::from)
+                .ok_or_else(|| {
+                    ImageHosterError::FormatNotFound(format!(
+                        "this url format is not supported: '{url}'"
+                    ))
+                })?;
             if SHORT_URL_REGEX.is_match(url) {
                 Self::decode(&id)
             } else {
                 Ok(id)
             }
         } else {
-            Err(ImageHosterError::FormatNotFound(format!("this url format is not supported: '{url}'")))
+            Err(ImageHosterError::FormatNotFound(format!(
+                "this url format is not supported: '{url}'"
+            )))
         }
     }
-
-
 
     fn decode(word: &str) -> Result<String> {
         let mut decoded = 0_u64;
         let mut multi = 1_u64;
         for char in word.chars().rev() {
-            let index = ALPHABET.find(char).ok_or_else(|| ImageHosterError::FormatNotFound(String::from("FlickrDecoder: Provided photo_id contains invalid characters.")))?;
-            decoded += multi * u64::try_from(index).expect("FlickrDecoder: Could not parse usize to u64");
-            multi *= u64::try_from(ALPHABET.len()).expect("FlickrDecoder: Could not parse usize to u64");
+            let index = ALPHABET.find(char).ok_or_else(|| {
+                ImageHosterError::FormatNotFound(String::from(
+                    "FlickrDecoder: Provided photo_id contains invalid characters.",
+                ))
+            })?;
+            decoded +=
+                multi * u64::try_from(index).expect("FlickrDecoder: Could not parse usize to u64");
+            multi *=
+                u64::try_from(ALPHABET.len()).expect("FlickrDecoder: Could not parse usize to u64");
         }
         Ok(decoded.to_string())
     }
@@ -169,7 +180,6 @@ mod test {
         let res = FlickrApiHandler::decode(word);
         assert!(res.is_err());
     }
-
 
     #[test]
     fn test_valid_determine_short_photo_id() {
