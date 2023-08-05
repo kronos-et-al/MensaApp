@@ -39,26 +39,21 @@ impl FlickrApiHandler {
     // URL TYPE 1.2: https://www.flickr.com/photos/198319418@N06/53077317043 <- remove last '/'
     // URL TYPE 2: https://flic.kr/p/2oRguN3
     // Both cases: Split with '/' and get last member (= photo_id).
-    fn determine_photo_id(mut url: &str) -> Result<String> {
-        return if !SHORT_URL_REGEX.is_match(url) && !LONG_URL_REGEX.is_match(url) {
-            Err(ImageHosterError::FormatNotFound(format!(
-                "this url format is not supported: '{url}'"
-            )))
-        } else {
-            url = url.trim_end_matches('/');
-            let splits = url.split('/');
-            let id = splits.last().map(String::from).ok_or_else(|| {
+    fn determine_photo_id(url: &str) -> Result<String> {
+        if LONG_URL_REGEX.is_match(url) || SHORT_URL_REGEX.is_match(url) {
+            let id = url.trim_end_matches('/').split('/').last().map(String::from).ok_or_else(|| {
                 ImageHosterError::FormatNotFound(format!(
                     "this url format is not supported: '{url}'"
                 ))
             })?;
-
             if SHORT_URL_REGEX.is_match(url) {
                 Self::decode(&id)
             } else {
                 Ok(id)
             }
-        };
+        } else {
+            Err(ImageHosterError::FormatNotFound(format!("this url format is not supported: '{url}'")))
+        }
     }
 
 
