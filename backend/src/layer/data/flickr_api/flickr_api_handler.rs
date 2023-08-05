@@ -162,6 +162,21 @@ mod test {
     }
 
     #[test]
+    fn test_valid_decode() {
+        let word = "2oSg8aV";
+        let res = FlickrApiHandler::decode(word).unwrap();
+        assert_eq!(res, "53077317043");
+    }
+
+    #[test]
+    fn test_invalid_decode() {
+        let word = "DU_K";
+        let res = FlickrApiHandler::decode(word);
+        assert!(res.is_err());
+    }
+
+
+    #[test]
     fn test_valid_determine_short_photo_id() {
         let valid_url = "https://flic.kr/p/2oRguN3";
         let res = FlickrApiHandler::determine_photo_id(valid_url).unwrap();
