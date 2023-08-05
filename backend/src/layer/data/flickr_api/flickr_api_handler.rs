@@ -86,7 +86,10 @@ impl ImageHoster for FlickrApiHandler {
     }
 
     /// This method checks if an image hosted at flickr.com has a valid license.
-    /// A list of all valid licenses is here: [`json_parser::get_valid_licences`]
+    /// A list of all valid licenses:
+    /// - `No known copyright restrictions`
+    /// - `Public Domain Dedication (CC0)`
+    /// - `Public Domain Mark`
     /// # Return
     /// True if the image is published under a valid license. False if not.
     /// # Errors

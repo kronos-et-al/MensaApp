@@ -1,7 +1,7 @@
 //! A module for creating links to the html files of the website of the Studierendenwerk Karlsruhe (www.sw-ka.de)
 //! The basic structure of a link is as follows:
 //!
-//! `base_url`+`mensa_name`+[`URL_SEPARATOR`]+[`WEEK_SELECTOR`]+number
+//! `base_url`+`mensa_name`+`URL_SEPARATOR`+`WEEK_SELECTOR`+`cw_number`
 //!
 //! Like this for example:
 //!
