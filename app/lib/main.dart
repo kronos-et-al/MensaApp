@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
 import 'package:app/model/api_server/config.dart';
 import 'package:app/model/database/SQLiteDatabaseAccess.dart';
@@ -21,6 +23,7 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 /// The main function of the app.
 void main() {
@@ -46,6 +49,10 @@ void main() {
     },
   );
   WidgetsFlutterBinding.ensureInitialized();
+
+  if (Platform.isWindows || Platform.isLinux) {
+    sqfliteFfiInit();
+  }
 
   runApp(MensaApp(
     delegate: delegate,

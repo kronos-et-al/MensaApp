@@ -1,10 +1,13 @@
 import 'dart:async';
-import 'dart:ffi';
+import 'dart:io';
 
 import 'package:app/model/database/model/database_model.dart';
+import 'package:app/model/database/model/db_mealplan_side.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
 import 'package:app/view_model/repository/data_classes/meal/Additive.dart';
+import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
+import 'package:app/view_model/repository/data_classes/meal/Price.dart';
 import 'package:app/view_model/repository/data_classes/meal/Side.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
@@ -14,7 +17,7 @@ import 'package:app/view_model/repository/interface/IDatabaseAccess.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../view_model/repository/data_classes/meal/Allergen.dart';
@@ -28,6 +31,7 @@ import 'model/db_meal.dart';
 import 'model/db_meal_additive.dart';
 import 'model/db_meal_allergen.dart';
 import 'model/db_meal_plan.dart';
+import 'model/db_mealplan_meal.dart';
 import 'model/db_side.dart';
 import 'model/db_side_additive.dart';
 import 'model/db_side_allergen.dart';
@@ -41,6 +45,8 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
       DBCanteen.initTable(),
       DBLine.initTable(),
       DBMealPlan.initTable(),
+      DBMealPlanMeal.initTable(),
+      DBMealPlanSide.initTable(),
       DBMeal.initTable(),
       DBSide.initTable(),
       DBImage.initTable(),
@@ -71,6 +77,9 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
 
   static Future<Database> _initiate() async {
     WidgetsFlutterBinding.ensureInitialized();
+    if (Platform.isWindows || Platform.isLinux) {
+      databaseFactory = databaseFactoryFfi;
+    }
     return await openDatabase(
       join(await getDatabasesPath(), _dbName),
       onCreate: (db, version) {
@@ -85,31 +94,23 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   @override
   Future<int> addFavorite(Meal meal) async {
     var db = await database;
-    print(meal.id);
-    var dbMeal = await _getDBMeal(meal.id);
-    print(dbMeal?.toMap());
-    var dbMealPlan = await _getDBMealPlan(dbMeal!.mealPlanID);
-    var dbLine = await _getDBLine(dbMealPlan!.lineID);
-    // FavoriteID is now the related mealID. Seems right. TODO: DateTime to String, if toString() isn't enough.
     var favorite = DBFavorite(
         meal.id,
-        dbLine!.lineID,
-        meal.lastServed.toString(),
+        _dateFormat.format(meal.lastServed ?? DateTime.now()),
         meal.foodType,
         meal.price.student,
         meal.price.employee,
         meal.price.pupil,
         meal.price.guest);
-    return db.insert(DBFavorite.tableName, favorite.toMap());
+    await _insertMeal(meal);
+    return await db.insert(DBFavorite.tableName, favorite.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   @override
   Future<int> deleteFavorite(Meal meal) async {
     var db = await database;
     return db.delete(DBFavorite.tableName,
-        where: '${DBFavorite.columnFavoriteID} = ?',
-        // Same as above: mealID and favID is the same meal.
-        whereArgs: [meal.id]);
+        where: '${DBFavorite.columnMealID} = ?', whereArgs: [meal.id]);
   }
 
   @override
@@ -118,9 +119,28 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     var meals = List<Meal>.empty(growable: true);
     var dbFavoritesListResult = await db.query(DBFavorite.tableName);
     for (Map<String, dynamic> favoriteMap in dbFavoritesListResult) {
-      var dbFavorite = DBFavorite.fromMap(favoriteMap);
-      var meal = await _getMeal(dbFavorite.favoriteID, true);
-      meals.add(meal);
+      DBFavorite? dbFavorite = DBFavorite.fromMap(favoriteMap);
+      DBMeal? dbMeal = await _getDBMeal(dbFavorite.mealID);
+      if (dbMeal != null) {
+        meals.add(DatabaseTransformer.fromDBMeal(
+            dbMeal,
+            Price(
+                student: dbFavorite.priceStudent,
+                employee: dbFavorite.priceEmployee,
+                pupil: dbFavorite.priceEmployee,
+                guest: dbFavorite.priceGuest),
+            await _getMealAllergens(dbMeal.mealID),
+            await _getMealAdditives(dbMeal.mealID),
+            [],
+            {},
+            {},
+            {},
+            await _getDBImages(dbMeal.mealID),
+            _dateFormat.parse(dbFavorite.lastDate),
+            null,
+            null,
+            true));
+      }
     }
     return meals;
   }
@@ -129,11 +149,32 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   Future<Result<Meal, NoMealException>> getMealFavorite(String id) async {
     var db = await database;
     var result = await db.query(DBFavorite.tableName,
-        where: '${DBFavorite.columnFavoriteID} = ?', whereArgs: [id]);
+        where: '${DBFavorite.columnMealID} = ?', whereArgs: [id]);
     if (result.isNotEmpty) {
       DBFavorite dbFavorite = DBFavorite.fromMap(result.first);
-      var meal = await _getMeal(dbFavorite.favoriteID, true);
-      return Success(meal);
+      DBMeal? dbMeal = await _getDBMeal(dbFavorite.mealID);
+      if (dbMeal != null) {
+        return Success(DatabaseTransformer.fromDBMeal(
+            dbMeal,
+            Price(
+                student: dbFavorite.priceStudent,
+                employee: dbFavorite.priceEmployee,
+                pupil: dbFavorite.priceEmployee,
+                guest: dbFavorite.priceGuest),
+            await _getMealAllergens(dbMeal.mealID),
+            await _getMealAdditives(dbMeal.mealID),
+            [],
+            {},
+            {},
+            {},
+            (await _getDBImages(dbMeal.mealID)),
+            _dateFormat.parse(dbFavorite.lastDate),
+            null,
+            null,
+            await _isFavorite(dbMeal.mealID)));
+      } else {
+        return Failure(NoMealException("Meal not found."));
+      }
     } else {
       return Failure(NoMealException("Meal not found."));
     }
@@ -149,7 +190,6 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
             '${DBCanteen.tableName}.${DBCanteen.columnCanteenID} = ${DBLine.tableName}.${DBLine.columnCanteenID} AND ${DBLine.tableName}.${DBLine.columnLineID} = ${DBMealPlan.tableName}.${DBMealPlan.columnLineID} AND ${DBCanteen.tableName}.${DBCanteen.columnCanteenID} = ? AND ${DBMealPlan.tableName}.${DBMealPlan.columnDate} = ?',
         whereArgs: [canteen.id, _dateFormat.format(date)]);
     if (result.isNotEmpty) {
-      // Maybe better solution...
       /*List<MealPlan> mealPlans = await Future.wait(result.map((plan) async {
         DBMealPlan dbMealPlan= DBMealPlan.fromMap(plan);
         var dbLine = await _getDBLine(dbMealPlan.lineID);
@@ -161,20 +201,12 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         return DatabaseTransformer.fromDBMealPlan(dbMealPlan, dbLine, dbCanteen!, meals);
       }));
       return Success(mealPlans);*/
-      int i = 0;
       List<MealPlan> mealPlans = List.empty(growable: true);
       for (DBMealPlan dbMealPlan
           in result.map((plan) => DBMealPlan.fromMap(plan))) {
         var dbLine = await _getDBLine(dbMealPlan.lineID);
         var dbCanteen = await _getDBCanteen(dbLine!.canteenID);
-        var dbMeals = await _getDBMeals(dbMealPlan.mealPlanID);
-        var meals = List<Meal>.empty(growable: true);
-        for (DBMeal dbMeal in dbMeals) {
-          bool isFavorite = await _isFavorite(dbMeal.mealID);
-          Meal meal = await _getMeal(dbMeal.mealID, isFavorite);
-          meals.add(meal);
-        }
-        i++;
+        var meals = await _getMealPlanMeals(dbMealPlan);
         mealPlans.add(DatabaseTransformer.fromDBMealPlan(
             dbMealPlan, dbLine, dbCanteen!, meals));
       }
@@ -184,10 +216,79 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     }
   }
 
+  Future<List<Meal>> _getMealPlanMeals(DBMealPlan dbMealPlan) async {
+    List<DBMealPlanMeal> dbMealPlanMeals =
+        await _getDBMealPlanMeals(dbMealPlan.mealPlanID);
+    List<Meal> meals = List<Meal>.empty(growable: true);
+    for (DBMealPlanMeal dbMealPlanMeal in dbMealPlanMeals) {
+      DBMeal? dbMeal = await _getDBMeal(dbMealPlanMeal.mealID);
+      if (dbMeal == null) {
+        continue;
+      }
+      bool isFavorite = await _isFavorite(dbMeal.mealID);
+      Meal meal = Meal(
+          id: dbMeal.mealID,
+          name: dbMeal.name,
+          foodType: dbMeal.foodType,
+          lastServed: _dateFormat.parse(dbMealPlanMeal.lastServed),
+          nextServed: _dateFormat.parse(dbMealPlanMeal.nextServed),
+          relativeFrequency: dbMealPlanMeal.relativeFrequency,
+          additives: await _getMealAdditives(dbMeal.mealID),
+          allergens: await _getMealAllergens(dbMeal.mealID),
+          averageRating: dbMeal.averageRating,
+          individualRating: dbMeal.individualRating,
+          numberOfRatings: dbMeal.numberOfRatings,
+          images: (await _getDBImages(dbMeal.mealID))
+              .map((dbImage) => ImageData(
+                  id: dbImage.imageID,
+                  url: dbImage.url,
+                  imageRank: dbImage.imageRank,
+                  negativeRating: dbImage.negativeRating,
+                  positiveRating: dbImage.positiveRating,
+                  individualRating: dbImage.individualRating))
+              .toList(),
+          sides: await _getMealPlanSides(dbMealPlan, dbMealPlanMeal),
+          price: Price(
+              student: dbMealPlanMeal.priceStudent,
+              employee: dbMealPlanMeal.priceEmployee,
+              pupil: dbMealPlanMeal.pricePupil,
+              guest: dbMealPlanMeal.priceGuest),
+          isFavorite: isFavorite);
+      meals.add(meal);
+    }
+    return meals;
+  }
+
+  Future<List<Side>> _getMealPlanSides(
+      DBMealPlan dbMealPlan, DBMealPlanMeal dbMealPlanMeal) async {
+    List<DBMealPlanSide> dbMealPlanSides =
+        await _getDBMealPlanSides(dbMealPlan.mealPlanID, dbMealPlanMeal.mealID);
+    List<Side> sides = List<Side>.empty(growable: true);
+    for (DBMealPlanSide dbMealPlanSide in dbMealPlanSides) {
+      DBSide? dbSide = await _getDBSide(dbMealPlanSide.sideID);
+      if (dbSide == null) {
+        continue;
+      }
+      Side side = Side(
+          id: dbSide.sideID,
+          name: dbSide.name,
+          foodType: dbSide.foodType,
+          price: Price(
+              student: dbMealPlanSide.priceStudent,
+              employee: dbMealPlanSide.priceEmployee,
+              pupil: dbMealPlanSide.pricePupil,
+              guest: dbMealPlanSide.priceGuest),
+          allergens: await _getSideAllergens(dbSide.sideID) ?? [],
+          additives: await _getSideAdditive(dbSide.sideID) ?? []);
+      sides.add(side);
+    }
+    return sides;
+  }
+
   Future<bool> _isFavorite(String id) async {
     var db = await database;
     var result = await db.query(DBFavorite.tableName,
-        where: '${DBFavorite.columnFavoriteID} = ?', whereArgs: [id]);
+        where: '${DBFavorite.columnMealID} = ?', whereArgs: [id]);
     return result.isNotEmpty;
   }
 
@@ -200,21 +301,42 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     }
   }
 
-  Future<Meal> _getMeal(String mealID, bool isFavorite) async {
-    var dbMeal = await _getDBMeal(mealID);
-    var allergens = await _getMealAllergens(dbMeal!.mealID);
-    var additives = await _getMealAdditive(dbMeal.mealID);
-    var sides = await _getDBSides(dbMeal.mealID);
-    var sideAllergens = <DBSide, List<Allergen>>{};
-    var sideAdditives = <DBSide, List<Additive>>{};
-    for (DBSide side in sides) {
-      sideAllergens[side] = (await _getSideAllergens(side.sideID))!;
-      sideAdditives[side] = (await _getSideAdditive(side.sideID))!;
+  /*Future<Meal?> _getMeal(DBMeal dbMeal) async {
+    DBMeal? dbMeal = await _getDBMeal(dbMealPlanMeal.mealID);
+    if (dbMeal == null) {
+      return null;
+    }
+    List<Allergen>? allergens = await _getMealAllergens(dbMeal.mealID);
+    List<Additive>? additives = await _getMealAdditives(dbMeal.mealID);
+    List<DBMealPlanSide> mealPlanSides =
+        await _getDBMealPlanSides(dbMealPlanMeal.mealPlanID, dbMeal.mealID);
+    List<DBSide> dbSides = List<DBSide>.empty(growable: true);
+    Map<DBSide, List<Allergen>> sideAllergens = <DBSide, List<Allergen>>{};
+    Map<DBSide, List<Additive>> sideAdditives = <DBSide, List<Additive>>{};
+    Map<DBSide, DBMealPlanSide> dbMealPlanSides = <DBSide, DBMealPlanSide>{};
+    for (DBMealPlanSide mealPlanSide in mealPlanSides) {
+      DBSide? dbSide = await _getDBSide(mealPlanSide.sideID);
+      if (dbSide == null) {
+        continue;
+      }
+      sideAllergens[dbSide] = (await _getSideAllergens(dbSide.sideID))!;
+      sideAdditives[dbSide] = (await _getSideAdditive(dbSide.sideID))!;
+      dbMealPlanSides[dbSide] = mealPlanSide;
+      dbSides.add(dbSide);
     }
     var images = await _getDBImages(dbMeal.mealID);
-    return DatabaseTransformer.fromDBMeal(dbMeal, allergens!, additives!, sides,
-        sideAllergens, sideAdditives, images, isFavorite);
-  }
+    return DatabaseTransformer.fromDBMeal(
+        dbMealPlanMeal,
+        dbMeal,
+        allergens!,
+        additives!,
+        dbSides,
+        dbMealPlanSides,
+        sideAllergens,
+        sideAdditives,
+        images,
+        isFavorite);
+  }*/
 
   Future<int> _insertLine(Line line) async {
     var db = await database;
@@ -246,58 +368,85 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
       dbMealPlan = DBMealPlan(uuid.v4(), mealPlan.line.id,
           _dateFormat.format(mealPlan.date), mealPlan.isClosed);
     }
-    await db.delete(DBMeal.tableName,
+    int id = await db.insert(DBMealPlan.tableName, dbMealPlan.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.delete(DBMealPlanMeal.tableName,
         where: '${DBMeal.columnMealPlanID} = ?',
         whereArgs: [dbMealPlan.mealPlanID]);
-    await Future.wait(mealPlan.meals.map((e) => _insertMeal(e, dbMealPlan!)));
-    return await db.insert(DBMealPlan.tableName, dbMealPlan.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.delete(DBMealPlanSide.tableName,
+        where: '${DBMealPlanSide.columnMealPlanID} = ?',
+        whereArgs: [dbMealPlan.mealPlanID]);
+    await Future.wait(mealPlan.meals.map((e) => _insertMealPlanMeal(e, dbMealPlan!)));
+    return id;
   }
 
-  Future<int> _insertMeal(Meal meal, DBMealPlan mealPlan) async {
+  Future<int> _insertMeal(Meal meal) async {
     var db = await database;
-    /*await db.delete(DBMealAllergen.tableName,
+
+    await db.delete(DBMealAllergen.tableName,
         where: '${DBMealAllergen.columnMealID} = ?', whereArgs: [meal.id]);
     await db.delete(DBMealAdditive.tableName,
         where: '${DBMealAdditive.columnMealID} = ?', whereArgs: [meal.id]);
-    await db.delete(DBSide.tableName,
-        where: '${DBSide.columnMealID} = ?', whereArgs: [meal.id]);*/
-    print('stored data: ${meal.toMap()}');
-    var dbMeal = DBMeal(
+
+    DBMeal dbMeal = DBMeal(
         meal.id,
-        mealPlan.mealPlanID,
         meal.name,
         meal.foodType,
+        meal.individualRating ?? 0,
+        meal.numberOfRatings ?? 0,
+        meal.averageRating ?? 0);
+    return await db.insert(DBMeal.tableName, dbMeal.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<int> _insertMealPlanMeal(Meal meal, DBMealPlan mealPlan) async {
+    var db = await database;
+
+    await db.delete(DBMealAllergen.tableName,
+        where: '${DBMealAllergen.columnMealID} = ?', whereArgs: [meal.id]);
+    await db.delete(DBMealAdditive.tableName,
+        where: '${DBMealAdditive.columnMealID} = ?', whereArgs: [meal.id]);
+
+    DBMeal dbMeal = DBMeal(
+        meal.id,
+        meal.name,
+        meal.foodType,
+        meal.individualRating ?? 0,
+        meal.numberOfRatings ?? 0,
+        meal.averageRating ?? 0);
+    DBMealPlanMeal mealPlanMeal = DBMealPlanMeal(
+        mealPlan.mealPlanID,
+        dbMeal.mealID,
         meal.price.student,
         meal.price.employee,
         meal.price.pupil,
         meal.price.guest,
-        meal.individualRating ?? 0,
-        meal.numberOfRatings ?? 0,
-        meal.averageRating ?? 0,
-        meal.lastServed.toString(),
-        meal.nextServed.toString(),
+        _dateFormat.format(meal.lastServed ?? DateTime.now()),
+        _dateFormat.format(meal.nextServed ?? DateTime.now()),
         meal.relativeFrequency ?? Frequency.normal);
     await Future.wait(
         meal.allergens!.map((e) => _insertMealAllergen(e, dbMeal)).toList());
     await Future.wait(
         meal.additives!.map((e) => _insertMealAdditive(e, dbMeal)));
-    await Future.wait(meal.sides!.map((e) => _insertSide(e, dbMeal)).toList());
-    return await db.insert(DBMeal.tableName, dbMeal.toMap(),
+    await Future.wait(
+        meal.sides!.map((e) => _insertMealPlanSide(e, dbMeal, mealPlan)).toList());
+    await db.insert(DBMeal.tableName, dbMeal.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    return await db.insert(DBMealPlanMeal.tableName, mealPlanMeal.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<int> _insertSide(Side side, DBMeal meal) async {
+  Future<int> _insertMealPlanSide(Side side, DBMeal meal, DBMealPlan mealPlan) async {
     var db = await database;
     await db.delete(DBSideAllergen.tableName,
         where: '${DBSideAllergen.columnSideID} = ?', whereArgs: [side.id]);
     await db.delete(DBSideAdditive.tableName,
         where: '${DBSideAdditive.columnSideID} = ?', whereArgs: [side.id]);
-    var dbSide = DBSide(
-        side.id,
+    DBSide dbSide = DBSide(side.id, side.name, side.foodType);
+    DBMealPlanSide mealPlanSide = DBMealPlanSide(
+        mealPlan.mealPlanID,
         meal.mealID,
-        side.name,
-        side.foodType,
+        dbSide.sideID,
         side.price.student,
         side.price.employee,
         side.price.pupil,
@@ -306,9 +455,9 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         side.allergens.map((e) => _insertSideAllergen(e, dbSide)));
     await Future.wait(
         side.additives.map((e) => _insertSideAdditive(e, dbSide)));
-    int id = await db.insert(DBSide.tableName, dbSide.toMap(),
+    await db.insert(DBSide.tableName, dbSide.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
-    return id;
+    return await db.insert(DBMealPlanSide.tableName, mealPlanSide.toMap());
   }
 
   Future<int> _insertMealAllergen(Allergen allergen, DBMeal meal) async {
@@ -372,7 +521,6 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     }
   }
 
-  // todo unused
   Future<DBSide?> _getDBSide(String sideID) async {
     var db = await database;
     var result = await db.query(DBSide.tableName,
@@ -384,19 +532,23 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     }
   }
 
-  Future<List<DBMeal>> _getDBMeals(String mealPlanID) async {
+  Future<List<DBMealPlanMeal>> _getDBMealPlanMeals(String mealPlanID) async {
     var db = await database;
-    var result = await db.query(DBMeal.tableName,
-        where: '${DBMeal.columnMealPlanID} = ?', whereArgs: [mealPlanID]);
-    return result.map((mealRow) => DBMeal.fromMap(mealRow)).toList();
+    var result = await db.query(DBMealPlanMeal.tableName,
+        where: '${DBMealPlanMeal.columnMealPlanID} = ?',
+        whereArgs: [mealPlanID]);
+    return result.map((mealRow) => DBMealPlanMeal.fromMap(mealRow)).toList();
   }
 
-  Future<List<DBSide>> _getDBSides(String mealID) async {
+  Future<List<DBMealPlanSide>> _getDBMealPlanSides(
+      String mealPlanID, String mealID) async {
     var db = await database;
-    var result = await db.query(DBSide.tableName,
-        where: '${DBSide.columnMealID} = ?', whereArgs: [mealID]);
+    var result = await db.query(DBMealPlanSide.tableName,
+        where:
+            '${DBMealPlanSide.columnMealPlanID} = ? AND ${DBMealPlanSide.columnMealID} = ?',
+        whereArgs: [mealPlanID, mealID]);
 
-    return result.map((sideRow) => DBSide.fromMap(sideRow)).toList();
+    return result.map((sideRow) => DBMealPlanSide.fromMap(sideRow)).toList();
   }
 
   // todo unused
@@ -433,7 +585,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   Future<DBFavorite?> _getDBFavorite(String favoriteID) async {
     var db = await database;
     var result = await db.query(DBFavorite.tableName,
-        where: '${DBFavorite.columnFavoriteID} = ?', whereArgs: [favoriteID]);
+        where: '${DBFavorite.columnMealID} = ?', whereArgs: [favoriteID]);
     if (result.isNotEmpty) {
       return DBFavorite.fromMap(result.first);
     } else {
@@ -459,7 +611,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         .toList();
   }
 
-  Future<List<Additive>?> _getMealAdditive(String id) async {
+  Future<List<Additive>?> _getMealAdditives(String id) async {
     var db = await database;
     var result = await db.query(DBMealAdditive.tableName,
         where: '${DBMealAdditive.columnMealID} = ?', whereArgs: [id]);

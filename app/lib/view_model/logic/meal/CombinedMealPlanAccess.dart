@@ -85,7 +85,6 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     };
 
     if (_mealPlans.isNotEmpty) {
-      print("meal plans from database");
       await _filterMealPlans();
       await _setNewMealPlan();
       return;
@@ -204,12 +203,6 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       return Future.value(Failure(ClosedCanteenException("canteen closed")));
     }
 
-    for (var element in _mealPlans) {
-      for (var element in element.meals) {
-        print(element.name);
-      }
-    }
-
     if (!_activeFilter) {
       return Future.value(Success(_mealPlans));
     }
@@ -228,12 +221,6 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     await _doneInitialization;
 
     final mealPlan = await _getMealPlanFromServer();
-
-    for (var element in mealPlan) {
-      for (var element in element.meals) {
-        print('fetched data: ${element.toMap()}');
-      }
-    }
 
     if (mealPlan.isEmpty) {
       return "snackbar.refreshMealPlanError";
@@ -473,7 +460,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     }
 
     // check rating
-    if (meal.averageRating != null && meal.averageRating! < _filter.rating) {
+    if (meal.averageRating != null && meal.averageRating != 0 && meal.averageRating! < _filter.rating.toDouble()) {
       return false;
     }
 

@@ -130,7 +130,6 @@ class GraphQlServerAccess implements IServerAccess {
     final result = await _client.mutate$LinkImage(Options$Mutation$LinkImage(
         variables:
             Variables$Mutation$LinkImage(imageUrl: url, mealId: meal.id)));
-    print(result);
     return result.parsedData?.addImage ?? false;
   }
 
@@ -241,8 +240,6 @@ class GraphQlServerAccess implements IServerAccess {
     if (exception != null) {
       return Failure(NoConnectionException(exception.toString()));
     }
-
-    print(result.parsedData?.getCanteen);
 
     final mealPlan = _convertMealPlan(
         [result.parsedData?.getCanteen].nonNulls.toList(), date);

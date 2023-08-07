@@ -19,7 +19,6 @@ class Favorites extends StatelessWidget {
         future: Future.wait([favoriteAccess.getFavoriteMeals()]),
         builder: (context, snapshot) {
           if (!snapshot.hasData || snapshot.hasError) {
-            print(snapshot.error);
             return Scaffold(
                 appBar: MensaAppBar(
                     appBarHeight: kToolbarHeight,
