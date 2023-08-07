@@ -5,7 +5,7 @@ use crate::interface::image_hoster::{ImageHoster, ImageHosterError, Result};
 use crate::layer::data::flickr_api::api_request::ApiRequest;
 use async_trait::async_trait;
 use lazy_static::lazy_static;
-use regex::Regex;
+use regex::{Captures, Regex};
 
 #[derive(Debug)]
 pub struct FlickrInfo {
@@ -35,27 +35,17 @@ impl FlickrApiHandler {
         }
     }
 
-    // URL TYPE 1.1: https://www.flickr.com/photos/gerdavs/52310534489/ <- remove last '/'
-    // URL TYPE 1.2: https://www.flickr.com/photos/198319418@N06/53077317043 <- remove last '/'
-    // URL TYPE 2: https://flic.kr/p/2oRguN3
+    // URL TYPE 1.1: https://www.flickr.com/photos/gerdavs/52310534489/, id group = 4
+    // URL TYPE 1.2: https://www.flickr.com/photos/198319418@N06/53077317043, id group = 4
+    // URL TYPE 2: https://flic.kr/p/2oRguN3, id group = 2
     // Both cases: Split with '/' and get last member (= photo_id).
     fn determine_photo_id(url: &str) -> Result<String> {
-        if LONG_URL_REGEX.is_match(url) || SHORT_URL_REGEX.is_match(url) {
-            let id = url
-                .trim_end_matches('/')
-                .split('/')
-                .last()
-                .map(String::from)
-                .ok_or_else(|| {
-                    ImageHosterError::FormatNotFound(format!(
-                        "this url format is not supported: '{url}'"
-                    ))
-                })?;
-            if SHORT_URL_REGEX.is_match(url) {
-                Self::decode(&id)
-            } else {
-                Ok(id)
-            }
+        if SHORT_URL_REGEX.is_match(url) {
+            let groups = SHORT_URL_REGEX.captures(url).expect("url matches regex but captures could not be created");
+            groups.get(2).map(|m| m.as_str()).map_or_else(|| Err(ImageHosterError::FormatNotFound(format!("could not detect id group in '{url}'"))), Self::decode)
+        } else if LONG_URL_REGEX.is_match(url) {
+            let groups = LONG_URL_REGEX.captures(url).expect("url matches regex but captures could not be created");
+            groups.get(4).map(|m| m.as_str()).map_or_else(|| Err(ImageHosterError::FormatNotFound(format!("could not detect id group in '{url}'"))), |str| Ok(str.to_string()))
         } else {
             Err(ImageHosterError::FormatNotFound(format!(
                 "this url format is not supported: '{url}'"
