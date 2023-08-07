@@ -14,7 +14,7 @@ void main () {
   late PreferenceAccess preferencesPredefined;
 
   group("initialization", () {
-    when(() => localStorage.getClientIdentifier()).thenReturn(null);
+    when(() => localStorage.getClientIdentifier()).thenAnswer((_) => null);
     when(() => localStorage.getColorScheme()).thenAnswer((_) => null);
     when(() => localStorage.getPriceCategory()).thenAnswer((_) => null);
     when(() => localStorage.getMealPlanFormat()).thenAnswer((_) => null);
@@ -44,7 +44,8 @@ void main () {
   group("test setters", () {
     test("set ClientIdentifier", () async {
       const string = "42";
-      when(() => localStorage.setClientIdentifier(string)).thenAnswer((_) async {});
+      when(() => localStorage.setClientIdentifier(string))
+          .thenAnswer((_) async {});
 
       await preferences.setClientIdentifier(string);
       verify(() => localStorage.setClientIdentifier(string)).called(1);
@@ -62,7 +63,8 @@ void main () {
 
     test("set Meal Plan Format", () async {
       const format = MealPlanFormat.list;
-      when(() => localStorage.setMealPlanFormat(format)).thenAnswer((_) async {});
+      when(() => localStorage.setMealPlanFormat(format))
+          .thenAnswer((_) async {});
 
       await preferences.setMealPlanFormat(format);
       verify(() => localStorage.setMealPlanFormat(format)).called(1);
@@ -81,9 +83,12 @@ void main () {
 
   group("initialization with non standard values", () {
     when(() => localStorage.getClientIdentifier()).thenAnswer((_) => "42");
-    when(() => localStorage.getColorScheme()).thenAnswer((_) => MensaColorScheme.light);
-    when(() => localStorage.getPriceCategory()).thenAnswer((_) => PriceCategory.employee);
-    when(() => localStorage.getMealPlanFormat()).thenAnswer((_) => MealPlanFormat.list);
+    when(() => localStorage.getColorScheme())
+        .thenAnswer((_) => MensaColorScheme.light);
+    when(() => localStorage.getPriceCategory())
+        .thenAnswer((_) => PriceCategory.employee);
+    when(() => localStorage.getMealPlanFormat())
+        .thenAnswer((_) => MealPlanFormat.list);
 
     when(() => localStorage.setPriceCategory(PriceCategory.student))
         .thenAnswer((_) async {});
@@ -106,5 +111,4 @@ void main () {
       expect(preferencesPredefined.getPriceCategory(), PriceCategory.employee);
     });
   });
-
 }
