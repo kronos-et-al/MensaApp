@@ -54,7 +54,7 @@ impl ApiRequest {
             .await?
             .bytes()
             .await
-            .map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))?;
+            .map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
         Self::json_to_struct::<JsonRootSizes>(&bytes).map_or_else(
             |_| Err(Self::determine_error(&bytes)),
             |root| JsonParser::parse_get_sizes(&root, photo_id),
@@ -83,7 +83,7 @@ impl ApiRequest {
             .await?
             .bytes()
             .await
-            .map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))?;
+            .map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
         Self::json_to_struct::<JsonRootLicense>(&bytes).map_or_else(
             |_| Err(Self::determine_error(&bytes)),
             |root| Ok(JsonParser::check_license(&root)),
@@ -93,12 +93,12 @@ impl ApiRequest {
     fn determine_error(bytes: &Bytes) -> ImageHosterError {
         match Self::json_to_struct::<JsonRootError>(bytes) {
             Ok(root) => JsonParser::parse_error(&root),
-            Err(e) => ImageHosterError::JsonDecodeFailed(e.to_string()),
+            Err(e) => ImageHosterError::DecodeFailed(e.to_string()),
         }
     }
 
     fn json_to_struct<T: DeserializeOwned>(bytes: &Bytes) -> Result<T, ImageHosterError> {
-        serde_json::from_slice(bytes).map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))
+        serde_json::from_slice(bytes).map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))
     }
 }
 

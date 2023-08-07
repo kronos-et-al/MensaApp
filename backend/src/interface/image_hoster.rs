@@ -39,9 +39,9 @@ pub enum ImageHosterError {
     /// The connection failed to establish error
     #[error("no connection could be established: {0}")]
     NotConnected(String),
-    /// The reqwest json parser failed
-    #[error("some json response couldn't be decoded: {0}")]
-    JsonDecodeFailed(String),
+    /// The provided argument could not be parsed into bytes
+    #[error("some bytes couldn't be decoded: {0}")]
+    DecodeFailed(String),
     /// The image is too small to be used error
     #[error("the provided photo_id links to an image that is too small")]
     ImageIsTooSmall,
