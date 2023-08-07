@@ -452,7 +452,9 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     }
 
     // check rating
-    if (meal.averageRating != null && meal.averageRating! < _filter.rating) {
+    if (meal.averageRating != null &&
+        meal.averageRating! < _filter.rating &&
+        meal.averageRating! > 0) {
       return false;
     }
 
