@@ -21,7 +21,7 @@ lazy_static! {
         Regex::new(r"(https://www.flickr.com/photos/)([\d\w@]+)/(\d+)([/]{0,1})")
             .expect("regex creation failed");
     static ref SHORT_URL_REGEX: Regex =
-        Regex::new(r"(https://flic.kr/p/)([\d\w]+)").expect("regex creation failed");
+        Regex::new(r"(https://www\.flickr\.com/photos/)([\w@]+)(/)(\d+)(/?)").expect("regex creation failed");
 }
 
 const ALPHABET: &str = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
