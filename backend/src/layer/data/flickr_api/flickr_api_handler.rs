@@ -18,10 +18,10 @@ pub struct FlickrApiHandler {
 
 lazy_static! {
     static ref LONG_URL_REGEX: Regex =
-        Regex::new(r"(https://www.flickr.com/photos/)([\d\w@]+)/(\d+)([/]{0,1})")
+        Regex::new(r"(https://www\.flickr\.com/photos/)([\w@]+)(/)(\d+)(/?)")
             .expect("regex creation failed");
     static ref SHORT_URL_REGEX: Regex =
-        Regex::new(r"(https://www\.flickr\.com/photos/)([\w@]+)(/)(\d+)(/?)").expect("regex creation failed");
+        Regex::new(r"(https://flic\.kr/p/)(\w+)").expect("regex creation failed");
 }
 
 const ALPHABET: &str = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
