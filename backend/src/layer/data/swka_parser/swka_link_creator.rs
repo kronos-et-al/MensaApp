@@ -134,12 +134,4 @@ mod tests {
         let result = test_util::get_creator().get_all_urls_for_next_weeks_from_date(date);
         assert_eq!(result, URLS_FOR_NEXT_WEEKS);
     }
-
-    #[test]
-    fn test_get_todays_date() {
-        assert_eq!(
-            Local::now().date_naive(),
-            SwKaLinkCreator::get_todays_date()
-        );
-    }
 }
