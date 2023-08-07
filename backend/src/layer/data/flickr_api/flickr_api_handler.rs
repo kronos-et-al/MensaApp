@@ -76,8 +76,8 @@ impl FlickrApiHandler {
         let mut multi = 1_u64;
         for char in word.chars().rev() {
             let index = ALPHABET.find(char).ok_or_else(|| {
-                ImageHosterError::FormatNotFound(String::from(
-                    "FlickrDecoder: Provided photo_id contains invalid characters.",
+                ImageHosterError::FormatNotFound(format!(
+                    "FlickrDecoder: Provided photo_id contains invalid characters: '{char}'."
                 ))
             })?;
             decoded +=
