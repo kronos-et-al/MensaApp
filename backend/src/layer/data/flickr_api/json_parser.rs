@@ -21,7 +21,7 @@ impl JsonParser {
     /// If the preferred size cannot be obtained a fallback to a smaller size will be done.
     /// If even this fallback size is not available the url will be empty. No url will be provided.
     /// # Errors
-    /// Returns [`ImageHosterError::ImageIsToSmall`] if the image is too small.
+    /// Returns [`ImageHosterError::ImageIsTooSmall`] if the image is too small.
     pub fn parse_get_sizes(
         root: &JsonRootSizes,
         photo_id: &str,
