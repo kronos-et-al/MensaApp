@@ -2,7 +2,7 @@ use tracing_subscriber::{EnvFilter, FmtSubscriber};
 
 /// Struct containing all configurations available for the logging system.
 pub struct LogInfo {
-    /// Logging specifier following the schema of [https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html]
+    /// Logging specifier following the schema of <https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html>
     pub log_config: String,
 }
 
