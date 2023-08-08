@@ -1,11 +1,11 @@
-use crate::layer::trigger::graphql::util::{ApiUtil, TRACE_QUERY_MESSAGE};
+use crate::layer::trigger::graphql::util::ApiUtil;
 use crate::util::MealType;
 use crate::{
     interface::persistent_data::model,
     util::{Additive, Allergen, Date, Uuid},
 };
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-use tracing::{instrument, trace};
+use tracing::instrument;
 
 use super::line::Line;
 use super::{image::Image, price::Price, side::Side};
@@ -37,7 +37,6 @@ impl Meal {
     /// Provides the allergens of this meal.
     #[instrument(skip(ctx))]
     async fn allergens(&self, ctx: &Context<'_>) -> Result<Vec<Allergen>> {
-        trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         let allergens = data_access
             .get_allergens(self.id)
@@ -51,7 +50,6 @@ impl Meal {
     /// Provides the additives of this meal
     #[instrument(skip(ctx))]
     async fn additives(&self, ctx: &Context<'_>) -> Result<Vec<Additive>> {
-        trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         let additives = data_access
             .get_additives(self.id)
@@ -65,7 +63,6 @@ impl Meal {
     /// Provides the images belonging to this meal
     #[instrument(skip(ctx))]
     async fn images(&self, ctx: &Context<'_>) -> Result<Vec<Image>> {
-        trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         let client_id = ctx.get_auth_info().map(|i| i.client_id);
         let images = data_access
@@ -80,7 +77,6 @@ impl Meal {
     /// Provides the sides belonging to this meal.
     #[instrument(skip(ctx))]
     async fn sides(&self, ctx: &Context<'_>) -> Result<Vec<Side>> {
-        trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         let sides = data_access
             .get_sides(self.line_id, self.date)
@@ -94,7 +90,6 @@ impl Meal {
     /// Provides the line this meal is served at.
     #[instrument(skip(ctx))]
     async fn line(&self, ctx: &Context<'_>) -> Result<Line> {
-        trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         data_access
             .get_line(self.line_id)
@@ -120,7 +115,6 @@ impl Ratings {
     /// Provides this user's rating for the meal.
     #[instrument(skip(ctx))]
     async fn personal_rating(&self, ctx: &Context<'_>) -> Result<Option<u32>> {
-        trace!(TRACE_QUERY_MESSAGE);
         let data_access = ctx.get_data_access();
         let client_id = match ctx.get_auth_info() {
             Some(info) => info.client_id,

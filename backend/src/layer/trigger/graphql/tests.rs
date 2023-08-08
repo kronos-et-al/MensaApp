@@ -3,20 +3,17 @@
 
 use async_graphql::{EmptySubscription, Request, Schema};
 
+use crate::interface::api_command::{AuthInfo, InnerAuthInfo};
 use crate::layer::trigger::graphql::mutation::MutationRoot;
 use crate::layer::trigger::graphql::query::QueryRoot;
 use crate::layer::trigger::graphql::server::construct_schema;
-use crate::layer::trigger::graphql::util::{AuthHeader, CommandBox, DataBox};
+use crate::layer::trigger::graphql::util::{CommandBox, DataBox};
+use crate::util::Uuid;
 
 use super::mock::{CommandMock, RequestDatabaseMock};
 
-const VALID_AUTH_HEDAER: &str =
-    "Mensa MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=";
-
 async fn test_gql_request(request: &'static str) {
     let request: Request = request.into();
-    let auth = VALID_AUTH_HEDAER.to_string() as AuthHeader;
-    let request = request.data(auth);
 
     let schema = construct_schema(RequestDatabaseMock, CommandMock);
     let response = schema.execute(request).await;
@@ -323,7 +320,7 @@ async fn test_recursive_meal_line_ok() {
 }
 
 #[tokio::test]
-async fn test_get_auth_info_correct() {
+async fn test_get_auth_info() {
     let request = r#"
     {
         getMyAuth {
@@ -332,14 +329,18 @@ async fn test_get_auth_info_correct() {
           hash
         }
       }
-      
-      
-      
     "#;
+
+    let auth_info = Some(InnerAuthInfo {
+        client_id: Uuid::try_from("1d75d380-cf07-4edb-9046-a2d981bc219d").unwrap(),
+        api_ident: "abc".into(),
+        hash: "123".into(),
+    });
+
     let schema = Schema::build(QueryRoot, MutationRoot, EmptySubscription)
         .data(Box::new(RequestDatabaseMock) as DataBox)
         .data(Box::new(CommandMock) as CommandBox)
-        .data(VALID_AUTH_HEDAER.to_string() as AuthHeader)
+        .data(auth_info as AuthInfo)
         .finish();
     let response = schema.execute(request).await;
     assert!(response.is_ok(), "request returned {:?}", response.errors);

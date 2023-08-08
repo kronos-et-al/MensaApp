@@ -6,6 +6,7 @@ use axum::body::Bytes;
 use reqwest::Response;
 use serde::de::DeserializeOwned;
 use tracing::debug;
+use tracing::trace;
 
 pub struct ApiRequest {
     api_key: String,
@@ -30,7 +31,6 @@ impl ApiRequest {
         let res = reqwest::get(url)
             .await
             .map_err(|e| ImageHosterError::NotConnected(e.to_string()))?;
-        debug!("request_url finished with response: {:?}", res);
         Ok(res)
     }
 

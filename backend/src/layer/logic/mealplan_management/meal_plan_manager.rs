@@ -6,7 +6,7 @@ use crate::layer::logic::mealplan_management::relation_resolver::RelationResolve
 use crate::util::Date;
 use async_trait::async_trait;
 use chrono::Local;
-use tracing::{debug, warn};
+use tracing::{trace, warn};
 
 pub struct MealPlanManager<Parser, DataAccess>
 where
@@ -33,7 +33,7 @@ where
         for parse_canteen in parse_canteens {
             let name = &parse_canteen.name.clone();
             match self.resolver.resolve(parse_canteen, date).await {
-                Ok(()) => debug!("resolved canteen '{name}' with no errors"),
+                Ok(()) => trace!("resolved canteen '{name}' with no errors"),
                 Err(error) => warn!("resolved canteen '{name}' with errors: {error}"),
             }
         }
