@@ -18,13 +18,11 @@ pub struct FlickrApiHandler {
 
 lazy_static! {
     static ref LONG_URL_REGEX: Regex =
-        Regex::new(r"(https://www\.flickr\.com/photos/)([\w@]+)(/)(\d+)(/?)")
+        Regex::new(r"https://www\.flickr\.com/photos/[\w@]+/(\d+)/?")
             .expect("regex creation failed");
     static ref SHORT_URL_REGEX: Regex =
-        Regex::new(r"(https://flic\.kr/p/)(\w+)").expect("regex creation failed");
+        Regex::new(r"https://flic\.kr/p/(\w+)").expect("regex creation failed");
 }
-
-const ALPHABET: &str = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
 
 impl FlickrApiHandler {
     #[must_use]
@@ -40,23 +38,15 @@ impl FlickrApiHandler {
     // URL TYPE 2: https://flic.kr/p/2oRguN3, id group = 2
     // Both cases: Split with '/' and get last member (= photo_id).
     fn determine_photo_id(url: &str) -> Result<String> {
-        if SHORT_URL_REGEX.is_match(url) {
-            let groups = SHORT_URL_REGEX
-                .captures(url)
-                .expect("url matches regex but captures could not be created");
-            groups.get(2).map(|m| m.as_str()).map_or_else(
-                || {
-                    Err(ImageHosterError::FormatNotFound(format!(
-                        "could not detect id group in '{url}'"
-                    )))
-                },
-                Self::decode,
-            )
-        } else if LONG_URL_REGEX.is_match(url) {
-            let groups = LONG_URL_REGEX
-                .captures(url)
-                .expect("url matches regex but captures could not be created");
-            groups.get(4).map(|m| m.as_str()).map_or_else(
+        if let Some(groups) = SHORT_URL_REGEX.captures(url) {
+            match groups.get(1).map(|m| m.as_str()) {
+                None => Err(ImageHosterError::FormatNotFound(format!(
+                    "could not detect id group in '{url}'"
+                ))),
+                Some(str) => Ok(Self::decode(str)?.to_string())
+            }
+        } else if let Some(groups) = LONG_URL_REGEX.captures(url) {
+            groups.get(1).map(|m| m.as_str()).map_or_else(
                 || {
                     Err(ImageHosterError::FormatNotFound(format!(
                         "could not detect id group in '{url}'"
@@ -71,21 +61,12 @@ impl FlickrApiHandler {
         }
     }
 
-    fn decode(word: &str) -> Result<String> {
-        let mut decoded = 0_u64;
-        let mut multi = 1_u64;
-        for char in word.chars().rev() {
-            let index = ALPHABET.find(char).ok_or_else(|| {
-                ImageHosterError::FormatNotFound(format!(
-                    "FlickrDecoder: Provided photo_id contains invalid characters: '{char}'."
-                ))
-            })?;
-            decoded +=
-                multi * u64::try_from(index).expect("FlickrDecoder: Could not parse usize to u64");
-            multi *=
-                u64::try_from(ALPHABET.len()).expect("FlickrDecoder: Could not parse usize to u64");
-        }
-        Ok(decoded.to_string())
+    fn decode(word: &str) -> Result<u64> {
+        let bytes = bs58::decode(word).with_alphabet(bs58::Alphabet::FLICKR).into_vec().map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
+        let mut bytes: Vec<u8> = bytes.into_iter().rev().collect();
+        bytes.resize(8, 0);
+        // try_into() cannot fail as bytes.resize guarantees length 8.
+        Ok(u64::from_le_bytes(bytes.try_into().expect("Decode: convert failed as Vec<u8> could not be parsed into &[u8; 8]")))
     }
 }
 
@@ -179,7 +160,7 @@ mod test {
     fn test_valid_decode() {
         let word = "2oSg8aV";
         let res = FlickrApiHandler::decode(word).unwrap();
-        assert_eq!(res, "53077317043");
+        assert_eq!(res, 53_077_317_043);
     }
 
     #[test]
