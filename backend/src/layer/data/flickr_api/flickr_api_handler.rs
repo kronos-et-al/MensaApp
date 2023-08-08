@@ -39,21 +39,9 @@ impl FlickrApiHandler {
     // Both cases: Split with '/' and get last member (= photo_id).
     fn determine_photo_id(url: &str) -> Result<String> {
         if let Some(groups) = SHORT_URL_REGEX.captures(url) {
-            match groups.get(1).map(|m| m.as_str()) {
-                None => Err(ImageHosterError::FormatNotFound(format!(
-                    "could not detect id group in '{url}'"
-                ))),
-                Some(str) => Ok(Self::decode(str)?.to_string()),
-            }
+            Ok(Self::decode(groups.get(1).map(|m| m.as_str()).expect("could not detect id group in url"))?.to_string())
         } else if let Some(groups) = LONG_URL_REGEX.captures(url) {
-            groups.get(1).map(|m| m.as_str()).map_or_else(
-                || {
-                    Err(ImageHosterError::FormatNotFound(format!(
-                        "could not detect id group in '{url}'"
-                    )))
-                },
-                |str| Ok(str.to_string()),
-            )
+            Ok(groups.get(1).map(|m| m.as_str()).expect("could not detect id group in url").to_string())
         } else {
             Err(ImageHosterError::FormatNotFound(format!(
                 "this url format is not supported: '{url}'"
@@ -65,7 +53,7 @@ impl FlickrApiHandler {
         let bytes = bs58::decode(word)
             .with_alphabet(bs58::Alphabet::FLICKR)
             .into_vec()
-            .map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
+            .map_err(|e| ImageHosterError::Bs58DecodeFailed(e.to_string()))?;
         let mut bytes: Vec<u8> = bytes.into_iter().rev().collect();
         bytes.resize(8, 0);
         // try_into() cannot fail as bytes.resize guarantees length 8.

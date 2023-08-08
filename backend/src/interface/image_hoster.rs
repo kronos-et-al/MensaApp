@@ -42,6 +42,9 @@ pub enum ImageHosterError {
     /// The provided argument could not be parsed into bytes
     #[error("some bytes couldn't be decoded: {0}")]
     DecodeFailed(String),
+    /// The provided argument could not be parsed into bytes
+    #[error("some bytes couldn't be decoded by the bs58 library: {0}")]
+    Bs58DecodeFailed(String),
     /// The image is too small to be used error
     #[error("the provided photo_id links to an image that is too small")]
     ImageIsTooSmall,
