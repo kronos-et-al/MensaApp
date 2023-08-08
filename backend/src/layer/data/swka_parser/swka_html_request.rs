@@ -71,26 +71,26 @@ mod test {
     }
 
     #[tokio::test]
-    async fn get_html_response_fail() {
+    async fn test_get_html_response_fail() {
         let result = test_util::get_request().get_html(&get_invalid_url()).await;
         assert!(result.is_err());
     }
 
     #[tokio::test]
-    async fn get_html_response_no_fail() {
+    async fn test_get_html_response_no_fail() {
         let result = test_util::get_request().get_html(&get_valid_url()).await;
         assert!(result.is_ok());
     }
 
     #[tokio::test]
-    async fn get_html_strings_response_fail() {
+    async fn test_get_html_strings_response_fail() {
         let urls = vec![get_invalid_url(), get_valid_url(), get_valid_url()];
         let result = test_util::get_request().get_html_strings(urls).await;
         assert!(result.is_err());
     }
 
     #[tokio::test]
-    async fn get_html_strings_response_no_fail() {
+    async fn test_get_html_strings_response_no_fail() {
         let urls = vec![get_valid_url(), get_valid_url()];
         let result = test_util::get_request().get_html_strings(urls).await;
         assert!(result.is_ok());

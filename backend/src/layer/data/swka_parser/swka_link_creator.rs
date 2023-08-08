@@ -35,7 +35,7 @@ impl SwKaLinkCreator {
     /// `Vec<String>` containing all urls.
     #[must_use]
     pub fn get_urls(&self, day: Date) -> Vec<String> {
-        let calender_week = Self::get_calender_week(day);
+        let calender_week = day.iso_week().week();
         self.valid_canteens
             .iter()
             .map(|mensa| {
@@ -52,7 +52,7 @@ impl SwKaLinkCreator {
     /// `Vec<String>` containing all urls.
     #[must_use]
     pub fn get_all_urls(&self) -> Vec<String> {
-        let today = Self::get_todays_date();
+        let today = Local::now().date_naive();
         self.get_all_urls_for_next_weeks_from_date(today)
     }
 
@@ -60,14 +60,6 @@ impl SwKaLinkCreator {
         (0..NUMBER_OF_WEEKS_TO_POLL)
             .flat_map(|week| Self::get_urls(self, date + Duration::weeks(week.into())))
             .collect()
-    }
-
-    fn get_calender_week(day: Date) -> u32 {
-        day.iso_week().week()
-    }
-
-    fn get_todays_date() -> Date {
-        Local::now().date_naive()
     }
 }
 

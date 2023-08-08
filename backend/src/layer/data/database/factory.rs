@@ -98,7 +98,7 @@ mod tests {
         };
         let factory = DataAccessFactory::new(info, true)
             .await
-            .expect("faild to access test database");
+            .expect("failed to access test database");
         let _ = factory.get_command_data_access();
         let _ = factory.get_image_review_data_access();
         let _ = factory.get_mealplan_management_data_access();
