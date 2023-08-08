@@ -74,7 +74,7 @@ impl MailSender {
             .body(report)?;
         self.mailer.send(&email)?;
         info!(
-            "Email sent successfully for image with id {} at {}",
+            "Notified administrators about image report for image with id {} at {}",
             info.image_id, info.image_link
         );
         Ok(())
