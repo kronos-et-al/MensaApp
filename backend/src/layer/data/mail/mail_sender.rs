@@ -43,7 +43,7 @@ pub struct MailSender {
 impl AdminNotification for MailSender {
     async fn notify_admin_image_report(&self, info: ImageReportInfo) {
         if let Err(error) = self.try_notify_admin_image_report(&info) {
-            warn!("{error}");
+            warn!("Error notifying administrator: {error}");
         }
     }
 }
