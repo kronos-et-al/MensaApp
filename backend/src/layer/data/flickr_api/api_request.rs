@@ -5,8 +5,6 @@ use crate::layer::data::flickr_api::json_structs::{JsonRootError, JsonRootLicens
 use axum::body::Bytes;
 use reqwest::Response;
 use serde::de::DeserializeOwned;
-use tracing::debug;
-use tracing::trace;
 
 pub struct ApiRequest {
     api_key: String,
@@ -36,7 +34,7 @@ impl ApiRequest {
 
     /// This method is used to request image information for the given `photo_id` from the flickr api.
     /// # Errors
-    /// If the request could not be decoded ([`ImageHosterError::JsonDecodeFailed`],
+    /// If the request could not be decoded ([`ImageHosterError::DecodeFailed`],
     /// Another request, which expects an error will be attempted.
     /// This error request returns a more detailed error information.
     /// # Returns
@@ -63,7 +61,7 @@ impl ApiRequest {
 
     /// This method is used to request image license information for the given `photo_id` from the flickr api.
     /// # Errors
-    /// If the request could not be decoded ([`ImageHosterError::JsonDecodeFailed`],
+    /// If the request could not be decoded ([`ImageHosterError::DecodeFailed`],
     /// Another request, which expects an error will be attempted.
     /// This error request returns a more detailed error information.
     /// # Returns
