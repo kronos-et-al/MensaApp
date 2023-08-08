@@ -1,0 +1,1 @@
+INSERT INTO meal_rating(user_id, food_id, rating) VALUES ('0562269b-8c46-4d5f-9749-25f93c062748', 'f7337122-b018-48ad-b420-6202dc3cb4ff', 3)
