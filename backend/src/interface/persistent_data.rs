@@ -189,7 +189,7 @@ pub trait CommandDataAccess: Sync + Send {
         image_hoster_id: String,
         url: String,
     ) -> Result<()>;
-    /// Adds a rating to the database. The rating will be related to the given meal and the given user.
+    /// Adds or updates a rating to the database. The rating will be related to the given meal and the given user.
     async fn add_rating(&self, meal_id: Uuid, user_id: Uuid, rating: u32) -> Result<()>;
     /// Loads all api_keys from the database.
     async fn get_api_keys(&self) -> Result<Vec<ApiKey>>;

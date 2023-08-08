@@ -40,7 +40,7 @@ where
 {
     async fn start_image_review(&self) {
         if let Err(error) = self.try_start_image_review().await {
-            warn!("{error}");
+            warn!("Error reviewing images: {error}");
         }
     }
 }
@@ -88,7 +88,7 @@ where
         images
             .into_iter()
             .filter_map(std::result::Result::err)
-            .for_each(|error| warn!("{error}"));
+            .for_each(|error| warn!("Error reviewing image: {error}"));
     }
 
     async fn review_image(&self, image: Image) -> ReviewerResult<()> {

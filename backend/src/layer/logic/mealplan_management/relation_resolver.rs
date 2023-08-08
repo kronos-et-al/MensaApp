@@ -42,8 +42,8 @@ where
         self.db.dissolve_relations(db_canteen, date).await?;
         for line in canteen.lines {
             let name = &line.name.clone();
-            if (self.resolve_line(date, line, db_canteen).await).is_err() {
-                warn!("Skip line '{}' as it could not be resolved", name);
+            if let Err(e) = self.resolve_line(date, line, db_canteen).await {
+                warn!("Skip line '{name}' as it could not be resolved: {e}");
             }
         }
         Ok(())
@@ -73,8 +73,8 @@ where
 
         for dish in line.dishes {
             let name = &dish.name.clone();
-            if (self.resolve_dish(line_id, date, dish, average).await).is_err() {
-                warn!("Skip dish '{}' as it could not be resolved", name);
+            if let Err(e) = self.resolve_dish(line_id, date, dish, average).await {
+                warn!("Skip dish '{name}' as it could not be resolved: {e}");
             }
         }
         Ok(())
