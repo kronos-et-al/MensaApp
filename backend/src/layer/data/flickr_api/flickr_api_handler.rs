@@ -33,15 +33,25 @@ impl FlickrApiHandler {
         }
     }
 
-    // URL TYPE 1.1: https://www.flickr.com/photos/gerdavs/52310534489/, id group = 4
-    // URL TYPE 1.2: https://www.flickr.com/photos/198319418@N06/53077317043, id group = 4
-    // URL TYPE 2: https://flic.kr/p/2oRguN3, id group = 2
+    // URL TYPE Long 1.1: https://www.flickr.com/photos/gerdavs/52310534489/, id group = 4
+    // URL TYPE Long 1.2: https://www.flickr.com/photos/198319418@N06/53077317043, id group = 4
+    // URL TYPE Short 2: https://flic.kr/p/2oRguN3, id group = 2
     // Both cases: Split with '/' and get last member (= photo_id).
     fn determine_photo_id(url: &str) -> Result<String> {
         if let Some(groups) = SHORT_URL_REGEX.captures(url) {
-            Ok(Self::decode(groups.get(1).map(|m| m.as_str()).expect("could not detect id group in url"))?.to_string())
+            Ok(Self::decode(
+                groups
+                    .get(1)
+                    .map(|m| m.as_str())
+                    .expect("could not detect id group in url"),
+            )?
+            .to_string())
         } else if let Some(groups) = LONG_URL_REGEX.captures(url) {
-            Ok(groups.get(1).map(|m| m.as_str()).expect("could not detect id group in url").to_string())
+            Ok(groups
+                .get(1)
+                .map(|m| m.as_str())
+                .expect("could not detect id group in url")
+                .to_string())
         } else {
             Err(ImageHosterError::FormatNotFound(format!(
                 "this url format is not supported: '{url}'"
