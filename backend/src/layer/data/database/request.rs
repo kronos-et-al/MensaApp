@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use chrono::Local;
+use chrono::{Duration, Local};
 use sqlx::{Pool, Postgres};
 
 use crate::{
@@ -11,6 +11,7 @@ use crate::{
     util::{Additive, Allergen, Date, MealType, Price, Uuid},
 };
 
+/// We have for four weeks, including the current week
 const MAX_WEEKS_DATA: i64 = 4;
 
 /// Class implementing all database requests arising from graphql manipulations.
@@ -107,8 +108,9 @@ impl RequestDataAccess for PersistentRequestData {
         // If date too far into the future, return `None`.
         // This should probably be inside the logic layer which currently does not exists for request.
         let today = Local::now().date_naive();
-        let duration_until = date - today;
-        if duration_until.num_weeks() > MAX_WEEKS_DATA {
+        let first_unknown_day =
+            today.week(chrono::Weekday::Mon).first_day() + Duration::weeks(MAX_WEEKS_DATA);
+        if date >= first_unknown_day {
             return Ok(None);
         }
 
@@ -426,13 +428,16 @@ mod tests {
         assert_eq!(meals, provide_dummy_meals());
 
         let meals_in_future = request
-            .get_meals(
-                line_id,
-                Local::now().date_naive() + Duration::weeks(MAX_WEEKS_DATA + 1),
-            )
+            .get_meals(line_id, Local::now().date_naive() + Duration::weeks(4))
             .await
             .unwrap();
         assert!(meals_in_future.is_none());
+
+        let meals_in_near_future = request
+            .get_meals(line_id, Local::now().date_naive() + Duration::weeks(3))
+            .await
+            .unwrap();
+        assert!(meals_in_near_future.is_some());
 
         let meals_in_past = request
             .get_meals(line_id, Local::now().date_naive() - Duration::days(1))
