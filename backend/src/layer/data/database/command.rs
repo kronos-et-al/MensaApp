@@ -137,7 +137,12 @@ impl CommandDataAccess for PersistentCommandData {
 
     async fn add_rating(&self, meal_id: Uuid, user_id: Uuid, rating: u32) -> Result<()> {
         sqlx::query!(
-            "INSERT INTO meal_rating (user_id, food_id, rating) VALUES ($1, $2, $3::smallint)",
+            "
+            INSERT INTO meal_rating (user_id, food_id, rating) 
+            VALUES ($1, $2, $3::smallint)
+            ON CONFLICT (user_id, food_id) 
+            DO UPDATE SET rating = $3::smallint
+            ",
             user_id,
             meal_id,
             i16::try_from(rating)?
@@ -364,17 +369,19 @@ mod test {
             .len()
     }
 
-    #[sqlx::test(fixtures("meal"))]
+    #[sqlx::test(fixtures("meal", "meal_rating"))]
     async fn test_add_rating(pool: PgPool) {
         let command = PersistentCommandData { pool: pool.clone() };
         let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         let user_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
+        let rated_user_id = Uuid::parse_str("0562269b-8c46-4d5f-9749-25f93c062748").unwrap();
         let rating = 5;
 
         let ratings = number_of_ratings(&pool).await;
         assert!(command.add_rating(meal_id, user_id, rating).await.is_ok());
         assert_eq!(number_of_ratings(&pool).await, ratings + 1);
-        assert!(command.add_rating(meal_id, user_id, rating).await.is_err());
+        // overwriting rating
+        assert!(command.add_rating(meal_id, user_id, rating).await.is_ok());
         assert!(command
             .add_rating(WRONG_UUID, user_id, rating)
             .await
@@ -384,6 +391,22 @@ mod test {
             .await
             .is_err());
         assert_eq!(number_of_ratings(&pool).await, ratings + 1);
+
+        // update rating
+        command
+            .add_rating(meal_id, rated_user_id, 1)
+            .await
+            .expect("ok");
+
+        let rating = sqlx::query_scalar!(
+            "SELECT rating FROM meal_rating WHERE user_id = $1 AND food_id = $2",
+            rated_user_id,
+            meal_id
+        )
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+        assert_eq!(1, rating);
     }
 
     async fn number_of_ratings(pool: &PgPool) -> usize {
