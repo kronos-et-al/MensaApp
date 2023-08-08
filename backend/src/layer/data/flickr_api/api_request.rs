@@ -36,7 +36,7 @@ impl ApiRequest {
 
     /// This method is used to request image information for the given `photo_id` from the flickr api.
     /// # Errors
-    /// If the request could not be decoded ([`ImageHosterError::DecodeFailed`],
+    /// If the request could not be decoded ([`ImageHosterError::JsonDecodeFailed`],
     /// Another request, which expects an error will be attempted.
     /// This error request returns a more detailed error information.
     /// # Returns
@@ -63,7 +63,7 @@ impl ApiRequest {
 
     /// This method is used to request image license information for the given `photo_id` from the flickr api.
     /// # Errors
-    /// If the request could not be decoded ([`ImageHosterError::DecodeFailed`],
+    /// If the request could not be decoded ([`ImageHosterError::JsonDecodeFailed`],
     /// Another request, which expects an error will be attempted.
     /// This error request returns a more detailed error information.
     /// # Returns

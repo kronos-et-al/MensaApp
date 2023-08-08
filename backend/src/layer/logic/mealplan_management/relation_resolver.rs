@@ -28,7 +28,7 @@ where
     /// `canteen: ParseCanteen`<br>This struct contains all canteen data e.g. lines and dishes.<br>
     /// `date: Date`<br>This date decides when the meal will be served next.<br>
     /// # Errors
-    /// Occurring errors get passed to the [`MealPlanManger`]
+    /// Occurring errors get passed to the [`MealPlanManager`](`crate::layer::logic::mealplan_management::meal_plan_manager::MealPlanManager`)
     pub async fn resolve(&self, canteen: ParseCanteen, date: Date) -> Result<(), DataError> {
         let db_canteen = match self.db.get_similar_canteen(&canteen.name).await? {
             Some(similar_canteen) => {

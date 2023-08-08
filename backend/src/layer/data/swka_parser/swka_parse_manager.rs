@@ -1,4 +1,4 @@
-//! The [`SwKaManager`] calls and transfers data between related classes.
+//! The [`SwKaParseManager`] calls and transfers data between related classes.
 
 use crate::interface::mensa_parser::model::ParseCanteen;
 use crate::interface::mensa_parser::{MealplanParser, ParseError};
