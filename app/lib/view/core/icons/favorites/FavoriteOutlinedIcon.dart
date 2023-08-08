@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// This widget is used to display the icon for making it a favorite
+/// This widget is used to display the icon for making it a favorite.
 class FavoriteOutlinedIcon extends StatelessWidget {
   final double? _size;
   final Color? _color;
 
-  /// This widget is used to display the icon for making it a favorite
-  /// @param key is the key of the widget
-  /// @param size is the size of the icon
-  /// @param color is the color of the icon
-  /// @returns a [FavoriteOutlinedIcon] widget
+  /// This widget is used to display the icon for making it a favorite.
   const FavoriteOutlinedIcon({super.key, double size = 24, Color? color})
       : _size = size,
         _color = color;

@@ -6,39 +6,27 @@ import '../../repository/data_classes/settings/PriceCategory.dart';
 
 /// This is an interface for accessing the preferences.
 abstract class IPreferenceAccess with ChangeNotifier {
-  /// The client identifier is returned.
-  /// @return The client identifier.
+  /// Returns the client identifier.
   String getClientIdentifier();
 
-  /// The client identifier is set.
-  /// @param identifier The new client identifier.
-  /// @return The result of the update.
+  /// Sets the client identifier.
   Future<void> setClientIdentifier(String identifier);
 
-  /// The saved ColorScheme is returned.
-  /// @return The saved ColorScheme.
+  /// Returns the saved ColorScheme.
   MensaColorScheme getColorScheme();
 
-  /// The committed ColorScheme is set.
-  /// @param scheme The new ColorScheme.
-  /// @return The result of the update.
+  /// Sets the committed ColorScheme.
   Future<void> setColorScheme(MensaColorScheme scheme);
 
-  /// The saved PriceCategory is returned.
-  /// @return The saved PriceCategory.
+  /// Returns the saved PriceCategory.
   PriceCategory getPriceCategory();
 
-  /// The committed PriceCategory is set.
-  /// @param category The new PriceCategory.
-  /// @return The result of the update.
+  /// Sets the committed PriceCategory.
   Future<void> setPriceCategory(PriceCategory category);
 
-  /// The saved MealPlanFormat is returned.
-  /// @return The saved MealPlanFormat.
+  /// Returns the saved MealPlanFormat.
   MealPlanFormat getMealPlanFormat();
 
-  /// The committed MealPlanFormat is set.
-  /// @param format The new MealPlanFormat.
-  /// @return The result of the update.
+  /// Sets the committed MealPlanFormat.
   Future<void> setMealPlanFormat(MealPlanFormat format);
 }

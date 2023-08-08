@@ -26,8 +26,6 @@ import 'package:provider/provider.dart';
 /// This widget is used to display the filter dialog.
 class FilterDialog extends StatefulWidget {
   /// Creates a new filter dialog.
-  /// @param key The key to identify this widget.
-  /// @return a widget that displays the filter dialog
   const FilterDialog({super.key});
 
   @override
@@ -323,7 +321,7 @@ class _FilterDialogState extends State<FilterDialog> {
         ),
       ),
       actions: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
             children: [
               Expanded(
@@ -431,17 +429,6 @@ class _FilterDialogState extends State<FilterDialog> {
         access.setCategoriesVegan();
         return;
     }
-    if (type == FoodType.vegan) {
-      access.setCategoriesVegan();
-      return;
-    }
-
-    if (type == FoodType.vegetarian) {
-      access.setCategoriesVegetarian();
-      return;
-    }
-
-    access.setAllCategories();
   }
 
   static int _getValueCategory(List<FoodType> types) {

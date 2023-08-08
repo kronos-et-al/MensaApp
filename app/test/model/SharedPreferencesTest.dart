@@ -35,41 +35,41 @@ Future<void> main() async {
   test('Client Identifier Test', () async {
     String id = "test";
     pref.setClientIdentifier(id);
-    expect(await pref.getClientIdentifier(), id);
+    expect(pref.getClientIdentifier(), id);
   });
 
   /// This method test the access to the meal plan format.
   test('Meal Plan Format Test', () async {
     MealPlanFormat format = MealPlanFormat.list;
     pref.setMealPlanFormat(format);
-    expect(await pref.getMealPlanFormat(), format);
+    expect(pref.getMealPlanFormat(), format);
   });
 
   /// This method tests the access to the color scheme.
   test('Color Scheme Test', () async {
     MensaColorScheme scheme = MensaColorScheme.light;
     pref.setColorScheme(scheme);
-    expect(await pref.getColorScheme(), scheme);
+    expect(pref.getColorScheme(), scheme);
   });
 
   /// This method tests the access to the price category.
   test('Price Category Test', () async {
     PriceCategory category = PriceCategory.employee;
     pref.setPriceCategory(category);
-    expect(await pref.getPriceCategory(), category);
+    expect(pref.getPriceCategory(), category);
   });
 
   /// This method tests the access to the canteen.
   test('Canteen Test', () async {
     String canteen = "test";
     pref.setCanteen(canteen);
-    expect(await pref.getCanteen(), canteen);
+    expect(pref.getCanteen(), canteen);
   });
 
   /// This method prepares the access to the filter preferences.
   setUp(() async {
     pref.setFilterPreferences(filter);
-    filterResult = await pref.getFilterPreferences() ?? FilterPreferences();
+    filterResult = pref.getFilterPreferences() ?? FilterPreferences();
   });
 
   /// This group tests the access to the filter preferences

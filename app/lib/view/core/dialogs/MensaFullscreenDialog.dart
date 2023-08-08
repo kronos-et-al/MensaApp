@@ -6,12 +6,7 @@ class MensaFullscreenDialog extends StatelessWidget {
   final Widget? _content;
   final Widget? _actions;
 
-  /// Creates a fullscreen dialog.
-  /// @param key The key to use for this widget.
-  /// @param appBar The app bar to display.
-  /// @param content The content to display.
-  /// @param actions The actions to display.
-  /// @returns a widget that displays a fullscreen dialog
+  /// Creates a new fullscreen dialog instance.
   const MensaFullscreenDialog(
       {super.key,
       PreferredSizeWidget? appBar,

@@ -3,8 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'IAllergenIcon.dart';
 
-/// This widget is used to display the icon for Peanuts
+/// This widget is used to display the icon for pecans
 class AllergenPecansIcon extends IAllergenIcon {
+  /// Creates an new peanuts icon.
   const AllergenPecansIcon({super.key, super.width, super.height, super.color});
 
   @override

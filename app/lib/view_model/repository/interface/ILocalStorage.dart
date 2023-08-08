@@ -1,4 +1,3 @@
-
 import '../data_classes/filter/FilterPreferences.dart';
 import '../data_classes/settings/MensaColorScheme.dart';
 import '../data_classes/settings/MealPlanFormat.dart';
@@ -6,58 +5,39 @@ import '../data_classes/settings/PriceCategory.dart';
 
 /// This is an interface to the local storage.
 abstract class ILocalStorage {
-  /// The device identifier is returned.
-  /// @return The device identifier.
+  /// Returns the client identifier.
   String? getClientIdentifier();
 
-  /// The device identifier is set.
-  /// @param identifier The new device identifier.
-  /// @return The result of the update.
+  /// Sets the device identifier.
   Future<void> setClientIdentifier(String identifier);
 
-  /// The saved FilterPreferences is returned.
-  /// @return The saved FilterPreferences.
+  /// Returns the FilterPreferences.
   FilterPreferences? getFilterPreferences();
 
-  /// The committed FilterPreferences is set.
-  /// @param filter The new FilterPreferences.
-  /// @return The result of the update.
+  /// Sets the FilterPreferences.
   Future<void> setFilterPreferences(FilterPreferences filter);
 
-  /// The saved canteen id is returned.
-  /// @return The saved canteen id.
+  /// Returns the saved canteen id.
   String? getCanteen();
 
-  /// The committed id of the canteen is set.
-  /// @param canteen The id of the new canteen.
-  /// @return The result of the update.
+  /// Sets the committed id of the canteen.
   Future<void> setCanteen(String canteen);
 
-  /// The saved ColorScheme is returned.
-  /// @return The saved ColorScheme.
+  /// Returns the saved ColorScheme.
   MensaColorScheme? getColorScheme();
 
-  /// The committed ColorScheme is set.
-  /// @param scheme The new ColorScheme.
-  /// @return The result of the update.
+  /// Sets the committed ColorScheme.
   Future<void> setColorScheme(MensaColorScheme scheme);
 
-  /// The saved PriceCategory is returned.
-  /// @return The saved PriceCategory.
-  /// @return The result of the update.
+  /// Returns the saved PriceCategory.
   PriceCategory? getPriceCategory();
 
-  /// The committed PriceCategory is set.
-  /// @param category The new PriceCategory.
-  /// @return The result of the update.
+  /// Sets the committed PriceCategory.
   Future<void> setPriceCategory(PriceCategory category);
 
-  /// The saved MealPlanFormat is returned.
-  /// @return The saved MealPlanFormat.
+  /// Returns the saved MealPlanFormat.
   MealPlanFormat? getMealPlanFormat();
 
-  /// The committed MealPlanFormat is set.
-  /// @param format The new MealPlanFormat.
-  /// @return The result of the update.
+  /// Sets the committed MealPlanFormat.
   Future<void> setMealPlanFormat(MealPlanFormat format);
 }

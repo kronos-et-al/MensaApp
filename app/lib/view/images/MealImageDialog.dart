@@ -13,9 +13,11 @@ import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+/// This widget is used to display the images of a meal.
 class MealImageDialog extends StatefulWidget {
   final List<ImageData> _images;
 
+  /// Creates a new meal image dialog.
   const MealImageDialog({super.key, required List<ImageData> images})
       : _images = images;
 
@@ -46,7 +48,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
         appBar: MensaAppBar(
             appBarHeight: kToolbarHeight,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: Row(
                 children: [
                   MensaIconButton(

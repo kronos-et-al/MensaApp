@@ -16,9 +16,7 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
   late PriceCategory _priceCategory;
   late MealPlanFormat _mealPlanFormat;
 
-  /// Stores the access to the local storage and loads the values that are stored therepreferencs.
-  /// @param access The access to the local storage.
-  /// @return A new instance of the class.
+  /// Stores the access to the local storage and loads the values that are stored in the preferences.
   PreferenceAccess(this._access) {
     _init();
   }

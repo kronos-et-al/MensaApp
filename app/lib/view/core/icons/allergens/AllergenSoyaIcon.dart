@@ -3,8 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'IAllergenIcon.dart';
 
-/// This widget is used to display the icon for Soya
+/// This widget is used to display the icon for soya
 class AllergenSoyaIcon extends IAllergenIcon {
+  /// Creates an new soya icon.
   const AllergenSoyaIcon({super.key, super.width, super.height, super.color});
 
   @override
