@@ -43,7 +43,7 @@ impl FlickrApiHandler {
                 None => Err(ImageHosterError::FormatNotFound(format!(
                     "could not detect id group in '{url}'"
                 ))),
-                Some(str) => Ok(Self::decode(str)?.to_string())
+                Some(str) => Ok(Self::decode(str)?.to_string()),
             }
         } else if let Some(groups) = LONG_URL_REGEX.captures(url) {
             groups.get(1).map(|m| m.as_str()).map_or_else(
@@ -62,11 +62,16 @@ impl FlickrApiHandler {
     }
 
     fn decode(word: &str) -> Result<u64> {
-        let bytes = bs58::decode(word).with_alphabet(bs58::Alphabet::FLICKR).into_vec().map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
+        let bytes = bs58::decode(word)
+            .with_alphabet(bs58::Alphabet::FLICKR)
+            .into_vec()
+            .map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
         let mut bytes: Vec<u8> = bytes.into_iter().rev().collect();
         bytes.resize(8, 0);
         // try_into() cannot fail as bytes.resize guarantees length 8.
-        Ok(u64::from_le_bytes(bytes.try_into().expect("Decode: convert failed as Vec<u8> could not be parsed into &[u8; 8]")))
+        Ok(u64::from_le_bytes(bytes.try_into().expect(
+            "Decode: convert failed as Vec<u8> could not be parsed into &[u8; 8]",
+        )))
     }
 }
 
