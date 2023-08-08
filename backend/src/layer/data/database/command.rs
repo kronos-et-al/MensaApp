@@ -393,10 +393,7 @@ mod test {
         assert_eq!(number_of_ratings(&pool).await, ratings + 1);
 
         // update rating
-        command
-            .add_rating(meal_id, rated_user_id, 1)
-            .await
-            .unwrap();
+        command.add_rating(meal_id, rated_user_id, 1).await.unwrap();
 
         let rating = sqlx::query_scalar!(
             "SELECT rating FROM meal_rating WHERE user_id = $1 AND food_id = $2",
