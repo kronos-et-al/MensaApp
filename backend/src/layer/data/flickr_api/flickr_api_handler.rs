@@ -6,6 +6,7 @@ use crate::layer::data::flickr_api::api_request::ApiRequest;
 use async_trait::async_trait;
 use lazy_static::lazy_static;
 use regex::Regex;
+use tracing::info;
 
 #[derive(Debug)]
 pub struct FlickrInfo {
@@ -33,9 +34,9 @@ impl FlickrApiHandler {
         }
     }
 
-    // URL TYPE Long 1.1: https://www.flickr.com/photos/gerdavs/52310534489/, id group = 4
-    // URL TYPE Long 1.2: https://www.flickr.com/photos/198319418@N06/53077317043, id group = 4
-    // URL TYPE Short 2: https://flic.kr/p/2oRguN3, id group = 2
+    // URL TYPE Long 1.1: https://www.flickr.com/photos/gerdavs/52310534489/
+    // URL TYPE Long 1.2: https://www.flickr.com/photos/198319418@N06/53077317043
+    // URL TYPE Short 2: https://flic.kr/p/2oRguN3
     // Both cases: Split with '/' and get last member (= photo_id).
     fn determine_photo_id(url: &str) -> Result<String> {
         if let Some(groups) = SHORT_URL_REGEX.captures(url) {
@@ -85,6 +86,7 @@ impl ImageHoster for FlickrApiHandler {
     /// # Return
     /// If the image exists, the [`ImageMetaData`] struct will be returned.
     async fn validate_url(&self, url: &str) -> Result<ImageMetaData> {
+        info!("FlickrApi: Started url validation with '{url}'");
         let photo_id = Self::determine_photo_id(url)?;
         self.request.flickr_photos_get_sizes(&photo_id).await
     }
@@ -95,6 +97,7 @@ impl ImageHoster for FlickrApiHandler {
     /// # Errors
     /// If errors occur, that not decide weather the image exists or not, they will be returned.
     async fn check_existence(&self, photo_id: &str) -> Result<bool> {
+        info!("FlickrApi: Checking image existence for '{photo_id}'");
         let res = self.request.flickr_photos_get_sizes(photo_id).await;
         match res {
             Ok(_) => Ok(true),
@@ -118,6 +121,7 @@ impl ImageHoster for FlickrApiHandler {
     /// # Errors
     /// If any error occurs, it will be returned.
     async fn check_licence(&self, photo_id: &str) -> Result<bool> {
+        info!("FlickrApi: Checking image license for '{photo_id}'");
         self.request.flickr_photos_license_check(photo_id).await
     }
 }
