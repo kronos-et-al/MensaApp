@@ -181,7 +181,7 @@ mod test {
                 },
             ],
         };
-        let (valid, license) = JsonParser::check_license(&valid_licenses);
+        let (valid, _license) = JsonParser::check_license(&valid_licenses);
         assert!(valid);
     }
 

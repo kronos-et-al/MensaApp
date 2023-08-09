@@ -157,7 +157,7 @@ mod test {
 
     #[tokio::test]
     async fn test_valid_check_license_request() {
-        let (valid, license) = get_api_request()
+        let (valid, _license) = get_api_request()
             .flickr_photos_license_check("52310534489")
             .await
             .unwrap();
