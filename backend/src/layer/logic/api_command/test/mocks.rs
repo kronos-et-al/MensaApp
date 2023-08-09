@@ -160,8 +160,8 @@ impl ImageHoster for CommandImageHosterMock {
         Ok(true)
     }
     /// Checks whether the licence is acceptable for our purposes.
-    async fn check_licence(&self, _image_id: &str) -> ImageResult<bool> {
-        Ok(true)
+    async fn check_licence(&self, _image_id: &str) -> ImageResult<()> {
+        Ok(())
     }
 }
 

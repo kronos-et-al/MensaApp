@@ -1,6 +1,5 @@
 use async_trait::async_trait;
 use chrono::Local;
-use tracing::warn;
 
 use crate::{
     interface::{

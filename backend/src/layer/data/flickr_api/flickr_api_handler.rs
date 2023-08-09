@@ -6,7 +6,6 @@ use crate::layer::data::flickr_api::api_request::ApiRequest;
 use async_trait::async_trait;
 use lazy_static::lazy_static;
 use regex::Regex;
-use tracing::trace;
 
 #[derive(Debug)]
 pub struct FlickrInfo {
