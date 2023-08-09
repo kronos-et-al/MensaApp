@@ -63,17 +63,15 @@ impl JsonParser {
             .max_by_key(|l| l.date_change)
             .map(|entry| entry.new_license);
 
-        if let Some(license) = license {
-            let str_license = license.as_str();
-            return if VALID_LICENSES.contains(&str_license) {
-                Ok(())
-            } else {
-                Err(ImageHosterError::InvalidLicense(license))
-            };
+        let license = license.ok_or_else(|| {
+            ImageHosterError::InvalidLicense(String::from("No license could be detected"))
+        })?;
+        let str_license = license.as_str();
+        if VALID_LICENSES.contains(&str_license) {
+            Ok(())
+        } else {
+            Err(ImageHosterError::InvalidLicense(license))
         }
-        Err(ImageHosterError::InvalidLicense(String::from(
-            "No license could be detected",
-        )))
     }
 
     /// Obtains and determines an error by its error code and message provided by the [`JsonRootError`] struct.
