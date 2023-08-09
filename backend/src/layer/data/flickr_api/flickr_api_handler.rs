@@ -118,12 +118,7 @@ impl ImageHoster for FlickrApiHandler {
     /// # Errors
     /// If any error occurs, it will be returned.
     async fn check_licence(&self, photo_id: &str) -> Result<()> {
-        let (valid, license) = self.request.flickr_photos_license_check(photo_id).await?;
-        return if valid {
-            Ok(())
-        } else {
-            Err(ImageHosterError::InvalidLicense(license))
-        };
+        self.request.flickr_photos_license_check(photo_id).await
     }
 }
 

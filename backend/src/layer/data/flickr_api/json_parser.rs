@@ -54,18 +54,24 @@ impl JsonParser {
     /// # Return
     /// A boolean if the image has an valid license or not.
     /// If the image has no license or no license history, the image isn't restricted by any license and true will be returned.
-    #[must_use]
-    pub fn check_license(root: &JsonRootLicense) -> (bool, String) {
+    pub fn check_license(root: &JsonRootLicense) -> Result<(), ImageHosterError> {
         let license = root
             .license_history
-            .iter()
+            .into_iter()
             .max_by_key(|l| l.date_change)
-            .map(|entry| &entry.new_license);
+            .map(|entry| entry.new_license);
 
         if let Some(license) = license {
-            return (VALID_LICENSES.contains(&license.as_str()), license.clone());
+            let str_license = license.as_str();
+            return if !VALID_LICENSES.contains(&str_license) {
+                Err(ImageHosterError::InvalidLicense(license))
+            } else {
+                Ok(())
+            };
         }
-        (false, String::from("No license could be detected"))
+        Err(ImageHosterError::InvalidLicense(String::from(
+            "No license could be detected",
+        )))
     }
 
     /// Obtains and determines an error by its error code and message provided by the [`JsonRootError`] struct.
@@ -181,8 +187,7 @@ mod test {
                 },
             ],
         };
-        let (valid, _license) = JsonParser::check_license(&valid_licenses);
-        assert!(valid);
+        assert!(JsonParser::check_license(&valid_licenses).is_ok());
     }
 
     #[test]
