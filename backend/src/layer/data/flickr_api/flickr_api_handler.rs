@@ -123,8 +123,7 @@ impl ImageHoster for FlickrApiHandler {
             Ok(())
         } else {
             Err(ImageHosterError::InvalidLicense(license))
-        }
-
+        };
     }
 }
 

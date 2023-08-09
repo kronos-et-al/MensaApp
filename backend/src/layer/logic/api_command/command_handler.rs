@@ -172,7 +172,14 @@ where
 
         let image_meta_data = self.image_hoster.validate_url(&image_url).await?;
         self.image_hoster.check_licence(&image_meta_data.id).await?;
-        self.command_data.link_image(auth_info.client_id, meal_id, image_meta_data.id, image_meta_data.image_url, ).await?;
+        self.command_data
+            .link_image(
+                auth_info.client_id,
+                meal_id,
+                image_meta_data.id,
+                image_meta_data.image_url,
+            )
+            .await?;
         Ok(())
     }
 
