@@ -103,8 +103,8 @@ impl CommandDataAccess for CommandDatabaseMock {
     /// Adds an image link to the database. The image will be related to the given meal.
     async fn link_image(
         &self,
-        _user_id: Uuid,
         meal_id: Uuid,
+        _user_id: Uuid,
         _image_hoster_id: String,
         _url: String,
     ) -> DataResult<()> {

@@ -19,7 +19,7 @@ async-graphql = {version = "5.0.10", features = ["chrono", "uuid", "tracing"]}
 async-graphql-axum = "5.0.10"
 tokio = {version = "1.29.0", features = ["full"]}
 tracing = "0.1"
-tracing-subscriber = {version = "0.3.17", features = ["env-filter"]}
+tracing-subscriber = {version = "0.3.17", features = ["env-filter", "local-time"]}
 base64 = "0.21.2"
 sha2 = "0.10.7"
 heck = "0.4.1"
