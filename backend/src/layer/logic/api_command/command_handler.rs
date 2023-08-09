@@ -186,13 +186,13 @@ where
                                 .await?;
                         }
                         Ok(())
-                    },
+                    }
                     Err(e) => {
                         warn!("{e}");
                         return Err(CommandError::ImageHosterError(e));
                     }
                 }
-            },
+            }
             Err(e) => {
                 warn!("{e}");
                 return Err(CommandError::ImageHosterError(e));
