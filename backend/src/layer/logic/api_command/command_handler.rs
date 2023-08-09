@@ -174,8 +174,8 @@ where
         self.image_hoster.check_licence(&image_meta_data.id).await?;
         self.command_data
             .link_image(
-                auth_info.client_id,
                 meal_id,
+                auth_info.client_id,
                 image_meta_data.id,
                 image_meta_data.image_url,
             )
@@ -374,10 +374,10 @@ mod test {
             hash: "TLvbxrv6azE4FpA2sROa8CD8ACdRGjj1M6OtLl1h4Q/NYypCKagZz0C2c4SEsoGjRpIbMAaKprFMcavssf2z2w==".into(),
             ..auth_info.unwrap()
         });
-        assert!(handler
+        handler
             .add_image(MEAL_ID_TO_FAIL, image_url.to_string(), auth_info.clone())
             .await
-            .is_err());
+            .unwrap_err();
     }
 
     #[tokio::test]
