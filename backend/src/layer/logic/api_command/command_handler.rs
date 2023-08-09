@@ -171,33 +171,10 @@ where
         };
         self.auth.authn_command(&auth_info, &command_type)?;
 
-        match self.image_hoster.validate_url(&image_url).await {
-            Ok(image_meta_data) => {
-                match self.image_hoster.check_licence(&image_meta_data.id).await {
-                    Ok(licence_ok) => {
-                        if licence_ok {
-                            self.command_data
-                                .link_image(
-                                    auth_info.client_id,
-                                    meal_id,
-                                    image_meta_data.id,
-                                    image_meta_data.image_url,
-                                )
-                                .await?;
-                        }
-                        Ok(())
-                    }
-                    Err(e) => {
-                        warn!("{e}");
-                        return Err(CommandError::ImageHosterError(e));
-                    }
-                }
-            }
-            Err(e) => {
-                warn!("{e}");
-                return Err(CommandError::ImageHosterError(e));
-            }
-        }
+        let image_meta_data = self.image_hoster.validate_url(&image_url).await?;
+        self.image_hoster.check_licence(&image_meta_data.id).await?;
+        self.command_data.link_image(auth_info.client_id, meal_id, image_meta_data.id, image_meta_data.image_url, ).await?;
+        Ok(())
     }
 
     async fn set_meal_rating(&self, meal_id: Uuid, rating: u32, auth_info: AuthInfo) -> Result<()> {
