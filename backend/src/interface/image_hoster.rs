@@ -24,7 +24,10 @@ pub enum ImageHosterError {
     /// Photo not found error
     #[error("the photo id passed was not a valid photo id")]
     PhotoNotFound,
-    /// License invalid
+    /// License invalid. List of valid licenses:
+    /// - `No known copyright restrictions`
+    /// - `Public Domain Dedication (CC0)`
+    /// - `Public Domain Mark`
     #[error("the detected license cannot be used: {0}")]
     InvalidLicense(String),
     /// Permission denied error
