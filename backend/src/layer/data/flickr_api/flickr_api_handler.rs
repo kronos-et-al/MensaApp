@@ -6,7 +6,7 @@ use crate::layer::data::flickr_api::api_request::ApiRequest;
 use async_trait::async_trait;
 use lazy_static::lazy_static;
 use regex::Regex;
-use tracing::info;
+use tracing::trace;
 
 #[derive(Debug)]
 pub struct FlickrInfo {
@@ -86,7 +86,7 @@ impl ImageHoster for FlickrApiHandler {
     /// # Return
     /// If the image exists, the [`ImageMetaData`] struct will be returned.
     async fn validate_url(&self, url: &str) -> Result<ImageMetaData> {
-        info!("FlickrApi: Started url validation with '{url}'");
+        trace!("FlickrApi: Started url validation with '{url}'");
         let photo_id = Self::determine_photo_id(url)?;
         self.request.flickr_photos_get_sizes(&photo_id).await
     }
@@ -97,7 +97,7 @@ impl ImageHoster for FlickrApiHandler {
     /// # Errors
     /// If errors occur, that not decide weather the image exists or not, they will be returned.
     async fn check_existence(&self, photo_id: &str) -> Result<bool> {
-        info!("FlickrApi: Checking image existence for '{photo_id}'");
+        trace!("FlickrApi: Checking image existence for '{photo_id}'");
         let res = self.request.flickr_photos_get_sizes(photo_id).await;
         match res {
             Ok(_) => Ok(true),
@@ -121,7 +121,7 @@ impl ImageHoster for FlickrApiHandler {
     /// # Errors
     /// If any error occurs, it will be returned.
     async fn check_licence(&self, photo_id: &str) -> Result<bool> {
-        info!("FlickrApi: Checking image license for '{photo_id}'");
+        trace!("FlickrApi: Checking image license for '{photo_id}'");
         self.request.flickr_photos_license_check(photo_id).await
     }
 }
