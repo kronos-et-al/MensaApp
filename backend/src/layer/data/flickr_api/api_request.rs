@@ -5,6 +5,7 @@ use crate::layer::data::flickr_api::json_structs::{JsonRootError, JsonRootLicens
 use axum::body::Bytes;
 use reqwest::Response;
 use serde::de::DeserializeOwned;
+use tracing::trace;
 
 pub struct ApiRequest {
     api_key: String,
@@ -53,6 +54,7 @@ impl ApiRequest {
             .bytes()
             .await
             .map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
+        trace!("successfully send request `{GET_SIZES}` to flickr for image {photo_id}");
         Self::json_to_struct::<JsonRootSizes>(&bytes).map_or_else(
             |_| Err(Self::determine_error(&bytes)),
             |root| JsonParser::parse_get_sizes(&root, photo_id),
@@ -82,6 +84,7 @@ impl ApiRequest {
             .bytes()
             .await
             .map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
+        trace!("successfully send request `{GET_LICENCE_HISTORY}` to flickr for image {photo_id}");
         Self::json_to_struct::<JsonRootLicense>(&bytes).map_or_else(
             |_| Err(Self::determine_error(&bytes)),
             |root| Ok(JsonParser::check_license(&root)),
