@@ -43,9 +43,11 @@ class DetailsPage extends StatefulWidget {
 
 class DetailsPageState extends State<DetailsPage> {
   int? expandedAccordionIndex;
+  Meal? localMeal;
 
   @override
   Widget build(BuildContext context) {
+    Meal meal = localMeal ?? widget._meal;
     ThemeData themeData = Theme.of(context);
     return Container(
         color: themeData.brightness == Brightness.light
@@ -69,10 +71,18 @@ class DetailsPageState extends State<DetailsPage> {
                         builder: (context, favoriteMealAccess, child) =>
                             MensaIconButton(
                                 onPressed: () => {
-                                      favoriteMealAccess
-                                          .addFavoriteMeal(widget._meal)
+                                      if (meal.isFavorite)
+                                        {
+                                          favoriteMealAccess
+                                              .removeFavoriteMeal(meal)
+                                        }
+                                      else
+                                        {
+                                          favoriteMealAccess
+                                              .addFavoriteMeal(meal)
+                                        }
                                     },
-                                icon: widget._meal.isFavorite
+                                icon: meal.isFavorite
                                     ? const FavoriteFilledIcon()
                                     : const FavoriteOutlinedIcon())),
                     MensaIconButton(
@@ -80,7 +90,7 @@ class DetailsPageState extends State<DetailsPage> {
                               showDialog(
                                 context: context,
                                 builder: (context) =>
-                                    UploadImageDialog(meal: widget._meal),
+                                    UploadImageDialog(meal: meal),
                               )
                             },
                         icon: const NavigationAddImageIcon()),
@@ -94,7 +104,7 @@ class DetailsPageState extends State<DetailsPage> {
                   child: Row(children: [
                     Expanded(
                         child: Text(
-                      widget._meal.name,
+                      meal.name,
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.bold),
                     ))
@@ -133,16 +143,16 @@ class DetailsPageState extends State<DetailsPage> {
                                   onUploadButtonPressed: () => showDialog(
                                         context: context,
                                         builder: (context) => UploadImageDialog(
-                                            meal: widget._meal),
+                                            meal: meal),
                                       ),
                                   onImagePressed: () => showDialog(
                                         context: context,
                                         builder: (context) => MealImageDialog(
-                                          images: widget._meal.images ?? [],
+                                          images: meal.images ?? [],
                                         ),
                                       ),
                                   borderRadius: BorderRadius.circular(4),
-                                  meal: widget._meal,
+                                  meal: meal,
                                   height: 250),
                               const SizedBox(height: 8),
                               MealAccordion(
@@ -154,16 +164,16 @@ class DetailsPageState extends State<DetailsPage> {
                                     themeData.brightness == Brightness.light
                                         ? themeData.colorScheme.surface
                                         : themeData.colorScheme.background,
-                                mainEntry: MealMainEntry(meal: widget._meal),
+                                mainEntry: MealMainEntry(meal: meal),
                                 info: MealAccordionInfo(
-                                    additives: widget._meal.additives ?? [],
-                                    allergens: widget._meal.allergens ?? []),
+                                    additives: meal.additives ?? [],
+                                    allergens: meal.allergens ?? []),
                                 isExpanded: expandedAccordionIndex == 0,
                                 onTap: () => setState(() =>
                                     expandedAccordionIndex =
                                         expandedAccordionIndex == 0 ? null : 0),
                               ),
-                              ...?widget._meal.sides
+                              ...?meal.sides
                                   ?.map((e) => MealAccordion(
                                         backgroundColor: themeData.brightness ==
                                                 Brightness.light
@@ -178,22 +188,22 @@ class DetailsPageState extends State<DetailsPage> {
                                             additives: e.additives,
                                             allergens: e.allergens),
                                         isExpanded: expandedAccordionIndex ==
-                                            widget._meal.sides!.indexOf(e) + 1,
+                                            meal.sides!.indexOf(e) + 1,
                                         onTap: () => setState(() =>
                                             expandedAccordionIndex =
                                                 expandedAccordionIndex ==
-                                                        widget._meal.sides!
+                                                        meal.sides!
                                                                 .indexOf(e) +
                                                             1
                                                     ? null
-                                                    : widget._meal.sides!
+                                                    : meal.sides!
                                                             .indexOf(e) +
                                                         1),
                                       ))
                                   .toList(),
                               const SizedBox(height: 16),
                               RatingsOverview(
-                                meal: widget._meal,
+                                meal: meal,
                                 backgroundColor:
                                     themeData.brightness == Brightness.light
                                         ? themeData.colorScheme.surface
@@ -212,7 +222,7 @@ class DetailsPageState extends State<DetailsPage> {
                                   )),
                               Row(children: [
                                 MensaRatingInput(
-                                  value: widget._meal.individualRating
+                                  value: meal.individualRating
                                           ?.toDouble() ??
                                       0,
                                   disabled: true,
@@ -230,7 +240,12 @@ class DetailsPageState extends State<DetailsPage> {
                                     showDialog(
                                         context: context,
                                         builder: (context) => MealRatingDialog(
-                                            meal: widget._meal),
+                                          onRatingChanged: (meal) {
+                                            setState(() {
+                                              localMeal = meal;
+                                            });
+                                          },
+                                            meal: meal),
                                         barrierDismissible: true);
                                   },
                                 )

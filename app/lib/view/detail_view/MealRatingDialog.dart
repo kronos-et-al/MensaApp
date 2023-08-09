@@ -10,13 +10,15 @@ import 'package:provider/provider.dart';
 /// This widget is used to display a dialog to rate a meal.
 class MealRatingDialog extends StatefulWidget {
   final Meal _meal;
+  final Function(Meal)? _onRatingChanged;
 
   /// Creates a new MealRatingDialog.
   /// @param key The key to identify this widget.
   /// @param meal The meal to rate.
-  const MealRatingDialog({Key? key, required Meal meal})
+  const MealRatingDialog(
+      {super.key, required Meal meal, Function(Meal)? onRatingChanged})
       : _meal = meal,
-        super(key: key);
+        _onRatingChanged = onRatingChanged;
 
   @override
   State<MealRatingDialog> createState() => _MealRatingDialogState();
@@ -59,7 +61,6 @@ class _MealRatingDialogState extends State<MealRatingDialog> {
                                 meal,
                               );
                       if (!context.mounted) return;
-                      Navigator.pop(context);
 
                       if (temporalMessage.isNotEmpty) {
                         final snackBar = SnackBar(
@@ -70,7 +71,17 @@ class _MealRatingDialogState extends State<MealRatingDialog> {
                         );
 
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else {
+                        widget._onRatingChanged?.call(Meal.copy(
+                            meal: meal,
+                            individualRating: rating,
+                            averageRating:
+                                (meal.averageRating! * meal.numberOfRatings! +
+                                        rating!) /
+                                    (meal.numberOfRatings! + 1),
+                            numberOfRatings: meal.numberOfRatings! + 1));
                       }
+                      Navigator.pop(context);
                     },
                     text: FlutterI18n.translate(context, "ratings.saveRating"))
               ],

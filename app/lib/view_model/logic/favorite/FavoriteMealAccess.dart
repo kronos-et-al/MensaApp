@@ -54,12 +54,8 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
   Future<void> removeFavoriteMeal(Meal meal) async {
     await _doneInitialization;
 
-    if (await isFavoriteMeal(meal) == false) {
-      return;
-    }
-
     await _database.deleteFavorite(meal);
-    _favorites.removeWhere((element) => element.id == meal.id);
+    _favorites = await _database.getFavorites();
     meal.deleteFavorite();
     notifyListeners();
   }

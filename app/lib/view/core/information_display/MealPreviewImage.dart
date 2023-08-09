@@ -91,7 +91,9 @@ class MealPreviewImage extends StatelessWidget {
               ])));
     } else {
       return Material(
+          borderRadius: _borderRadius,
           child: InkWell(
+              borderRadius: _borderRadius,
               onTap: _onImagePressed,
               child: Container(
                   width: _width,
