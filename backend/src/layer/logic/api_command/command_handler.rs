@@ -1,5 +1,6 @@
 use async_trait::async_trait;
 use chrono::Local;
+use tracing::warn;
 
 use crate::{
     interface::{
@@ -169,19 +170,34 @@ where
             url: image_url.clone(),
         };
         self.auth.authn_command(&auth_info, &command_type)?;
-        let image_meta_data = self.image_hoster.validate_url(&image_url).await?;
-        let licence_ok = self.image_hoster.check_licence(&image_meta_data.id).await?;
-        if licence_ok {
-            self.command_data
-                .link_image(
-                    auth_info.client_id,
-                    meal_id,
-                    image_meta_data.id,
-                    image_meta_data.image_url,
-                )
-                .await?;
+
+        match self.image_hoster.validate_url(&image_url).await {
+            Ok(image_meta_data) => {
+                match self.image_hoster.check_licence(&image_meta_data.id).await {
+                    Ok(licence_ok) => {
+                        if licence_ok {
+                            self.command_data
+                                .link_image(
+                                    auth_info.client_id,
+                                    meal_id,
+                                    image_meta_data.id,
+                                    image_meta_data.image_url,
+                                )
+                                .await?;
+                        }
+                        Ok(())
+                    },
+                    Err(e) => {
+                        warn!("{e}");
+                        return Err(CommandError::ImageHosterError(e));
+                    }
+                }
+            },
+            Err(e) => {
+                warn!("{e}");
+                return Err(CommandError::ImageHosterError(e));
+            }
         }
-        Ok(())
     }
 
     async fn set_meal_rating(&self, meal_id: Uuid, rating: u32, auth_info: AuthInfo) -> Result<()> {
