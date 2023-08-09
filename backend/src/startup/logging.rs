@@ -1,4 +1,4 @@
-use tracing_subscriber::{EnvFilter, FmtSubscriber};
+use tracing_subscriber::{fmt::time::LocalTime, EnvFilter, FmtSubscriber};
 
 /// Struct containing all configurations available for the logging system.
 pub struct LogInfo {
@@ -18,6 +18,7 @@ impl Logger {
 
         let subscriber = FmtSubscriber::builder()
             .with_env_filter(env_filter)
+            .with_timer(LocalTime::rfc_3339())
             .pretty()
             .finish();
         tracing::subscriber::set_global_default(subscriber)
