@@ -28,7 +28,7 @@ pub enum ImageHosterError {
     /// - `No known copyright restrictions`
     /// - `Public Domain Dedication (CC0)`
     /// - `Public Domain Mark`
-    #[error("the detected license cannot be used: {0}")]
+    #[error("the detected license cannot be used: '{0}'\nList of valid licenses:\n- No known copyright restrictions\n- Public Domain Dedication (CC0)\n- Public Domain Mark\n")]
     InvalidLicense(String),
     /// Permission denied error
     #[error("the calling user does not have permission to view the photo")]
