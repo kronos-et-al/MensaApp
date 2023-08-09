@@ -15,7 +15,7 @@ pub trait ImageHoster: Send + Sync {
     /// Checks if an image still exists at the hoster website.
     async fn check_existence(&self, image_id: &str) -> Result<bool>;
     /// Checks whether the licence is acceptable for our purposes.
-    async fn check_licence(&self, image_id: &str) -> Result<bool>;
+    async fn check_licence(&self, image_id: &str) -> Result<()>;
 }
 
 /// Enum describing the possible ways, a image hoster request can fail.
@@ -24,6 +24,9 @@ pub enum ImageHosterError {
     /// Photo not found error
     #[error("the photo id passed was not a valid photo id")]
     PhotoNotFound,
+    /// License invalid
+    #[error("the detected license cannot be used: {0}")]
+    InvalidLicense(String),
     /// Permission denied error
     #[error("the calling user does not have permission to view the photo")]
     PermissionDenied,

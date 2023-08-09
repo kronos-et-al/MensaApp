@@ -73,7 +73,7 @@ impl ApiRequest {
     pub async fn flickr_photos_license_check(
         &self,
         photo_id: &str,
-    ) -> Result<bool, ImageHosterError> {
+    ) -> Result<(bool, String), ImageHosterError> {
         let url = &format!(
             "{BASE_URL}{GET_LICENCE_HISTORY}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{FORMAT}",
             api_key = self.api_key
@@ -157,11 +157,11 @@ mod test {
 
     #[tokio::test]
     async fn test_valid_check_license_request() {
-        let res = get_api_request()
+        let (valid, license) = get_api_request()
             .flickr_photos_license_check("52310534489")
             .await
             .unwrap();
-        assert!(!res);
+        assert!(!valid);
     }
 
     #[tokio::test]

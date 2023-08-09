@@ -86,7 +86,6 @@ impl ImageHoster for FlickrApiHandler {
     /// # Return
     /// If the image exists, the [`ImageMetaData`] struct will be returned.
     async fn validate_url(&self, url: &str) -> Result<ImageMetaData> {
-        trace!("FlickrApi: Started url validation with '{url}'");
         let photo_id = Self::determine_photo_id(url)?;
         self.request.flickr_photos_get_sizes(&photo_id).await
     }
@@ -97,7 +96,6 @@ impl ImageHoster for FlickrApiHandler {
     /// # Errors
     /// If errors occur, that not decide weather the image exists or not, they will be returned.
     async fn check_existence(&self, photo_id: &str) -> Result<bool> {
-        trace!("FlickrApi: Checking image existence for '{photo_id}'");
         let res = self.request.flickr_photos_get_sizes(photo_id).await;
         match res {
             Ok(_) => Ok(true),
@@ -120,9 +118,14 @@ impl ImageHoster for FlickrApiHandler {
     /// True if the image is published under a valid license. False if not.
     /// # Errors
     /// If any error occurs, it will be returned.
-    async fn check_licence(&self, photo_id: &str) -> Result<bool> {
-        trace!("FlickrApi: Checking image license for '{photo_id}'");
-        self.request.flickr_photos_license_check(photo_id).await
+    async fn check_licence(&self, photo_id: &str) -> Result<()> {
+        let (valid, license) = self.request.flickr_photos_license_check(photo_id).await?;
+        return if valid {
+            Ok(())
+        } else {
+            Err(ImageHosterError::InvalidLicense(license))
+        }
+
     }
 }
 
@@ -141,7 +144,7 @@ where
         hoster.check_existence(image_id).await
     }
 
-    async fn check_licence(&self, image_id: &str) -> Result<bool> {
+    async fn check_licence(&self, image_id: &str) -> Result<()> {
         let hoster: &T = self;
         hoster.check_licence(image_id).await
     }
@@ -238,8 +241,8 @@ mod test {
                 Ok(true)
             }
 
-            async fn check_licence(&self, _image_id: &str) -> Result<bool> {
-                Ok(true)
+            async fn check_licence(&self, _image_id: &str) -> Result<()> {
+                Ok(())
             }
         }
 
