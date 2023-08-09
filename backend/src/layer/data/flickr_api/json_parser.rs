@@ -54,7 +54,7 @@ impl JsonParser {
     /// # Return
     /// A boolean if the image has an valid license or not.
     /// If the image has no license or no license history, the image isn't restricted by any license and true will be returned.
-    pub fn check_license(root: &JsonRootLicense) -> Result<(), ImageHosterError> {
+    pub fn check_license(root: JsonRootLicense) -> Result<(), ImageHosterError> {
         let license = root
             .license_history
             .into_iter()
@@ -187,7 +187,7 @@ mod test {
                 },
             ],
         };
-        assert!(JsonParser::check_license(&valid_licenses).is_ok());
+        assert!(JsonParser::check_license(valid_licenses).is_ok());
     }
 
     #[test]

@@ -87,14 +87,7 @@ impl ApiRequest {
         trace!("successfully send request `{GET_LICENCE_HISTORY}` to flickr for image {photo_id}");
         Self::json_to_struct::<JsonRootLicense>(&bytes).map_or_else(
             |_| Err(Self::determine_error(&bytes)),
-            |root| {
-                let (valid, license) = JsonParser::check_license(&root);
-                if valid {
-                    Ok(())
-                } else {
-                    Err(ImageHosterError::InvalidLicense(license))
-                }
-            },
+            JsonParser::check_license,
         )
     }
 
