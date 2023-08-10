@@ -2,7 +2,7 @@ use tracing_subscriber::{EnvFilter, FmtSubscriber};
 
 /// Struct containing all configurations available for the logging system.
 pub struct LogInfo {
-    /// Logging specifier following the schema of [https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html]
+    /// Logging specifier following the schema of <https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html>
     pub log_config: String,
 }
 
@@ -22,5 +22,24 @@ impl Logger {
             .finish();
         tracing::subscriber::set_global_default(subscriber)
             .expect("setting default subscriber failed");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use rusty_fork::rusty_fork_test;
+
+    use super::{LogInfo, Logger};
+
+    // put in separate process to allow setting subscriber to avoid conflict with `traced_test`s
+    rusty_fork_test! {
+        #[test]
+        fn test_logger_init() {
+            let info = LogInfo {
+                log_config: "trace".into(),
+            };
+            Logger::init(info);
+        }
+
     }
 }

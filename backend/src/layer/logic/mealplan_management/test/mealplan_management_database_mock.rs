@@ -26,7 +26,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         _similar_name: &str,
         _canteen_id: Uuid,
     ) -> Result<Option<Uuid>> {
-        Ok(Option::from(gen_random_uuid()))
+        Ok(None)
     }
 
     async fn get_similar_meal(
@@ -35,7 +35,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         _allergens: &[Allergen],
         _additives: &[Additive],
     ) -> Result<Option<Uuid>> {
-        Ok(Option::from(gen_random_uuid()))
+        Ok(None)
     }
 
     async fn get_similar_side(
@@ -44,7 +44,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         _allergens: &[Allergen],
         _additives: &[Additive],
     ) -> Result<Option<Uuid>> {
-        Ok(Option::from(gen_random_uuid()))
+        Ok(None)
     }
 
     async fn update_canteen(&self, _uuid: Uuid, _name: &str, _position: u32) -> Result<()> {

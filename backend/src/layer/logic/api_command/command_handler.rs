@@ -35,7 +35,7 @@ where
     /// A function that creates a new [`CommandHandler`]
     ///
     /// # Errors
-    /// Returns an error, if the api keys could not be gotten from [`command_data`]
+    /// Returns an error, if the api keys could not be gotten from `command_data`
     pub async fn new(
         command_data: DataAccess,
         admin_notification: Notify,
@@ -198,7 +198,10 @@ where
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
+    use chrono::Local;
+
     use crate::interface::api_command::{Command, InnerAuthInfo, Result};
+    use crate::interface::persistent_data::model::Image;
     use crate::layer::logic::api_command::test::mocks::{
         IMAGE_ID_TO_FAIL, INVALID_URL, MEAL_ID_TO_FAIL,
     };
@@ -410,5 +413,19 @@ mod test {
         let admin_notification = CommandAdminNotificationMock;
         let image_hoster = CommandImageHosterMock;
         CommandHandler::new(command_data, admin_notification, image_hoster).await
+    }
+
+    #[test]
+    fn test_will_be_hidden() {
+        let image = Image {
+            upload_date: Local::now().date_naive(),
+            report_count: 10,
+            ..Default::default()
+        };
+        assert!(CommandHandler::<
+            CommandDatabaseMock,
+            CommandAdminNotificationMock,
+            CommandImageHosterMock,
+        >::will_be_hidden(&image));
     }
 }

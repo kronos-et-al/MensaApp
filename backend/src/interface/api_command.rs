@@ -44,7 +44,7 @@ pub trait Command {
 pub type AuthInfo = Option<InnerAuthInfo>;
 
 /// Structure containing all information necessary for authenticating a client.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct InnerAuthInfo {
     /// Id of client, chosen at random.
     pub client_id: Uuid,

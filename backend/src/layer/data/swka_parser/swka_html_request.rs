@@ -4,7 +4,7 @@ use crate::interface::mensa_parser::ParseError;
 use futures::future::join_all;
 use reqwest::Client;
 use std::time::Duration;
-use tracing::debug;
+use tracing::trace;
 
 pub struct SwKaHtmlRequest {
     client: Client,
@@ -52,7 +52,7 @@ impl SwKaHtmlRequest {
             .await
             .and_then(reqwest::Response::error_for_status)
             .map_err(|e| ParseError::NoConnectionEstablished(e.to_string()))?;
-        debug!("Url request finished: {:?}", resp);
+        trace!("loaded mensa page at {}", resp.url());
         resp.text()
             .await
             .map_err(|e| ParseError::DecodeFailed(e.to_string()))
@@ -71,26 +71,26 @@ mod test {
     }
 
     #[tokio::test]
-    async fn get_html_response_fail() {
+    async fn test_get_html_response_fail() {
         let result = test_util::get_request().get_html(&get_invalid_url()).await;
         assert!(result.is_err());
     }
 
     #[tokio::test]
-    async fn get_html_response_no_fail() {
+    async fn test_get_html_response_no_fail() {
         let result = test_util::get_request().get_html(&get_valid_url()).await;
         assert!(result.is_ok());
     }
 
     #[tokio::test]
-    async fn get_html_strings_response_fail() {
+    async fn test_get_html_strings_response_fail() {
         let urls = vec![get_invalid_url(), get_valid_url(), get_valid_url()];
         let result = test_util::get_request().get_html_strings(urls).await;
         assert!(result.is_err());
     }
 
     #[tokio::test]
-    async fn get_html_strings_response_no_fail() {
+    async fn test_get_html_strings_response_no_fail() {
         let urls = vec![get_valid_url(), get_valid_url()];
         let result = test_util::get_request().get_html_strings(urls).await;
         assert!(result.is_ok());

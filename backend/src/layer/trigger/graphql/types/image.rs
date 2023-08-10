@@ -1,9 +1,8 @@
-use crate::layer::trigger::graphql::util::TRACE_QUERY_MESSAGE;
 use crate::{
     interface::persistent_data::model, layer::trigger::graphql::util::ApiUtil, util::Uuid,
 };
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
-use tracing::{instrument, trace};
+use tracing::instrument;
 
 #[derive(SimpleObject, Debug)]
 #[graphql(complex)]
@@ -24,7 +23,6 @@ pub struct Image {
 impl Image {
     #[instrument(skip(ctx))]
     async fn personal_upvote(&self, ctx: &Context<'_>) -> Result<bool> {
-        trace!(TRACE_QUERY_MESSAGE);
         let data = ctx.get_data_access();
         let client_id = match ctx.get_auth_info() {
             Some(info) => info.client_id,
@@ -36,7 +34,6 @@ impl Image {
     /// This attribute specifies whether or not the user downvoted the image.
     #[instrument(skip(ctx))]
     async fn personal_downvote(&self, ctx: &Context<'_>) -> Result<bool> {
-        trace!(TRACE_QUERY_MESSAGE);
         let data = ctx.get_data_access();
         let client_id = match ctx.get_auth_info() {
             Some(info) => info.client_id,
