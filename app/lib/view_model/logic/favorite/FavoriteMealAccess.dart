@@ -32,7 +32,7 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
     }
 
     await _database.addFavorite(meal);
-    _favorites.add(meal);
+    _favorites = await _database.getFavorites();
     meal.setFavorite();
     notifyListeners();
   }
@@ -40,7 +40,7 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
   @override
   Future<List<Meal>> getFavoriteMeals() async {
     await _doneInitialization;
-    return Future.value(_favorites);
+    return _favorites;
   }
 
   @override
@@ -54,12 +54,8 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
   Future<void> removeFavoriteMeal(Meal meal) async {
     await _doneInitialization;
 
-    if (await isFavoriteMeal(meal) == false) {
-      return;
-    }
-
     await _database.deleteFavorite(meal);
-    _favorites.removeWhere((element) => element.id == meal.id);
+    _favorites = await _database.getFavorites();
     meal.deleteFavorite();
     notifyListeners();
   }

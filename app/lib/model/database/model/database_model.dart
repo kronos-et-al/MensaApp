@@ -1,4 +1,5 @@
 import 'package:app/model/database/model/db_canteen.dart';
+import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
@@ -25,7 +26,6 @@ abstract class DatabaseModel {
 /// This class transforms the database models to the data classes.
 class DatabaseTransformer {
   /// This method transforms a meal plan from the database to a data class.
-  /// @param dbMealPlan The meal plan from the database.
   /// @param dbLines The lines of the meal plan from the database.
   /// @param dbMeals The meals of the meal plan from the database.
   /// @param dbSides The sides of the meal plan from the database.
@@ -35,34 +35,35 @@ class DatabaseTransformer {
   /// @returns The meal plan as a data class.
   static Meal fromDBMeal(
       DBMeal dbMeal,
-      List<Allergen> allergens,
-      List<Additive> additives,
+      Price price,
+      List<Allergen>? allergens,
+      List<Additive>? additives,
       List<DBSide> sides,
       Map<DBSide, List<Allergen>> sideAllergens,
       Map<DBSide, List<Additive>> sideAdditives,
+      Map<DBSide, Price> sidePrices,
       List<DBImage> images,
+      DateTime? lastServed,
+      DateTime? nextServed,
+      Frequency? relativeFrequency,
       bool isFavorite) {
     return Meal(
         id: dbMeal.mealID,
         name: dbMeal.name,
         foodType: dbMeal.foodType,
-        price: Price(
-            student: dbMeal.priceStudent,
-            employee: dbMeal.priceEmployee,
-            pupil: dbMeal.pricePupil,
-            guest: dbMeal.priceGuest),
+        price: price,
         additives: additives,
         allergens: allergens,
         sides: sides
             .map((side) =>
-                fromDBSide(side, sideAllergens[side]!, sideAdditives[side]!))
+                fromDBSide(side, sideAllergens[side]!, sideAdditives[side]!, sidePrices[side]!))
             .toList(),
         individualRating: dbMeal.individualRating,
         numberOfRatings: dbMeal.numberOfRatings,
         averageRating: dbMeal.averageRating,
-        lastServed: DateTime.tryParse(dbMeal.lastServed),
-        nextServed: DateTime.tryParse(dbMeal.nextServed),
-        relativeFrequency: dbMeal.relativeFrequency,
+        lastServed: lastServed,
+        nextServed: nextServed,
+        relativeFrequency: relativeFrequency,
         images: images.map((image) => fromDBImage(image)).toList(),
         isFavorite: isFavorite);
   }
@@ -71,20 +72,17 @@ class DatabaseTransformer {
   /// @param side The side from the database.
   /// @param allergens The allergens of the side.
   /// @param additives The additives of the side.
+  /// @param price The price of the side.
   /// @returns The side as a data class.
   static Side fromDBSide(
-      DBSide side, List<Allergen> allergens, List<Additive> additives) {
+      DBSide side, List<Allergen>? allergens, List<Additive>? additives, Price price) {
     return Side(
         id: side.sideID,
         name: side.name,
         foodType: side.foodType,
-        price: Price(
-            student: side.priceStudent,
-            employee: side.priceEmployee,
-            pupil: side.pricePupil,
-            guest: side.priceGuest),
-        allergens: allergens,
-        additives: additives);
+        price: price,
+        allergens: allergens ?? [],
+        additives: additives ?? []);
   }
 
   /// This method transforms an image from the database to a data class.

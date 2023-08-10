@@ -2,11 +2,13 @@ import 'package:app/view/core/icons/MealIcon.dart';
 import 'package:app/view/core/information_display/MealPreviewImage.dart';
 import 'package:app/view/core/input_components/MensaRatingInput.dart';
 import 'package:app/view/detail_view/DetailsPage.dart';
+import 'package:app/view_model/logic/preference/IPreferenceAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 /// Displays a Meal as a List Entry.
 class MealListEntry extends StatelessWidget {
@@ -96,9 +98,12 @@ class MealListEntry extends StatelessWidget {
                                         Theme.of(context).colorScheme.onSurface,
                                   ),
                                   const Spacer(),
-                                  Text(_priceFormat.format(_meal.price
-                                          .getPrice(PriceCategory.student) /
-                                      100)),
+                                  Consumer<IPreferenceAccess>(
+                                      builder: (context, prefs, child) {
+                                    return Text(_priceFormat.format(_meal.price
+                                        .getPrice(prefs.getPriceCategory()) /
+                                        100));
+                                  }),
                                 ]),
                               ],
                             )))

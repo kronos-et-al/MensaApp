@@ -17,9 +17,9 @@ class Meal {
   final List<Additive>? _additives;
   final List<Side>? _sides;
 
-  final int? _individualRating;
-  final int? _numberOfRatings;
-  final double? _averageRating;
+  int? _individualRating;
+  int? _numberOfRatings;
+  double? _averageRating;
   final DateTime? _lastServed;
   final DateTime? _nextServed;
   final Frequency? _relativeFrequency;
@@ -247,6 +247,11 @@ class Meal {
   /// @return The favorite status of the meal
   bool get isFavorite => _isFavorite ?? false;
 
+
+  set individualRating(int? value) {
+    _individualRating = value;
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -254,4 +259,12 @@ class Meal {
 
   @override
   int get hashCode => _id.hashCode;
+
+  set numberOfRatings(int? value) {
+    _numberOfRatings = value;
+  }
+
+  set averageRating(double? value) {
+    _averageRating = value;
+  }
 }

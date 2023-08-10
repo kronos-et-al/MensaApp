@@ -1,5 +1,6 @@
 import 'package:app/view/core/MensaAppBar.dart';
 import 'package:app/view/core/buttons/MensaTapable.dart';
+import 'package:app/view/core/icons/navigation/NavigationFilterOutlinedDisabledIcon.dart';
 import 'package:app/view/core/icons/navigation/NavigationFilterOutlinedIcon.dart';
 import 'package:app/view/core/icons/navigation/NavigationGridOutlinedIcon.dart';
 import 'package:app/view/core/icons/navigation/NavigationListOutlinedIcon.dart';
@@ -42,6 +43,7 @@ class MealPlanView extends StatelessWidget {
                     mealAccess.getAvailableCanteens(),
                     mealAccess.getDate(),
                     mealAccess.getMealPlan(),
+                    mealAccess.isFilterActive()
                   ], eagerError: true),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
@@ -60,6 +62,7 @@ class MealPlanView extends StatelessWidget {
                     Result<List<MealPlan>, MealPlanException> mealPlans =
                         snapshot.requireData[3]
                             as Result<List<MealPlan>, MealPlanException>;
+                    bool filterActive = snapshot.requireData[4] as bool;
                     if (availableCanteens.indexWhere(
                             (element) => element.id == selectedCanteen.id) ==
                         -1) {
@@ -96,10 +99,10 @@ class MealPlanView extends StatelessWidget {
                                       ),
                                       const Spacer(),
                                       MensaTapable(
-                                          child: const Padding(
-                                              padding: EdgeInsets.all(8),
+                                          child: Padding(
+                                              padding: const EdgeInsets.all(8),
                                               child:
-                                                  NavigationFilterOutlinedIcon()),
+                                                  filterActive ? const NavigationFilterOutlinedIcon() : const NavigationFilterOutlinedDisabledIcon()),
                                           onLongPress: () => {
                                                 mealAccess.toggleFilter(),
                                               },
@@ -107,7 +110,7 @@ class MealPlanView extends StatelessWidget {
                                                 showDialog(
                                                   context: context,
                                                   builder: (context) =>
-                                                      FilterDialog(),
+                                                      const FilterDialog(),
                                                 )
                                               })
                                     ],

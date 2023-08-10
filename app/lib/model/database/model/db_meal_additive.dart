@@ -32,7 +32,7 @@ class DBMealAdditive implements DatabaseModel {
   /// @param map The map to create the instance from.
   /// @returns A new instance of a meal additive.
   static DBMealAdditive fromMap(Map<String, dynamic> map) {
-    return DBMealAdditive(map[columnMealID], map[columnAdditive]);
+    return DBMealAdditive(map[columnMealID], Additive.values.byName(map[columnAdditive]));
   }
 
   /// The string to create a table for an additive of a meal.

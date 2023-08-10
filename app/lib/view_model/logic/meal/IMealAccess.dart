@@ -1,6 +1,7 @@
 import 'package:app/view_model/repository/data_classes/filter/FilterPreferences.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
+import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../repository/data_classes/meal/Meal.dart';
@@ -15,6 +16,10 @@ abstract class IMealAccess with ChangeNotifier {
   /// @param canteen The canteen of the mealplan
   /// @return The mealplan of the committed date of the committed canteen or an error
   Future<Result<List<MealPlan>, MealPlanException>> getMealPlan();
+
+  /// This method returns the meal with the committed id form the database or current mealplan.
+  ///
+  Future<Result<Meal, NoMealException>> getMeal(Meal meal);
 
   /// This method returns the meal with the committed id form the database.
   /// If the requested data is not stored there, the data is requested from the server.
@@ -87,4 +92,6 @@ abstract class IMealAccess with ChangeNotifier {
 
   /// This method toggles the activity of a filter.
   Future<void> toggleFilter();
+
+  Future<bool> isFilterActive();
 }
