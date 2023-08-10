@@ -13,6 +13,7 @@ import 'package:app/view_model/repository/interface/ILocalStorage.dart';
 import 'package:app/view_model/repository/interface/IServerAccess.dart';
 import 'package:flutter/material.dart';
 
+import '../../repository/data_classes/filter/Sorting.dart';
 import '../../repository/data_classes/meal/Side.dart';
 
 /// This class is the interface for the access to the meal data. The access can be done via the database or the server.
@@ -162,6 +163,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     final line = await _database.getFavoriteMealsLine(meal);
     final date = await _database.getFavoriteMealsDate(meal);
 
+    //todo
     if (line == null || date == null) {
       return Failure(NoMealException("no meal"));
     }
@@ -372,8 +374,14 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   }
 
   Future<void> _changeRatingOfMeal(Meal changedMeal, int rating) async {
-    double newRating = ((changedMeal.averageRating! * changedMeal.numberOfRatings!) + rating) / (changedMeal.numberOfRatings! + 1);
-    Meal newMeal = Meal.copy(meal: changedMeal, averageRating: newRating, numberOfRatings: changedMeal.numberOfRatings! + 1, individualRating: rating);
+    double newRating =
+        ((changedMeal.averageRating! * changedMeal.numberOfRatings!) + rating) /
+            (changedMeal.numberOfRatings! + 1);
+    Meal newMeal = Meal.copy(
+        meal: changedMeal,
+        averageRating: newRating,
+        numberOfRatings: changedMeal.numberOfRatings! + 1,
+        individualRating: rating);
     await _database.updateMeal(newMeal);
     changedMeal.averageRating = newRating;
     changedMeal.numberOfRatings = changedMeal.numberOfRatings! + 1;
@@ -410,7 +418,77 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       }
     }
 
-    _filteredMealPlan = newFilteredMealPlans;
+    _filteredMealPlan = _sort(newFilteredMealPlans);
+  }
+
+  List<MealPlan> _sort(List<MealPlan> mealPlans) {
+    List<MealPlan> sort = List<MealPlan>.empty(growable: true);
+    List<MealPlan> sorted = List<MealPlan>.empty(growable: true);
+
+    // check if sorted by
+    if (_filter.sortedBy == Sorting.line) {
+      if (_filter.ascending) {
+        return mealPlans;
+      }
+      return List.from(mealPlans.reversed);
+    }
+
+    // give each meal is own meal plan for sorting
+    for (final mealPlan in mealPlans) {
+      for (final meal in mealPlan.meals) {
+        sort.add(MealPlan.copy(mealPlan: mealPlan, meals: [meal]));
+      }
+    }
+
+    // sort
+    switch (_filter.sortedBy) {
+      case Sorting.price:
+        final category =
+            _preferences.getPriceCategory() ?? PriceCategory.student;
+        sort.sort((a, b) => a.meals[0].price
+            .getPrice(category)
+            .compareTo(b.meals[0].price.getPrice(category)));
+      case Sorting.rating:
+        sort.sort((a, b) =>
+            a.meals[0].averageRating
+                ?.compareTo(b.meals[0].averageRating ?? 0) ??
+            0);
+      default:
+        sort.sort((a, b) =>
+        a.meals[0].numberOfOccurance
+            ?.compareTo(b.meals[0].numberOfOccurance ?? 0) ??
+            0);
+    }
+
+    // add same lines after each other to one
+
+    MealPlan? lastMealPlan;
+    for (final mealPlan in sort) {
+      // first plan
+      if (lastMealPlan == null) {
+        lastMealPlan = mealPlan;
+        continue;
+      }
+
+      // same line
+      if (lastMealPlan.line.id == mealPlan.line.id) {
+        lastMealPlan.meals.addAll(mealPlan.meals);
+        continue;
+      }
+
+      // different line
+      sorted.add(lastMealPlan);
+      lastMealPlan = mealPlan;
+    }
+
+    sorted.add(lastMealPlan!);
+
+    // sort ascending
+    if (_filter.ascending) {
+      return sorted;
+    }
+    //sort descending
+    return List.from(sorted.reversed);
   }
 
   Future<void> _filterSides(Meal meal, List<Side>? sides) async {
@@ -471,7 +549,9 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     }
 
     // check rating
-    if (meal.averageRating != null && meal.averageRating != 0 && meal.averageRating! < _filter.rating.toDouble()) {
+    if (meal.averageRating != null &&
+        meal.averageRating != 0 &&
+        meal.averageRating! < _filter.rating.toDouble()) {
       return false;
     }
 
