@@ -20,13 +20,4 @@ class Canteen {
   /// This method returns the name of the canteen.
   /// @return The name of the canteen
   String get name => _name;
-
-  /// This method returns all attributes needed for the database.
-  /// @return All attributes needed for the database
-  Map<String, dynamic> toMap() {
-    return {
-      'canteenID': _id,
-      'name': _name,
-    };
-  }
 }

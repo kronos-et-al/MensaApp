@@ -63,12 +63,4 @@ class ImageData {
   void deleteRating() {
     _individualRating = 0;
   }
-
-  /// The method returns the information that are stored in a map.
-  Map<String, dynamic> toMap() {
-    return {
-      'imageID': _id,
-      'url': _url,
-    };
-  }
 }

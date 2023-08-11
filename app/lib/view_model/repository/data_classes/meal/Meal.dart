@@ -148,45 +148,6 @@ class Meal {
     _isFavorite = false;
   }
 
-  /// This method returns the information of the meal that are stored in the database.
-  /// @return The information of the meal that are stored in the database
-  Map<String, dynamic> toMap() {
-    return {
-      'mealID': _id,
-      'name': _name,
-      'foodType': _foodType,
-      ..._price.toMap(),
-      'individualRating': _individualRating,
-      'numberOfRatings': _numberOfRatings,
-      'averageRating': _averageRating,
-      'lastServed': _lastServed,
-      'nextServed': _nextServed,
-      'relativeFrequency': _relativeFrequency,
-    };
-  }
-
-  /// This method returns the additives as a map.
-  /// @return The additives as a map
-  List<Map<String, dynamic>> additiveToMap() {
-    return _additives!
-        .map((additive) => {
-              'mealID': _id,
-              'additive': additive,
-            })
-        .toList();
-  }
-
-  /// This method returns the allerens as a map.
-  /// @return The allergens as a map
-  List<Map<String, dynamic>> allergenToMap() {
-    return _allergens!
-        .map((allergen) => {
-              'mealID': _id,
-              'allergen': allergen,
-            })
-        .toList();
-  }
-
   /// This method returns the sides as a map.
   /// @return The sides as a map
   String get id => _id;

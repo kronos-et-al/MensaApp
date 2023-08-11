@@ -39,17 +39,6 @@ class Price {
     }
   }
 
-  /// This method returns all attributes needed for the database.
-  /// @return All attributes needed for the database
-  Map<String, dynamic> toMap() {
-    return {
-      'priceStudent': _student,
-      'priceEmployee': _employee,
-      'pricePupil': _pupil,
-      'priceGuest': _guest,
-    };
-  }
-
   /// This method returns the price for guests.
   /// @return The price for guests
   int get guest => _guest;
