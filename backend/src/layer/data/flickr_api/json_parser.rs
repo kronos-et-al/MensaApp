@@ -63,10 +63,7 @@ impl JsonParser {
             .max_by_key(|l| l.date_change)
             .map(|entry| entry.new_license)
             .ok_or_else(|| {
-                ImageHosterError::InvalidLicense(
-                    String::from("No license could be detected"),
-                    format!("{VALID_LICENSES:?}"),
-                )
+                ImageHosterError::InvalidLicense(String::from("none"), VALID_LICENSES.join(", "))
             })?;
         let str_license = license.as_str();
         if VALID_LICENSES.contains(&str_license) {
@@ -74,7 +71,7 @@ impl JsonParser {
         } else {
             Err(ImageHosterError::InvalidLicense(
                 license,
-                format!("{VALID_LICENSES:?}"),
+                VALID_LICENSES.join(", "),
             ))
         }
     }
