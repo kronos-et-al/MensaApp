@@ -9,15 +9,14 @@ import 'package:app/view/core/icons/image/ThumbUpOutlinedIcon.dart';
 import 'package:app/view/core/icons/navigation/NavigationCloseIcon.dart';
 import 'package:app/view/images/ImageReportDialog.dart';
 import 'package:app/view_model/logic/image/IImageAccess.dart';
-import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
+import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MealImageDialog extends StatefulWidget {
-  final List<ImageData> _images;
+  final Meal _meal;
 
-  const MealImageDialog({super.key, required List<ImageData> images})
-      : _images = images;
+  const MealImageDialog({super.key, required Meal meal}) : _meal = meal;
 
   @override
   State<MealImageDialog> createState() => _MealImageDialogState();
@@ -57,12 +56,12 @@ class _MealImageDialogState extends State<MealImageDialog> {
               ),
             )),
         content: PageView.builder(
-          itemCount: widget._images.length,
+          itemCount: widget._meal.images?.length ?? 0,
           controller: pageController,
           itemBuilder: (context, index) {
             return Center(
                 child: Image.network(
-              widget._images[index].url,
+              widget._meal.images![index].url,
               fit: BoxFit.contain,
             ));
           },
@@ -73,29 +72,45 @@ class _MealImageDialogState extends State<MealImageDialog> {
               children: [
                 MensaIconButton(
                     onPressed: () async {
-                      await context
-                          .read<IImageAccess>()
-                          .upvoteImage(widget._images[currentPage]);
+                      if (widget._meal.images![currentPage].individualRating ==
+                          1) {
+                        await context
+                            .read<IImageAccess>()
+                            .deleteUpvote(widget._meal.images![currentPage]);
+                      } else {
+                        await context
+                            .read<IImageAccess>()
+                            .upvoteImage(widget._meal.images![currentPage]);
+                      }
                     },
-                    icon: widget._images[currentPage].individualRating == 1
-                        ? const ThumbUpFilledIcon()
-                        : const ThumbUpOutlinedIcon()),
+                    icon:
+                        widget._meal.images![currentPage].individualRating == 1
+                            ? const ThumbUpFilledIcon()
+                            : const ThumbUpOutlinedIcon()),
                 MensaIconButton(
                     onPressed: () async {
-                      await context
-                          .read<IImageAccess>()
-                          .downvoteImage(widget._images[currentPage]);
+                      if (widget._meal.images![currentPage].individualRating ==
+                          -1) {
+                        await context
+                            .read<IImageAccess>()
+                            .deleteDownvote(widget._meal.images![currentPage]);
+                      } else {
+                        await context
+                            .read<IImageAccess>()
+                            .downvoteImage(widget._meal.images![currentPage]);
+                      }
                     },
-                    icon: widget._images[currentPage].individualRating == -1
-                        ? const ThumbDownFilledIcon()
-                        : const ThumbDownOutlinedIcon()),
+                    icon:
+                        widget._meal.images![currentPage].individualRating == -1
+                            ? const ThumbDownFilledIcon()
+                            : const ThumbDownOutlinedIcon()),
                 const Spacer(),
                 MensaIconButton(
                     onPressed: () {
                       showDialog(
                         context: context,
                         builder: (context) => ImageReportDialog(
-                            image: widget._images[currentPage]),
+                            image: widget._meal.images![currentPage]),
                       );
                     },
                     icon: const ImageReportIcon()),

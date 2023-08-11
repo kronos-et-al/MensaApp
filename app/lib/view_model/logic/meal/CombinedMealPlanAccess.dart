@@ -163,7 +163,6 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     final line = await _database.getFavoriteMealsLine(meal);
     final date = await _database.getFavoriteMealsDate(meal);
 
-    //todo
     if (line == null || date == null) {
       return Failure(NoMealException("no meal"));
     }
@@ -225,8 +224,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     await _doneInitialization;
 
     for (final mealPlan in _mealPlans) {
-      for (final meal in mealPlan.meals) {
-        if (meal.id == meal.id) {
+      for (final e in mealPlan.meals) {
+        if (e.id == meal.id) {
           return Success(meal);
         }
       }
@@ -374,17 +373,13 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   }
 
   Future<void> _changeRatingOfMeal(Meal changedMeal, int rating) async {
-    double newRating =
-        ((changedMeal.averageRating! * changedMeal.numberOfRatings!) + rating) /
-            (changedMeal.numberOfRatings! + 1);
-    Meal newMeal = Meal.copy(
-        meal: changedMeal,
-        averageRating: newRating,
-        numberOfRatings: changedMeal.numberOfRatings! + 1,
-        individualRating: rating);
+    int numberOfRatings = changedMeal.numberOfRatings! + (changedMeal.individualRating != 0 ? -1 : 0);
+    double clearedRating = ((changedMeal.averageRating! * changedMeal.numberOfRatings!) - changedMeal.individualRating!) / numberOfRatings;
+    double newRating = ((clearedRating * numberOfRatings) + rating) / (numberOfRatings + 1);
+    Meal newMeal = Meal.copy(meal: changedMeal, averageRating: newRating, numberOfRatings: numberOfRatings + 1, individualRating: rating);
     await _database.updateMeal(newMeal);
     changedMeal.averageRating = newRating;
-    changedMeal.numberOfRatings = changedMeal.numberOfRatings! + 1;
+    changedMeal.numberOfRatings = numberOfRatings + 1;
     changedMeal.individualRating = rating;
     notifyListeners();
   }
@@ -418,6 +413,10 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       }
     }
 
+    if (newFilteredMealPlans.isEmpty) {
+      _filteredMealPlan = List<MealPlan>.empty();
+      return;
+    }
     _filteredMealPlan = _sort(newFilteredMealPlans);
   }
 
@@ -549,9 +548,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     }
 
     // check rating
-    if (meal.averageRating != null &&
-        meal.averageRating != 0 &&
-        meal.averageRating! < _filter.rating.toDouble()) {
+    if (meal.averageRating != null && meal.averageRating != 0 && meal.averageRating! < _filter.rating.toDouble()) {
       return false;
     }
 

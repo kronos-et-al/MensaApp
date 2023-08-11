@@ -17,6 +17,7 @@ import 'package:app/view/filter/MensaSortSelectEntry.dart';
 import 'package:app/view_model/logic/meal/IMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/filter/FilterPreferences.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
+import 'package:app/view_model/repository/data_classes/filter/Sorting.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:flutter/material.dart';
@@ -36,8 +37,6 @@ class FilterDialog extends StatefulWidget {
 
 class _FilterDialogState extends State<FilterDialog> {
   FilterPreferences preferences = FilterPreferences();
-  String selectedSorting = "line";
-  SortDirection sortDirection = SortDirection.ascending;
 
   final TextStyle headingTextStyle =
       const TextStyle(fontSize: 16, fontWeight: FontWeight.bold);
@@ -297,22 +296,21 @@ class _FilterDialogState extends State<FilterDialog> {
                         height: 8,
                       ),
                       MensaSortSelect(
-                        entries: const [
-                          MensaSortSelectEntry(value: "line", label: "Linie"),
-                          MensaSortSelectEntry(value: "price", label: "Preis"),
-                          MensaSortSelectEntry(
-                              value: "rating", label: "Bewertung"),
-                        ],
-                        selectedEntry: selectedSorting,
-                        sortDirection: sortDirection,
+                        entries: Sorting.values.map((e) => MensaSortSelectEntry(
+                            label: FlutterI18n.translate(
+                                context, "filter.sorting.${e.name}"),
+                            value: e
+                        )).toList(),
+                        selectedEntry: preferences.sortedBy,
+                        sortDirection: preferences.ascending ? SortDirection.ascending : SortDirection.descending,
                         onEntrySelected: (v) => {
                           setState(() {
-                            selectedSorting = v;
+                            preferences.sortedBy = v;
                           })
                         },
                         onSortDirectionSelected: (v) => {
                           setState(() {
-                            sortDirection = v;
+                            preferences.ascending = v == SortDirection.ascending;
                           })
                         },
                       ),
@@ -323,7 +321,7 @@ class _FilterDialogState extends State<FilterDialog> {
         ),
       ),
       actions: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
             children: [
               Expanded(

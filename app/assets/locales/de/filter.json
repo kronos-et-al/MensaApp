@@ -21,5 +21,11 @@
   "priceMax": "10€",
   "ratingMin": "1 Stern",
   "ratingMax": "5 Sterne",
-  "storeButton": "Übernehmen"
+  "storeButton": "Übernehmen",
+  "sorting": {
+    "line": "Linie",
+    "price": "Preis",
+    "rating": "Bewertung",
+    "frequency": "Häufigkeit"
+  }
 }

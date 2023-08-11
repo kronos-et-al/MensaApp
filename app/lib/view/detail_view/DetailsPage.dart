@@ -17,8 +17,11 @@ import 'package:app/view/detail_view/RatingsOverview.dart';
 import 'package:app/view/detail_view/UploadImageDialog.dart';
 import 'package:app/view/images/MealImageDialog.dart';
 import 'package:app/view_model/logic/favorite/IFavoriteMealAccess.dart';
+import 'package:app/view_model/logic/meal/IMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
+import 'package:app/view_model/repository/error_handling/NoMealException.dart';
+import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
@@ -47,215 +50,302 @@ class DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    Meal meal = localMeal ?? widget._meal;
+    IMealAccess mealAccess = Provider.of<IMealAccess>(context);
     ThemeData themeData = Theme.of(context);
-    return Container(
-        color: themeData.brightness == Brightness.light
-            ? themeData.colorScheme.background
-            : themeData.colorScheme.background,
-        child: SafeArea(
-            child: Scaffold(
-          appBar: MensaAppBar(
-            appBarHeight: kToolbarHeight * 1.25,
-            child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    MensaIconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: const NavigationBackIcon()),
-                    const Spacer(),
-                    Consumer<IFavoriteMealAccess>(
-                        builder: (context, favoriteMealAccess, child) =>
-                            MensaIconButton(
-                                onPressed: () => {
-                                      if (meal.isFavorite)
-                                        {
-                                          favoriteMealAccess
-                                              .removeFavoriteMeal(meal)
-                                        }
-                                      else
-                                        {
-                                          favoriteMealAccess
-                                              .addFavoriteMeal(meal)
-                                        }
-                                    },
-                                icon: meal.isFavorite
-                                    ? const FavoriteFilledIcon()
-                                    : const FavoriteOutlinedIcon())),
-                    MensaIconButton(
-                        onPressed: () => {
-                              showDialog(
-                                context: context,
-                                builder: (context) =>
-                                    UploadImageDialog(meal: meal),
-                              )
-                            },
-                        icon: const NavigationAddImageIcon()),
-                  ],
-                )),
-          ),
-          body: Column(
-            children: [
-              Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 28),
-                  child: Row(children: [
-                    Expanded(
-                        child: Text(
-                      meal.name,
-                      style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold),
-                    ))
-                  ])),
-              const SizedBox(height: 16),
-              Expanded(
-                  child: Container(
-                      color: themeData.brightness == Brightness.light
-                          ? themeData.colorScheme.background
-                          : themeData.colorScheme.surface,
-                      child: SingleChildScrollView(
+    return FutureBuilder(
+        future: mealAccess.getMeal(widget._meal),
+        builder: (context, mealSnapshot) {
+          if (!mealSnapshot.hasData) {
+            return Container(
+              color: themeData.brightness == Brightness.light
+                  ? themeData.colorScheme.background
+                  : themeData.colorScheme.background,
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+          if (mealSnapshot.hasError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(mealSnapshot.error.toString())));
+            Navigator.of(context).pop();
+            return Container(
+              color: themeData.brightness == Brightness.light
+                  ? themeData.colorScheme.background
+                  : themeData.colorScheme.background,
+            );
+          }
+          switch (mealSnapshot.requireData) {
+            case Success<Meal, NoMealException> value:
+              {
+                Meal meal = value.value;
+                return Container(
+                    color: themeData.brightness == Brightness.light
+                        ? themeData.colorScheme.background
+                        : themeData.colorScheme.background,
+                    child: SafeArea(
+                        child: Scaffold(
+                      appBar: MensaAppBar(
+                        appBarHeight: kToolbarHeight * 1.25,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              widget._line != null
-                                  ? Row(
-                                      children: [
-                                        const Padding(
-                                          padding: EdgeInsets.all(8),
-                                          child: MealLineIcon(),
-                                        ),
-                                        Text(
-                                          widget._line!.name,
-                                          style: const TextStyle(fontSize: 16),
-                                        )
-                                      ],
-                                    )
-                                  : const SizedBox(),
-                              const SizedBox(height: 8),
-                              MealPreviewImage(
-                                  enableUploadButton: true,
-                                  onUploadButtonPressed: () => showDialog(
-                                        context: context,
-                                        builder: (context) => UploadImageDialog(
-                                            meal: meal),
-                                      ),
-                                  onImagePressed: () => showDialog(
-                                        context: context,
-                                        builder: (context) => MealImageDialog(
-                                          images: meal.images ?? [],
-                                        ),
-                                      ),
-                                  borderRadius: BorderRadius.circular(4),
-                                  meal: meal,
-                                  height: 250),
-                              const SizedBox(height: 8),
-                              MealAccordion(
-                                backgroundColor:
-                                    themeData.brightness == Brightness.light
-                                        ? themeData.colorScheme.background
-                                        : themeData.colorScheme.surface,
-                                expandedColor:
-                                    themeData.brightness == Brightness.light
-                                        ? themeData.colorScheme.surface
-                                        : themeData.colorScheme.background,
-                                mainEntry: MealMainEntry(meal: meal),
-                                info: MealAccordionInfo(
-                                    additives: meal.additives ?? [],
-                                    allergens: meal.allergens ?? []),
-                                isExpanded: expandedAccordionIndex == 0,
-                                onTap: () => setState(() =>
-                                    expandedAccordionIndex =
-                                        expandedAccordionIndex == 0 ? null : 0),
-                              ),
-                              ...?meal.sides
-                                  ?.map((e) => MealAccordion(
-                                        backgroundColor: themeData.brightness ==
-                                                Brightness.light
-                                            ? themeData.colorScheme.background
-                                            : themeData.colorScheme.surface,
-                                        expandedColor: themeData.brightness ==
-                                                Brightness.light
-                                            ? themeData.colorScheme.surface
-                                            : themeData.colorScheme.background,
-                                        sideEntry: MealSideEntry(side: e),
-                                        info: MealAccordionInfo(
-                                            additives: e.additives,
-                                            allergens: e.allergens),
-                                        isExpanded: expandedAccordionIndex ==
-                                            meal.sides!.indexOf(e) + 1,
-                                        onTap: () => setState(() =>
-                                            expandedAccordionIndex =
-                                                expandedAccordionIndex ==
-                                                        meal.sides!
-                                                                .indexOf(e) +
-                                                            1
-                                                    ? null
-                                                    : meal.sides!
-                                                            .indexOf(e) +
-                                                        1),
-                                      ))
-                                  .toList(),
-                              const SizedBox(height: 16),
-                              RatingsOverview(
-                                meal: meal,
-                                backgroundColor:
-                                    themeData.brightness == Brightness.light
-                                        ? themeData.colorScheme.surface
-                                        : themeData.colorScheme.background,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                  FlutterI18n.translate(
-                                      context, "ratings.titlePersonalRating"),
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.onSurface,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  )),
-                              Row(children: [
-                                MensaRatingInput(
-                                  value: meal.individualRating
-                                          ?.toDouble() ??
-                                      0,
-                                  disabled: true,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface,
-                                  size: 20,
-                                  max: 5,
-                                  onChanged: (int) {},
-                                ),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                MensaIconButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                    icon: const NavigationBackIcon()),
                                 const Spacer(),
-                                MensaButton(
-                                  text: FlutterI18n.translate(
-                                      context, "ratings.editRating"),
-                                  onPressed: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) => MealRatingDialog(
-                                          onRatingChanged: (meal) {
-                                            setState(() {
-                                              localMeal = meal;
-                                            });
-                                          },
-                                            meal: meal),
-                                        barrierDismissible: true);
-                                  },
-                                )
-                              ])
-                            ],
-                          ),
-                        ),
-                      )))
-            ],
-          ),
-        )));
+                                Consumer<IFavoriteMealAccess>(
+                                    builder: (context, favoriteMealAccess,
+                                            child) =>
+                                        MensaIconButton(
+                                            onPressed: () => {
+                                                  if (meal.isFavorite)
+                                                    {
+                                                      favoriteMealAccess
+                                                          .removeFavoriteMeal(
+                                                              meal)
+                                                    }
+                                                  else
+                                                    {
+                                                      favoriteMealAccess
+                                                          .addFavoriteMeal(meal)
+                                                    }
+                                                },
+                                            icon: meal.isFavorite
+                                                ? const FavoriteFilledIcon()
+                                                : const FavoriteOutlinedIcon())),
+                                MensaIconButton(
+                                    onPressed: () => {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                                UploadImageDialog(meal: meal),
+                                          )
+                                        },
+                                    icon: const NavigationAddImageIcon()),
+                              ],
+                            )),
+                      ),
+                      body: Column(
+                        children: [
+                          Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 28),
+                              child: Row(children: [
+                                Expanded(
+                                    child: Text(
+                                  meal.name,
+                                  style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold),
+                                ))
+                              ])),
+                          const SizedBox(height: 16),
+                          Expanded(
+                              child: Container(
+                                  color:
+                                      themeData.brightness == Brightness.light
+                                          ? themeData.colorScheme.background
+                                          : themeData.colorScheme.surface,
+                                  child: SingleChildScrollView(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 8),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          widget._line != null
+                                              ? Row(
+                                                  children: [
+                                                    const Padding(
+                                                      padding:
+                                                          EdgeInsets.all(8),
+                                                      child: MealLineIcon(),
+                                                    ),
+                                                    Text(
+                                                      widget._line!.name,
+                                                      style: const TextStyle(
+                                                          fontSize: 16),
+                                                    )
+                                                  ],
+                                                )
+                                              : const SizedBox(),
+                                          const SizedBox(height: 8),
+                                          MealPreviewImage(
+                                              enableUploadButton: true,
+                                              onUploadButtonPressed: () =>
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        UploadImageDialog(
+                                                            meal: meal),
+                                                  ),
+                                              onImagePressed: () => showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        MealImageDialog(
+                                                      meal: meal,
+                                                    ),
+                                                  ),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              meal: meal,
+                                              height: 250),
+                                          const SizedBox(height: 8),
+                                          MealAccordion(
+                                            backgroundColor: themeData
+                                                        .brightness ==
+                                                    Brightness.light
+                                                ? themeData
+                                                    .colorScheme.background
+                                                : themeData.colorScheme.surface,
+                                            expandedColor: themeData
+                                                        .brightness ==
+                                                    Brightness.light
+                                                ? themeData.colorScheme.surface
+                                                : themeData
+                                                    .colorScheme.background,
+                                            mainEntry:
+                                                MealMainEntry(meal: meal),
+                                            info: MealAccordionInfo(
+                                                additives: meal.additives ?? [],
+                                                allergens:
+                                                    meal.allergens ?? []),
+                                            isExpanded:
+                                                expandedAccordionIndex == 0,
+                                            onTap: () => setState(() =>
+                                                expandedAccordionIndex =
+                                                    expandedAccordionIndex == 0
+                                                        ? null
+                                                        : 0),
+                                          ),
+                                          ...?meal.sides
+                                              ?.map((e) => MealAccordion(
+                                                    backgroundColor:
+                                                        themeData.brightness ==
+                                                                Brightness.light
+                                                            ? themeData
+                                                                .colorScheme
+                                                                .background
+                                                            : themeData
+                                                                .colorScheme
+                                                                .surface,
+                                                    expandedColor:
+                                                        themeData.brightness ==
+                                                                Brightness.light
+                                                            ? themeData
+                                                                .colorScheme
+                                                                .surface
+                                                            : themeData
+                                                                .colorScheme
+                                                                .background,
+                                                    sideEntry:
+                                                        MealSideEntry(side: e),
+                                                    info: MealAccordionInfo(
+                                                        additives: e.additives,
+                                                        allergens: e.allergens),
+                                                    isExpanded:
+                                                        expandedAccordionIndex ==
+                                                            meal.sides!.indexOf(
+                                                                    e) +
+                                                                1,
+                                                    onTap: () => setState(() =>
+                                                        expandedAccordionIndex =
+                                                            expandedAccordionIndex ==
+                                                                    meal.sides!.indexOf(
+                                                                            e) +
+                                                                        1
+                                                                ? null
+                                                                : meal.sides!
+                                                                        .indexOf(
+                                                                            e) +
+                                                                    1),
+                                                  ))
+                                              .toList(),
+                                          const SizedBox(height: 16),
+                                          RatingsOverview(
+                                            meal: meal,
+                                            backgroundColor: themeData
+                                                        .brightness ==
+                                                    Brightness.light
+                                                ? themeData.colorScheme.surface
+                                                : themeData
+                                                    .colorScheme.background,
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Text(
+                                              FlutterI18n.translate(context,
+                                                  "ratings.titlePersonalRating"),
+                                              textAlign: TextAlign.left,
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurface,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                              )),
+                                          Row(children: [
+                                            MensaRatingInput(
+                                              value: meal.individualRating
+                                                      ?.toDouble() ??
+                                                  0,
+                                              disabled: true,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
+                                              size: 20,
+                                              max: 5,
+                                              onChanged: (int) {},
+                                            ),
+                                            const Spacer(),
+                                            MensaButton(
+                                              text: FlutterI18n.translate(
+                                                  context,
+                                                  "ratings.editRating"),
+                                              onPressed: () {
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        MealRatingDialog(
+                                                            onRatingChanged:
+                                                                (meal) {
+                                                              setState(() {
+                                                                localMeal =
+                                                                    meal;
+                                                              });
+                                                            },
+                                                            meal: meal),
+                                                    barrierDismissible: true);
+                                              },
+                                            )
+                                          ])
+                                        ],
+                                      ),
+                                    ),
+                                  )))
+                        ],
+                      ),
+                    )));
+              }
+            case Failure<Meal, NoMealException> exception:
+              {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(mealSnapshot.error.toString())));
+                Navigator.of(context).pop();
+                return Container(
+                  color: themeData.brightness == Brightness.light
+                      ? themeData.colorScheme.background
+                      : themeData.colorScheme.background,
+                );
+              }
+          }
+        });
   }
 }
