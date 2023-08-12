@@ -74,7 +74,12 @@ impl CommandDataAccess for PersistentCommandData {
 
     async fn add_upvote(&self, image_id: Uuid, user_id: Uuid) -> Result<()> {
         sqlx::query!(
-            "INSERT INTO image_rating (user_id, image_id, rating) VALUES ($1, $2, 1)",
+            "
+            INSERT INTO image_rating (user_id, image_id, rating) 
+            VALUES ($1, $2, 1) 
+            ON CONFLICT (user_id, image_id) 
+            DO UPDATE SET rating = 1
+            ",
             user_id,
             image_id
         )
@@ -85,7 +90,12 @@ impl CommandDataAccess for PersistentCommandData {
 
     async fn add_downvote(&self, image_id: Uuid, user_id: Uuid) -> Result<()> {
         sqlx::query!(
-            "INSERT INTO image_rating (user_id, image_id, rating) VALUES ($1, $2, -1)",
+            "
+            INSERT INTO image_rating (user_id, image_id, rating) 
+            VALUES ($1, $2, -1)
+            ON CONFLICT (user_id, image_id) 
+            DO UPDATE SET rating = -1
+            ",
             user_id,
             image_id
         )
@@ -260,7 +270,7 @@ mod test {
         let upvotes = number_of_votes(&pool, 1).await;
         assert!(command.add_upvote(image_id, user_id).await.is_ok());
         assert_eq!(number_of_votes(&pool, 1).await, upvotes + 1);
-        assert!(command.add_upvote(image_id, user_id).await.is_err());
+        assert!(command.add_upvote(image_id, user_id).await.is_ok());
         assert!(command.add_upvote(WRONG_UUID, user_id).await.is_err());
         assert_eq!(number_of_votes(&pool, 1).await, upvotes + 1);
     }
@@ -274,9 +284,40 @@ mod test {
         let downvotes = number_of_votes(&pool, -1).await;
         assert!(command.add_downvote(image_id, user_id).await.is_ok());
         assert_eq!(number_of_votes(&pool, -1).await, downvotes + 1);
-        assert!(command.add_downvote(image_id, user_id).await.is_err());
+        assert!(command.add_downvote(image_id, user_id).await.is_ok());
         assert!(command.add_downvote(WRONG_UUID, user_id).await.is_err());
         assert_eq!(number_of_votes(&pool, -1).await, downvotes + 1);
+    }
+
+    #[sqlx::test(fixtures("meal", "image"))]
+    async fn test_override_votes(pool: PgPool) {
+        let command = PersistentCommandData { pool: pool.clone() };
+        let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+        let user_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
+
+        assert!(command.add_upvote(image_id, user_id).await.is_ok());
+        assert!(command.add_downvote(image_id, user_id).await.is_ok());
+
+        let vote = sqlx::query_scalar!(
+            "SELECT rating FROM image_rating WHERE image_id = $1 AND user_id = $2",
+            image_id,
+            user_id,
+        )
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+        assert_eq!(vote, -1);
+
+        assert!(command.add_upvote(image_id, user_id).await.is_ok());
+        let vote = sqlx::query_scalar!(
+            "SELECT rating FROM image_rating WHERE image_id = $1 AND user_id = $2",
+            image_id,
+            user_id,
+        )
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+        assert_eq!(vote, 1);
     }
 
     #[sqlx::test(fixtures("meal", "image"))]
