@@ -1,0 +1,42 @@
+services:
+  mensa-app:
+    image: ghcr.io/kronos-et-al/mensa-app
+    command: --migrate
+    ports:
+      - 80:80
+    environment: # please configure accordingly <------------------------------------------------------------
+      - DATABASE_URL=postgres://postgres:secret_password@database/mensa_app # only change password if wanted
+      - SMTP_SERVER=<domain of mail server>
+      - SMTP_PORT=<port of mail server>
+      - SMTP_USERNAME=<username of mail server>
+      - SMTP_PASSWORD=<password of mail server>
+      - ADMIN_EMAIL=<email address admin notofocations should be send to>
+      - FLICKR_API_KEY=<flickr public api key>
+    restart: unless-stopped
+    depends_on:
+      - database
+  database:
+    image: postgres
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret_password # change here and above <------------------------------------------
+      - POSTGRES_DB=mensa_app
+    restart: unless-stopped
+  admin:
+    image: dpage/pgadmin4
+    environment: # change <----------------------------------------------------------------------------------
+      - PGADMIN_DEFAULT_EMAIL=
+      - PGADMIN_DEFAULT_PASSWORD=
+    ports:
+      - 8888:80
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    restart: unless-stopped
+    depends_on:
+      - database
+
+volumes:
+ dbdata:
+ pgadmin:
