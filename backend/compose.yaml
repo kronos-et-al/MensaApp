@@ -1,7 +1,7 @@
 services:
   mensa-app:
     image: ghcr.io/kronos-et-al/mensa-app
-    command: --migrate
+    #command: --migrate # only run for the first time to create initial database structure
     ports:
       - 80:80
     environment: # please configure accordingly <------------------------------------------------------------
