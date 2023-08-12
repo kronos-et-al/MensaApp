@@ -12,6 +12,7 @@ services:
       - SMTP_PASSWORD=<password of mail server>
       - ADMIN_EMAIL=<email address admin notofocations should be send to>
       - FLICKR_API_KEY=<flickr public api key>
+      - TZ=Europe/Berlin
     restart: unless-stopped
     depends_on:
       - database
@@ -23,12 +24,14 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=secret_password # change here and above <------------------------------------------
       - POSTGRES_DB=mensa_app
+      - TZ=Europe/Berlin
     restart: unless-stopped
   admin:
     image: dpage/pgadmin4
     environment: # change <----------------------------------------------------------------------------------
       - PGADMIN_DEFAULT_EMAIL=
       - PGADMIN_DEFAULT_PASSWORD=
+      - TZ=Europe/Berlin
     ports:
       - 8888:80
     volumes:

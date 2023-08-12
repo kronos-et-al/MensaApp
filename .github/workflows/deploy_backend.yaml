@@ -4,6 +4,10 @@ on:
   workflow_dispatch:
   release:
     types: [published]
+  push:
+    branches:
+      - 'main'
+      - 'backend'
 
 
 env:
@@ -19,7 +23,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-      # 
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
