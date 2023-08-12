@@ -5,9 +5,7 @@ on:
   release:
     types: [published]
   push:
-    branches:
-      - 'main'
-      - 'backend'
+    paths: ["backend/**"]
 
 
 env:
