@@ -1,55 +1,32 @@
+import 'package:flutter/material.dart';
 
-import '../../repository/data_classes/filter/FilterPreferences.dart';
-import '../../repository/data_classes/mealplan/Canteen.dart';
 import '../../repository/data_classes/settings/MensaColorScheme.dart';
 import '../../repository/data_classes/settings/MealPlanFormat.dart';
 import '../../repository/data_classes/settings/PriceCategory.dart';
 
 /// This is an interface for accessing the preferences.
-abstract class IPreferenceAccess {
+abstract class IPreferenceAccess with ChangeNotifier {
   /// The client identifier is returned.
   /// @return The client identifier.
-  Future<String> getClientIdentifier();
+  String getClientIdentifier();
 
   /// The client identifier is set.
   /// @param identifier The new client identifier.
   /// @return The result of the update.
   Future<void> setClientIdentifier(String identifier);
 
-  /// The saved FilterPreferences is returned.
-  /// @return The saved FilterPreferences.
-  Future<FilterPreferences> getFilterPreferences();
-
-  /// The committed FilterPreferences is set.
-  /// @param filter The new FilterPreferences.
-  /// @return The result of the update.
-  Future<void> setFilterPreferences(FilterPreferences filter);
-
-  /// The FilterPreferences are reset to the default values.
-  /// @return The result of the update.
-  Future<void> resetFilterPreferences();
-
-  /// The saved Canteen is returned.
-  /// @return The saved Canteen.
-  Future<Canteen> getCanteen();
-
-  /// The committed Canteen is set.
-  /// @param canteen The new Canteen.
-  /// @return The result of the update.
-  Future<void> setCanteen(Canteen canteen);
-
   /// The saved ColorScheme is returned.
   /// @return The saved ColorScheme.
-  Future<ColorScheme> getColorScheme();
+  MensaColorScheme getColorScheme();
 
   /// The committed ColorScheme is set.
   /// @param scheme The new ColorScheme.
   /// @return The result of the update.
-  Future<void> setColorScheme(ColorScheme scheme);
+  Future<void> setColorScheme(MensaColorScheme scheme);
 
   /// The saved PriceCategory is returned.
   /// @return The saved PriceCategory.
-  Future<PriceCategory> getPriceCategory();
+  PriceCategory getPriceCategory();
 
   /// The committed PriceCategory is set.
   /// @param category The new PriceCategory.
@@ -58,7 +35,7 @@ abstract class IPreferenceAccess {
 
   /// The saved MealPlanFormat is returned.
   /// @return The saved MealPlanFormat.
-  Future<MealPlanFormat> getMealPlanFormat();
+  MealPlanFormat getMealPlanFormat();
 
   /// The committed MealPlanFormat is set.
   /// @param format The new MealPlanFormat.

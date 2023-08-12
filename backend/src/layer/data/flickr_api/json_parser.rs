@@ -21,7 +21,7 @@ impl JsonParser {
     /// If the preferred size cannot be obtained a fallback to a smaller size will be done.
     /// If even this fallback size is not available the url will be empty. No url will be provided.
     /// # Errors
-    /// Returns [`ImageHosterError::ImageIsToSmall`] if the image is too small.
+    /// Returns [`ImageHosterError::ImageIsTooSmall`] if the image is too small.
     pub fn parse_get_sizes(
         root: &JsonRootSizes,
         photo_id: &str,
@@ -54,18 +54,26 @@ impl JsonParser {
     /// # Return
     /// A boolean if the image has an valid license or not.
     /// If the image has no license or no license history, the image isn't restricted by any license and true will be returned.
-    #[must_use]
-    pub fn check_license(root: &JsonRootLicense) -> bool {
+    /// # Errors
+    /// If an image is invalid [`ImageHosterError::InvalidLicense`] with the invalid license will be returned.
+    pub fn check_license(root: JsonRootLicense) -> Result<(), ImageHosterError> {
         let license = root
             .license_history
-            .iter()
+            .into_iter()
             .max_by_key(|l| l.date_change)
-            .map(|entry| &entry.new_license);
-
-        if let Some(license) = license {
-            return VALID_LICENSES.contains(&license.as_str());
+            .map(|entry| entry.new_license)
+            .ok_or_else(|| {
+                ImageHosterError::InvalidLicense(String::from("none"), VALID_LICENSES.join(", "))
+            })?;
+        let str_license = license.as_str();
+        if VALID_LICENSES.contains(&str_license) {
+            Ok(())
+        } else {
+            Err(ImageHosterError::InvalidLicense(
+                license,
+                VALID_LICENSES.join(", "),
+            ))
         }
-        false
     }
 
     /// Obtains and determines an error by its error code and message provided by the [`JsonRootError`] struct.
@@ -100,7 +108,7 @@ mod test {
     use crate::layer::data::flickr_api::json_structs::Sizes;
 
     #[test]
-    fn valid_get_size() {
+    fn test_valid_get_size() {
         let valid_sizes = JsonRootSizes {
             sizes: Sizes {
                 size: vec![
@@ -126,7 +134,7 @@ mod test {
     }
 
     #[test]
-    fn fallback_get_size() {
+    fn test_fallback_get_size() {
         let fallback_sizes = JsonRootSizes {
             sizes: Sizes {
                 size: vec![
@@ -152,7 +160,7 @@ mod test {
     }
 
     #[test]
-    fn invalid_get_size() {
+    fn test_invalid_get_size() {
         let invalid_sizes = JsonRootSizes {
             sizes: Sizes {
                 size: vec![Size {
@@ -168,7 +176,7 @@ mod test {
     }
 
     #[test]
-    fn valid_check_license() {
+    fn test_valid_check_license() {
         let valid_licenses = JsonRootLicense {
             license_history: vec![
                 LicenceHistory {
@@ -181,11 +189,11 @@ mod test {
                 },
             ],
         };
-        assert!(JsonParser::check_license(&valid_licenses));
+        assert!(JsonParser::check_license(valid_licenses).is_ok());
     }
 
     #[test]
-    fn valid_parse_error() {
+    fn test_valid_parse_error() {
         let valid_error = JsonRootError {
             stat: String::new(),
             code: 0,
@@ -196,7 +204,7 @@ mod test {
     }
 
     #[test]
-    fn invalid_parse_error() {
+    fn test_invalid_parse_error() {
         let invalid_error = JsonRootError {
             stat: String::new(),
             code: 42,

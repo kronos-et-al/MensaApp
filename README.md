@@ -1,11 +1,13 @@
 # 🥘 MensaApp
 
-[![Build-Android](https://github.com/kronos-et-al/MensaApp/actions/workflows/main.yml/badge.svg)](https://github.com/kronos-et-al/MensaApp/actions/workflows/main.yml) [![Build-Rust](https://github.com/kronos-et-al/MensaApp/actions/workflows/rust.yml/badge.svg)](https://github.com/kronos-et-al/MensaApp/actions/workflows/rust.yml) ![License](https://badgen.net/github/license/kronos-et-al/MensaApp) ![version](https://badgen.net/github/release/kronos-et-al/MensaApp) ![stars](https://badgen.net/github/stars/kronos-et-al/MensaApp)
+<!--- [![Build-Android](https://github.com/kronos-et-al/MensaApp/actions/workflows/main.yml/badge.svg)](https://github.com/kronos-et-al/MensaApp/actions/workflows/main.yml)--> 
+[![Build-Rust](https://github.com/kronos-et-al/MensaApp/actions/workflows/rust.yml/badge.svg)](https://github.com/kronos-et-al/MensaApp/actions/workflows/rust.yml) [![codecov](https://codecov.io/gh/kronos-et-al/MensaApp/branch/main/graph/badge.svg?token=2CZXSPAP48)](https://codecov.io/gh/kronos-et-al/MensaApp) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/kronos-et-al/MensaApp/blob/main/LICENSE) [![version](https://shields.io/github/v/release/kronos-et-al/MensaApp)](https://github.com/kronos-et-al/MensaApp/releases) ![GitHub Repo stars](https://img.shields.io/github/stars/kronos-et-al/MensaApp)
+
 
 **Application for communication and collective exchange of
 menu information in university catering facilities.**
 
-| 🚧        | This project is still in a very early state and WIP!       |
+| 🚧        | This project is still in a early state and WIP!       |
 |------------|:-----------------------------------------------------------|
 
 

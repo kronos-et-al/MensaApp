@@ -1,5 +1,10 @@
 #![forbid(unsafe_code)]
-#![warn(clippy::pedantic, clippy::nursery, clippy::unwrap_used)]
+#![warn(
+    clippy::pedantic,
+    clippy::nursery,
+    clippy::unwrap_used,
+    clippy::dbg_macro
+)]
 #![allow(clippy::module_name_repetitions)]
 //! # MensaApp-Backend
 //! Backend application for providing and synchronizing meal plan data of the canteens of the Studierendenwerk Karlsruhe. [^1]

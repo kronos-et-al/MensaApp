@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO meal_rating (user_id, food_id, rating) \n            VALUES ($1, $2, $3::smallint)\n            ON CONFLICT (user_id, food_id) \n            DO UPDATE SET rating = $3::smallint\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Int2"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "1cc339e7a2f173ce111315ca82c75ee3f070b64164ee0ae5b186765b52a247b1"
+}

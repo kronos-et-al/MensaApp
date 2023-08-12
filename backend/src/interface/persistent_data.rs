@@ -91,9 +91,11 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     async fn update_line(&self, uuid: Uuid, name: &str, position: u32) -> Result<()>;
 
     /// Updates an existing meal entity in the database.
+    /// Behavior is undefined, if the specified UUID is a side.
     async fn update_meal(&self, uuid: Uuid, name: &str) -> Result<()>;
 
     /// Updates an existing side entity in the database.
+    /// Behavior is undefined, if the specified UUID is a meal.
     async fn update_side(&self, uuid: Uuid, name: &str) -> Result<()>;
 
     /// Adds a new canteen entity to the database.
@@ -123,6 +125,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     ) -> Result<Uuid>;
 
     /// Adds a meal into the meal plan for a line at a date by specifying its price.
+    /// Behavior is undefined, if the specified UUID is a side.
     async fn add_meal_to_plan(
         &self,
         meal_id: Uuid,
@@ -132,6 +135,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     ) -> Result<()>;
 
     /// Adds a side into the meal plan for a line at a date by specifying its price.
+    /// Behavior is undefined, if the specified UUID is a meal.
     async fn add_side_to_plan(
         &self,
         side_id: Uuid,
@@ -185,7 +189,7 @@ pub trait CommandDataAccess: Sync + Send {
         image_hoster_id: String,
         url: String,
     ) -> Result<()>;
-    /// Adds a rating to the database. The rating will be related to the given meal and the given user.
+    /// Adds or updates a rating to the database. The rating will be related to the given meal and the given user.
     async fn add_rating(&self, meal_id: Uuid, user_id: Uuid, rating: u32) -> Result<()>;
     /// Loads all api_keys from the database.
     async fn get_api_keys(&self) -> Result<Vec<ApiKey>>;

@@ -1,0 +1,9 @@
+{
+  "filterException": "Zu deinen Filtereinstellungen konnten keine Ergebnisse gefunden werden.",
+  "filterButton": "Filter temporär deaktivieren",
+
+  "closedCanteenException": "Die Mensa ist an diesem Tag geschlossen.",
+  "noDataException": "Für diesen Tag liegen keine Daten vor.",
+  "noConnectionException": "Gerichte konnten nicht geladen werden",
+  "noConnectionButton": "Erneut versuchen"
+}

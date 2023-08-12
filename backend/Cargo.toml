@@ -35,11 +35,15 @@ lettre = "0.10.4"
 string_template = "0.2.1"
 lazy_static = "1.4.0"
 colored = "2.0.4"
+serde_json = "1.0"
+bs58 = "0.5.0"
 
 [dev-dependencies]
 serde_json = "1.0"
 serial_test = "2.0.0"
 rand = "0.8.0"
+tracing-test = "0.2.4"
+rusty-fork = "0.3.0"
 
 [[bin]]
 name = "graphql_mock"

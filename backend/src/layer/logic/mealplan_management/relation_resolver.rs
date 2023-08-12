@@ -28,7 +28,7 @@ where
     /// `canteen: ParseCanteen`<br>This struct contains all canteen data e.g. lines and dishes.<br>
     /// `date: Date`<br>This date decides when the meal will be served next.<br>
     /// # Errors
-    /// Occurring errors get passed to the [`MealPlanManger`]
+    /// Occurring errors get passed to the [`MealPlanManager`](`crate::layer::logic::mealplan_management::meal_plan_manager::MealPlanManager`)
     pub async fn resolve(&self, canteen: ParseCanteen, date: Date) -> Result<(), DataError> {
         let db_canteen = match self.db.get_similar_canteen(&canteen.name).await? {
             Some(similar_canteen) => {
@@ -42,8 +42,8 @@ where
         self.db.dissolve_relations(db_canteen, date).await?;
         for line in canteen.lines {
             let name = &line.name.clone();
-            if (self.resolve_line(date, line, db_canteen).await).is_err() {
-                warn!("Skip line '{}' as it could not be resolved", name);
+            if let Err(e) = self.resolve_line(date, line, db_canteen).await {
+                warn!("Skip line '{name}' as it could not be resolved: {e}");
             }
         }
         Ok(())
@@ -73,8 +73,8 @@ where
 
         for dish in line.dishes {
             let name = &dish.name.clone();
-            if (self.resolve_dish(line_id, date, dish, average).await).is_err() {
-                warn!("Skip dish '{}' as it could not be resolved", name);
+            if let Err(e) = self.resolve_dish(line_id, date, dish, average).await {
+                warn!("Skip dish '{name}' as it could not be resolved: {e}");
             }
         }
         Ok(())
@@ -227,14 +227,14 @@ mod test {
     }
 
     #[tokio::test]
-    async fn resolve_empty_canteen() {
+    async fn test_resolve_empty_canteen() {
         let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
         let res = resolver.resolve(get_empty_canteen(), Local::now().date_naive());
         assert!(res.await.is_ok());
     }
 
     #[tokio::test]
-    async fn resolve_canteens() {
+    async fn test_resolve_canteens() {
         let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
         let mut rng = rand::thread_rng();
         for canteen in get_canteens(
@@ -250,7 +250,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn resolve_line_with_rand_dishes() {
+    async fn test_resolve_line_with_rand_dishes() {
         let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
         let mut rng = rand::thread_rng();
         let mut dishes = Vec::new();
@@ -262,6 +262,13 @@ mod test {
             .resolve_line(Local::now().date_naive(), line, Uuid::default())
             .await
             .is_ok());
+    }
+
+    #[test]
+    fn test_is_side() {
+        let res =
+            RelationResolver::<MealplanManagementDatabaseMock>::is_side(400_u32, 400_f64, "name");
+        assert!(!res);
     }
 
     #[test]

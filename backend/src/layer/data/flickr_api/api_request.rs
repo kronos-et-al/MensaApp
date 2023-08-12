@@ -2,8 +2,10 @@ use crate::interface::image_hoster::model::ImageMetaData;
 use crate::interface::image_hoster::ImageHosterError;
 use crate::layer::data::flickr_api::json_parser::JsonParser;
 use crate::layer::data::flickr_api::json_structs::{JsonRootError, JsonRootLicense, JsonRootSizes};
+use axum::body::Bytes;
 use reqwest::Response;
-use tracing::debug;
+use serde::de::DeserializeOwned;
+use tracing::trace;
 
 pub struct ApiRequest {
     api_key: String,
@@ -28,7 +30,6 @@ impl ApiRequest {
         let res = reqwest::get(url)
             .await
             .map_err(|e| ImageHosterError::NotConnected(e.to_string()))?;
-        debug!("request_url finished with response: {:?}", res);
         Ok(res)
     }
 
@@ -47,16 +48,17 @@ impl ApiRequest {
             "{BASE_URL}{GET_SIZES}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{FORMAT}",
             api_key = self.api_key,
         );
-        match self
+        let bytes = self
             .request_url(url)
             .await?
-            .json::<JsonRootSizes>()
+            .bytes()
             .await
-            .map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))
-        {
-            Ok(root) => Ok(JsonParser::parse_get_sizes(&root, photo_id)?),
-            Err(e) => Err(self.determine_error(url, e).await),
-        }
+            .map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
+        trace!("successfully send request `{GET_SIZES}` to flickr for image {photo_id}");
+        Self::json_to_struct::<JsonRootSizes>(&bytes).map_or_else(
+            |_| Err(Self::determine_error(&bytes)),
+            |root| JsonParser::parse_get_sizes(&root, photo_id),
+        )
     }
 
     /// This method is used to request image license information for the given `photo_id` from the flickr api.
@@ -71,42 +73,33 @@ impl ApiRequest {
     pub async fn flickr_photos_license_check(
         &self,
         photo_id: &str,
-    ) -> Result<bool, ImageHosterError> {
+    ) -> Result<(), ImageHosterError> {
         let url = &format!(
             "{BASE_URL}{GET_LICENCE_HISTORY}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{FORMAT}",
             api_key = self.api_key
         );
-        let resp = self.request_url(url).await?;
-        match resp
-            .json::<JsonRootLicense>()
+        let bytes = self
+            .request_url(url)
+            .await?
+            .bytes()
             .await
-            .map_err(|e| ImageHosterError::JsonDecodeFailed(e.to_string()))
-        {
-            Ok(licenses) => Ok(JsonParser::check_license(&licenses)),
-            Err(e) => Err(self.determine_error(url, e).await),
+            .map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
+        trace!("successfully send request `{GET_LICENCE_HISTORY}` to flickr for image {photo_id}");
+        Self::json_to_struct::<JsonRootLicense>(&bytes).map_or_else(
+            |_| Err(Self::determine_error(&bytes)),
+            JsonParser::check_license,
+        )
+    }
+
+    fn determine_error(bytes: &Bytes) -> ImageHosterError {
+        match Self::json_to_struct::<JsonRootError>(bytes) {
+            Ok(root) => JsonParser::parse_error(&root),
+            Err(e) => ImageHosterError::DecodeFailed(e.to_string()),
         }
     }
 
-    async fn determine_error(&self, url: &String, e: ImageHosterError) -> ImageHosterError {
-        if std::mem::discriminant(&e)
-            != std::mem::discriminant(&ImageHosterError::JsonDecodeFailed(String::new()))
-        {
-            return e;
-        }
-        match self.request_url(url).await {
-            Ok(res) => {
-                let error_root = match res
-                    .json::<JsonRootError>()
-                    .await
-                    .map_err(|err| ImageHosterError::JsonDecodeFailed(err.to_string()))
-                {
-                    Ok(root) => root,
-                    Err(err) => return err,
-                };
-                JsonParser::parse_error(&error_root)
-            }
-            Err(err) => err,
-        }
+    fn json_to_struct<T: DeserializeOwned>(bytes: &Bytes) -> Result<T, ImageHosterError> {
+        serde_json::from_slice(bytes).map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))
     }
 }
 
@@ -130,7 +123,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn valid_request_sizes() {
+    async fn test_valid_request_sizes() {
         let expected = "https://live.staticflickr.com/65535/53066073286_9fcebfc95f_b.jpg";
         let res = get_api_request()
             .flickr_photos_get_sizes("2oRguN3")
@@ -140,7 +133,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn invalid_request_sizes() {
+    async fn test_invalid_request_sizes() {
         let res = get_api_request()
             .flickr_photos_get_sizes("If it is it, it is it; if it is it is it, it is")
             .await;
@@ -148,14 +141,14 @@ mod test {
     }
 
     #[tokio::test]
-    async fn valid_error_request() {
+    async fn test_valid_error_request() {
         let expected = ImageHosterError::PhotoNotFound;
         let res = get_api_request().flickr_photos_get_sizes("42").await;
         assert_eq!(expected, res.unwrap_err());
     }
 
     #[tokio::test]
-    async fn invalid_license_request() {
+    async fn test_invalid_license_request() {
         let res = get_api_request()
             .flickr_photos_license_check("If it is it, it is it; if it is it is it, it is")
             .await;
@@ -163,21 +156,20 @@ mod test {
     }
 
     #[tokio::test]
-    async fn valid_check_license_request() {
+    async fn test_valid_check_license_request() {
         let res = get_api_request()
             .flickr_photos_license_check("52310534489")
-            .await
-            .unwrap();
-        assert!(!res);
+            .await;
+        assert!(res.is_err());
     }
 
     #[tokio::test]
-    async fn error_check_license_invalid_photo() {
+    async fn test_error_check_license_invalid_photo() {
         // FlickrApi responses with code 0 but documents code 1...
         // Only the flickr.photos.licenses.getLicenseHistory request has this issue.
         // See: https://www.flickr.com/services/api/flickr.photos.licenses.getLicenseHistory.html
         // To let this test pass, we use ImageHosterError::ServiceUnavailable even if ImageHosterError::PhotoNotFound is the right one.
-        let expected = ImageHosterError::ServiceUnavailable;
+        let expected = ImageHosterError::PhotoNotFound;
         let res = get_api_request().flickr_photos_license_check("42").await;
         let err =
             res.expect_err("error_check_license_invalid_photo test failed as res isn't an error");

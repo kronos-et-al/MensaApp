@@ -35,7 +35,7 @@ where
     /// A function that creates a new [`CommandHandler`]
     ///
     /// # Errors
-    /// Returns an error, if the api keys could not be gotten from [`command_data`]
+    /// Returns an error, if the api keys could not be gotten from `command_data`
     pub async fn new(
         command_data: DataAccess,
         admin_notification: Notify,
@@ -169,18 +169,17 @@ where
             url: image_url.clone(),
         };
         self.auth.authn_command(&auth_info, &command_type)?;
+
         let image_meta_data = self.image_hoster.validate_url(&image_url).await?;
-        let licence_ok = self.image_hoster.check_licence(&image_meta_data.id).await?;
-        if licence_ok {
-            self.command_data
-                .link_image(
-                    auth_info.client_id,
-                    meal_id,
-                    image_meta_data.id,
-                    image_meta_data.image_url,
-                )
-                .await?;
-        }
+        self.image_hoster.check_licence(&image_meta_data.id).await?;
+        self.command_data
+            .link_image(
+                meal_id,
+                auth_info.client_id,
+                image_meta_data.id,
+                image_meta_data.image_url,
+            )
+            .await?;
         Ok(())
     }
 
@@ -198,7 +197,10 @@ where
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
+    use chrono::Local;
+
     use crate::interface::api_command::{Command, InnerAuthInfo, Result};
+    use crate::interface::persistent_data::model::Image;
     use crate::layer::logic::api_command::test::mocks::{
         IMAGE_ID_TO_FAIL, INVALID_URL, MEAL_ID_TO_FAIL,
     };
@@ -372,10 +374,10 @@ mod test {
             hash: "TLvbxrv6azE4FpA2sROa8CD8ACdRGjj1M6OtLl1h4Q/NYypCKagZz0C2c4SEsoGjRpIbMAaKprFMcavssf2z2w==".into(),
             ..auth_info.unwrap()
         });
-        assert!(handler
+        handler
             .add_image(MEAL_ID_TO_FAIL, image_url.to_string(), auth_info.clone())
             .await
-            .is_err());
+            .unwrap_err();
     }
 
     #[tokio::test]
@@ -410,5 +412,19 @@ mod test {
         let admin_notification = CommandAdminNotificationMock;
         let image_hoster = CommandImageHosterMock;
         CommandHandler::new(command_data, admin_notification, image_hoster).await
+    }
+
+    #[test]
+    fn test_will_be_hidden() {
+        let image = Image {
+            upload_date: Local::now().date_naive(),
+            report_count: 10,
+            ..Default::default()
+        };
+        assert!(CommandHandler::<
+            CommandDatabaseMock,
+            CommandAdminNotificationMock,
+            CommandImageHosterMock,
+        >::will_be_hidden(&image));
     }
 }

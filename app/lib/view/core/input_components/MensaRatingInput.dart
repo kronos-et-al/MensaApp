@@ -43,24 +43,48 @@ class MensaRatingInput extends StatelessWidget {
         for (int i = 0; i < _max; i++)
           AbsorbPointer(
             absorbing: _disabled,
-            child: IconButton(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              constraints: const BoxConstraints(),
-              onPressed: () => {if (!_disabled) _onChanged(i + 1)},
-              icon: i < _value.floor()
-                  ? SvgPicture.asset(
-                      'assets/icons/star_filled.svg',
-                      colorFilter: ColorFilter.mode(
-                          _color ?? Theme.of(context).colorScheme.primary,
-                          BlendMode.srcIn),
-                      width: _size,
-                      height: _size,
-                    )
-                  : i < _value && _value < i + 1
-                      ? Stack(
-                          //fit: StackFit.expand,
-                          children: [
-                            SvgPicture.asset(
+            child: Padding(
+                padding: EdgeInsets.all(_size * .1),
+                child: GestureDetector(
+                  onTap: () => {if (!_disabled) _onChanged(i + 1)},
+                  child: i < _value.floor()
+                      ? SvgPicture.asset(
+                          'assets/icons/star_filled.svg',
+                          colorFilter: ColorFilter.mode(
+                              _color ?? Theme.of(context).colorScheme.primary,
+                              BlendMode.srcIn),
+                          width: _size,
+                          height: _size,
+                        )
+                      : i < _value && _value < i + 1
+                          ? Stack(
+                              //fit: StackFit.expand,
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/icons/star_outlined.svg',
+                                  colorFilter: ColorFilter.mode(
+                                      _color ??
+                                          Theme.of(context).colorScheme.primary,
+                                      BlendMode.srcIn),
+                                  width: _size,
+                                  height: _size,
+                                ),
+                                ClipRect(
+                                    clipper: _Clipper(part: _value - i),
+                                    child: SvgPicture.asset(
+                                      'assets/icons/star_filled.svg',
+                                      colorFilter: ColorFilter.mode(
+                                          _color ??
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                          BlendMode.srcIn),
+                                      width: _size,
+                                      height: _size,
+                                    ))
+                              ],
+                            )
+                          : SvgPicture.asset(
                               'assets/icons/star_outlined.svg',
                               colorFilter: ColorFilter.mode(
                                   _color ??
@@ -69,28 +93,7 @@ class MensaRatingInput extends StatelessWidget {
                               width: _size,
                               height: _size,
                             ),
-                            ClipRect(
-                                clipper: _Clipper(part: _value - i),
-                                child: SvgPicture.asset(
-                                  'assets/icons/star_filled.svg',
-                                  colorFilter: ColorFilter.mode(
-                                      _color ??
-                                          Theme.of(context).colorScheme.primary,
-                                      BlendMode.srcIn),
-                                  width: _size,
-                                  height: _size,
-                                ))
-                          ],
-                        )
-                      : SvgPicture.asset(
-                          'assets/icons/star_outlined.svg',
-                          colorFilter: ColorFilter.mode(
-                              _color ?? Theme.of(context).colorScheme.primary,
-                              BlendMode.srcIn),
-                          width: _size,
-                          height: _size,
-                        ),
-            ),
+                )),
           )
       ],
     );

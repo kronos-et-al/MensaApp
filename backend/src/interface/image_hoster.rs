@@ -15,7 +15,7 @@ pub trait ImageHoster: Send + Sync {
     /// Checks if an image still exists at the hoster website.
     async fn check_existence(&self, image_id: &str) -> Result<bool>;
     /// Checks whether the licence is acceptable for our purposes.
-    async fn check_licence(&self, image_id: &str) -> Result<bool>;
+    async fn check_licence(&self, image_id: &str) -> Result<()>;
 }
 
 /// Enum describing the possible ways, a image hoster request can fail.
@@ -24,6 +24,12 @@ pub enum ImageHosterError {
     /// Photo not found error
     #[error("the photo id passed was not a valid photo id")]
     PhotoNotFound,
+    /// License invalid. List of valid licenses:
+    /// - `No known copyright restrictions`
+    /// - `Public Domain Dedication (CC0)`
+    /// - `Public Domain Mark`
+    #[error("invalid license '{0}' detected, expected one of: {1}")]
+    InvalidLicense(String, String),
     /// Permission denied error
     #[error("the calling user does not have permission to view the photo")]
     PermissionDenied,
@@ -39,9 +45,12 @@ pub enum ImageHosterError {
     /// The connection failed to establish error
     #[error("no connection could be established: {0}")]
     NotConnected(String),
-    /// The reqwest json parser failed
-    #[error("some json response couldn't be decoded: {0}")]
-    JsonDecodeFailed(String),
+    /// The provided argument could not be parsed into bytes
+    #[error("some bytes couldn't be decoded: {0}")]
+    DecodeFailed(String),
+    /// The provided argument could not be parsed into bytes
+    #[error("some bytes couldn't be decoded by the bs58 library: {0}")]
+    Bs58DecodeFailed(String),
     /// The image is too small to be used error
     #[error("the provided photo_id links to an image that is too small")]
     ImageIsTooSmall,

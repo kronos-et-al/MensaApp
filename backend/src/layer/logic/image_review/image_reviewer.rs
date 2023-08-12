@@ -40,7 +40,7 @@ where
 {
     async fn start_image_review(&self) {
         if let Err(error) = self.try_start_image_review().await {
-            warn!("{error}");
+            warn!("Error reviewing images: {error}");
         }
     }
 }
@@ -88,7 +88,7 @@ where
         images
             .into_iter()
             .filter_map(std::result::Result::err)
-            .for_each(|error| warn!("{error}"));
+            .for_each(|error| warn!("Error reviewing image: {error}"));
     }
 
     async fn review_image(&self, image: Image) -> ReviewerResult<()> {
@@ -107,8 +107,10 @@ where
 
 #[cfg(test)]
 mod test {
+    use tracing_test::traced_test;
+
     use crate::{
-        interface::persistent_data::model::Image,
+        interface::{image_review::ImageReviewScheduling, persistent_data::model::Image},
         layer::logic::image_review::{
             image_reviewer::ImageReviewer,
             test::{
@@ -122,6 +124,21 @@ mod test {
         },
         util::{Date, Uuid},
     };
+
+    #[tokio::test]
+    #[traced_test]
+    async fn test_start_image_review() {
+        let image_reviewer = ImageReviewer::new(
+            ImageReviewDatabaseMock::default(),
+            ImageHosterMock::default(),
+        );
+        image_reviewer.start_image_review().await;
+
+        logs_assert(|lines: &[&str]| {
+            assert!(lines.is_empty());
+            Ok(())
+        });
+    }
 
     #[tokio::test]
     async fn test_full_review() {

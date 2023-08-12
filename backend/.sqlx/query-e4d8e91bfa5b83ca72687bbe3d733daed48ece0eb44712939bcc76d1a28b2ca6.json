@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO image_rating (user_id, image_id, rating) \n            VALUES ($1, $2, -1)\n            ON CONFLICT (user_id, image_id) \n            DO UPDATE SET rating = -1\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e4d8e91bfa5b83ca72687bbe3d733daed48ece0eb44712939bcc76d1a28b2ca6"
+}

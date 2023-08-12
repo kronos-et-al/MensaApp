@@ -3,6 +3,24 @@ Backend application for providing and synchronizing meal plan data of the cantee
 
 [^1]: https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/
 
+
+## Deploy using Docker
+The docker container can be run using 
+```
+docker run \
+    -p 80:80
+    -e DATABASE_URL="postgres://<db user>:<db password>@<db host>:<db port>/<db name>"
+    -e SMTP_SERVER=<domain of mail server> \
+    -e SMTP_PORT=<port of mail server> \
+    -e SMTP_USERNAME=<username of mail server> \
+    -e SMTP_PASSWORD=<password of mail server> \
+    -e ADMIN_EMAIL=<email address admin notofocations should be send to> \
+    -e FLICKR_API_KEY=<flickr public api key> \
+    ghcr.io/kronos-et-al/mensa-app
+```
+
+Running the container requires a postgres database, connection to a mail server and a flickr api key.
+
 ## Building
 - Run `cargo fmt` to format all code files.
 - Run `cargo clippy` to check for errors and recommendations.
@@ -57,3 +75,8 @@ To make development easier, these can also be defined textually in a `.env` file
 1. To build the docker container, run `docker build . -t ghcr.io/kronos-et-al/mensa-app:<verion>` where `<version>` is of format `x.y` or `pre_x.y` for pre-releases.
 2. To deploy to ghc login using `docker login ghcr.io -u <username> --password-stdin` and provide access token with necessary permission.
 3. Publish using `docker push ghcr.io/kronos-et-al/mensa-app:<version>`
+
+
+## Testing
+To show test coverage, you need to install `cargo install cargo-tarpaulin`. Then you can run `cargo tarpaulin --out Lcov` to generate coverage info.
+to view these information, you can install the VSCode plugin "Coverage Gutters". It should work out of the box with the installed files.

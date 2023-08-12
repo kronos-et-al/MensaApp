@@ -131,6 +131,8 @@ const DATE_FORMAT: &str = "%Y-%m-%d";
 const NUMBER_OF_MEAL_TYPES: usize = 8;
 const PRICE_TYPE_COUNT: usize = 4;
 
+const LINE_CLOSED_MEAL_NAME: &str = "GESCHLOSSEN";
+
 const SELECTOR_PARSE_E_MSG: &str = "Error while parsing Selector string";
 const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
 const INVALID_ROOT_NODE_MESSAGE: &str =
@@ -162,7 +164,7 @@ impl HTMLParser {
     /// # Errors
     ///
     /// Will return a [`ParseError`], when either one of the following cases occurs (in order of appearance):
-    ///     1. If there is no node in the document, that has a class called [`ROOT_NODE_CLASS_SELECTOR`]. This indicates that a wrong html file was passed.
+    ///     1. If there is no node in the document, that has a class called `div.main-content`, a wrong html file was passed.
     ///     2. If the number of dates does not match the number of days for which data exists. This case is more for completeness and should never occur
     pub fn transform(
         &self,
@@ -301,9 +303,13 @@ impl HTMLParser {
 
     fn get_dish_name(dish_node: &ElementRef) -> Option<String> {
         let dish_name_node = dish_node.select(&DISH_NAME_NODE_CLASS_SELECTOR).next()?;
-        Some(Self::remove_multiple_whitespaces(
-            &dish_name_node.text().collect::<String>(),
-        ))
+        let dish_name =
+            Self::remove_multiple_whitespaces(&dish_name_node.text().collect::<String>());
+        if dish_name == LINE_CLOSED_MEAL_NAME {
+            None
+        } else {
+            Some(dish_name)
+        }
     }
 
     fn remove_multiple_whitespaces(string: &str) -> String {

@@ -1,0 +1,28 @@
+mutation RemoveDownvote($imageId: UUID!) {
+    removeDownvote(imageId: $imageId)
+}
+
+mutation RemoveUpvote($imageId: UUID!) {
+    removeUpvote(imageId: $imageId)
+}
+
+mutation AddDownvote($imageId: UUID!) {
+    addDownvote(imageId: $imageId)
+}
+
+mutation AddUpvote($imageId: UUID!) {
+    addUpvote(imageId: $imageId)
+}
+
+mutation LinkImage($mealId: UUID!, $imageUrl: String!) {
+    addImage(mealId: $mealId, imageUrl: $imageUrl)
+}
+
+mutation ReportImage($imageId: UUID!, $reason: ReportReason!) {
+    reportImage(imageId: $imageId, reason: $reason)
+}
+
+mutation UpdateRating($mealId: UUID!, $rating: Int!) {
+    setRating(mealId: $mealId, rating: $rating)
+}
+
