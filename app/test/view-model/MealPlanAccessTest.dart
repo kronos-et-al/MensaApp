@@ -193,15 +193,9 @@ void main() {
       expect(await mealPlanAccess.getFilterPreferences(), FilterPreferences());
 
       final date = await mealPlanAccess.getDate();
-      expect(date.year, DateTime
-          .now()
-          .year);
-      expect(date.month, DateTime
-          .now()
-          .month);
-      expect(date.day, DateTime
-          .now()
-          .day);
+      expect(date.year, DateTime.now().year);
+      expect(date.month, DateTime.now().month);
+      expect(date.day, DateTime.now().day);
 
       final returnedMealPlan = switch (await mealPlanAccess.getMealPlan()) {
         Success(value: final value) => value,
@@ -230,7 +224,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -330,7 +324,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -345,7 +339,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -366,7 +360,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -381,7 +375,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -411,7 +405,7 @@ void main() {
         await mealPlanAccess.deactivateFilter();
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -427,7 +421,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -454,7 +448,7 @@ void main() {
         await mealPlanAccess.toggleFilter();
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -469,7 +463,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -497,7 +491,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -516,7 +510,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -542,7 +536,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -561,7 +555,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -582,7 +576,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -605,7 +599,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -624,7 +618,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -656,7 +650,7 @@ void main() {
         await mealPlanAccess.changeFilterPreferences(filter);
 
         final List<MealPlan> returnedMealPlan = switch (
-        await mealPlanAccess.getMealPlan()) {
+            await mealPlanAccess.getMealPlan()) {
           Success(value: final value) => value,
           Failure(exception: _) => []
         };
@@ -692,12 +686,11 @@ void main() {
     test("successful update", () async {
       when(() => api.updateMealRating(3, meals[0]))
           .thenAnswer((_) async => true);
-      when(() =>
-          database.updateMeal(Meal.copy(meal: meals[0],
-              individualRating: 3,
-              averageRating: 3,
-              numberOfRatings: 1)))
-          .thenAnswer((_) async {});
+      when(() => database.updateMeal(Meal.copy(
+          meal: meals[0],
+          individualRating: 3,
+          averageRating: 3,
+          numberOfRatings: 1))).thenAnswer((_) async {});
 
       expect(await mealPlanAccess.updateMealRating(3, meals[0]),
           "snackbar.updateRatingSuccess");
@@ -712,13 +705,9 @@ void main() {
       expect(await mealPlanAccess.getAvailableCanteens(), []);
     });
 
-
     test("failure database, success api", () async {
-      when(() => api.getCanteens()).thenAnswer((_) async =>
-      [
-        canteen,
-        otherCanteen
-      ]);
+      when(() => api.getCanteens())
+          .thenAnswer((_) async => [canteen, otherCanteen]);
       when(() => database.getCanteens()).thenAnswer((_) async => null);
 
       expect(
@@ -726,22 +715,15 @@ void main() {
     });
 
     test("success database", () async {
-      when(() => api.getCanteens()).thenAnswer((_) async =>
-      [
-        canteen,
-        otherCanteen
-      ]);
-      when(() => database.getCanteens()).thenAnswer((_) async =>
-      [
-        canteen,
-        otherCanteen
-      ]);
+      when(() => api.getCanteens())
+          .thenAnswer((_) async => [canteen, otherCanteen]);
+      when(() => database.getCanteens())
+          .thenAnswer((_) async => [canteen, otherCanteen]);
 
       expect(
           await mealPlanAccess.getAvailableCanteens(), [canteen, otherCanteen]);
     });
   });
-
 
   group("refresh meal plan", () {
     test("connection error", () async {
@@ -823,7 +805,7 @@ void main() {
       await mealPlanAccess.changeDate(DateTime.now());
 
       final List<MealPlan> result = switch (
-      await mealPlanAccess.getMealPlan()) {
+          await mealPlanAccess.getMealPlan()) {
         Success(value: final value) => value,
         Failure(exception: _) => []
       };
