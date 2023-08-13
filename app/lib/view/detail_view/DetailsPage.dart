@@ -334,7 +334,7 @@ class DetailsPageState extends State<DetailsPage> {
                       ),
                     )));
               }
-            case Failure<Meal, NoMealException> exception:
+            case Failure<Meal, NoMealException> _:
               {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(mealSnapshot.error.toString())));
