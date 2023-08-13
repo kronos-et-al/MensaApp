@@ -9,7 +9,7 @@ The docker container can be run using
 ```
 docker run \
     -p 80:80
-    -e DATABASE_URL="postgres://<db user>:<db password>@<db host>:<db port>/<db name>"
+    -e DATABASE_URL=postgres://<db user>:<db password>@<db host>:<db port>/<db name>
     -e SMTP_SERVER=<domain of mail server> \
     -e SMTP_PORT=<port of mail server> \
     -e SMTP_USERNAME=<username of mail server> \
