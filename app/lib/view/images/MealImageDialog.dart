@@ -45,7 +45,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
         appBar: MensaAppBar(
             appBarHeight: kToolbarHeight,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: Row(
                 children: [
                   MensaIconButton(

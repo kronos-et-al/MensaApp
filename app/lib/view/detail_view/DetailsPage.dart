@@ -298,7 +298,7 @@ class DetailsPageState extends State<DetailsPage> {
                                                   .onSurface,
                                               size: 20,
                                               max: 5,
-                                              onChanged: (int) {},
+                                              onChanged: (_) {},
                                             ),
                                             const Spacer(),
                                             MensaButton(
