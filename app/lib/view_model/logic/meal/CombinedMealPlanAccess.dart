@@ -13,6 +13,7 @@ import 'package:app/view_model/repository/interface/ILocalStorage.dart';
 import 'package:app/view_model/repository/interface/IServerAccess.dart';
 import 'package:flutter/material.dart';
 
+import '../../repository/data_classes/filter/Sorting.dart';
 import '../../repository/data_classes/meal/Side.dart';
 
 /// This class is the interface for the access to the meal data. The access can be done via the database or the server.
@@ -25,7 +26,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   late DateTime _displayedDate;
   late List<MealPlan> _filteredMealPlan;
   late FilterPreferences _filter;
-  List<MealPlan> _mealPlans = [];
+  List<MealPlan> _mealPlans = List<MealPlan>.empty(growable: true);
   bool _noDataYet = false;
   bool _activeFilter = true;
 
@@ -84,6 +85,12 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       Failure() => []
     };
 
+    if (_mealPlans.isNotEmpty) {
+      await _filterMealPlans();
+      await _setNewMealPlan();
+      return;
+    }
+
     // get meal plans form server
     List<MealPlan> mealPlans = switch (await _api.updateAll()) {
       Success(value: final mealplan) => mealplan,
@@ -130,6 +137,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   Future<void> changeFilterPreferences(
       FilterPreferences filterPreferences) async {
     await _doneInitialization;
+
+    _activeFilter = true;
 
     _filter = filterPreferences;
     await _preferences.setFilterPreferences(_filter);
@@ -211,6 +220,21 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   }
 
   @override
+  Future<Result<Meal, NoMealException>> getMeal(Meal meal) async {
+    await _doneInitialization;
+
+    for (final mealPlan in _mealPlans) {
+      for (final e in mealPlan.meals) {
+        if (e.id == meal.id) {
+          return Success(meal);
+        }
+      }
+    }
+
+    return _database.getMeal(meal);
+  }
+
+  @override
   Future<String?> refreshMealplan() async {
     await _doneInitialization;
 
@@ -258,7 +282,9 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   Future<List<Canteen>> getAvailableCanteens() async {
     await _doneInitialization;
 
-    return await _api.getCanteens() ?? List<Canteen>.empty();
+    return (await _database.getCanteens()) ??
+        (await _api.getCanteens()) ??
+        List<Canteen>.empty();
   }
 
   @override
@@ -290,7 +316,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     await _doneInitialization;
 
     bool changed = await _updateFavorites();
-    final category = await _preferences.getPriceCategory();
+    final category = _preferences.getPriceCategory();
 
     // check if changed
     if (category != null && category != _priceCategory) {
@@ -346,20 +372,16 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     }
   }
 
-  void _changeRatingOfMeal(Meal changedMeal, int rating) {
-    for (final mealPlan in _mealPlans) {
-      // check if right meal plan
-      final result =
-          mealPlan.meals.map((meal) => meal.id).contains(changedMeal.id);
-
-      if (result) {
-        // remove outdated meal, add new meal
-        mealPlan.meals.removeWhere((element) => element.id == changedMeal.id);
-        mealPlan.meals
-            .add(Meal.copy(meal: changedMeal, individualRating: rating));
-        return;
-      }
-    }
+  Future<void> _changeRatingOfMeal(Meal changedMeal, int rating) async {
+    int numberOfRatings = changedMeal.numberOfRatings! + (changedMeal.individualRating != 0 ? -1 : 0);
+    double clearedRating = ((changedMeal.averageRating! * changedMeal.numberOfRatings!) - changedMeal.individualRating!) / numberOfRatings;
+    double newRating = ((clearedRating * numberOfRatings) + rating) / (numberOfRatings + 1);
+    Meal newMeal = Meal.copy(meal: changedMeal, averageRating: newRating, numberOfRatings: numberOfRatings + 1, individualRating: rating);
+    await _database.updateMeal(newMeal);
+    changedMeal.averageRating = newRating;
+    changedMeal.numberOfRatings = numberOfRatings + 1;
+    changedMeal.individualRating = rating;
+    notifyListeners();
   }
 
   Future<void> _filterMealPlans() async {
@@ -391,7 +413,81 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       }
     }
 
-    _filteredMealPlan = newFilteredMealPlans;
+    if (newFilteredMealPlans.isEmpty) {
+      _filteredMealPlan = List<MealPlan>.empty();
+      return;
+    }
+    _filteredMealPlan = _sort(newFilteredMealPlans);
+  }
+
+  List<MealPlan> _sort(List<MealPlan> mealPlans) {
+    List<MealPlan> sort = List<MealPlan>.empty(growable: true);
+    List<MealPlan> sorted = List<MealPlan>.empty(growable: true);
+
+    // check if sorted by
+    if (_filter.sortedBy == Sorting.line) {
+      if (_filter.ascending) {
+        return mealPlans;
+      }
+      return List.from(mealPlans.reversed);
+    }
+
+    // give each meal is own meal plan for sorting
+    for (final mealPlan in mealPlans) {
+      for (final meal in mealPlan.meals) {
+        sort.add(MealPlan.copy(mealPlan: mealPlan, meals: [meal]));
+      }
+    }
+
+    // sort
+    switch (_filter.sortedBy) {
+      case Sorting.price:
+        final category =
+            _preferences.getPriceCategory() ?? PriceCategory.student;
+        sort.sort((a, b) => a.meals[0].price
+            .getPrice(category)
+            .compareTo(b.meals[0].price.getPrice(category)));
+      case Sorting.rating:
+        sort.sort((a, b) =>
+            a.meals[0].averageRating
+                ?.compareTo(b.meals[0].averageRating ?? 0) ??
+            0);
+      default:
+        sort.sort((a, b) =>
+        a.meals[0].numberOfOccurance
+            ?.compareTo(b.meals[0].numberOfOccurance ?? 0) ??
+            0);
+    }
+
+    // add same lines after each other to one
+
+    MealPlan? lastMealPlan;
+    for (final mealPlan in sort) {
+      // first plan
+      if (lastMealPlan == null) {
+        lastMealPlan = mealPlan;
+        continue;
+      }
+
+      // same line
+      if (lastMealPlan.line.id == mealPlan.line.id) {
+        lastMealPlan.meals.addAll(mealPlan.meals);
+        continue;
+      }
+
+      // different line
+      sorted.add(lastMealPlan);
+      lastMealPlan = mealPlan;
+    }
+
+    sorted.add(lastMealPlan!);
+
+    // sort ascending
+    if (_filter.ascending) {
+      return sorted;
+    }
+    //sort descending
+    return List.from(sorted.reversed);
   }
 
   Future<void> _filterSides(Meal meal, List<Side>? sides) async {
@@ -452,7 +548,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     }
 
     // check rating
-    if (meal.averageRating != null && meal.averageRating! < _filter.rating) {
+    if (meal.averageRating != null && meal.averageRating != 0 && meal.averageRating! < _filter.rating.toDouble()) {
       return false;
     }
 
@@ -569,5 +665,10 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     }
 
     return changed;
+  }
+
+  @override
+  Future<bool> isFilterActive() async {
+    return Future.value(_activeFilter);
   }
 }

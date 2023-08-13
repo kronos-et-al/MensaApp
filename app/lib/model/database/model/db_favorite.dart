@@ -1,12 +1,9 @@
 import 'package:app/model/database/model/database_model.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 
-import 'db_line.dart';
-
 /// This class represents a favorite in the database.
 class DBFavorite implements DatabaseModel {
-  final String _favoriteID;
-  final String _lineID;
+  final String _mealID;
   final String _lastDate;
   final FoodType _foodType;
   final int _priceStudent;
@@ -18,10 +15,7 @@ class DBFavorite implements DatabaseModel {
   static const String tableName = 'favorite';
 
   /// The name of the column for the favorite id.
-  static const String columnFavoriteID = 'favoriteID';
-
-  /// The name of the column for the line id.
-  static const String columnLineID = 'lineID';
+  static const String columnMealID = 'mealID';
 
   /// The name of the column for the last date.
   static const String columnLastDate = 'lastDate';
@@ -52,8 +46,7 @@ class DBFavorite implements DatabaseModel {
   /// @param _priceGuest The price for guests.
   /// @returns A new instance of a favorite.
   DBFavorite(
-      this._favoriteID,
-      this._lineID,
+      this._mealID,
       this._lastDate,
       this._foodType,
       this._priceStudent,
@@ -64,8 +57,7 @@ class DBFavorite implements DatabaseModel {
   @override
   Map<String, dynamic> toMap() {
     return {
-      columnFavoriteID: _favoriteID,
-      columnLineID: _lineID,
+      columnMealID: _mealID,
       columnLastDate: _lastDate,
       columnFoodType: _foodType.name,
       columnPriceStudent: _priceStudent,
@@ -80,8 +72,7 @@ class DBFavorite implements DatabaseModel {
   /// @returns A new instance of a favorite.
   static DBFavorite fromMap(Map<String, dynamic> map) {
     return DBFavorite(
-        map[columnFavoriteID],
-        map[columnLineID],
+        map[columnMealID],
         map[columnLastDate],
         FoodType.values.byName(map[columnFoodType]),
         map[columnPriceStudent],
@@ -95,15 +86,13 @@ class DBFavorite implements DatabaseModel {
   static String initTable() {
     return '''
     CREATE TABLE $tableName (
-      $columnFavoriteID TEXT PRIMARY KEY,
-      $columnLineID TEXT NOT NULL,
+      $columnMealID TEXT PRIMARY KEY,
       $columnLastDate TEXT NOT NULL,
       $columnFoodType TEXT,
       $columnPriceStudent INTEGER CHECK($columnPriceStudent > 0),
       $columnPriceEmployee INTEGER CHECK($columnPriceEmployee > 0),
       $columnPricePupil INTEGER CHECK($columnPricePupil > 0),
-      $columnPriceGuest INTEGER CHECK($columnPriceGuest > 0),
-      FOREIGN KEY($columnLineID) REFERENCES ${DBLine.tableName}(${DBLine.columnLineID})
+      $columnPriceGuest INTEGER CHECK($columnPriceGuest > 0)
     )
   ''';
   }
@@ -132,11 +121,7 @@ class DBFavorite implements DatabaseModel {
   /// @returns The last date of the favorite.
   String get lastDate => _lastDate;
 
-  /// This method returns the id of the line.
-  /// @returns The id of the line.
-  String get lineID => _lineID;
-
   /// This method returns the id of the favorite.
   /// @returns The id of the favorite.
-  String get favoriteID => _favoriteID;
+  String get mealID => _mealID;
 }

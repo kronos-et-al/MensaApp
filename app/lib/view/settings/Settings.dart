@@ -106,7 +106,7 @@ class Settings extends StatelessWidget {
                                 Expanded(
                                   child: MensaLink(
                                       onPressed: () => _launchUrl(Uri.parse(
-                                          'https://docs.flutter.io/flutter/services/UrlLauncher-class.html')),
+                                          'https://mensa-ka.de/privacy.html')),
                                       text: FlutterI18n.translate(
                                           context, "settings.privacyPolicy")),
                                 )
@@ -118,7 +118,7 @@ class Settings extends StatelessWidget {
                                 Expanded(
                                   child: MensaLink(
                                       onPressed: () => _launchUrl(Uri.parse(
-                                          'https://docs.flutter.io/flutter/services/UrlLauncher-class.html')),
+                                          'mailto:contact@mensa-ka.de')),
                                       text: FlutterI18n.translate(
                                           context, "settings.contactDetails")),
                                 )
