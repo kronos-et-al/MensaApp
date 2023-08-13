@@ -13,8 +13,6 @@ class MealRatingDialog extends StatefulWidget {
   final Function(Meal)? _onRatingChanged;
 
   /// Creates a new MealRatingDialog.
-  /// @param key The key to identify this widget.
-  /// @param meal The meal to rate.
   const MealRatingDialog(
       {super.key, required Meal meal, Function(Meal)? onRatingChanged})
       : _meal = meal,
