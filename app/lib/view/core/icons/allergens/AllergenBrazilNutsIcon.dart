@@ -3,8 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'IAllergenIcon.dart';
 
-/// This widget is used to display the icon for Brazil Nuts
+/// This widget is used to display the icon for brazil nuts
 class AllergenBrazilNutsIcon extends IAllergenIcon {
+  /// Creates an new brazil nuts icon.
   const AllergenBrazilNutsIcon(
       {super.key, super.width, super.height, super.color});
 

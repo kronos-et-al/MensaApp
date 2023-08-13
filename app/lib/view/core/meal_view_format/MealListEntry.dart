@@ -19,9 +19,6 @@ class MealListEntry extends StatelessWidget {
       NumberFormat.currency(locale: 'de_DE', symbol: '€');
 
   /// Creates a MealListEntry.
-  /// @param meal The Meal to display.
-  /// @param key The key to use for this widget.
-  /// @return A MealListEntry.flutter
   MealListEntry({super.key, required Meal meal, Line? line})
       : _meal = meal,
         _line = line;

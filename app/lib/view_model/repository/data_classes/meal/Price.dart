@@ -8,11 +8,7 @@ class Price {
   final int _guest;
 
   /// This constructor creates a new price.
-  /// @param student The price for students
-  /// @param employee The price for employees
-  /// @param pupil The price for pupils
-  /// @param guest The price for guests
-  /// @return A new price
+  /// The required values are the prices for [student], [employee], [pupil] and [guest].
   Price({
     required int student,
     required int employee,
@@ -23,9 +19,7 @@ class Price {
         _pupil = pupil,
         _guest = guest;
 
-  /// This method returns the price for the committed price category.
-  /// @param category The price category
-  /// @return The price for the committed price category
+  /// Returns the price for the committed price category.
   int getPrice(PriceCategory category) {
     switch (category) {
       case PriceCategory.student:
@@ -40,18 +34,14 @@ class Price {
   }
 
   /// This method returns the price for guests.
-  /// @return The price for guests
   int get guest => _guest;
 
-  /// This method returns the price for pupils.
-  /// @return The price for pupils
+  /// Returns the price for pupils.
   int get pupil => _pupil;
 
-  /// This method returns the price for employees.
-  /// @return The price for employees
+  /// Returns the price for employees.
   int get employee => _employee;
 
-  /// This method returns the price for students.
-  /// @return The price for students
+  /// Returns the price for students.
   int get student => _student;
 }

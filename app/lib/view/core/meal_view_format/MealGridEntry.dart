@@ -14,10 +14,6 @@ class MealGridEntry extends StatelessWidget {
   final double _width;
 
   /// Creates a MealGridEntry.
-  /// @param meal The Meal to display.
-  /// @param width The width of the entry.
-  /// @param key The key to use for this widget.
-  /// @return A MealGridEntry.
   const MealGridEntry(
       {super.key, required Meal meal, Line? line, required double width})
       : _meal = meal,
@@ -63,12 +59,12 @@ class MealGridEntry extends StatelessWidget {
                         borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(8),
                             topRight: Radius.circular(8))),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     MealMainEntry(meal: _meal),
                     Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: Row(children: [
-                          SizedBox(width: 32),
+                          const SizedBox(width: 32),
                           MensaRatingInput(
                             disabled: true,
                             onChanged: (v) {},
@@ -78,7 +74,7 @@ class MealGridEntry extends StatelessWidget {
                           )
                         ])),
                     Padding(
-                        padding: EdgeInsets.symmetric(vertical: 4),
+                        padding: const EdgeInsets.symmetric(vertical: 4),
                         child: Column(
                           children: _meal.sides
                                   ?.map((e) => MealSideEntry(side: e))

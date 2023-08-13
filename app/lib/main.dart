@@ -64,9 +64,9 @@ class MensaApp extends StatelessWidget {
   final FlutterI18nDelegate _delegate;
 
   /// Creates a new [MensaApp]
+  ///
   /// [delegate] is the [FlutterI18nDelegate] used for localization.
   /// [key] is the key of the widget.
-  /// @returns a new [MensaApp]
   const MensaApp({super.key, required FlutterI18nDelegate delegate})
       : _delegate = delegate;
 

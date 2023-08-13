@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'IAllergenIcon.dart';
 
-/// This widget is used to display the icon for Rye
+/// This widget is used to display the icon for rye
 class AllergenRyeIcon extends IAllergenIcon {
+  /// Creates an new rye icon.
   const AllergenRyeIcon({super.key, super.width, super.height, super.color});
 
   @override

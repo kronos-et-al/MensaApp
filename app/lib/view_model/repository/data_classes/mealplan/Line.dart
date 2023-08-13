@@ -8,11 +8,8 @@ class Line {
   final int _position;
 
   /// This constructor creates a new line.
-  /// @param id The id of the line
-  /// @param name The name of the line
-  /// @param canteen The canteen of the line
-  /// @param position The position of the line
-  /// @return A new line
+  ///
+  /// The required values are the [id], [name], [canteen] and the original [position] of the line.
   Line({
     required String id,
     required String name,
@@ -24,18 +21,14 @@ class Line {
         _position = position;
 
   /// This method returns the id of the line.
-  /// @return The id of the line
   String get id => _id;
 
-  /// This method returns the name of the line.
-  /// @return The name of the line
+  /// Returns the name of the line.
   String get name => _name;
 
-  /// This method returns the canteen of the line.
-  /// @return The canteen of the line
+  /// Returns the canteen of the line.
   Canteen get canteen => _canteen;
 
-  /// This method returns the position of the line.
-  /// @return The position of the line
+  /// Returns the position of the line.
   int get position => _position;
 }

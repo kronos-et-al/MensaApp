@@ -9,12 +9,6 @@ class MensaDropdown<T> extends StatelessWidget {
   final Color? _backgroundColor;
 
   /// Creates a new MensaDropdown.
-  /// @param key The key to identify this widget.
-  /// @param onChanged The function that is called when the value changes.
-  /// @param value The value that is currently selected.
-  /// @param items The items that can be selected.
-  /// @param backgroundColor The background color of the dropdown.
-  /// @returns A new MensaDropdown.
   const MensaDropdown(
       {super.key,
       required Function(T?)? onChanged,
@@ -27,8 +21,6 @@ class MensaDropdown<T> extends StatelessWidget {
         _backgroundColor = backgroundColor;
 
   /// Builds the widget.
-  /// @param context The context in which the widget is built.
-  /// @returns The widget.
   @override
   Widget build(BuildContext context) {
     return Container(

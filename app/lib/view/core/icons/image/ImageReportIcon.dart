@@ -7,10 +7,6 @@ class ImageReportIcon extends StatelessWidget {
   final Color? _color;
 
   /// Creates a new report icon.
-  /// @param key The key to identify this widget.
-  /// @param size The size of the icon.
-  /// @param color The color of the icon.
-  /// @return a widget that displays the icon for a report of an image
   const ImageReportIcon({super.key, double size = 24, Color? color})
       : _size = size,
         _color = color;

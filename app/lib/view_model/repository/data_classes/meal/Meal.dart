@@ -28,22 +28,9 @@ class Meal {
   bool? _isFavorite;
 
   /// This constructor creates a meal with the committed values.
-  /// @param id The id of the meal
-  /// @param name The name of the meal
-  /// @param foodType The food type of the meal
-  /// @param price The price of the meal
-  /// @param allergens The allergens of the meal
-  /// @param additives The additives of the meal
-  /// @param sides The sides of the meal
-  /// @param individualRating The individual rating of the meal
-  /// @param numberOfRatings The number of ratings of the meal
-  /// @param averageRating The average rating of the meal
-  /// @param lastServed The date when the meal was last served
-  /// @param nextServed The date when the meal will be served next
-  /// @param relativeFrequency The relative frequency of the meal
-  /// @param images The images of the meal
-  /// @param isFavorite The favorite status of the meal
-  /// @return A meal with the committed values
+  ///
+  /// The required values are the [id], [name], [foodType] and [price] of the meal.
+  /// The other values are optional and can be null.
   Meal({
     required String id,
     required String name,
@@ -79,24 +66,7 @@ class Meal {
         _isFavorite = isFavorite;
 
   /// This constructor creates a meal with the committed values.
-  /// If any values are not committed these values are replaced with the values of the committed Meal.
-  /// @param meal The meal that is copied
-  /// @param id The id of the meal
-  /// @param name The name of the meal
-  /// @param foodType The food type of the meal
-  /// @param price The price of the meal
-  /// @param allergens The allergens of the meal
-  /// @param additives The additives of the meal
-  /// @param sides The sides of the meal
-  /// @param individualRating The individual rating of the meal
-  /// @param numberOfRatings The number of ratings of the meal
-  /// @param averageRating The average rating of the meal
-  /// @param lastServed The date when the meal was last served
-  /// @param nextServed The date when the meal will be served next
-  /// @param relativeFrequency The relative frequency of the meal
-  /// @param images The images of the meal
-  /// @param isFavorite The favorite status of the meal
-  /// @return A meal with the committed values
+  /// If any values are not committed these values are replaced with the values of [meal].
   Meal.copy({
     required Meal meal,
     String? id,
@@ -132,8 +102,7 @@ class Meal {
         _numberOfOccurance = numberOfOccurance ?? meal._numberOfOccurance,
         _isFavorite = isFavorite ?? meal.isFavorite;
 
-  /// This method returns the number of occurences in three months.
-  /// @return The number of occurences in three months
+  /// Returns the number of occurences in three months.
   int? get numberOfOccurance => _numberOfOccurance;
 
   /// This method adds the meal to the favorites.
@@ -148,69 +117,64 @@ class Meal {
     _isFavorite = false;
   }
 
-  /// This method returns the sides as a map.
-  /// @return The sides as a map
+  /// This method returns the id of the meal.
   String get id => _id;
 
-  /// This method returns the name of the meal.
-  /// @return The name of the meal
+  /// Returns the name of the meal.
   String get name => _name;
 
-  /// This method returns the food type of the meal.
-  /// @return The food type of the meal
+  /// Returns the food type of the meal.
   FoodType get foodType => _foodType;
 
-  /// This method returns the price of the meal.
-  /// @return The price of the meal
+  /// Returns the price of the meal.
   Price get price => _price;
 
-  /// This method returns the allergens of the meal.
-  /// @return The allergens of the meal
+  /// Returns the allergens of the meal.
   List<Allergen>? get allergens => _allergens;
 
-  /// This method returns the additives of the meal.
-  /// @return The additives of the meal
+  /// Returns the additives of the meal.
   List<Additive>? get additives => _additives;
 
-  /// This method returns the sides of the meal.
-  /// @return The sides of the meal
+  /// Returns the sides of the meal.
   List<Side>? get sides => _sides;
 
-  /// This method returns the individual rating of the meal.
-  /// @return The individual rating of the meal
+  /// Returns the individual rating of the meal.
   int? get individualRating => _individualRating;
 
-  /// This method returns the number of ratings of the meal.
-  /// @return The number of ratings of the meal
+  /// Returns the number of ratings of the meal.
   int? get numberOfRatings => _numberOfRatings;
 
-  /// This method returns the average rating of the meal.
-  /// @return The average rating of the meal
+  /// Returns the average rating of the meal.
   double? get averageRating => _averageRating;
 
-  /// This method returns the date when the meal was last served.
-  /// @return The date when the meal was last served
+  /// Returns the date when the meal was last served.
   DateTime? get lastServed => _lastServed;
 
-  /// This method returns the date when the meal will be served next.
-  /// @return The date when the meal will be served next
+  /// Returns the date when the meal will be served next.
   DateTime? get nextServed => _nextServed;
 
-  /// This method returns the relative frequency of the meal.
-  /// @return The relative frequency of the meal
+  /// Returns the relative frequency of the meal.
   Frequency? get relativeFrequency => _relativeFrequency;
 
-  /// This method returns the images of the meal.
-  /// @return The images of the meal
+  /// Returns the images of the meal.
   List<ImageData>? get images => _images;
 
-  /// This method returns the favorite status of the meal.
-  /// @return The favorite status of the meal
+  /// Returns the favorite status of the meal.
   bool get isFavorite => _isFavorite ?? false;
 
-
+  /// Sets the value of the individual rating.
   set individualRating(int? value) {
     _individualRating = value;
+  }
+
+  /// Sets the number of ratings.
+  set numberOfRatings(int? value) {
+    _numberOfRatings = value;
+  }
+
+  /// Sets the average Rating
+  set averageRating(double? value) {
+    _averageRating = value;
   }
 
   @override
@@ -220,12 +184,4 @@ class Meal {
 
   @override
   int get hashCode => _id.hashCode;
-
-  set numberOfRatings(int? value) {
-    _numberOfRatings = value;
-  }
-
-  set averageRating(double? value) {
-    _averageRating = value;
-  }
 }

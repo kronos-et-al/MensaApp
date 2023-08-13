@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'IAllergenIcon.dart';
 
-/// This widget is used to display the icon for Pistachios
+/// This widget is used to display the icon for pistachios
 class AllergenPistachiosIcon extends IAllergenIcon {
+  /// Creates an new pistachios icon.
   const AllergenPistachiosIcon(
       {super.key, super.width, super.height, super.color});
 

@@ -12,14 +12,9 @@ class Side {
   final List<Allergen> _allergens;
   final List<Additive> _additives;
 
-  /// This constructor creates a new side.
-  /// @param id The id of the side
-  /// @param name The name of the side
-  /// @param foodType The food type of the side
-  /// @param price The price of the side
-  /// @param allergens The allergens of the side
-  /// @param additives The additives of the side
-  /// @return A new side
+  /// Constructor that creates a new side.
+  ///
+  /// The required values are the [id], [name], [foodType], [price], [allergens] and [additives] of the side.
   Side({
     required String id,
     required String name,
@@ -34,16 +29,8 @@ class Side {
         _allergens = allergens,
         _additives = additives;
 
-  /// This constructor creates a new side with the committed values.
-  /// If any values are not committed these values are replaced with the values of the committed side.
-  /// @param side The side that should be copied
-  /// @param id The id of the side
-  /// @param name The name of the side
-  /// @param foodType The food type of the side
-  /// @param price The price of the side
-  /// @param allergens The allergens of the side
-  /// @param additives The additives of the side
-  /// @return A new side with the committed values
+  /// Constructor that creates a new side with the committed values.
+  /// If any values are not committed these values are replaced with the values of [side].
   Side.copy({
     required Side side,
     String? id,
@@ -59,28 +46,22 @@ class Side {
         _allergens = allergens ?? side.allergens,
         _additives = additives ?? side.additives;
 
-  /// This method returns the id of the side.
-  /// @return The id of the side
+  /// Returns the id of the side.
   String get id => _id;
 
   /// This method returns the name of the side.
-  /// @return The name of the side
   String get name => _name;
 
-  /// This method returns the food type of the side.
-  /// @return The food type of the side
+  /// Returns the food type of the side.
   FoodType get foodType => _foodType;
 
-  /// This method returns the price of the side.
-  /// @return The price of the side
+  /// Returns the price of the side.
   Price get price => _price;
 
-  /// This method returns the allergens of the side.
-  /// @return The allergens of the side
+  /// Returns the allergens of the side.
   List<Allergen> get allergens => _allergens;
 
-  /// This method returns the additives of the side.
-  /// @return The additives of the side
+  /// Returns the additives of the side.
   List<Additive> get additives => _additives;
 
   @override

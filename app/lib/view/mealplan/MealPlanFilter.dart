@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 /// This widget is used to display that no meal reaches the filter preferences.
 class MealPlanFilter extends StatelessWidget {
   /// Creates a no filtered meal widget.
-  /// @return a widget that displays the exception that says that no meal reaches the filter preferences
   const MealPlanFilter({super.key});
 
   @override

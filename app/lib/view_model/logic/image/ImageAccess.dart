@@ -10,8 +10,6 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
   final IServerAccess _api;
 
   /// Stores the access to the server.
-  /// @param api The access to the server.
-  /// @return A new instance of the class.
   ImageAccess(this._api);
 
   @override

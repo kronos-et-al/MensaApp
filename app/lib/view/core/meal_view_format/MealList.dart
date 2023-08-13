@@ -7,9 +7,6 @@ class MealList extends StatelessWidget {
   final List<MealPlan> _mealPlans;
 
   /// Creates a MealList.
-  /// @param mealPlans The MealPlans to display.
-  /// @param key The key to use for this widget.
-  /// @return A MealList.
   const MealList({super.key, required List<MealPlan> mealPlans})
       : _mealPlans = mealPlans;
 

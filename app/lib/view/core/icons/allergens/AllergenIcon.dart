@@ -31,10 +31,12 @@ import 'package:flutter/material.dart';
 
 import 'IAllergenIcon.dart';
 
+/// This widget is used to display the icon for a given allergen.
 class AllergenIcon extends IAllergenIcon {
   final Allergen _allergen;
   final Color? _color;
 
+  /// Creates an new allergen icon.
   const AllergenIcon(
       {super.key,
       required Allergen allergen,

@@ -7,11 +7,7 @@ class MensaButton extends StatelessWidget {
   final String _text;
 
   /// Creates a new MensaButton.
-  /// @param key The key to identify this widget.
-  /// @param onPressed The function that is called when the button is pressed.
-  /// @param onLongPressed The function that is called when the button is long pressed.
-  /// @param text The text that is displayed on the button.
-  /// @returns A new MensaButton.
+  /// The String [text] is displayed on the button.
   const MensaButton(
       {super.key, required onPressed, onLongPressed, required text})
       : _onPressed = onPressed,
@@ -19,8 +15,6 @@ class MensaButton extends StatelessWidget {
         _text = text;
 
   /// Builds the widget.
-  /// @param context The context in which the widget is built.
-  /// @returns The widget.
   @override
   Widget build(BuildContext context) {
     return MaterialButton(

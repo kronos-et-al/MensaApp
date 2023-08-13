@@ -6,11 +6,7 @@ class ErrorExceptionIcon extends StatelessWidget {
   final double _size;
   final Color? _color;
 
-  /// Creates an error icon.
-  /// @param key The key to use for this widget.
-  /// @param size The size of the icon.
-  /// @param color The color of the icon.
-  /// @returns a widget that displays the icon for an error
+  /// Creates a new error icon instance.
   const ErrorExceptionIcon({super.key, double size = 24, Color? color})
       : _size = size,
         _color = color;

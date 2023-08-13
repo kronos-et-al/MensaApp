@@ -8,8 +8,6 @@ import 'package:provider/provider.dart';
 /// This widget is used to display the favorites.
 class Favorites extends StatelessWidget {
   /// Creates a new Favorites widget.
-  /// @param key The key to identify this widget.
-  /// @returns A new Favorites widget.
   const Favorites({super.key});
 
   @override

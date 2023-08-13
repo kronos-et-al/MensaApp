@@ -17,10 +17,7 @@ class DBMealAllergen implements DatabaseModel {
   /// The name of the column for the allergen.
   static const String columnAllergen = 'allergen';
 
-  /// Creates a new instance of a meal allergen.
-  /// @param _mealID The id of the meal.
-  /// @param _allergen The allergen of the meal.
-  /// @returns A new instance of a meal allergen.
+  /// Creates a new instance of a meal allergen as it is represented in the database.
   DBMealAllergen(this._mealID, this._allergen);
 
   @override
@@ -29,15 +26,12 @@ class DBMealAllergen implements DatabaseModel {
   }
 
   /// Creates a new instance of a meal allergen from a map.
-  /// @param map The map to create the instance from.
-  /// @returns A new instance of a meal allergen.
   static DBMealAllergen fromMap(Map<String, dynamic> map) {
     return DBMealAllergen(
         map[columnMealID], Allergen.values.byName(map[columnAllergen]));
   }
 
   /// The string to create a table for an allergen of a meal.
-  /// @returns The string to create a table for an allergen of a meal.
   static String initTable() {
     return '''
     CREATE TABLE $tableName (
@@ -49,11 +43,9 @@ class DBMealAllergen implements DatabaseModel {
   ''';
   }
 
-  /// This method returns the allergen of the meal.
-  /// @returns The allergen of the meal.
+  /// Returns the allergen of the meal.
   Allergen get allergen => _allergen;
 
-  /// This method returns the id of the meal.
-  /// @returns The id of the meal.
+  /// Returns the id of the meal.
   String get mealID => _mealID;
 }

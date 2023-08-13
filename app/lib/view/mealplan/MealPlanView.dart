@@ -28,8 +28,6 @@ import 'package:provider/provider.dart';
 /// This class is the view for the meal plan.
 class MealPlanView extends StatelessWidget {
   /// Creates a new meal plan view.
-  /// @param key The key to identify this widget.
-  /// @returns A new meal plan view.
   const MealPlanView({super.key});
 
   @override
