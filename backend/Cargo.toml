@@ -24,14 +24,14 @@ base64 = "0.21.2"
 sha2 = "0.10.7"
 heck = "0.4.1"
 dotenvy = "0.15.7"
-reqwest = { version = "0.11", features = ["json", "rustls-tls", "trust-dns"] }
+reqwest = { version = "0.11", features = ["json"] }
 serde = "1.0.171"
 scraper = "0.17.1"
 regex = "1.9.1"
 futures = "0.3.28"
 tokio-cron-scheduler = "0.9.4"
-sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-rustls", "postgres", "uuid", "chrono", "macros"] }
-lettre = {version = "0.10.4", features = ["rustls-tls"]}
+sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-native-tls", "postgres", "uuid", "chrono", "macros"] }
+lettre = "0.10.4"
 string_template = "0.2.1"
 lazy_static = "1.4.0"
 colored = "2.0.4"
