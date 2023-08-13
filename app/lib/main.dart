@@ -159,7 +159,7 @@ class MensaApp extends StatelessWidget {
                           surfaceTint: Color(0xFF202020),
                           onSurface: Color(0xFFFFFFFF)),
                     ),
-                    home: MainPage()),
+                    home: const MainPage()),
               ));
         });
   }
