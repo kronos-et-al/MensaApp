@@ -250,10 +250,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     await _setNewMealPlan();
 
-    await _filterMealPlans();
-
     notifyListeners();
-    return null;
+    return Future.value();
   }
 
   @override
@@ -266,6 +264,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       return "snackbar.updateRatingError";
     }
 
+    // todo save in database?
     _changeRatingOfMeal(meal, rating);
     notifyListeners();
     return "snackbar.updateRatingSuccess";
@@ -373,10 +372,19 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   }
 
   Future<void> _changeRatingOfMeal(Meal changedMeal, int rating) async {
-    int numberOfRatings = changedMeal.numberOfRatings! + (changedMeal.individualRating != 0 ? -1 : 0);
-    double clearedRating = ((changedMeal.averageRating! * changedMeal.numberOfRatings!) - changedMeal.individualRating!) / numberOfRatings;
-    double newRating = ((clearedRating * numberOfRatings) + rating) / (numberOfRatings + 1);
-    Meal newMeal = Meal.copy(meal: changedMeal, averageRating: newRating, numberOfRatings: numberOfRatings + 1, individualRating: rating);
+    int numberOfRatings = (changedMeal.numberOfRatings ?? 0) +
+        (changedMeal.individualRating != 0 ? -1 : 0);
+    double clearedRating =
+        ((changedMeal.averageRating! * changedMeal.numberOfRatings!) -
+                changedMeal.individualRating!) /
+            numberOfRatings;
+    double newRating =
+        ((clearedRating * numberOfRatings) + rating) / (numberOfRatings + 1);
+    Meal newMeal = Meal.copy(
+        meal: changedMeal,
+        averageRating: newRating,
+        numberOfRatings: numberOfRatings + 1,
+        individualRating: rating);
     await _database.updateMeal(newMeal);
     changedMeal.averageRating = newRating;
     changedMeal.numberOfRatings = numberOfRatings + 1;
@@ -454,8 +462,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
             0);
       default:
         sort.sort((a, b) =>
-        a.meals[0].numberOfOccurance
-            ?.compareTo(b.meals[0].numberOfOccurance ?? 0) ??
+            a.meals[0].numberOfOccurance
+                ?.compareTo(b.meals[0].numberOfOccurance ?? 0) ??
             0);
     }
 
@@ -548,7 +556,9 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     }
 
     // check rating
-    if (meal.averageRating != null && meal.averageRating != 0 && meal.averageRating! < _filter.rating.toDouble()) {
+    if (meal.averageRating != null &&
+        meal.averageRating != 0 &&
+        meal.averageRating! < _filter.rating.toDouble()) {
       return false;
     }
 
