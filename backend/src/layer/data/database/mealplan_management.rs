@@ -1,3 +1,4 @@
+use async_graphql::InputType;
 use async_trait::async_trait;
 use sqlx::{Pool, Postgres};
 
@@ -53,34 +54,36 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     async fn get_similar_meal(
         &self,
         similar_name: &str,
+        meal_type: MealType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
             // the `<@` operator checks whether each element in the left array is also present in the right
-            "
+            r#"
             SELECT food_id 
             FROM food JOIN meal USING (food_id)
-            WHERE similarity(name, $1) >= $4
+            WHERE similarity(name, $1) >= $5 AND food_type = $2
             AND food_id IN (
                 -- all food_id's with same allergens
                 SELECT food_id 
                 FROM food_allergen FULL JOIN food USING (food_id)
                 GROUP BY food_id 
-				HAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $2::allergen[] 
-				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $2::allergen[]
+				HAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $3::allergen[]
+				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $3::allergen[]
             )
             AND food_id IN (
                 -- all food_id's with same additives
                 SELECT food_id
 				FROM food_additive FULL JOIN food USING (food_id)
 				GROUP BY food_id 
-				HAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $3::additive[] 
-				AND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $3::additive[]
+				HAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $4::additive[]
+				AND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $4::additive[]
             )
             ORDER BY similarity(name, $1) DESC
-            ",
+            "#,
             similar_name,
+            meal_type as _,
             allergens
                 .iter()
                 .copied()
@@ -101,34 +104,36 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     async fn get_similar_side(
         &self,
         similar_name: &str,
+        meal_type: MealType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
             // the `<@` operator checks whether each element in the left array is also present in the right
-            "
+            r#"
             SELECT food_id 
             FROM food
-            WHERE similarity(name, $1) >= $4 AND food_id NOT IN (SELECT food_id FROM meal)
+            WHERE similarity(name, $1) >= $5 AND food_type = $2 AND food_id NOT IN (SELECT food_id FROM meal)
             AND food_id IN (
                 -- all food_id's with same allergens
                 SELECT food_id 
                 FROM food_allergen FULL JOIN food USING (food_id)
                 GROUP BY food_id 
-				HAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $2::allergen[] 
-				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $2::allergen[]
+				HAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $3::allergen[]
+				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $3::allergen[]
             )
             AND food_id IN (
                 -- all food_id's with same additives
                 SELECT food_id
 				FROM food_additive FULL JOIN food USING (food_id)
 				GROUP BY food_id 
-				HAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $3::additive[] 
-				AND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $3::additive[]
+				HAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $4::additive[]
+				AND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $4::additive[]
             )
             ORDER BY similarity(name, $1) DESC
-            ",
+            "#,
             similar_name,
+            meal_type as _,
             allergens
                 .iter()
                 .copied()
