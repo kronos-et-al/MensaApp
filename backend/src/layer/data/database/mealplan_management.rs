@@ -10,7 +10,9 @@ pub struct PersistentMealplanManagementData {
     pub(super) pool: Pool<Postgres>,
 }
 
-const THRESHOLD: f32 = 0.785;
+const THRESHOLD_MEAL: f32 = 0.785;
+const THRESHOLD_LINE: f32 = 0.894;
+const THRESHOLD_CANTEEN: f32 = 0.8515;
 
 #[async_trait]
 #[allow(clippy::missing_panics_doc)] // necessary because sqlx macro sometimes create unreachable panics?
@@ -33,7 +35,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
             "SELECT canteen_id FROM canteen WHERE similarity(name, $1) >= $2 ORDER BY similarity(name, $1) DESC",
-            similar_name, THRESHOLD
+            similar_name, THRESHOLD_CANTEEN
         )
         .fetch_optional(&self.pool)
         .await
@@ -43,7 +45,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     async fn get_similar_line(&self, similar_name: &str, canteen_id: Uuid) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
             "SELECT line_id FROM line WHERE similarity(name, $1) >= $3 AND canteen_id = $2 ORDER BY similarity(name, $1) DESC",
-            similar_name, canteen_id, THRESHOLD
+            similar_name, canteen_id, THRESHOLD_LINE
         )
         .fetch_optional(&self.pool)
         .await
@@ -93,7 +95,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
                 .copied()
                 .map(Additive::to_db_string)
                 .collect::<Vec<_>>() as _,
-            THRESHOLD
+            THRESHOLD_MEAL
         )
         .fetch_optional(&self.pool)
         .await
@@ -143,7 +145,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
                 .copied()
                 .map(Additive::to_db_string)
                 .collect::<Vec<_>>() as _,
-            THRESHOLD
+            THRESHOLD_MEAL
         )
         .fetch_optional(&self.pool)
         .await
