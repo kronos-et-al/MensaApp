@@ -89,11 +89,11 @@ where
     ) -> Result<(), DataError> {
         let similar_meal_result = self
             .db
-            .get_similar_meal(&dish.name, &dish.allergens, &dish.additives)
+            .get_similar_meal(&dish.name, &dish.meal_type, &dish.allergens, &dish.additives)
             .await?;
         let similar_side_result = self
             .db
-            .get_similar_side(&dish.name, &dish.allergens, &dish.additives)
+            .get_similar_side(&dish.name, &dish.meal_type, &dish.allergens, &dish.additives)
             .await?;
 
         // Case 1.1: A similar side and meal could be found. Uncommon case.
