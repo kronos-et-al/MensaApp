@@ -69,6 +69,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     async fn get_similar_meal(
         &self,
         similar_name: &str,
+        meal_type: MealType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>>;
@@ -78,6 +79,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     async fn get_similar_side(
         &self,
         similar_name: &str,
+        meal_type: MealType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>>;
