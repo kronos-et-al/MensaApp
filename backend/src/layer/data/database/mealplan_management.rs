@@ -569,7 +569,12 @@ mod test {
                 true,
             ),
             // No longer 'similar' with identical addons
-            (Uuid::default(), "Geflügel - Cevapcici", MealType::Unknown, false),
+            (
+                Uuid::default(),
+                "Geflügel - Cevapcici",
+                MealType::Unknown,
+                false,
+            ),
             (Uuid::default(), "Dampfnudeln", MealType::Vegetarian, false),
             (Uuid::default(), "", MealType::Vegan, false),
         ];
