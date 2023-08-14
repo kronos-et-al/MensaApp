@@ -1,4 +1,3 @@
-use async_graphql::InputType;
 use async_trait::async_trait;
 use sqlx::{Pool, Postgres};
 
@@ -535,44 +534,50 @@ mod test {
             (
                 Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
                 "Geflügel - Cevapcici, Ajvar, Djuvec Reis",
+                MealType::Unknown,
                 true,
             ),
             (
                 Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap(),
                 "2 Dampfnudeln mit Vanillesoße",
+                MealType::Vegetarian,
                 true,
             ),
             (
                 Uuid::parse_str("0a850476-eda4-4fd8-9f93-579eb85b8c25").unwrap(),
                 "Mediterraner Gemüsegulasch mit Räuchertofu, dazu Sommerweizen",
+                MealType::Vegan,
                 true,
             ),
             // 'Similar' with identical addons
             (
                 Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
                 "Geflügel - Cevapcici, Ajvar, Reis",
+                MealType::Unknown,
                 true,
             ),
             (
                 Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap(),
                 "Dampfnudeln mit Vanillesoße",
+                MealType::Vegetarian,
                 true,
             ),
             (
                 Uuid::parse_str("0a850476-eda4-4fd8-9f93-579eb85b8c25").unwrap(),
                 "Mediterraner Gemüsegulasch mit Räuchertofu und Sommerweizen",
+                MealType::Vegan,
                 true,
             ),
             // No longer 'similar' with identical addons
-            (Uuid::default(), "Geflügel - Cevapcici", false),
-            (Uuid::default(), "Dampfnudeln", false),
-            (Uuid::default(), "", false),
+            (Uuid::default(), "Geflügel - Cevapcici", MealType::Unknown, false),
+            (Uuid::default(), "Dampfnudeln", MealType::Vegetarian, false),
+            (Uuid::default(), "", MealType::Vegan, false),
         ];
 
-        for (uuid, name, is_similar) in tests {
+        for (uuid, name, meal_type, is_similar) in tests {
             println!("Testing values: '{uuid}', '{name}'. Should be similar: {is_similar}");
             let (additives, allergens) = addons.get(&*uuid.to_string()).unwrap();
-            req.get_similar_meal(name, allergens, additives)
+            req.get_similar_meal(name, meal_type, allergens, additives)
                 .await
                 .unwrap()
                 .map_or_else(
@@ -604,44 +609,50 @@ mod test {
             (
                 Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
                 "zu jedem Gericht reichen wir ein Dessert oder Salat",
+                MealType::Vegan,
                 true,
             ),
             (
                 Uuid::parse_str("836b17fb-cb16-425d-8d3c-c274a9cdbd0c").unwrap(),
                 "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings, Preis je 100 g",
+                MealType::Vegetarian,
                 true,
             ),
             (
                 Uuid::parse_str("2c662143-eb84-4142-aa98-bd7bdf84c498").unwrap(),
                 "Insalata piccola - kleiner Blattsalat mit Thunfisch und Paprika",
+                MealType::Fish,
                 true,
             ),
             // 'Similar' with identical addons
             (
                 Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
                 "zu jedem Gericht reichen wir Desserts oder Salate",
+                MealType::Vegan,
                 true,
             ),
             (
                 Uuid::parse_str("836b17fb-cb16-425d-8d3c-c274a9cdbd0c").unwrap(),
                 "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings",
+                MealType::Vegetarian,
                 true,
             ),
             (
                 Uuid::parse_str("2c662143-eb84-4142-aa98-bd7bdf84c498").unwrap(),
                 "Insalata piccola - Blattsalat mit Thunfisch und Paprika",
+                MealType::Fish,
                 true,
             ),
             // No longer 'similar' with identical addons
-            (Uuid::default(), "zu jedem Gericht reichen wir ein Dessert", false),
-            (Uuid::default(), "Salatbuffet mit frischer Rohkost", false),
-            (Uuid::default(), "Insalata piccola", false),
+            (Uuid::default(), "zu jedem Gericht reichen wir ein Dessert", MealType::Vegan, false),
+            (Uuid::default(), "Salatbuffet mit frischer Rohkost", MealType::Vegetarian, false),
+            (Uuid::default(), "Insalata piccola", MealType::Fish, false),
         ];
 
-        for (uuid, name, is_similar) in tests {
+        for (uuid, name, meal_type, is_similar) in tests {
             println!("Testing values: '{uuid}', '{name}'. Should be similar: {is_similar}");
             let (additives, allergens) = addons.get(&*uuid.to_string()).unwrap();
-            req.get_similar_side(name, allergens, additives)
+            req.get_similar_side(name, meal_type, allergens, additives)
                 .await
                 .unwrap()
                 .map_or_else(
