@@ -609,44 +609,44 @@ mod test {
             (
                 Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
                 "zu jedem Gericht reichen wir ein Dessert oder Salat",
-                MealType::Vegan,
+                MealType::Unknown,
                 true,
             ),
             (
                 Uuid::parse_str("836b17fb-cb16-425d-8d3c-c274a9cdbd0c").unwrap(),
                 "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings, Preis je 100 g",
-                MealType::Vegetarian,
+                MealType::Vegan,
                 true,
             ),
             (
                 Uuid::parse_str("2c662143-eb84-4142-aa98-bd7bdf84c498").unwrap(),
                 "Insalata piccola - kleiner Blattsalat mit Thunfisch und Paprika",
-                MealType::Fish,
+                MealType::Unknown,
                 true,
             ),
             // 'Similar' with identical addons
             (
                 Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
                 "zu jedem Gericht reichen wir Desserts oder Salate",
-                MealType::Vegan,
+                MealType::Unknown,
                 true,
             ),
             (
                 Uuid::parse_str("836b17fb-cb16-425d-8d3c-c274a9cdbd0c").unwrap(),
                 "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings",
-                MealType::Vegetarian,
+                MealType::Vegan,
                 true,
             ),
             (
                 Uuid::parse_str("2c662143-eb84-4142-aa98-bd7bdf84c498").unwrap(),
                 "Insalata piccola - Blattsalat mit Thunfisch und Paprika",
-                MealType::Fish,
+                MealType::Unknown,
                 true,
             ),
             // No longer 'similar' with identical addons
-            (Uuid::default(), "zu jedem Gericht reichen wir ein Dessert", MealType::Vegan, false),
-            (Uuid::default(), "Salatbuffet mit frischer Rohkost", MealType::Vegetarian, false),
-            (Uuid::default(), "Insalata piccola", MealType::Fish, false),
+            (Uuid::default(), "zu jedem Gericht reichen wir ein Dessert", MealType::Unknown, false),
+            (Uuid::default(), "Salatbuffet mit frischer Rohkost", MealType::Vegan, false),
+            (Uuid::default(), "Insalata piccola", MealType::Unknown, false),
         ];
 
         for (uuid, name, meal_type, is_similar) in tests {
