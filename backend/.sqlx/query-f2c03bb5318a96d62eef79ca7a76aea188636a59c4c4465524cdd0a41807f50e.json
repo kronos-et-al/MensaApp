@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT food_id \n            FROM food\n            WHERE similarity(name, $1) >= $4 AND food_id NOT IN (SELECT food_id FROM meal)\n            AND food_id IN (\n                -- all food_id's with same allergens\n                SELECT food_id \n                FROM food_allergen FULL JOIN food USING (food_id)\n                GROUP BY food_id \n\t\t\t\tHAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $2::allergen[] \n\t\t\t\tAND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $2::allergen[]\n            )\n            AND food_id IN (\n                -- all food_id's with same additives\n                SELECT food_id\n\t\t\t\tFROM food_additive FULL JOIN food USING (food_id)\n\t\t\t\tGROUP BY food_id \n\t\t\t\tHAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $3::additive[] \n\t\t\t\tAND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $3::additive[]\n            )\n            ORDER BY similarity(name, $1) DESC\n            ",
+  "query": "\n            SELECT food_id \n            FROM food\n            WHERE similarity(name, $1) >= $5 AND food_type = $2 AND food_id NOT IN (SELECT food_id FROM meal)\n            AND food_id IN (\n                -- all food_id's with same allergens\n                SELECT food_id \n                FROM food_allergen FULL JOIN food USING (food_id)\n                GROUP BY food_id \n\t\t\t\tHAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $3::allergen[]\n\t\t\t\tAND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $3::allergen[]\n            )\n            AND food_id IN (\n                -- all food_id's with same additives\n                SELECT food_id\n\t\t\t\tFROM food_additive FULL JOIN food USING (food_id)\n\t\t\t\tGROUP BY food_id \n\t\t\t\tHAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $4::additive[]\n\t\t\t\tAND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $4::additive[]\n            )\n            ORDER BY similarity(name, $1) DESC\n            ",
   "describe": {
     "columns": [
       {
@@ -12,6 +12,23 @@
     "parameters": {
       "Left": [
         "Text",
+        {
+          "Custom": {
+            "name": "meal_type",
+            "kind": {
+              "Enum": [
+                "VEGAN",
+                "VEGETARIAN",
+                "BEEF",
+                "BEEF_AW",
+                "PORK",
+                "PORK_AW",
+                "FISH",
+                "UNKNOWN"
+              ]
+            }
+          }
+        },
         {
           "Custom": {
             "name": "_allergen",
@@ -72,7 +89,7 @@
                       "PHOSPHATE",
                       "SURFACE_WAXED",
                       "SULPHUR",
-                      "ARTIFICIALLY_BLACKENED_OLIVES",
+                      "ARTIFICALLY_BLACKENED_OLIVES",
                       "SWEETENER",
                       "LAXATIVE_IF_OVERUSED",
                       "PHENYLALANINE",
@@ -94,5 +111,5 @@
       false
     ]
   },
-  "hash": "6248da40d2a41a9ff120b64e11a200860a6369d3d472262583e991d201995a03"
+  "hash": "f2c03bb5318a96d62eef79ca7a76aea188636a59c4c4465524cdd0a41807f50e"
 }
