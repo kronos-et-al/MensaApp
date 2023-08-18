@@ -57,20 +57,21 @@ impl JsonParser {
     /// # Errors
     /// If an image is invalid [`ImageHosterError::InvalidLicense`] with the invalid license will be returned.
     pub fn check_license(root: JsonRootLicense) -> Result<(), ImageHosterError> {
-        let license = root
+        let (old_license, new_license) = root
             .license_history
             .into_iter()
-            .max_by_key(|l| l.date_change)
-            .map(|entry| entry.new_license)
+            .max_by_key(|history| history.date_change)
+            .map(|history| (history.old_license, history.new_license))
             .ok_or_else(|| {
                 ImageHosterError::InvalidLicense(String::from("none"), VALID_LICENSES.join(", "))
             })?;
-        let str_license = license.as_str();
-        if VALID_LICENSES.contains(&str_license) {
+
+        let new_license = new_license.as_str();
+        if VALID_LICENSES.contains(&new_license) || VALID_LICENSES.contains(&old_license.as_str()) {
             Ok(())
         } else {
             Err(ImageHosterError::InvalidLicense(
-                license,
+                String::from(new_license),
                 VALID_LICENSES.join(", "),
             ))
         }
@@ -182,14 +183,47 @@ mod test {
                 LicenceHistory {
                     date_change: 1_295_918_034,
                     new_license: String::from("Attribution License"),
+                    old_license: String::from("Public Domain Mark"),
                 },
                 LicenceHistory {
                     date_change: 1_598_990_519,
                     new_license: String::from("Public Domain Mark"),
+                    old_license: String::from("Attribution License"),
                 },
             ],
         };
         assert!(JsonParser::check_license(valid_licenses).is_ok());
+    }
+
+    #[test]
+    fn test_valid_check_old_license() {
+        let valid_licenses = JsonRootLicense {
+            license_history: vec![LicenceHistory {
+                date_change: 1_295_918_034,
+                new_license: String::new(),
+                old_license: String::from("Public Domain Mark"),
+            }],
+        };
+        assert!(JsonParser::check_license(valid_licenses).is_ok());
+    }
+
+    #[test]
+    fn test_invalid_check_old_license() {
+        let valid_licenses = JsonRootLicense {
+            license_history: vec![
+                LicenceHistory {
+                    date_change: 1_295_918_034,
+                    new_license: String::from("United States Government Work"),
+                    old_license: String::from("Public Domain Dedication (CC0)"),
+                },
+                LicenceHistory {
+                    date_change: 1_598_990_519,
+                    new_license: String::from("All Rights Reserved"),
+                    old_license: String::from("United States Government Work"),
+                },
+            ],
+        };
+        assert!(JsonParser::check_license(valid_licenses).is_err());
     }
 
     #[test]
