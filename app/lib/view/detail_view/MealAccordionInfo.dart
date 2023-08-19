@@ -25,10 +25,14 @@ class MealAccordionInfo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 8),
-        const Text(
-          "Allergene:",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        const SizedBox(height: 8),
+        Text(
+          FlutterI18n.translate(
+              context,
+              _allergens.isEmpty
+                  ? "allergen.allergenTitleEmpty"
+                  : "allergen.allergenTitle"),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         ..._allergens.map((e) => Row(
               children: [
@@ -36,10 +40,14 @@ class MealAccordionInfo extends StatelessWidget {
                 Expanded(child: I18nText("allergen.${e.name}")),
               ],
             )),
-        SizedBox(height: 8),
-        const Text(
-          "Zusatzstoffe:",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        const SizedBox(height: 8),
+        Text(
+          FlutterI18n.translate(
+              context,
+              _allergens.isEmpty
+                  ? "additive.additiveTitleEmpty"
+                  : "additive.additiveTitle"),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         ..._additives.map((e) => Row(
               children: [

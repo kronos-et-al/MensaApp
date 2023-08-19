@@ -3,8 +3,8 @@ class ImageData {
   final String _id;
   final String _url;
   final double _imageRank;
-  final int _positiveRating;
-  final int _negativeRating;
+  int _positiveRating;
+  int _negativeRating;
 
   int _individualRating;
 
@@ -51,11 +51,15 @@ class ImageData {
 
   /// The method changes the value of [_individualRating] to the value of an upvote.
   void upvote() {
+    _positiveRating += _individualRating == 1 ? 0 : 1;
+    _negativeRating += _individualRating == -1 ? -1 : 0;
     _individualRating = 1;
   }
 
   /// The method changes the value of [_individualRating] to the value of a downvote.
   void downvote() {
+    _positiveRating += _individualRating == 1 ? -1 : 0;
+    _negativeRating += _individualRating == -1 ? 0 : 1;
     _individualRating = -1;
   }
 

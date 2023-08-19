@@ -101,8 +101,11 @@ class UploadImageDialog extends StatelessWidget {
                     if (temporalMessage.isNotEmpty) {
                       final snackBar = SnackBar(
                         content: Text(
-                            FlutterI18n.translate(context, temporalMessage)),
-                        backgroundColor: Theme.of(context).colorScheme.onError,
+                          FlutterI18n.translate(context, temporalMessage),
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface),
+                        ),
+                        backgroundColor: Theme.of(context).colorScheme.surface,
                       );
 
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);

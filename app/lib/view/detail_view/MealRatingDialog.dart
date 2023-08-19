@@ -64,11 +64,14 @@ class _MealRatingDialogState extends State<MealRatingDialog> {
 
                       if (temporalMessage.isNotEmpty) {
                         final snackBar = SnackBar(
-                          content: Text(
-                              FlutterI18n.translate(context, temporalMessage)),
-                          backgroundColor:
-                              Theme.of(context).colorScheme.onError,
-                        );
+                            content: Text(
+                              FlutterI18n.translate(context, temporalMessage),
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface),
+                            ),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.surface);
 
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       } else {

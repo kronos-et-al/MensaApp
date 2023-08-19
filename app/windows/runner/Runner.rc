@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "de.mensa_ka" "\0"
+            VALUE "CompanyName", "Kronos et al." "\0"
             VALUE "FileDescription", "app" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "app" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2023 de.mensa_ka. All rights reserved." "\0"
-            VALUE "OriginalFilename", "app.exe" "\0"
-            VALUE "ProductName", "app" "\0"
+            VALUE "InternalName", "de.mensa_ka.app" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2023 Kronos et al. All rights reserved." "\0"
+            VALUE "OriginalFilename", "mensa-ka.exe" "\0"
+            VALUE "ProductName", "Mensa KA" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

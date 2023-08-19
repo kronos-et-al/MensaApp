@@ -103,7 +103,7 @@ class MensaApp extends StatelessWidget {
                     create: (context) =>
                         PreferenceAccess(sharedPreferencesAccess)),
                 ChangeNotifierProvider<IImageAccess>(
-                    create: (context) => ImageAccess(api)),
+                    create: (context) => ImageAccess(api, db)),
               ],
               child: Consumer<IPreferenceAccess>(
                 builder: (context, preferenceAccess, child) => MaterialApp(

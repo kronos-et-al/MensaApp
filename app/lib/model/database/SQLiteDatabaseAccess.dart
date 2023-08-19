@@ -710,4 +710,11 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
       }
     });
   }
+
+  @override
+  Future<void> removeImage(ImageData image) async {
+    var db = await database;
+    await db.delete(DBImage.tableName,
+        where: '${DBImage.columnImageID} = ?', whereArgs: [image.id]);
+  }
 }

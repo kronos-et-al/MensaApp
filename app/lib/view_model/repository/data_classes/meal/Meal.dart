@@ -267,4 +267,8 @@ class Meal {
   set averageRating(double? value) {
     _averageRating = value;
   }
+
+  void removeImage(ImageData image) {
+    _images!.remove(image);
+  }
 }

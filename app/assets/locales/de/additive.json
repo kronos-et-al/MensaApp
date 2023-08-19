@@ -1,5 +1,6 @@
 {
-  "additiveTitle": "Zusatzstoffe",
+  "additiveTitle": "Zusatzstoffe:",
+  "additiveTitleEmpty": "Keine Zusatzstoffe",
   "colorant": "mit Farbstoff",
   "preservingAgents": "mit Konservierungsstoff",
   "antioxidantAgents": "mit Antioxidationsmittel",

@@ -1,3 +1,4 @@
+import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
 import 'package:app/view_model/repository/error_handling/NoMealException.dart';
@@ -59,4 +60,6 @@ abstract class IDatabaseAccess {
 
   /// This method returns all canteens or null if no canteen is stored.
   Future<List<Canteen>?> getCanteens();
+
+  Future<void> removeImage(ImageData image);
 }

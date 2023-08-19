@@ -52,5 +52,5 @@ abstract class IImageAccess with ChangeNotifier {
   /// @param reportReason The reason why the image is reported
   /// @param context The context of the app used for displaying temporal messages.
   /// @return The string that should be displayed in a temporal message
-  Future<String> reportImage(ImageData image, ReportCategory reportReason);
+  Future<String> reportImage(Meal meal, ImageData image, ReportCategory reportReason);
 }

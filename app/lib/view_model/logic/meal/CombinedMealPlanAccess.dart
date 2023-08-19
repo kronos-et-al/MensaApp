@@ -1,5 +1,6 @@
 import 'package:app/view_model/logic/meal/IMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/filter/FilterPreferences.dart';
+import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
@@ -351,11 +352,13 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       return;
     }
 
-    for (final mealPlan in _mealPlans) {
+    /*for (final mealPlan in _mealPlans) {
       if (mealPlan.isClosed && _mealPlans.length > 1) {
         _mealPlans.remove(mealPlan);
       }
-    }
+    }*/
+
+    _mealPlans = _mealPlans.where((element) => !element.isClosed).toList();
 
     _activeFilter = false;
     notifyListeners();
@@ -670,5 +673,10 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   @override
   Future<bool> isFilterActive() async {
     return Future.value(_activeFilter);
+  }
+
+  @override
+  Future<void> removeImage(ImageData image) async {
+
   }
 }
