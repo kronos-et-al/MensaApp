@@ -24,7 +24,7 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
       return "snackbar.voteError";
     }
 
-    image.deleteRating();
+    image.individualRating = 0;
     notifyListeners();
     return null;
   }
@@ -37,7 +37,7 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
       return "snackbar.voteError";
     }
 
-    image.deleteRating();
+    image.individualRating = 0;
     notifyListeners();
     return null;
   }
@@ -50,7 +50,7 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
       return "snackbar.voteError";
     }
 
-    image.downvote();
+    image.individualRating = -1;
     notifyListeners();
     return null;
   }
@@ -90,7 +90,7 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
       return "snackbar.voteError";
     }
 
-    image.upvote();
+    image.individualRating = 1;
     notifyListeners();
     return null;
   }

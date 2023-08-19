@@ -49,23 +49,27 @@ class ImageData {
   /// The method returns the id of the image.
   String get id => _id;
 
-  /// The method changes the value of [_individualRating] to the value of an upvote.
-  void upvote() {
-    _positiveRating += _individualRating == 1 ? 0 : 1;
-    _negativeRating += _individualRating == -1 ? -1 : 0;
-    _individualRating = 1;
-  }
-
-  /// The method changes the value of [_individualRating] to the value of a downvote.
-  void downvote() {
-    _positiveRating += _individualRating == 1 ? -1 : 0;
-    _negativeRating += _individualRating == -1 ? 0 : 1;
-    _individualRating = -1;
-  }
-
-  /// The method changes the value of [_individualRating] to the value of no vote.
-  void deleteRating() {
-    _individualRating = 0;
+  set individualRating(int value) {
+    if(value != _individualRating) {
+      if(value == 1) {
+        _positiveRating++;
+        if(_individualRating == -1) {
+          _negativeRating--;
+        }
+      } else if(value == -1) {
+        _negativeRating++;
+        if(_individualRating == 1) {
+          _positiveRating--;
+        }
+      } else {
+        if(_individualRating == 1) {
+          _positiveRating--;
+        } else if(_individualRating == -1) {
+          _negativeRating--;
+        }
+      }
+    }
+    _individualRating = value;
   }
 
   /// The method returns the information that are stored in a map.
