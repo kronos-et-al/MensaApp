@@ -65,16 +65,16 @@ class Meal {
         _name = name,
         _foodType = foodType,
         _price = price,
-        _allergens = allergens,
-        _additives = additives,
-        _sides = sides,
+        _allergens = allergens ?? [],
+        _additives = additives ?? [],
+        _sides = sides ?? [],
         _individualRating = individualRating ?? 0,
         _numberOfRatings = numberOfRatings ?? 0,
         _averageRating = averageRating ?? 0,
         _lastServed = lastServed,
         _nextServed = nextServed,
         _relativeFrequency = relativeFrequency,
-        _images = images,
+        _images = images ?? [],
         _numberOfOccurance = numberOfOccurance,
         _isFavorite = isFavorite;
 
@@ -122,9 +122,9 @@ class Meal {
         _allergens = allergens ?? meal.allergens,
         _additives = additives ?? meal.additives,
         _sides = sides ?? meal.sides,
-        _individualRating = individualRating ?? meal.individualRating ?? 0,
-        _numberOfRatings = numberOfRatings ?? meal.numberOfRatings ?? 0,
-        _averageRating = averageRating ?? meal.averageRating ?? 0,
+        _individualRating = individualRating ?? meal.individualRating,
+        _numberOfRatings = numberOfRatings ?? meal.numberOfRatings,
+        _averageRating = averageRating ?? meal.averageRating,
         _lastServed = lastServed ?? meal.lastServed,
         _nextServed = nextServed ?? meal.nextServed,
         _relativeFrequency = relativeFrequency ?? meal.relativeFrequency,
@@ -146,45 +146,6 @@ class Meal {
   /// If the meal is not a favorite, it does nothing.
   void deleteFavorite() {
     _isFavorite = false;
-  }
-
-  /// This method returns the information of the meal that are stored in the database.
-  /// @return The information of the meal that are stored in the database
-  Map<String, dynamic> toMap() {
-    return {
-      'mealID': _id,
-      'name': _name,
-      'foodType': _foodType,
-      ..._price.toMap(),
-      'individualRating': _individualRating,
-      'numberOfRatings': _numberOfRatings,
-      'averageRating': _averageRating,
-      'lastServed': _lastServed,
-      'nextServed': _nextServed,
-      'relativeFrequency': _relativeFrequency,
-    };
-  }
-
-  /// This method returns the additives as a map.
-  /// @return The additives as a map
-  List<Map<String, dynamic>> additiveToMap() {
-    return _additives!
-        .map((additive) => {
-              'mealID': _id,
-              'additive': additive,
-            })
-        .toList();
-  }
-
-  /// This method returns the allerens as a map.
-  /// @return The allergens as a map
-  List<Map<String, dynamic>> allergenToMap() {
-    return _allergens!
-        .map((allergen) => {
-              'mealID': _id,
-              'allergen': allergen,
-            })
-        .toList();
   }
 
   /// This method returns the sides as a map.

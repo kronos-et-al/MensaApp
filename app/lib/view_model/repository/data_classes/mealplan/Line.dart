@@ -23,17 +23,6 @@ class Line {
         _canteen = canteen,
         _position = position;
 
-  /// This method returns all attributes needed for the database.
-  /// @return All attributes needed for the database
-  Map<String, dynamic> toMap() {
-    return {
-      'lineID': _id,
-      'name': _name,
-      'canteenID': _canteen.id,
-      'position': _position,
-    };
-  }
-
   /// This method returns the id of the line.
   /// @return The id of the line
   String get id => _id;

@@ -63,18 +63,6 @@ class Side {
   /// @return The id of the side
   String get id => _id;
 
-  /// This method returns all attributes needed for the database.
-  /// @return All attributes needed for the database
-  Map<String, dynamic> toMap() {
-    return {
-      'sideID': _id,
-      'mealID': 0, // TODO implement mealID
-      'name': _name,
-      'foodType': _foodType,
-      ..._price.toMap(),
-    };
-  }
-
   /// This method returns the additives as a map.
   /// @return The additives as a map
   List<Map<String, dynamic>> additiveToMap() {

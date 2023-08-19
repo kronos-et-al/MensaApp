@@ -71,12 +71,4 @@ class ImageData {
     }
     _individualRating = value;
   }
-
-  /// The method returns the information that are stored in a map.
-  Map<String, dynamic> toMap() {
-    return {
-      'imageID': _id,
-      'url': _url,
-    };
-  }
 }
