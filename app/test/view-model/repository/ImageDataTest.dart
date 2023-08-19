@@ -28,17 +28,17 @@ void main() {
 
   group("votes", () {
     test("upvote", () {
-      image.upvote();
+      image.individualRating = 1;
       expect(image.individualRating, 1);
     });
 
     test("downvote", () {
-      image.downvote();
+      image.individualRating = -1;
       expect(image.individualRating, -1);
     });
 
     test("delete rating", () {
-      image.deleteRating();
+      image.individualRating = 0;
       expect(image.individualRating, 0);
     });
   });

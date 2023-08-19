@@ -215,4 +215,26 @@ void main() {
       expect(meal.isFavorite, false);
     });
   });
+
+  group("setter", () {
+    test("numberOfRatins", () {
+      meal.numberOfRatings = 10;
+      expect(meal.numberOfRatings, 10);
+    });
+
+    test("individual Rating", () {
+      meal.numberOfRatings = 3;
+      expect(meal.numberOfRatings, 3);
+    });
+
+    test("averageRating", () {
+      meal.averageRating = 3;
+      expect(meal.numberOfRatings, 3);
+    });
+  });
+
+  test("remove image", () {
+    meal.removeImage(images[0]);
+    expect(meal.images?.isEmpty, isTrue);
+  });
 }
