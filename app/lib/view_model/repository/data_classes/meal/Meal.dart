@@ -17,9 +17,9 @@ class Meal {
   final List<Additive>? _additives;
   final List<Side>? _sides;
 
-  int? _individualRating;
-  int? _numberOfRatings;
-  double? _averageRating;
+  int _individualRating;
+  int _numberOfRatings;
+  double _averageRating;
   final DateTime? _lastServed;
   final DateTime? _nextServed;
   final Frequency? _relativeFrequency;
@@ -68,9 +68,9 @@ class Meal {
         _allergens = allergens,
         _additives = additives,
         _sides = sides,
-        _individualRating = individualRating,
-        _numberOfRatings = numberOfRatings,
-        _averageRating = averageRating,
+        _individualRating = individualRating ?? 0,
+        _numberOfRatings = numberOfRatings ?? 0,
+        _averageRating = averageRating ?? 0,
         _lastServed = lastServed,
         _nextServed = nextServed,
         _relativeFrequency = relativeFrequency,
@@ -122,9 +122,9 @@ class Meal {
         _allergens = allergens ?? meal.allergens,
         _additives = additives ?? meal.additives,
         _sides = sides ?? meal.sides,
-        _individualRating = individualRating ?? meal.individualRating,
-        _numberOfRatings = numberOfRatings ?? meal.numberOfRatings,
-        _averageRating = averageRating ?? meal.averageRating,
+        _individualRating = individualRating ?? meal.individualRating ?? 0,
+        _numberOfRatings = numberOfRatings ?? meal.numberOfRatings ?? 0,
+        _averageRating = averageRating ?? meal.averageRating ?? 0,
         _lastServed = lastServed ?? meal.lastServed,
         _nextServed = nextServed ?? meal.nextServed,
         _relativeFrequency = relativeFrequency ?? meal.relativeFrequency,
@@ -217,15 +217,15 @@ class Meal {
 
   /// This method returns the individual rating of the meal.
   /// @return The individual rating of the meal
-  int? get individualRating => _individualRating;
+  int get individualRating => _individualRating;
 
   /// This method returns the number of ratings of the meal.
   /// @return The number of ratings of the meal
-  int? get numberOfRatings => _numberOfRatings;
+  int get numberOfRatings => _numberOfRatings;
 
   /// This method returns the average rating of the meal.
   /// @return The average rating of the meal
-  double? get averageRating => _averageRating;
+  double get averageRating => _averageRating;
 
   /// This method returns the date when the meal was last served.
   /// @return The date when the meal was last served
@@ -248,7 +248,7 @@ class Meal {
   bool get isFavorite => _isFavorite ?? false;
 
 
-  set individualRating(int? value) {
+  set individualRating(int value) {
     _individualRating = value;
   }
 
@@ -260,11 +260,11 @@ class Meal {
   @override
   int get hashCode => _id.hashCode;
 
-  set numberOfRatings(int? value) {
+  set numberOfRatings(int value) {
     _numberOfRatings = value;
   }
 
-  set averageRating(double? value) {
+  set averageRating(double value) {
     _averageRating = value;
   }
 

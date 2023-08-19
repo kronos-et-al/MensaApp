@@ -35,7 +35,7 @@ class MensaFilterIconCheckboxGroup<T> extends StatelessWidget {
     print('spacing: $spacing');
     return Wrap(
         runAlignment: WrapAlignment.center,
-        spacing: spacing.floorToDouble(),
+        spacing: spacing,
         runSpacing: 8,
         children: _items
             .map((e) => e.build(context, _selectedValues.contains(e.value), () {
