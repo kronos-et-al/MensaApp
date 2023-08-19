@@ -31,16 +31,6 @@ abstract class IDatabaseAccess {
   /// @return The favorite meal with the committed id or an error
   Future<Result<Meal, Exception>> getMealFavorite(String id);
 
-  /// This method returns a favorite meals line.
-  /// @param the meal whose line is requested
-  /// @return the line that once offered the meal
-  Future<Line?> getFavoriteMealsLine(Meal meal);
-
-  /// this method returns a favorite meals date.
-  /// @param the meal whose date is requested
-  /// @return the date that once had offered the meal
-  Future<DateTime?> getFavoriteMealsDate(Meal meal);
-
   /// This method adds a favorite. If the favorite does already exists, it does nothing.
   /// @param meal The meal that should be added as favorite
   /// @return The result of the update

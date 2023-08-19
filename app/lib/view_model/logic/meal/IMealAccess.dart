@@ -22,12 +22,6 @@ abstract class IMealAccess with ChangeNotifier {
   ///
   Future<Result<Meal, NoMealException>> getMeal(Meal meal);
 
-  /// This method returns the meal with the committed id form the database.
-  /// If the requested data is not stored there, the data is requested from the server.
-  /// @param id The id of the meal
-  /// @return The meal with the committed id or an error
-  Future<Result<Meal, Exception>> getWholeFavorite(String id);
-
   /// This method updates all meal plans of the committed date of the committed canteen.
   /// It returns a string that should be displayed in a temporal message or null.
   /// @param date The date of the mealplan

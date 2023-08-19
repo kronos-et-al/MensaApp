@@ -149,38 +149,6 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   }
 
   @override
-  Future<Result<Meal, Exception>> getWholeFavorite(String id) async {
-    await _doneInitialization;
-
-    final meal = switch (await _database.getMealFavorite(id)) {
-      Success(value: final value) => value,
-      Failure() => null
-    };
-
-    if (meal == null) {
-      return Failure(NoMealException("no meal"));
-    }
-
-    final line = await _database.getFavoriteMealsLine(meal);
-    final date = await _database.getFavoriteMealsDate(meal);
-
-    if (line == null || date == null) {
-      return Failure(NoMealException("no meal"));
-    }
-
-    final mealFromServer = switch (await _api.getMeal(meal, line, date)) {
-      Success(value: final value) => value,
-      Failure() => null
-    };
-
-    if (mealFromServer == null) {
-      return Failure(NoMealException("no meal"));
-    }
-
-    return Success(mealFromServer);
-  }
-
-  @override
   Future<Result<List<MealPlan>, MealPlanException>> getMealPlan() async {
     await _doneInitialization;
 
