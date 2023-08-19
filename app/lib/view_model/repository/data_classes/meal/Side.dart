@@ -63,28 +63,6 @@ class Side {
   /// @return The id of the side
   String get id => _id;
 
-  /// This method returns the additives as a map.
-  /// @return The additives as a map
-  List<Map<String, dynamic>> additiveToMap() {
-    return _additives
-        .map((additive) => {
-              'sideID': _id,
-              'additive': additive,
-            })
-        .toList();
-  }
-
-  /// This method returns the allerens as a map.
-  /// @return The allergens as a map
-  List<Map<String, dynamic>> allergenToMap() {
-    return _allergens
-        .map((allergen) => {
-              'sideID': _id,
-              'allergen': allergen,
-            })
-        .toList();
-  }
-
   /// This method returns the name of the side.
   /// @return The name of the side
   String get name => _name;
