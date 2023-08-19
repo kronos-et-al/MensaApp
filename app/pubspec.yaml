@@ -57,6 +57,7 @@ dependencies:
   uuid: ^3.0.7
   package_info_plus: ^4.0.2
   url_launcher: ^6.1.12
+  sqlite3_flutter_libs: ^0.5.15
 
 dev_dependencies:
   integration_test:
