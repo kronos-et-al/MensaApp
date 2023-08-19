@@ -376,9 +376,25 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   }
 
   Future<void> _changeRatingOfMeal(Meal changedMeal, int rating) async {
-    int numberOfRatings = changedMeal.numberOfRatings! + (changedMeal.individualRating != 0 ? -1 : 0);
-    double clearedRating = ((changedMeal.averageRating! * changedMeal.numberOfRatings!) - changedMeal.individualRating!) / numberOfRatings;
-    double newRating = ((clearedRating * numberOfRatings) + rating) / (numberOfRatings + 1);
+    int numberOfRatings;
+    double clearedRating;
+    double newRating;
+    if (changedMeal.numberOfRatings > 0 && (changedMeal.numberOfRatings > 1 || changedMeal.individualRating == 0)) {
+      numberOfRatings = changedMeal.numberOfRatings! + (changedMeal.individualRating != 0 ? -1 : 0);
+      clearedRating = ((changedMeal.averageRating! * changedMeal.numberOfRatings!) - changedMeal.individualRating!) / numberOfRatings;
+      newRating = ((clearedRating * numberOfRatings) + rating) / (numberOfRatings + 1);
+    } else {
+      if (changedMeal.individualRating == 0) {
+        numberOfRatings = 1;
+        clearedRating = rating.toDouble();
+        newRating = rating.toDouble();
+      } else {
+        numberOfRatings = changedMeal.numberOfRatings;
+        clearedRating = 0;
+        newRating = rating.toDouble();
+      }
+
+    }
     Meal newMeal = Meal.copy(meal: changedMeal, averageRating: newRating, numberOfRatings: numberOfRatings + 1, individualRating: rating);
     await _database.updateMeal(newMeal);
     changedMeal.averageRating = newRating;
