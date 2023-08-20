@@ -24,7 +24,7 @@ async fn setup() -> Scheduler {
     let info = ScheduleInfo {
         full_parse_schedule: "* * * * * 0".to_string(),
         update_parse_schedule: "* * * * * 0".to_string(),
-        image_review_schedule: "*/5 * * * * *".to_string(),
+        image_review_schedule: "0 */5 * * * *".to_string(),
     };
     let reader = ConfigReader::default();
     let database_factory = DataAccessFactory::new(reader.read_database_info().unwrap(), false)
