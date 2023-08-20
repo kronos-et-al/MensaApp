@@ -99,15 +99,20 @@ mod tests {
         let factory = DataAccessFactory::new(info, true)
             .await
             .expect("failed to access test database");
-        let _ = factory.get_command_data_access();
-        let _ = factory.get_image_review_data_access();
-        let _ = factory.get_mealplan_management_data_access();
-        let _ = factory.get_request_data_access();
+        let command_data_access = factory.get_command_data_access();
+        let image_review_data_access = factory.get_image_review_data_access();
+        let mealplan_management_data_access = factory.get_mealplan_management_data_access();
+        let request_data_access = factory.get_request_data_access();
 
         std::mem::drop(factory); // drop database connection
 
         sqlx::Postgres::drop_database(&connection)
             .await
             .expect("failed to delete test database");
+
+        assert!(command_data_access.pool.is_closed());
+        assert!(image_review_data_access.pool.is_closed());
+        assert!(mealplan_management_data_access.pool.is_closed());
+        assert!(request_data_access.pool.is_closed());
     }
 }

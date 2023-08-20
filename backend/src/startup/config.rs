@@ -176,7 +176,5 @@ mod tests {
         reader.read_mail_info().ok();
         reader.read_schedule_info().ok();
         reader.read_swka_info().ok();
-        let _ = reader.should_migrate();
-        let _ = reader.should_print_help();
     }
 }
