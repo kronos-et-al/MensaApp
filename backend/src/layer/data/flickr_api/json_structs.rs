@@ -68,6 +68,7 @@ pub struct JsonRootLicense {
 pub struct LicenceHistory {
     pub date_change: u64,
     pub new_license: String,
+    pub old_license: String,
 }
 
 /// Example for an error response structure:
