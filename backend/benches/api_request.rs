@@ -124,7 +124,7 @@ fn bench(c: &mut Criterion) {
     });
 
     let mut group = c.benchmark_group("many_requests");
-    for size in [1, 5, 10, 20, 50].iter() {
+    for size in [1, 5, 10, 20].iter() {
         group.throughput(Throughput::Elements(*size as u64));
         group.bench_with_input(BenchmarkId::from_parameter(size), size, |b, &size| {
             b.to_async(&runtime).iter(|| async {
@@ -141,5 +141,5 @@ fn bench(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(name = group; config = Criterion::default(); targets = bench);
+criterion_group!(name = group; config = Criterion::default().sample_size(50); targets = bench);
 criterion_main!(group);

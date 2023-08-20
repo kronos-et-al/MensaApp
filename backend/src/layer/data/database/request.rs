@@ -182,8 +182,8 @@ impl RequestDataAccess for PersistentRequestData {
             r#"
             SELECT food_id, name, food_type as "meal_type: MealType", 
             price_student, price_employee, price_guest, price_pupil
-            FROM food JOIN food_plan USING (food_id)
-            WHERE line_id = $1 AND serve_date = $2 AND food_id NOT IN (SELECT food_id FROM meal)
+            FROM food JOIN food_plan USING (food_id) LEFT JOIN meal m USING(food_id)
+            WHERE line_id = $1 AND serve_date = $2 AND m.food_id IS NULL
             ORDER BY food_id
             "#,
             line_id,
