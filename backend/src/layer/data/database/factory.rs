@@ -69,9 +69,7 @@ impl DataAccessFactory {
     /// Returns a object for accessing database requests for api requests.
     #[must_use]
     pub fn get_request_data_access(&self) -> PersistentRequestData {
-        PersistentRequestData {
-            pool: self.pool.clone(),
-        }
+        PersistentRequestData::new(self.pool.clone())
     }
 }
 
