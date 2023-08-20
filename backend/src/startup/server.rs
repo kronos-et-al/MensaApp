@@ -59,6 +59,7 @@ impl Server {
     /// # Errors
     /// - when the the config could not read environment variables
     /// - when crating a component fails
+    #[allow(clippy::cognitive_complexity)]
     pub async fn run() -> Result<()> {
         let config = ConfigReader::default();
 
