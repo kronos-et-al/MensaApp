@@ -71,4 +71,14 @@ class ImageData {
     }
     _individualRating = value;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ImageData &&
+          runtimeType == other.runtimeType &&
+          _id == other._id;
+
+  @override
+  int get hashCode => _id.hashCode;
 }
