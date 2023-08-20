@@ -101,6 +101,7 @@ impl MailSender {
             ("negative_rating_count", &info.negative_rating_count),
             ("get_image_rank", &info.get_image_rank),
             ("report_barrier", &info.report_barrier),
+            ("client_id", &info.client_id),
         ];
 
         let info_map = info_array_map
@@ -176,6 +177,10 @@ mod test {
             report.contains(info.report_barrier.to_string().as_str()),
             "the template must contain all of the information from the report info"
         );
+        assert!(
+            report.contains(info.client_id.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
     }
 
     #[tokio::test]
@@ -217,6 +222,7 @@ mod test {
             negative_rating_count: 20,
             get_image_rank: 1.0,
             report_barrier: 1,
+            client_id: Uuid::default(),
         }
     }
 

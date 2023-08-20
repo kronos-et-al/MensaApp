@@ -116,6 +116,7 @@ where
                 negative_rating_count: info.downvotes,
                 get_image_rank: info.rank,
                 report_barrier: Self::get_report_barrier(info.upload_date),
+                client_id: auth_info.client_id,
             };
 
             self.admin_notification
