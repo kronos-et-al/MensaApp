@@ -12,7 +12,7 @@ use mensa_app_backend::{
         logic::api_command::command_handler::CommandHandler,
     },
     startup::config::ConfigReader,
-    util::Uuid,
+    util::{Uuid, ReportReason},
 };
 
 #[tokio::test]
@@ -29,6 +29,23 @@ async fn test_add_image() {
         .unwrap();
 }
 
+
+#[tokio::test]
+#[ignore = "manual test"]
+async fn test_report_image() {
+    let cmd = setup_cmd().await;
+
+    let image_id = Uuid::try_from("1b8f373b-7383-4a3a-9818-e0137fd164b7").unwrap();
+
+    let reason = ReportReason::NoMeal;
+
+    let auth_info = get_auth_info("rxGJ5jz4aMwklyzFxZq6eHlySLuuPyv2+ixnzz8hDB2UQ+KuiJOaLKtINJh/iPZmgAEipA7E/ADceiFSO1RWmQ==");
+
+    cmd.report_image(image_id, reason, auth_info).await.unwrap();
+}
+
+
+
 async fn setup_cmd() -> impl Command {
     let reader = ConfigReader::default();
 
@@ -40,8 +57,6 @@ async fn setup_cmd() -> impl Command {
     let data = factory.get_command_data_access();
     CommandHandler::new(data, mail, hoster).await.unwrap()
 }
-
-
 
 
 fn get_auth_info(hash: &str) -> AuthInfo {
