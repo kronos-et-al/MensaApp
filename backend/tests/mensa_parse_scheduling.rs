@@ -12,12 +12,15 @@ use mensa_app_backend::{
 };
 use tokio::signal::ctrl_c;
 
+const NEVER: &str = "* * * 31 2 *";
+
 #[tokio::test]
+#[ignore = "manual test"]
 async fn test_full_mensa_parse_scheduling() {
     let info = ScheduleInfo {
         full_parse_schedule: "0 */5 * * * *".to_string(),
-        update_parse_schedule: "* * * * 0 *".to_string(),
-        image_review_schedule: "* * * * 0 *".to_string(),
+        update_parse_schedule: NEVER.to_string(),
+        image_review_schedule: NEVER.to_string(),
     };
     let mut scheduler = setup(info).await;
     scheduler.start().await;
@@ -26,11 +29,12 @@ async fn test_full_mensa_parse_scheduling() {
 }
 
 #[tokio::test]
+#[ignore = "manual test"]
 async fn test_update_mensa_parse_scheduling() {
     let info = ScheduleInfo {
-        full_parse_schedule: "* * * * 0 *".to_string(),
+        full_parse_schedule: NEVER.to_string(),
         update_parse_schedule: "0 */5 * * * *".to_string(),
-        image_review_schedule: "* * * * 0 *".to_string(),
+        image_review_schedule: NEVER.to_string(),
     };
     let mut scheduler = setup(info).await;
     scheduler.start().await;
