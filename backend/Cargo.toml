@@ -44,6 +44,10 @@ serial_test = "2.0.0"
 rand = "0.8.0"
 tracing-test = "0.2.4"
 rusty-fork = "0.3.0"
+criterion = {version = "0.5", features = ["async_tokio"]}
+gql_client = "1.0"
+serde = "1.0"
+chrono = {version = "0.4", features = ["serde"]}
 
 [[bin]]
 name = "graphql_mock"
@@ -51,3 +55,11 @@ path = "src/layer/trigger/graphql/bin.rs"
 
 [profile.dev.package.sqlx-macros]
 opt-level = 3
+
+[[bench]]
+name = "api_request"
+harness = false
+
+# remove
+[profile.release]
+debug = true
