@@ -13,6 +13,7 @@ use mensa_app_backend::{
 use tokio::signal::ctrl_c;
 
 #[tokio::test]
+#[ignore = "manual test"]
 async fn test_image_scheduling() {
     let mut scheduler = setup().await;
     scheduler.start().await;
@@ -22,8 +23,8 @@ async fn test_image_scheduling() {
 
 async fn setup() -> Scheduler {
     let info = ScheduleInfo {
-        full_parse_schedule: "* * * * * 0".to_string(),
-        update_parse_schedule: "* * * * * 0".to_string(),
+        full_parse_schedule: "* * * * 1 *".to_string(),
+        update_parse_schedule: "* * * * 1 *".to_string(),
         image_review_schedule: "0 */5 * * * *".to_string(),
     };
     let reader = ConfigReader::default();
