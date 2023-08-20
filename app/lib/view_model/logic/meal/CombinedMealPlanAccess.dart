@@ -86,27 +86,21 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       Failure() => []
     };
 
-    if (_mealPlans.isNotEmpty) {
-      await _filterMealPlans();
-      await _setNewMealPlan();
-      return;
-    }
-
     // get meal plans form server
-    List<MealPlan> mealPlans = switch (await _api.updateAll()) {
+    List<MealPlan> mealPlans =  switch (await _api.updateAll()) {
       Success(value: final mealplan) => mealplan,
       Failure(exception: final exception) =>
-        _convertMealPlanExceptionToMealPlan(exception)
+          _convertMealPlanExceptionToMealPlan(exception)
     };
 
     // update all if connection to server is successful
     if (mealPlans.isNotEmpty) {
       _database.updateAll(mealPlans);
+      _mealPlans = mealPlans;
     }
 
     // filter meal plans
     await _filterMealPlans();
-    await _setNewMealPlan();
   }
 
   @override
@@ -146,38 +140,6 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     await _filterMealPlans();
 
     notifyListeners();
-  }
-
-  @override
-  Future<Result<Meal, Exception>> getWholeFavorite(String id) async {
-    await _doneInitialization;
-
-    final meal = switch (await _database.getMealFavorite(id)) {
-      Success(value: final value) => value,
-      Failure() => null
-    };
-
-    if (meal == null) {
-      return Failure(NoMealException("no meal"));
-    }
-
-    final line = await _database.getFavoriteMealsLine(meal);
-    final date = await _database.getFavoriteMealsDate(meal);
-
-    if (line == null || date == null) {
-      return Failure(NoMealException("no meal"));
-    }
-
-    final mealFromServer = switch (await _api.getMeal(meal, line, date)) {
-      Success(value: final value) => value,
-      Failure() => null
-    };
-
-    if (mealFromServer == null) {
-      return Failure(NoMealException("no meal"));
-    }
-
-    return Success(mealFromServer);
   }
 
   @override
@@ -232,7 +194,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       }
     }
 
-    return _database.getMeal(meal);
+    return await _database.getMeal(meal);
   }
 
   @override
@@ -248,8 +210,6 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     await _database.updateAll(mealPlan);
 
     _mealPlans = mealPlan;
-
-    await _setNewMealPlan();
 
     await _filterMealPlans();
 
@@ -352,12 +312,6 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       return;
     }
 
-    /*for (final mealPlan in _mealPlans) {
-      if (mealPlan.isClosed && _mealPlans.length > 1) {
-        _mealPlans.remove(mealPlan);
-      }
-    }*/
-
     _mealPlans = _mealPlans.where((element) => !element.isClosed).toList();
 
     _activeFilter = false;
@@ -448,7 +402,12 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       if (_filter.ascending) {
         return mealPlans;
       }
-      return List.from(mealPlans.reversed);
+
+      List<MealPlan> reversed = List<MealPlan>.empty(growable: true);
+      for (MealPlan mealPlan in mealPlans) {
+        reversed.add(MealPlan.copy(mealPlan: mealPlan, meals: List.from(mealPlan.meals.reversed)));
+      }
+      return List.from(reversed.reversed);
     }
 
     // give each meal is own meal plan for sorting
@@ -505,8 +464,13 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     if (_filter.ascending) {
       return sorted;
     }
+
     //sort descending
-    return List.from(sorted.reversed);
+    List<MealPlan> reversed = List<MealPlan>.empty(growable: true);
+    for (MealPlan mealPlan in sorted) {
+      reversed.add(MealPlan.copy(mealPlan: mealPlan, meals: List.from(mealPlan.meals.reversed)));
+    }
+    return List.from(reversed.reversed);
   }
 
   Future<void> _filterSides(Meal meal, List<Side>? sides) async {
@@ -567,7 +531,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     }
 
     // check rating
-    if (meal.averageRating != null && meal.averageRating != 0 && meal.averageRating! < _filter.rating.toDouble()) {
+    if (meal.averageRating != 0 && meal.averageRating! < _filter.rating.toDouble()) {
       return false;
     }
 
@@ -693,6 +657,6 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
   @override
   Future<void> removeImage(ImageData image) async {
-
+    //Todo
   }
 }
