@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use chrono::Local;
 use futures::future::join_all;
 use thiserror::Error;
-use tracing::warn;
+use tracing::{info, warn};
 
 use crate::interface::{
     image_hoster::{ImageHoster, ImageHosterError},
@@ -100,6 +100,10 @@ where
             self.data_access.mark_as_checked(image.id).await?;
         } else {
             self.data_access.delete_image(image.id).await?;
+            info!(
+                ?image,
+                "Deleted image {} as it does not exist at the hoster anymore", image.id
+            );
         }
         Ok(())
     }

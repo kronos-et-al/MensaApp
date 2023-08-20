@@ -1,5 +1,6 @@
 use async_trait::async_trait;
 use chrono::Local;
+use tracing::info;
 
 use crate::{
     interface::{
@@ -103,6 +104,7 @@ where
             let will_be_hidden = Self::will_be_hidden(&info);
             if will_be_hidden {
                 self.command_data.hide_image(image_id).await?;
+                info!(image = ?info, "Automatically hid image {image_id} because reported {} times.", info.report_count);
             }
             let report_info = ImageReportInfo {
                 reason,
@@ -113,6 +115,7 @@ where
                 positive_rating_count: info.upvotes,
                 negative_rating_count: info.downvotes,
                 get_image_rank: info.rank,
+                report_barrier: Self::get_report_barrier(info.upload_date),
             };
 
             self.admin_notification

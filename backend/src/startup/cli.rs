@@ -22,7 +22,10 @@ pub fn print_help() {
     println!("For more information, ");
     println!("see {}", env!("CARGO_PKG_REPOSITORY"));
     println!();
-    println!("{}", format!("Licensed under the {} license.", env!("CARGO_PKG_LICENSE")).italic());
+    println!(
+        "{}",
+        format!("Licensed under the {} license.", env!("CARGO_PKG_LICENSE")).italic()
+    );
     println!();
     println!();
     println!("{}", "Available commands:".blue());
