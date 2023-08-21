@@ -5,9 +5,9 @@ import 'package:app/view_model/repository/data_classes/settings/MensaColorScheme
 import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class SharedPreferencesMock extends Mock implements SharedPreferences {}
+import '../model/mocks/SharedPreferencesMock.dart';
+
 
 void main() {
   SharedPreferencesMock mock = SharedPreferencesMock();
