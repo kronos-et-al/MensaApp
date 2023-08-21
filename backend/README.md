@@ -3,6 +3,50 @@ Backend application for providing and synchronizing meal plan data of the cantee
 
 [^1]: https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/
 
+## Environment variables
+To pass configuration options to the backend application environment variables are used.
+Alternatively, a `.env` file can be provided in the current execution directory.
+The following options are available:
+| Name                    | Description                                                                                                                                                                                                                                                                                    | Default / Required                                                                                                           |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `LOG_CONFIG`            | Configure which messages are logged. Fore more information on the used syntax, see [here](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html#directives). You may want to set this to `warn,mensa_app_backend=trace` to enable all messages we produce. | `warn,mensa_app_backend=info`                                                                                                |
+| `DATABASE_URL`          | Connection information to for the datebase. Format: `postgres://[<username>[:<password>]@]<host>[:<port>]/<database>`. Must be a [postgresql](https://www.postgresql.org/) database.                                                                                                           | required                                                                                                                     |
+| `ADMIN_EMAIL`           | Email address to send notifications to (when images are reported)                                                                                                                                                                                                                              | required                                                                                                                     |
+| `SMTP_SERVER`           | Name of SMTP server used for sending emails                                                                                                                                                                                                                                                    | required                                                                                                                     |
+| `SMTP_PORT`             | Port of SMTP server                                                                                                                                                                                                                                                                            | `465`                                                                                                                        |
+| `SMTP_USERNAME`         | Username to access the SMTP server. Often, this is the email address of the sender.                                                                                                                                                                                                            | required                                                                                                                     |
+| `SMTP_PASSWORD`         | Password to access the SMTP server.                                                                                                                                                                                                                                                            | required                                                                                                                     |
+| `FULL_PARSE_SCHEDULE`   | [Cron](https://cron.help/)-**like** schedule for when to run a full parsing to get the meal plans for the next three weeks. **A sixth, first _digit_ specifying the seconds is neccessary!**                                                                                                   | `0 0 2 * * *`                                                                                                                |
+| `UPDATE_PARSE_SCHEDULE` | Schedule for when to update the melplan for the current day. Same format as `FULL_PARSE_SCHEDULE`                                                                                                                                                                                              | `0 */15 10-15 * * *`                                                                                                         |
+| `IMAGE_REVIEW_SCHEDULE` | Schedule for when to check if images still exists at flickr. Same format as `FULL_PARSE_SCHEDULE`                                                                                                                                                                                              | `0 0 2 * * *`                                                                                                                |
+| `FLICKR_API_KEY`        | API key from [flickr](https://www.flickr.com/), you can request one [here](https://www.flickr.com/services/api/misc.api_keys.html). Sometimes called public key.                                                                                                                               | required                                                                                                                     |
+| `CLIENT_TIMEOUT`        | Timeout in ms for requesting the webpage containing the meal plan.                                                                                                                                                                                                                             | `6000`                                                                                                                       |
+| `MENSA_BASE_URL`        | Base URL where meal plans are requested. It excludes the canteens name, which will be appended later on.                                                                                                                                                                                       | `https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/`                                                                   |
+| `CANTEENS`              | Comma (`,`) separated list of canteens which should be requested and parsed. These are appended on the `MENSA_BASE_URL`.                                                                                                                                                                       | `mensa_adenauerring,mensa_gottesaue,mensa_moltke,mensa_x1moltkestrasse,mensa_erzberger,mensa_tiefenbronner,mensa_holzgarten` |
+| `USER_AGENT`            | [User agent](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent) used for requesting meal plan data. Fore some reason, this can not be empty.                                                                                                                                | `MensaKa <version>`, where `<version>` is the current version of the application (as specified in the rust crate)            |
+| `HTTP_PORT`             | Port to listen on for API requests                                                                                                                                                                                                                                                             | `80`                                                                                                                         |
+## Command line arguments
+```
+==================================================
+   MensaApp Backend v0.1 🥘
+==================================================
+This binary runs the backend to for the mensa app,
+including a graphql server.
+For more information,
+see https://github.com/kronos-et-al/MensaApp
+
+Licensed under the MIT license.
+
+
+Available commands:
+help      --help -h -?
+          shows this page
+
+migrate   --migrate
+          runs the database migrations
+          before continuing like normal
+
+```
 
 ## Deploy using Docker
 The docker container can be run using 

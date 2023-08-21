@@ -12,7 +12,7 @@ use crate::{
 };
 
 use string_template::Template;
-use tracing::{info, warn, error};
+use tracing::{error, info};
 
 pub type MailResult<T> = std::result::Result<T, MailError>;
 
