@@ -60,6 +60,10 @@ opt-level = 3
 name = "api_request"
 harness = false
 
+[[bench]]
+name = "database"
+harness = false
+
 # remove
 [profile.release]
 debug = true
