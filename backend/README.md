@@ -3,6 +3,7 @@ Backend application for providing and synchronizing meal plan data of the cantee
 
 [^1]: https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/
 
+If you just want to use the (Android, iOS) App, the following is not necessary.
 
 ## Running the backend yourself
 
@@ -32,10 +33,11 @@ docker run -d --name mens-app-backend \
 
 Running the container requires a postgres database, connection to a mail server and a flickr api key.
 
+### Run the binary
+Alternatively, you can also just build yourself and run the binary. See [below](#building-the-backend) for building the backend yourself.
 
 ### Environment variables
 To pass configuration options to the backend application environment variables are used.
-Alternatively, a `.env` file can be provided in the current execution directory.
 The following options are available:
 | Name                    | Description                                                                                                                                                                                                                                                                                    | Default / Required                                                                                                           |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -60,31 +62,9 @@ The following options are available:
 
 ## Building the backend
 
-### First Setup
-To compile the backend, you need cargo, you can install it here: https://www.rust-lang.org/tools/install.
-
-For writing rust code, VSCode with the `rust-analyzer` extension is recommended.
-It is also recommended to set the `rust-analyzer.check.command` setting to `clippy`
-
-#### Environment Variables
-For deployment of the server, initial settings like API tokens and other access information are passed as environment variables.
-To make development easier, these can also be defined textually in a `.env` file. A preset with all available options is provided as `.env.default`. The `.env` file is the **only place you can put credentials safely** so that they get not published in the _public_ git repository.
-
-#### Database
-If you work on database parts, you need to setup a local dev database first:
-1. Setup your environment variable for the database in the `.env` file. The default should be ok when you use the command below for your database.
-
-2. Install docker and run to spun up a database:
-    ```bash
-    docker run -itd -e POSTGRES_USER=postgres_user -e POSTGRES_PASSWORD=secret_password -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=mensa_app -p 5432:5432 -v data:/var/lib/postgresql/data --name postgresql postgres
-    ```
-    This runs a postgres database as a docker container.
-    To setup all relations install `cargo install sqlx-cli` and run `cargo sqlx mig run`.
-
-3. If you want to reset the database (because you changed the migrations) run `sqlx database reset`
-
-
 ### Run the backend
+You need to install rust and cargo.
+
 - Run `cargo run --bin mensa-app-backend` to build and run the backend.
 
 #### Command line arguments
@@ -117,15 +97,34 @@ To run a mock version of the graphql server, run `cargo run --bin graphql_mock`.
 The documentation can be accessed with `cargo doc --open`.
 
 
-### Build Docker
-1. To build the docker container, run `docker build . -t ghcr.io/kronos-et-al/mensa-app:<verion>` where `<version>` is of format `x.y` or `pre_x.y` for pre-releases.
-2. To deploy to ghc login using `docker login ghcr.io -u <username> --password-stdin` and provide access token with necessary permission.
-3. Publish using `docker push ghcr.io/kronos-et-al/mensa-app:<version>`
-
-
-
 
 ## Contribution
+
+### First Setup
+To compile the backend, you need cargo, you can install it here: https://www.rust-lang.org/tools/install.
+
+For writing rust code, VSCode with the `rust-analyzer` extension is recommended.
+It is also recommended to set the `rust-analyzer.check.command` setting to `clippy`
+
+#### Environment Variables
+For deployment of the server, initial settings like API tokens and other access information are passed as environment variables.
+To make development easier, these can also be defined textually in a `.env` file. A preset with all available options is provided as `.env.default`. The `.env` file is the **only place you can put credentials safely** so that they get not published in the _public_ git repository.
+
+#### Database
+If you work on database parts, you need to setup a local dev database first:
+1. Setup your environment variable for the database in the `.env` file. The default should be ok when you use the command below for your database.
+
+2. Install docker and run to spun up a database:
+    ```bash
+    docker run -itd -e POSTGRES_USER=postgres_user -e POSTGRES_PASSWORD=secret_password -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=mensa_app -p 5432:5432 -v data:/var/lib/postgresql/data --name postgresql postgres
+    ```
+    This runs a postgres database as a docker container.
+    To setup all relations install `cargo install sqlx-cli` and run `cargo sqlx mig run`.
+
+3. If you want to reset the database (because you changed the migrations) run `sqlx database reset`
+
+### Pre-submission checklist
+
 Before submitting changes to the code, you should run
 - `cargo fmt` to format all code files.
 - `cargo clippy` to check for errors and recommendations.
@@ -149,3 +148,9 @@ The following log levels are available:
 To show test coverage, you need to install `cargo install cargo-tarpaulin`. Then you can run `cargo tarpaulin --out Lcov` to generate coverage info.
 to view these information, you can install the VSCode plugin "Coverage Gutters". It should work out of the box with the installed files.
 
+
+
+### Build Docker
+1. To build the docker container, run `docker build . -t ghcr.io/kronos-et-al/mensa-app:<verion>` where `<version>` is of format `x.y` or `pre_x.y` for pre-releases.
+2. To deploy to ghc login using `docker login ghcr.io -u <username> --password-stdin` and provide access token with necessary permission.
+3. Publish using `docker push ghcr.io/kronos-et-al/mensa-app:<version>`
