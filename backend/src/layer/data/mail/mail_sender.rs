@@ -12,7 +12,7 @@ use crate::{
 };
 
 use string_template::Template;
-use tracing::{info, warn};
+use tracing::{info, warn, error};
 
 pub type MailResult<T> = std::result::Result<T, MailError>;
 
@@ -43,7 +43,7 @@ pub struct MailSender {
 impl AdminNotification for MailSender {
     async fn notify_admin_image_report(&self, info: ImageReportInfo) {
         if let Err(error) = self.try_notify_admin_image_report(&info) {
-            warn!("Error notifying administrator: {error}");
+            error!("Error notifying administrator: {error}");
         }
     }
 }

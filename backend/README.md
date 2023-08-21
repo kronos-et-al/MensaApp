@@ -35,13 +35,13 @@ The documentation can be accessed with `cargo doc --open`.
 ## Logging
 Whenever an action of importance happens or a silent error occurs (which does not get transported to the next upper layer) a logging message shall get produced.
 The following log levels are available:
-| level | syntax         | usecase                                                                                                                    |
-| ----- | -------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| TRACE | `trace!(...);` | Information useful for troubleshooting for developers.                                                                     |
-| DEBUG | `debug!(...);` | Information useful for sys admins when troubleshooting.                                                                    |
-| INFO  | `info!(...);`  | Information which an administrator might want to see but does not mark something going wrong.                              |
-| WARN  | `warn!(...);`  | An error is allowed to occur now and then on some edge cases but has t obe looked after if occurring too often.            |
-| ERROR | `error!(...);` | A fatal error which does _may not_ lead to program termination but is so severe that it should never happen in production. |
+| level | syntax         | usecase                                                                                                                                                                               |
+| ----- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TRACE | `trace!(...);` | Information about things happening in the background like API-Requests or web requests. Enabeling all TRACE messages may result in much noise.                                        |
+| DEBUG | `debug!(...);` | More important information than trace but still not always noteworthy. For example, this includes failed api request.                                                                 |
+| INFO  | `info!(...);`  | Noteworthy information about the state of the system. This is where the server communicates events like successful startup or mealplan parsing.                                       |
+| WARN  | `warn!(...);`  | An error occurred but execution can continue. This includes situations like when a meal could not be resolved and added to the meal plan, but other meals are and will be added fine. |
+| ERROR | `error!(...);` | A fatal error which does _may not_ lead to program termination but marks a serious malcondition. This includes failed sending of an email.                                            |
 
 ## First Setup
 To compile the backend, you need cargo, you can install it here: https://www.rust-lang.org/tools/install.
