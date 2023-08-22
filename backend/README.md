@@ -17,16 +17,16 @@ The easiest way to run the backend is by using [docker compose](https://docs.doc
 
 ### Deploy using Docker
 If you only want to run the backend and want to provide a database by other means, you can run the backend container using:
-(Is you use docker compose, this is not necessary!) 
+(If you use docker compose, this is not necessary!) 
 ```
-docker run -d --name mens-app-backend \
+docker run -d --name mensa-app-backend \
     -p 80:80
     -e DATABASE_URL=postgres://<db user>:<db password>@<db host>/<db port>/<db name>
     -e SMTP_SERVER=<domain of mail server> \
     -e SMTP_PORT=<port of mail server> \
     -e SMTP_USERNAME=<username of mail server> \
     -e SMTP_PASSWORD=<password of mail server> \
-    -e ADMIN_EMAIL=<email address admin notofocations should be send to> \
+    -e ADMIN_EMAIL=<email address admin notifications should be sent to> \
     -e FLICKR_API_KEY=<flickr public api key> \
     ghcr.io/kronos-et-al/mensa-app
 ```
@@ -41,21 +41,21 @@ To pass configuration options to the backend application environment variables a
 The following options are available:
 | Name                    | Description                                                                                                                                                                                                                                                                                    | Default / Required                                                                                                           |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `LOG_CONFIG`            | Configure which messages are logged. Fore more information on the used syntax, see [here](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html#directives). You may want to set this to `warn,mensa_app_backend=trace` to enable all messages we produce. | `warn,mensa_app_backend=info`                                                                                                |
-| `DATABASE_URL`          | Connection information to for the datebase. Format: `postgres://[<username>[:<password>]@]<host>[:<port>]/<database>`. Must be a [postgresql](https://www.postgresql.org/) database.                                                                                                           | required                                                                                                                     |
+| `LOG_CONFIG`            | Configure which messages are logged. For more information on the used syntax, see [here](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html#directives). You may want to set this to `warn,mensa_app_backend=trace` to enable all messages we produce. | `warn,mensa_app_backend=info`                                                                                                |
+| `DATABASE_URL`          | Connection information to for the database. Format: `postgres://[<username>[:<password>]@]<host>[:<port>]/<database>`. Must be a [postgresql](https://www.postgresql.org/) database.                                                                                                           | required                                                                                                                     |
 | `ADMIN_EMAIL`           | Email address to send notifications to (when images are reported)                                                                                                                                                                                                                              | required                                                                                                                     |
 | `SMTP_SERVER`           | Name of SMTP server used for sending emails                                                                                                                                                                                                                                                    | required                                                                                                                     |
 | `SMTP_PORT`             | Port of SMTP server                                                                                                                                                                                                                                                                            | `465`                                                                                                                        |
 | `SMTP_USERNAME`         | Username to access the SMTP server. Often, this is the email address of the sender.                                                                                                                                                                                                            | required                                                                                                                     |
 | `SMTP_PASSWORD`         | Password to access the SMTP server.                                                                                                                                                                                                                                                            | required                                                                                                                     |
-| `FULL_PARSE_SCHEDULE`   | [Cron](https://cron.help/)-**like** schedule for when to run a full parsing to get the meal plans for the next three weeks. **A sixth, first _digit_ specifying the seconds is neccessary!**                                                                                                   | `0 0 2 * * *`                                                                                                                |
-| `UPDATE_PARSE_SCHEDULE` | Schedule for when to update the melplan for the current day. Same format as `FULL_PARSE_SCHEDULE`                                                                                                                                                                                              | `0 */15 10-15 * * *`                                                                                                         |
-| `IMAGE_REVIEW_SCHEDULE` | Schedule for when to check if images still exists at flickr. Same format as `FULL_PARSE_SCHEDULE`                                                                                                                                                                                              | `0 0 2 * * *`                                                                                                                |
+| `FULL_PARSE_SCHEDULE`   | [Cron](https://cron.help/)-**like** schedule for when to run a full parsing to get the meal plans for the next three weeks. **A sixth, first _digit_ specifying the seconds is necessary!**                                                                                                   | `0 0 2 * * *`                                                                                                                |
+| `UPDATE_PARSE_SCHEDULE` | Schedule for when to update the mealplan for the current day. Same format as `FULL_PARSE_SCHEDULE`                                                                                                                                                                                              | `0 */15 10-15 * * *`                                                                                                         |
+| `IMAGE_REVIEW_SCHEDULE` | Schedule for when to check if images still exist at flickr. Same format as `FULL_PARSE_SCHEDULE`                                                                                                                                                                                              | `0 0 2 * * *`                                                                                                                |
 | `FLICKR_API_KEY`        | API key from [flickr](https://www.flickr.com/), you can request one [here](https://www.flickr.com/services/api/misc.api_keys.html). Sometimes called public key.                                                                                                                               | required                                                                                                                     |
 | `CLIENT_TIMEOUT`        | Timeout in ms for requesting the webpage containing the meal plan.                                                                                                                                                                                                                             | `6000`                                                                                                                       |
 | `MENSA_BASE_URL`        | Base URL where meal plans are requested. It excludes the canteens name, which will be appended later on.                                                                                                                                                                                       | `https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/`                                                                   |
 | `CANTEENS`              | Comma (`,`) separated list of canteens which should be requested and parsed. These are appended on the `MENSA_BASE_URL`.                                                                                                                                                                       | `mensa_adenauerring,mensa_gottesaue,mensa_moltke,mensa_x1moltkestrasse,mensa_erzberger,mensa_tiefenbronner,mensa_holzgarten` |
-| `USER_AGENT`            | [User agent](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent) used for requesting meal plan data. Fore some reason, this can not be empty.                                                                                                                                | `MensaKa <version>`, where `<version>` is the current version of the application (as specified in the rust crate)            |
+| `USER_AGENT`            | [User agent](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent) used for requesting meal plan data. For some reason, this cannot be empty.                                                                                                                                | `MensaKa <version>`, where `<version>` is the current version of the application (as specified in the rust crate)            |
 | `HTTP_PORT`             | Port to listen on for API requests                                                                                                                                                                                                                                                             | `80`                                                                                                                         |
 
 
@@ -129,28 +129,28 @@ Before submitting changes to the code, you should run
 - `cargo fmt` to format all code files.
 - `cargo clippy` to check for errors and recommendations.
 - `cargo sqlx prepare` if you have changed database queries or migrations. This is to prepare information on these queries so that others can still compile the backend without having a local dev database. See also [sqlx-cli/README.md](https://github.com/launchbadge/sqlx/blob/main/sqlx-cli/README.md#enable-building-in-offline-mode-with-query).
-- `cargo test` to make sure all test are ok
+- `cargo test` to make sure all tests are ok
 
 ### Logging
-Whenever an action of importance happens or a silent error occurs (which does not get transported to the next upper layer) a logging message shall get produced.
+Whenever an action of importance happens, or a silent error occurs (which does not get transported to the next upper layer) a logging message shall get produced.
 The following log levels are available:
 | level | syntax         | usecase                                                                                                                                                                               |
 | ----- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| TRACE | `trace!(...);` | Information about things happening in the background like API-Requests or web requests. Enabeling all TRACE messages may result in much noise.                                        |
+| TRACE | `trace!(...);` | Information about things happening in the background like API-Requests or web requests. Enabling all TRACE messages may result in much noise.                                        |
 | DEBUG | `debug!(...);` | More important information than trace but still not always noteworthy. For example, this includes failed api request.                                                                 |
 | INFO  | `info!(...);`  | Noteworthy information about the state of the system. This is where the server communicates events like successful startup or mealplan parsing.                                       |
 | WARN  | `warn!(...);`  | An error occurred but execution can continue. This includes situations like when a meal could not be resolved and added to the meal plan, but other meals are and will be added fine. |
-| ERROR | `error!(...);` | A fatal error which does _may not_ lead to program termination but marks a serious malcondition. This includes failed sending of an email.                                            |
+| ERROR | `error!(...);` | A fatal error which _may not_ lead to program termination but shows that something went wrong. This includes failed sending of an email.                                            |
 
 
 ### Testing Coverage
 
 To show test coverage, you need to install `cargo install cargo-tarpaulin`. Then you can run `cargo tarpaulin --out Lcov` to generate coverage info.
-to view these information, you can install the VSCode plugin "Coverage Gutters". It should work out of the box with the installed files.
+to view this information, you can install the VSCode plugin "Coverage Gutters". It should work out of the box with the installed files.
 
 
 
 ### Build Docker
-1. To build the docker container, run `docker build . -t ghcr.io/kronos-et-al/mensa-app:<verion>` where `<version>` is of format `x.y` or `pre_x.y` for pre-releases.
+1. To build the docker container, run `docker build . -t ghcr.io/kronos-et-al/mensa-app:<version>` where `<version>` is of format `x.y` or `pre_x.y` for pre-releases.
 2. To deploy to ghc login using `docker login ghcr.io -u <username> --password-stdin` and provide access token with necessary permission.
 3. Publish using `docker push ghcr.io/kronos-et-al/mensa-app:<version>`
