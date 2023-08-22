@@ -7,8 +7,9 @@ use crate::{
         model::{Canteen, Image, Line, Meal, Side},
         DataError, RequestDataAccess, Result,
     },
+    layer::data::swka_parser::swka_link_creator::NUMBER_OF_WEEKS_TO_POLL,
     null_error,
-    util::{Additive, Allergen, Date, MealType, Price, Uuid}, layer::data::swka_parser::swka_link_creator::NUMBER_OF_WEEKS_TO_POLL,
+    util::{Additive, Allergen, Date, MealType, Price, Uuid},
 };
 
 /// We have for four weeks, including the current week
@@ -108,8 +109,8 @@ impl RequestDataAccess for PersistentRequestData {
         // If date too far into the future, return `None`.
         // This should probably be inside the logic layer which currently does not exists for request.
         let today = Local::now().date_naive();
-        let first_unknown_day =
-            today.week(chrono::Weekday::Mon).first_day() + Duration::weeks(i64::from(MAX_WEEKS_DATA));
+        let first_unknown_day = today.week(chrono::Weekday::Mon).first_day()
+            + Duration::weeks(i64::from(MAX_WEEKS_DATA));
         if date >= first_unknown_day {
             return Ok(None);
         }
