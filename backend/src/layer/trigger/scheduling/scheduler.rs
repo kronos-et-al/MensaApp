@@ -193,7 +193,7 @@ mod tests {
 
         tokio::time::sleep(Duration::from_secs(10)).await;
 
-        info!("shutting down");
+        println!("shutting down");
         scheduler.shutdown().await;
 
         assert!(

@@ -30,4 +30,8 @@ pub struct ImageReportInfo {
     pub negative_rating_count: u32,
     /// Image rank after which the images are sorted when shown to the user.
     pub get_image_rank: f32,
+    /// Number of times this image would have to be reported to automatically get hidden (at the current date).
+    pub report_barrier: u32,
+    /// User that reported the image.
+    pub client_id: Uuid,
 }

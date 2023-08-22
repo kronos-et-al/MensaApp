@@ -32,9 +32,6 @@ impl<'a> ApiUtil for Context<'a> {
     }
 }
 
-pub const TRACE_MUTATION_MESSAGE: &str = "incoming mutation request";
-pub const TRACE_QUERY_MESSAGE: &str = "incoming query request";
-
 const AUTH_TYPE: &str = "Mensa";
 const AUTH_SEPARATOR: char = ':';
 
