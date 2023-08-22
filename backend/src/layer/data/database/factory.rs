@@ -77,7 +77,6 @@ impl DataAccessFactory {
 
 #[cfg(test)]
 mod tests {
-    #![allow(unused_must_use)]
     use dotenvy::dotenv;
     use sqlx::migrate::MigrateDatabase;
 
