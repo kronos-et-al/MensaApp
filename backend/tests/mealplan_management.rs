@@ -18,7 +18,7 @@ use mensa_app_backend::layer::logic::mealplan_management::meal_plan_manager::Mea
 
 async fn setup() -> MealPlanManager<SwKaParseManager, PersistentMealplanManagementData> {
     dotenv().ok();
-    assert_eq!(env::var("MENSA_BASE_URL").unwrap(), "localhost");
+    assert_eq!(env::var("MENSA_BASE_URL").unwrap(), "http://localhost:3000");
     assert_eq!(env::var("CANTEENS").unwrap(), "canteen1,canteen2,canteen3");
 
     setup_local_webserver().await;
