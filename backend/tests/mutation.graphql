@@ -1,0 +1,50 @@
+# file containing some example graphql mutations for integration testing purposes
+
+# Used Data: API-Key: 1234567890, clientID: 6f04a6c7-9723-4a01-ae8c-67baa62fba75
+
+
+# === addImage ===
+# Header Autorization: Mensa NmYwNGE2YzctOTcyMy00YTAxLWFlOGMtNjdiYWE2MmZiYTc1OjEyMzQ1Njc4OTA6VDdYOTNNMHQ0b1dSeFJGeEgyTXBXZFlTSFpOc2lxa2trcEtieEwxQWVEOHdYUjVwRCtqbUh2TTRKamZEK1dFeDBLbmw3ZzBES1Nlc215ekwyalZZeEE9PQ==
+mutation {
+ addImage(mealId:"48b0ed7b-8387-46ad-866c-7993f469a9bf", imageUrl:"https://flic.kr/p/2oSg8aV")
+}
+
+
+# === reportImage ===
+# Header Autorization: Mensa NmYwNGE2YzctOTcyMy00YTAxLWFlOGMtNjdiYWE2MmZiYTc1OjEyMzQ1Njc4OTA6cnhHSjVqejRhTXdrbHl6RnhacTZlSGx5U0x1dVB5djIraXhueno4aERCMlVRK0t1aUpPYUxLdElOSmgvaVBabWdBRWlwQTdFL0FEY2VpRlNPMVJXbVE9PQ==
+mutation {
+ reportImage(imageId:"1b8f373b-7383-4a3a-9818-e0137fd164b7", reason: NO_MEAL)
+}
+
+# === setRating ===
+# Header Autorization: Mensa NmYwNGE2YzctOTcyMy00YTAxLWFlOGMtNjdiYWE2MmZiYTc1OjEyMzQ1Njc4OTA6WVhCSWNERk9ScmhZODNwQm13dVN3YjBsMHpzWVhNL2gxOE9mVCtBTUVZQ1hXQ3RwRXhsTjJFTWlMdGpHa3Y3dzIvY0FQbUlLZThtK21RYkdhc2JjRVE9PQ==
+mutation {
+ setRating(mealId:"48b0ed7b-8387-46ad-866c-7993f469a9bf", rating:4)
+}
+
+# === addUpvote ===
+# Header Autorization: Mensa NmYwNGE2YzctOTcyMy00YTAxLWFlOGMtNjdiYWE2MmZiYTc1OjEyMzQ1Njc4OTA6cit0ZW5oS3hPZmEyd0pVRStFUHpPeVJndEljNUlCRGpoL2lNeXZsUDR2em5vaUxMc0pLT015S09zNjBaVjk4b1ByT0VNcHlEbk9OZGF2d0Znbm9IK2c9PQ==
+mutation {
+ addUpvote(imageId:"1b8f373b-7383-4a3a-9818-e0137fd164b7")
+}
+
+
+# === addDownvote === TODO
+# Header Autorization: Mensa NmYwNGE2YzctOTcyMy00YTAxLWFlOGMtNjdiYWE2MmZiYTc1OjEyMzQ1Njc4OTA6YUtseXpneHovMHBISytMV1FGSGhXb3loVWpPS2ErL2ZtcjZteTRWSDNSeG4rbFB2dlhiNGxrM3JFTng4VFN3Q2QyU2p3N3FzcFByczJTOTNab0cvZlE9PQ==
+mutation {
+ addDownvote(imageId:"1b8f373b-7383-4a3a-9818-e0137fd164b7")
+}
+
+# === removeUpvote ===
+# Header Autorization: Mensa NmYwNGE2YzctOTcyMy00YTAxLWFlOGMtNjdiYWE2MmZiYTc1OjEyMzQ1Njc4OTA6YU5OLzJuazJKZ0Uwd1pPTVdHMHp6eGcvTHRxYUNlaUxoanE3ZWJxRHJuU1NYdFdWSkM5a0l0S2sxL1JCS256RCtUK2dHSC9KR2NsQnk4U1dkZ0JLTVE9PQ==
+mutation {
+ removeUpvote(imageId:"1b8f373b-7383-4a3a-9818-e0137fd164b7")
+}
+
+
+# === removeDownvote ===
+# Header Autorization: Mensa NmYwNGE2YzctOTcyMy00YTAxLWFlOGMtNjdiYWE2MmZiYTc1OjEyMzQ1Njc4OTA6NjVLbEZiVCtNaWpVOE9xVVdPbGVRWi9veGlrSUdwN3E0aGJFWVRsRU1uamJ5bHJ6Tm5sOG5aVWExTEVGYUtacHRBVzQ2UG1HSi9YZ2NtNnA0RnpReGc9PQ==
+mutation {
+ removeDownvote(imageId:"1b8f373b-7383-4a3a-9818-e0137fd164b7")
+}
+
