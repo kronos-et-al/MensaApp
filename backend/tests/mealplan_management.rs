@@ -19,14 +19,14 @@ async fn setup() -> MealPlanManager<SwKaParseManager, PersistentMealplanManageme
 
 #[tokio::test]
 #[ignore = "manual test"]
-async fn start_full_parsing() {
+async fn test_start_full_parsing() {
     let mgmt = setup().await;
     mgmt.start_full_parsing().await;
 }
 
 #[tokio::test]
 #[ignore = "manual test"]
-async fn start_update_parsing() {
+async fn test_start_update_parsing() {
     let mgmt = setup().await;
     mgmt.start_update_parsing().await;
 }
