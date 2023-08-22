@@ -684,17 +684,6 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   }
 
   @override
-  Future<DateTime?> getFavoriteMealsDate(Meal meal) {
-    // todo what did he do?
-    return Future.value(DateTime.now());
-  }
-
-  @override
-  Future<Line?> getFavoriteMealsLine(Meal meal) {
-    return Future.value(null);
-  }
-
-  @override
   Future<Result<Meal, NoMealException>> getMeal(Meal meal) async {
     return _getDBMeal(meal.id).then((dbMeal) async {
       if (dbMeal != null) {
