@@ -15,11 +15,6 @@ class MealIcon extends StatelessWidget {
   final double _height;
 
   /// This widget is used to display the icon for a meal.
-  /// @param key is the key for this widget
-  /// @param foodType is the type of food the meal is
-  /// @param width is the width of the icon
-  /// @param height is the height of the icon
-  /// @returns a widget that displays the icon for a meal
   const MealIcon(
       {Key? key,
       required FoodType foodType,

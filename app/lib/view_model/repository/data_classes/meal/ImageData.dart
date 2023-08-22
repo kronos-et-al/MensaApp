@@ -9,13 +9,8 @@ class ImageData {
   int _individualRating;
 
   /// This constructor creates an image with the committed values.
-  /// @param id The id of the image
-  /// @param url The url of the image
-  /// @param imageRank The rank of the image calculated by the server
-  /// @param individualRating The individual rating of the image
-  /// @param positiveRating The number of positive ratings of the image
-  /// @param negativeRating The number of negative ratings of the image
-  /// @return An image with the committed values
+  ///
+  /// The required values are the [id], [url], [imageRank] and the number of positive and negative ratings of the image.
   ImageData({
     required String id,
     required String url,
@@ -30,23 +25,23 @@ class ImageData {
         _positiveRating = positiveRating,
         _negativeRating = negativeRating;
 
-  /// The method returns the number of negative ratings.
+  /// Returns the number of negative ratings.
   int get negativeRating => _negativeRating;
 
-  /// The method returns the number of positive ratings.
+  /// Returns the number of positive ratings.
   int get positiveRating => _positiveRating;
 
-  /// The method returns the individual rating of the image.
+  /// Returns the individual rating of the image.
   /// It is 0 if there is no rating, 1 for an upvote and -1 for a downvote.
   int get individualRating => _individualRating;
 
-  /// The method returns the image rank calculated by the server.
+  /// Returns the image rank calculated by the server.
   double get imageRank => _imageRank;
 
-  /// The method returns the url to the image at the image hoster.
+  /// Returns the url to the image at the image hoster.
   String get url => _url;
 
-  /// The method returns the id of the image.
+  /// Returns the id of the image.
   String get id => _id;
 
   set individualRating(int value) {
@@ -70,13 +65,5 @@ class ImageData {
       }
     }
     _individualRating = value;
-  }
-
-  /// The method returns the information that are stored in a map.
-  Map<String, dynamic> toMap() {
-    return {
-      'imageID': _id,
-      'url': _url,
-    };
   }
 }

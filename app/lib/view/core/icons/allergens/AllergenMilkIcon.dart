@@ -3,8 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'IAllergenIcon.dart';
 
-/// This widget is used to display the icon for Milk
+/// This widget is used to display the icon for milk
 class AllergenMilkIcon extends IAllergenIcon {
+  /// Creates an new milk icon.
   const AllergenMilkIcon({super.key, super.width, super.height, super.color});
 
   @override

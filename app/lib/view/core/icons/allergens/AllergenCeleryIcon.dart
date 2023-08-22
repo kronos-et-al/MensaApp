@@ -3,8 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'IAllergenIcon.dart';
 
-/// This widget is used to display the icon for Cashews
+/// This widget is used to display the icon for celery
 class AllergenCeleryIcon extends IAllergenIcon {
+  /// Creates an new celery icon.
   const AllergenCeleryIcon({super.key, super.width, super.height, super.color});
 
   @override

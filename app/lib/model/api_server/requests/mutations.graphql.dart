@@ -87,6 +87,7 @@ class _CopyWithImpl$Variables$Mutation$RemoveDownvote<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
+  @override
   TRes call({Object? imageId = _undefined}) =>
       _then(Variables$Mutation$RemoveDownvote._({
         ..._instance._$data,
@@ -101,6 +102,7 @@ class _CopyWithStubImpl$Variables$Mutation$RemoveDownvote<TRes>
 
   TRes _res;
 
+  @override
   call({String? imageId}) => _res;
 }
 

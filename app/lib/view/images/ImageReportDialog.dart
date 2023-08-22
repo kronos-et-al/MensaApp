@@ -16,9 +16,6 @@ class ImageReportDialog extends StatefulWidget {
   final Meal _meal;
 
   /// Creates a new image report dialog.
-  /// @param key The key to identify this widget.
-  /// @param image The image to report.
-  /// @return a widget that displays the report dialog for an image
   const ImageReportDialog(
       {super.key, required ImageData image, required Meal meal})
       : _image = image,

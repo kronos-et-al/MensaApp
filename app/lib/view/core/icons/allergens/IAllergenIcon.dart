@@ -7,10 +7,6 @@ abstract class IAllergenIcon extends StatelessWidget {
   final Color _color;
 
   /// Creates an allergen icon.
-  /// @param key The key to use for this widget.
-  /// @param width The width of the icon.
-  /// @param height The height of the icon.
-  /// @param color The color of the icon.
   const IAllergenIcon(
       {super.key,
       double width = 24,

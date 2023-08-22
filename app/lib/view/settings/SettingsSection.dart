@@ -7,10 +7,6 @@ class SettingsSection extends StatelessWidget {
   final List<Widget> _children;
 
   /// Creates a new SettingsSection.
-  /// @param key The key to identify this widget.
-  /// @param heading The heading of the section.
-  /// @param children The children of the section.
-  /// @returns A new SettingsSection.
   const SettingsSection({super.key, required heading, required children})
       : _heading = heading,
         _children = children;

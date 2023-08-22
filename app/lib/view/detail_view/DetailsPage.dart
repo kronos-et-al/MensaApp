@@ -32,10 +32,6 @@ class DetailsPage extends StatefulWidget {
   final Line? _line;
 
   /// Creates a new DetailsPage.
-  /// @param key The key to identify this widget.
-  /// @param meal The meal to display.
-  /// @param line The line of the meal.
-  /// @returns A new DetailsPage.
   const DetailsPage({super.key, required Meal meal, Line? line})
       : _meal = meal,
         _line = line;
@@ -302,7 +298,7 @@ class DetailsPageState extends State<DetailsPage> {
                                                   .onSurface,
                                               size: 20,
                                               max: 5,
-                                              onChanged: (int) {},
+                                              onChanged: (_) {},
                                             ),
                                             const Spacer(),
                                             MensaButton(
@@ -334,7 +330,7 @@ class DetailsPageState extends State<DetailsPage> {
                       ),
                     )));
               }
-            case Failure<Meal, NoMealException> exception:
+            case Failure<Meal, NoMealException> _:
               {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(mealSnapshot.error.toString())));

@@ -10,8 +10,6 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 /// This widget is used to display the main page of the app.
 class MainPage extends StatefulWidget {
   /// Creates a new MainPage widget.
-  /// @param key The key to identify this widget.
-  /// @returns A new MainPage widget.
   const MainPage({super.key});
 
   @override
@@ -30,8 +28,8 @@ class _MainPageState extends State<MainPage> {
           body: IndexedStack(
             index: _selectedIndex,
             children: [
-              MealPlanView(),
-              Favorites(),
+              const MealPlanView(),
+              const Favorites(),
               Settings(),
             ],
           ),
@@ -42,15 +40,15 @@ class _MainPageState extends State<MainPage> {
             onTap: (index) => setState(() => _selectedIndex = index),
             items: [
               BottomNavigationBarItem(
-                icon: NavigationMealPlanIcon(),
+                icon: const NavigationMealPlanIcon(),
                 label: FlutterI18n.translate(context, "common.mealPlan"),
               ),
               BottomNavigationBarItem(
-                icon: NavigationFavoritesIcon(),
+                icon: const NavigationFavoritesIcon(),
                 label: FlutterI18n.translate(context, "common.favorites"),
               ),
               BottomNavigationBarItem(
-                icon: NavigationSettingsIcon(),
+                icon: const NavigationSettingsIcon(),
                 label: FlutterI18n.translate(context, "common.settings"),
               ),
             ],

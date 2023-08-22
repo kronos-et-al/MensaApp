@@ -45,13 +45,6 @@ void main() {
   });
 
   group("copy constructor nothing copied", () {
-    Side min = Side(
-        id: "1",
-        name: "2",
-        foodType: FoodType.vegan,
-        price: Price(student: 100, employee: 200, pupil: 300, guest: 400),
-        allergens: [],
-        additives: []);
     Side copy = Side.copy(
         side: side,
         id: id,

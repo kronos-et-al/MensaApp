@@ -100,7 +100,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
                     ),
                     actions: (meal.images!.isEmpty ||
                             currentPage >= meal.images!.length || currentPage == -1)
-                        ? SizedBox(
+                        ? const SizedBox(
                             height: 64,
                           )
                         : Padding(

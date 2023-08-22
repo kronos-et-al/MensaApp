@@ -21,15 +21,6 @@ class DBSide implements DatabaseModel {
   static const String columnFoodType = 'foodType';
 
   /// Creates a new instance of a side.
-  /// @param _sideID The id of the side.
-  /// @param _mealID The id of the meal.
-  /// @param _name The name of the side.
-  /// @param _foodType The food type of the side.
-  /// @param _priceStudent The price for students.
-  /// @param _priceEmployee The price for employees.
-  /// @param _pricePupil The price for pupils.
-  /// @param _priceGuest The price for guests.
-  /// @returns A new instance of a side.
   DBSide(
       this._sideID,
       this._name,
@@ -45,8 +36,6 @@ class DBSide implements DatabaseModel {
   }
 
   /// Creates a side from a map.
-  /// @param map The map to create the side from.
-  /// @returns The created side.
   static DBSide fromMap(Map<String, dynamic> map) {
     return DBSide(
         map[columnSideID],
@@ -55,7 +44,6 @@ class DBSide implements DatabaseModel {
   }
 
   /// The string to create a table for a side.
-  /// @returns The string to create a table for a side.
   static String initTable() {
     return '''
     CREATE TABLE $tableName (
@@ -67,14 +55,11 @@ class DBSide implements DatabaseModel {
   }
 
   /// This method returns the food type of the side.
-  /// @returns The food type of the side.
   FoodType get foodType => _foodType;
 
   /// This method returns the name of the side.
-  /// @returns The name of the side.
   String get name => _name;
 
   /// This method returns the id of the side.
-  /// @returns The id of the side.
   String get sideID => _sideID;
 }

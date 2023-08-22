@@ -5,7 +5,6 @@ import 'package:app/view/detail_view/DetailsPage.dart';
 import 'package:app/view_model/logic/preference/IPreferenceAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
-import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -20,9 +19,6 @@ class MealListEntry extends StatelessWidget {
       NumberFormat.currency(locale: 'de_DE', symbol: '€');
 
   /// Creates a MealListEntry.
-  /// @param meal The Meal to display.
-  /// @param key The key to use for this widget.
-  /// @return A MealListEntry.flutter
   MealListEntry({super.key, required Meal meal, Line? line})
       : _meal = meal,
         _line = line;

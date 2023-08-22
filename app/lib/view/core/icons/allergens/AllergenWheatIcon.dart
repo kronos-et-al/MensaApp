@@ -3,8 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'IAllergenIcon.dart';
 
-/// This widget is used to display the icon for Wheat
+/// This widget is used to display the icon for wheat
 class AllergenWheatIcon extends IAllergenIcon {
+  /// Creates an new wheat icon.
   const AllergenWheatIcon({super.key, super.width, super.height, super.color});
 
   @override

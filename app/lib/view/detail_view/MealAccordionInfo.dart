@@ -9,10 +9,6 @@ class MealAccordionInfo extends StatelessWidget {
   final List<Additive> _additives;
 
   /// Creates a MealAccordionInfo widget.
-  /// @param key The key to identify this widget.
-  /// @param allergens The allergens of the meal.
-  /// @param additives The additives of the meal.
-  /// @returns A new MealAccordionInfo widget.
   const MealAccordionInfo(
       {super.key,
       required List<Allergen> allergens,

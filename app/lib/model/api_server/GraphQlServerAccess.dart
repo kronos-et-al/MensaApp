@@ -54,11 +54,6 @@ class GraphQlServerAccess implements IServerAccess {
   /// To connect to the server, its address has to be provided as `address`.
   /// To authenticate commands to the server, an api key has also to be specified.
   /// The client identifier is necessary to request user specific information from the server.
-  ///
-  /// @param address the address of the server
-  /// @param apiKey the api key to authenticate commands to the server
-  /// @param clientId the client identifier to request user specific information from the server
-  /// @return an instance of the server access class
   factory GraphQlServerAccess(String address, String apiKey, String clientId) {
     return GraphQlServerAccess._(clientId, address, apiKey);
   }

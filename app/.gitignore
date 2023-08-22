@@ -45,3 +45,4 @@ app.*.map.json
 
 # secrets
 secret.json
+/android/app/src/main/java/de/mensa_ka/app/MainActivity.java
