@@ -10,7 +10,9 @@ pub struct PersistentMealplanManagementData {
     pub(super) pool: Pool<Postgres>,
 }
 
-const THRESHOLD: f32 = 0.785;
+const THRESHOLD_MEAL: f32 = 0.785;
+const THRESHOLD_LINE: f32 = 0.894;
+const THRESHOLD_CANTEEN: f32 = 0.8515;
 
 #[async_trait]
 #[allow(clippy::missing_panics_doc)] // necessary because sqlx macro sometimes create unreachable panics?
@@ -33,7 +35,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     async fn get_similar_canteen(&self, similar_name: &str) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
             "SELECT canteen_id FROM canteen WHERE similarity(name, $1) >= $2 ORDER BY similarity(name, $1) DESC",
-            similar_name, THRESHOLD
+            similar_name, THRESHOLD_CANTEEN
         )
         .fetch_optional(&self.pool)
         .await
@@ -43,7 +45,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     async fn get_similar_line(&self, similar_name: &str, canteen_id: Uuid) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
             "SELECT line_id FROM line WHERE similarity(name, $1) >= $3 AND canteen_id = $2 ORDER BY similarity(name, $1) DESC",
-            similar_name, canteen_id, THRESHOLD
+            similar_name, canteen_id, THRESHOLD_LINE
         )
         .fetch_optional(&self.pool)
         .await
@@ -53,34 +55,36 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     async fn get_similar_meal(
         &self,
         similar_name: &str,
+        meal_type: MealType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
             // the `<@` operator checks whether each element in the left array is also present in the right
-            "
+            r#"
             SELECT food_id 
             FROM food JOIN meal USING (food_id)
-            WHERE similarity(name, $1) >= $4
+            WHERE similarity(name, $1) >= $5 AND food_type = $2
             AND food_id IN (
                 -- all food_id's with same allergens
                 SELECT food_id 
                 FROM food_allergen FULL JOIN food USING (food_id)
                 GROUP BY food_id 
-				HAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $2::allergen[] 
-				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $2::allergen[]
+				HAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $3::allergen[]
+				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $3::allergen[]
             )
             AND food_id IN (
                 -- all food_id's with same additives
                 SELECT food_id
 				FROM food_additive FULL JOIN food USING (food_id)
 				GROUP BY food_id 
-				HAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $3::additive[] 
-				AND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $3::additive[]
+				HAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $4::additive[]
+				AND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $4::additive[]
             )
             ORDER BY similarity(name, $1) DESC
-            ",
+            "#,
             similar_name,
+            meal_type as _,
             allergens
                 .iter()
                 .copied()
@@ -91,7 +95,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
                 .copied()
                 .map(Additive::to_db_string)
                 .collect::<Vec<_>>() as _,
-            THRESHOLD
+            THRESHOLD_MEAL
         )
         .fetch_optional(&self.pool)
         .await
@@ -101,34 +105,36 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     async fn get_similar_side(
         &self,
         similar_name: &str,
+        meal_type: MealType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
             // the `<@` operator checks whether each element in the left array is also present in the right
-            "
+            r#"
             SELECT food_id 
             FROM food
-            WHERE similarity(name, $1) >= $4 AND food_id NOT IN (SELECT food_id FROM meal)
+            WHERE similarity(name, $1) >= $5 AND food_type = $2 AND food_id NOT IN (SELECT food_id FROM meal)
             AND food_id IN (
                 -- all food_id's with same allergens
                 SELECT food_id 
                 FROM food_allergen FULL JOIN food USING (food_id)
                 GROUP BY food_id 
-				HAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $2::allergen[] 
-				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $2::allergen[]
+				HAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $3::allergen[]
+				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $3::allergen[]
             )
             AND food_id IN (
                 -- all food_id's with same additives
                 SELECT food_id
 				FROM food_additive FULL JOIN food USING (food_id)
 				GROUP BY food_id 
-				HAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $3::additive[] 
-				AND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $3::additive[]
+				HAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $4::additive[]
+				AND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $4::additive[]
             )
             ORDER BY similarity(name, $1) DESC
-            ",
+            "#,
             similar_name,
+            meal_type as _,
             allergens
                 .iter()
                 .copied()
@@ -139,7 +145,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
                 .copied()
                 .map(Additive::to_db_string)
                 .collect::<Vec<_>>() as _,
-            THRESHOLD
+            THRESHOLD_MEAL
         )
         .fetch_optional(&self.pool)
         .await
@@ -530,44 +536,55 @@ mod test {
             (
                 Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
                 "Geflügel - Cevapcici, Ajvar, Djuvec Reis",
+                MealType::Unknown,
                 true,
             ),
             (
                 Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap(),
                 "2 Dampfnudeln mit Vanillesoße",
+                MealType::Vegetarian,
                 true,
             ),
             (
                 Uuid::parse_str("0a850476-eda4-4fd8-9f93-579eb85b8c25").unwrap(),
                 "Mediterraner Gemüsegulasch mit Räuchertofu, dazu Sommerweizen",
+                MealType::Vegan,
                 true,
             ),
             // 'Similar' with identical addons
             (
                 Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
                 "Geflügel - Cevapcici, Ajvar, Reis",
+                MealType::Unknown,
                 true,
             ),
             (
                 Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap(),
                 "Dampfnudeln mit Vanillesoße",
+                MealType::Vegetarian,
                 true,
             ),
             (
                 Uuid::parse_str("0a850476-eda4-4fd8-9f93-579eb85b8c25").unwrap(),
                 "Mediterraner Gemüsegulasch mit Räuchertofu und Sommerweizen",
+                MealType::Vegan,
                 true,
             ),
             // No longer 'similar' with identical addons
-            (Uuid::default(), "Geflügel - Cevapcici", false),
-            (Uuid::default(), "Dampfnudeln", false),
-            (Uuid::default(), "", false),
+            (
+                Uuid::default(),
+                "Geflügel - Cevapcici",
+                MealType::Unknown,
+                false,
+            ),
+            (Uuid::default(), "Dampfnudeln", MealType::Vegetarian, false),
+            (Uuid::default(), "", MealType::Vegan, false),
         ];
 
-        for (uuid, name, is_similar) in tests {
+        for (uuid, name, meal_type, is_similar) in tests {
             println!("Testing values: '{uuid}', '{name}'. Should be similar: {is_similar}");
             let (additives, allergens) = addons.get(&*uuid.to_string()).unwrap();
-            req.get_similar_meal(name, allergens, additives)
+            req.get_similar_meal(name, meal_type, allergens, additives)
                 .await
                 .unwrap()
                 .map_or_else(
@@ -599,44 +616,50 @@ mod test {
             (
                 Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
                 "zu jedem Gericht reichen wir ein Dessert oder Salat",
+                MealType::Unknown,
                 true,
             ),
             (
                 Uuid::parse_str("836b17fb-cb16-425d-8d3c-c274a9cdbd0c").unwrap(),
                 "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings, Preis je 100 g",
+                MealType::Vegan,
                 true,
             ),
             (
                 Uuid::parse_str("2c662143-eb84-4142-aa98-bd7bdf84c498").unwrap(),
                 "Insalata piccola - kleiner Blattsalat mit Thunfisch und Paprika",
+                MealType::Unknown,
                 true,
             ),
             // 'Similar' with identical addons
             (
                 Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
                 "zu jedem Gericht reichen wir Desserts oder Salate",
+                MealType::Unknown,
                 true,
             ),
             (
                 Uuid::parse_str("836b17fb-cb16-425d-8d3c-c274a9cdbd0c").unwrap(),
                 "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings",
+                MealType::Vegan,
                 true,
             ),
             (
                 Uuid::parse_str("2c662143-eb84-4142-aa98-bd7bdf84c498").unwrap(),
                 "Insalata piccola - Blattsalat mit Thunfisch und Paprika",
+                MealType::Unknown,
                 true,
             ),
             // No longer 'similar' with identical addons
-            (Uuid::default(), "zu jedem Gericht reichen wir ein Dessert", false),
-            (Uuid::default(), "Salatbuffet mit frischer Rohkost", false),
-            (Uuid::default(), "Insalata piccola", false),
+            (Uuid::default(), "zu jedem Gericht reichen wir ein Dessert", MealType::Unknown, false),
+            (Uuid::default(), "Salatbuffet mit frischer Rohkost", MealType::Vegan, false),
+            (Uuid::default(), "Insalata piccola", MealType::Unknown, false),
         ];
 
-        for (uuid, name, is_similar) in tests {
+        for (uuid, name, meal_type, is_similar) in tests {
             println!("Testing values: '{uuid}', '{name}'. Should be similar: {is_similar}");
             let (additives, allergens) = addons.get(&*uuid.to_string()).unwrap();
-            req.get_similar_side(name, allergens, additives)
+            req.get_similar_side(name, meal_type, allergens, additives)
                 .await
                 .unwrap()
                 .map_or_else(

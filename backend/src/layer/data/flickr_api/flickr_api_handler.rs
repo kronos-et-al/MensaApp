@@ -33,9 +33,9 @@ impl FlickrApiHandler {
         }
     }
 
-    // URL TYPE Long 1.1: https://www.flickr.com/photos/gerdavs/52310534489/, id group = 4
-    // URL TYPE Long 1.2: https://www.flickr.com/photos/198319418@N06/53077317043, id group = 4
-    // URL TYPE Short 2: https://flic.kr/p/2oRguN3, id group = 2
+    // URL TYPE Long 1.1: https://www.flickr.com/photos/gerdavs/52310534489/
+    // URL TYPE Long 1.2: https://www.flickr.com/photos/198319418@N06/53077317043
+    // URL TYPE Short 2: https://flic.kr/p/2oRguN3
     // Both cases: Split with '/' and get last member (= photo_id).
     fn determine_photo_id(url: &str) -> Result<String> {
         if let Some(groups) = SHORT_URL_REGEX.captures(url) {
@@ -117,7 +117,7 @@ impl ImageHoster for FlickrApiHandler {
     /// True if the image is published under a valid license. False if not.
     /// # Errors
     /// If any error occurs, it will be returned.
-    async fn check_licence(&self, photo_id: &str) -> Result<bool> {
+    async fn check_licence(&self, photo_id: &str) -> Result<()> {
         self.request.flickr_photos_license_check(photo_id).await
     }
 }
@@ -137,7 +137,7 @@ where
         hoster.check_existence(image_id).await
     }
 
-    async fn check_licence(&self, image_id: &str) -> Result<bool> {
+    async fn check_licence(&self, image_id: &str) -> Result<()> {
         let hoster: &T = self;
         hoster.check_licence(image_id).await
     }
@@ -234,8 +234,8 @@ mod test {
                 Ok(true)
             }
 
-            async fn check_licence(&self, _image_id: &str) -> Result<bool> {
-                Ok(true)
+            async fn check_licence(&self, _image_id: &str) -> Result<()> {
+                Ok(())
             }
         }
 

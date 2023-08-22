@@ -5,6 +5,7 @@ use crate::layer::data::flickr_api::json_structs::{JsonRootError, JsonRootLicens
 use axum::body::Bytes;
 use reqwest::Response;
 use serde::de::DeserializeOwned;
+use tracing::trace;
 
 pub struct ApiRequest {
     api_key: String,
@@ -53,6 +54,7 @@ impl ApiRequest {
             .bytes()
             .await
             .map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
+        trace!("successfully send request `{GET_SIZES}` to flickr for image {photo_id}");
         Self::json_to_struct::<JsonRootSizes>(&bytes).map_or_else(
             |_| Err(Self::determine_error(&bytes)),
             |root| JsonParser::parse_get_sizes(&root, photo_id),
@@ -71,7 +73,7 @@ impl ApiRequest {
     pub async fn flickr_photos_license_check(
         &self,
         photo_id: &str,
-    ) -> Result<bool, ImageHosterError> {
+    ) -> Result<(), ImageHosterError> {
         let url = &format!(
             "{BASE_URL}{GET_LICENCE_HISTORY}{TAG_API_KEY}{api_key}{TAG_PHOTO_ID}{photo_id}{FORMAT}",
             api_key = self.api_key
@@ -82,9 +84,10 @@ impl ApiRequest {
             .bytes()
             .await
             .map_err(|e| ImageHosterError::DecodeFailed(e.to_string()))?;
+        trace!("successfully send request `{GET_LICENCE_HISTORY}` to flickr for image {photo_id}");
         Self::json_to_struct::<JsonRootLicense>(&bytes).map_or_else(
             |_| Err(Self::determine_error(&bytes)),
-            |root| Ok(JsonParser::check_license(&root)),
+            JsonParser::check_license,
         )
     }
 
@@ -156,9 +159,8 @@ mod test {
     async fn test_valid_check_license_request() {
         let res = get_api_request()
             .flickr_photos_license_check("52310534489")
-            .await
-            .unwrap();
-        assert!(!res);
+            .await;
+        assert!(res.is_err());
     }
 
     #[tokio::test]
