@@ -19,6 +19,7 @@ impl Logger {
         let subscriber = FmtSubscriber::builder()
             .with_env_filter(env_filter)
             .pretty()
+            .with_thread_ids(true)
             .finish();
         tracing::subscriber::set_global_default(subscriber)
             .expect("setting default subscriber failed");
