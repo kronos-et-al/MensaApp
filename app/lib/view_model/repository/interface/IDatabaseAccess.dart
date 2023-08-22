@@ -10,11 +10,9 @@ import '../error_handling/Result.dart';
 /// This is an interface to the database of the client.
 abstract class IDatabaseAccess {
   /// This method updates all mealplans with the committed mealplans.
-  /// @param mealplans The mealplans that should be updated
-  /// @return The result of the update
   Future<void> updateAll(List<MealPlan> mealplans);
 
-  /// Changes the meal with the id of the committed meal in the database to the committed meal.
+  /// This method updates a meal in the database with the same id as [meal] with the attributes of [meal].
   Future<void> updateMeal(Meal meal);
 
   /// Returns the [MealPlan] of the committed date of the committed canteen.
@@ -26,13 +24,15 @@ abstract class IDatabaseAccess {
   /// This method is used for applying changes on the graphical user interface.
   Future<Result<Meal, NoMealException>> getMeal(Meal meal);
 
+  /// Returns the [Meal] with the id of [meal].
+  Future<Result<Meal, NoMealException>> getMeal(Meal meal);
+
   /// Returns the favorite meal with the committed id.
   /// If the [Meal] is not a favorite, it returns an [Exception].
   Future<Result<Meal, Exception>> getMealFavorite(String id);
 
-  /// This method adds a favorite. If the favorite does already exists, it does nothing.
-  /// @param meal The meal that should be added as favorite
-  /// @return The result of the update
+  /// This method adds a favorite.
+  /// If the favorite does already exists, it does nothing.
   Future<void> addFavorite(Meal meal);
 
   /// This method removes a favorite.
@@ -49,5 +49,6 @@ abstract class IDatabaseAccess {
   /// This method returns all canteens or null if no canteen is stored.
   Future<List<Canteen>?> getCanteens();
 
+  /// This method removes the committed image from the database.
   Future<void> removeImage(ImageData image);
 }

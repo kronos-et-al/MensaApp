@@ -52,16 +52,16 @@ class Meal {
         _name = name,
         _foodType = foodType,
         _price = price,
-        _allergens = allergens,
-        _additives = additives,
-        _sides = sides,
+        _allergens = allergens ?? [],
+        _additives = additives ?? [],
+        _sides = sides ?? [],
         _individualRating = individualRating ?? 0,
         _numberOfRatings = numberOfRatings ?? 0,
         _averageRating = averageRating ?? 0,
         _lastServed = lastServed,
         _nextServed = nextServed,
         _relativeFrequency = relativeFrequency,
-        _images = images,
+        _images = images ?? [],
         _numberOfOccurance = numberOfOccurance,
         _isFavorite = isFavorite;
 
@@ -138,13 +138,13 @@ class Meal {
   /// Returns the sides of the meal.
   List<Side>? get sides => _sides;
 
-  /// Returns the individual rating of the meal.
+  /// This method returns the individual rating of the meal.
   int get individualRating => _individualRating;
 
-  /// Returns the number of ratings of the meal.
+  /// This method returns the number of ratings of the meal.
   int get numberOfRatings => _numberOfRatings;
 
-  /// Returns the average rating of the meal.
+  /// This method returns the average rating of the meal.
   double get averageRating => _averageRating;
 
   /// Returns the date when the meal was last served.
@@ -162,7 +162,7 @@ class Meal {
   /// Returns the favorite status of the meal.
   bool get isFavorite => _isFavorite ?? false;
 
-  /// Sets the value of the individual rating.
+  /// This method sets the individual rating.
   set individualRating(int value) {
     _individualRating = value;
   }
@@ -175,14 +175,17 @@ class Meal {
   @override
   int get hashCode => _id.hashCode;
 
+  /// This method sets the number of ratings
   set numberOfRatings(int value) {
     _numberOfRatings = value;
   }
 
+  /// This method sets the average rating
   set averageRating(double value) {
     _averageRating = value;
   }
 
+  /// This method removes the committed image form [images].
   void removeImage(ImageData image) {
     _images!.remove(image);
   }

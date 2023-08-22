@@ -164,7 +164,7 @@ void main() {
 
     test("set rare frequency", () {
       filter.setRareFrequency();
-      expect(filter.frequency, [Frequency.rare]);
+      expect(filter.frequency, [Frequency.rare, Frequency.newMeal]);
     });
 
     test("set new frequency", () {

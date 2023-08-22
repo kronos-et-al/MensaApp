@@ -190,6 +190,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
             '${DBCanteen.tableName}.${DBCanteen.columnCanteenID} = ${DBLine.tableName}.${DBLine.columnCanteenID} AND ${DBLine.tableName}.${DBLine.columnLineID} = ${DBMealPlan.tableName}.${DBMealPlan.columnLineID} AND ${DBCanteen.tableName}.${DBCanteen.columnCanteenID} = ? AND ${DBMealPlan.tableName}.${DBMealPlan.columnDate} = ?',
         whereArgs: [canteen.id, _dateFormat.format(date)]);
     if (result.isNotEmpty) {
+      // todo remove commented code
       /*List<MealPlan> mealPlans = await Future.wait(result.map((plan) async {
         DBMealPlan dbMealPlan= DBMealPlan.fromMap(plan);
         var dbLine = await _getDBLine(dbMealPlan.lineID);
@@ -306,6 +307,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     await _insertMeal(meal);
   }
 
+  // todo delete commented code
   /*Future<Meal?> _getMeal(DBMeal dbMeal) async {
     DBMeal? dbMeal = await _getDBMeal(dbMealPlanMeal.mealID);
     if (dbMeal == null) {
@@ -445,14 +447,16 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         _dateFormat.format(meal.nextServed ?? DateTime.now()),
         meal.relativeFrequency ?? Frequency.normal);
     await Future.wait(
-        meal.allergens!.map((e) => _insertMealAllergen(e, dbMeal)).toList());
+        meal.allergens?.map((e) => _insertMealAllergen(e, dbMeal)).toList() ??
+            []);
     await Future.wait(
-        meal.additives!.map((e) => _insertMealAdditive(e, dbMeal)));
+        meal.additives?.map((e) => _insertMealAdditive(e, dbMeal)).toList() ??
+            []);
     await Future.wait(meal.sides!
         .map((e) => _insertMealPlanSide(e, dbMeal, mealPlan))
         .toList());
     await Future.wait(
-        meal.images!.map((e) => _insertImage(e, dbMeal)).toList());
+        meal.images?.map((e) => _insertImage(e, dbMeal)).toList() ?? []);
     await db.insert(DBMeal.tableName, dbMeal.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
     return await db.insert(DBMealPlanMeal.tableName, mealPlanMeal.toMap(),

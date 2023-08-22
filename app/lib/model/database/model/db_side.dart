@@ -21,6 +21,7 @@ class DBSide implements DatabaseModel {
   static const String columnFoodType = 'foodType';
 
   /// Creates a new instance of a side.
+  /// Creates a new instance of a side as it is represented in the Database.
   DBSide(
       this._sideID,
       this._name,

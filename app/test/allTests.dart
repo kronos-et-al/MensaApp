@@ -1,3 +1,5 @@
+import 'package:test/test.dart';
+
 import './view-model/repository/CanteenTest.dart' as canteen;
 import './view-model/repository/LineTest.dart' as line;
 import './view-model/repository/MealPlanTest.dart' as meal_plan;
@@ -15,23 +17,25 @@ import './view-model/PreferenceAccessTest.dart' as preference;
 
 import './model/SharedPreferencesTest.dart' as storage;
 import './model/api_server/GraphQlServerAccess_test.dart' as api;
+import './model/SqLiteAccessTest.dart' as database;
 
 void main() async {
-  canteen.main();
-  line.main();
-  meal_plan.main();
-  filter.main();
+  group("canteen", () => canteen.main());
+  group("line", () => line.main());
+  group("meal plan", () => meal_plan.main());
+  group("filter", () => filter.main());
 
-  image_data.main();
-  price.main();
-  side.main();
-  meal.main();
+  group("image", () => image_data.main());
+  group("price", () => price.main());
+  group("side", () => side.main());
+  group("meal", () => meal.main());
 
-  favorite.main();
-  meal_access.main();
-  image.main();
-  preference.main();
+  group("favorite access", () => favorite.main());
+  group("meal plan access", () => meal_access.main());
+  group("image access", () => image.main());
+  group("preference access", () => preference.main());
 
-  await storage.main();
   api.main();
+  group("database", () => database.main());
+  await storage.main();
 }

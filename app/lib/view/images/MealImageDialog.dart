@@ -20,9 +20,11 @@ import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+/// This widget is used to display the images of a meal.
 class MealImageDialog extends StatefulWidget {
   final Meal _meal;
 
+  /// Creates a new meal image dialog.
   const MealImageDialog({super.key, required Meal meal}) : _meal = meal;
 
   @override

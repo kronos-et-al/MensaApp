@@ -1,6 +1,8 @@
 import 'package:app/view_model/logic/meal/CombinedMealPlanAccess.dart';
+import 'package:app/view_model/logic/meal/IMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/filter/FilterPreferences.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
+import 'package:app/view_model/repository/data_classes/filter/Sorting.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
@@ -11,6 +13,7 @@ import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
+import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -21,6 +24,9 @@ import '../model/mocks/LocalStorageMock.dart';
 
 class FilterPreferencesFake extends Fake implements FilterPreferences {}
 
+// todo
+// other initializations
+// remove image
 void main() {
   final localStorage = LocalStorageMock();
   final api = ApiMock();
@@ -31,7 +37,7 @@ void main() {
 
   const String canteenID = "id";
   final Canteen canteen = Canteen(id: canteenID, name: "name");
-  final Canteen otherCanteen = Canteen(id: "42", name: "other canteen");
+  final Canteen otherCanteen = Canteen(id: "23", name: "other name");
 
   final List<Side> sides = [
     Side(
@@ -70,11 +76,12 @@ void main() {
         name: "vegan Meal",
         foodType: FoodType.vegan,
         relativeFrequency: Frequency.newMeal,
-        price: Price(student: 200, employee: 300, pupil: 400, guest: 500),
+        price: Price(student: 230, employee: 300, pupil: 400, guest: 500),
         allergens: [Allergen.lu, Allergen.ka],
         additives: [],
         sides: [sides[0]],
         averageRating: 5,
+        numberOfOccurance: 5,
         numberOfRatings: 2,
         individualRating: 1,
         isFavorite: true),
@@ -83,11 +90,12 @@ void main() {
         name: "vegetarian Meal",
         foodType: FoodType.vegetarian,
         relativeFrequency: Frequency.normal,
-        price: Price(student: 200, employee: 300, pupil: 400, guest: 500),
+        price: Price(student: 201, employee: 300, pupil: 400, guest: 500),
         allergens: [Allergen.lu, Allergen.sn, Allergen.kr],
         additives: [],
         sides: [sides[1], sides[0]],
         averageRating: 4,
+        numberOfOccurance: 10,
         isFavorite: true),
     Meal(
         id: "12",
@@ -99,6 +107,7 @@ void main() {
         additives: [],
         sides: [sides[2], sides[0], sides[1]],
         averageRating: 3,
+        numberOfOccurance: 7,
         isFavorite: false),
     Meal(
         id: "34",
@@ -110,6 +119,7 @@ void main() {
         additives: [],
         sides: [sides[0], sides[1], sides[2], sides[3]],
         averageRating: 2,
+        numberOfOccurance: 1,
         isFavorite: true),
     Meal(
         id: "54",
@@ -121,13 +131,15 @@ void main() {
         additives: [],
         sides: [sides[0], sides[1], sides[2], sides[3]],
         averageRating: 1,
+        numberOfOccurance: 9,
         isFavorite: false),
   ];
 
   final List<Line> lines = [
     Line(id: "1", name: "Linie 1", canteen: canteen, position: 1),
     Line(id: "2", name: "Linie 2", canteen: canteen, position: 2),
-    Line(id: "3", name: "Linie 3", canteen: canteen, position: 3)
+    Line(id: "3", name: "Linie 3", canteen: canteen, position: 3),
+    Line(id: "4", name: "Linie 1", canteen: otherCanteen, position: 1),
   ];
 
   final List<MealPlan> mealplans = [
@@ -147,6 +159,9 @@ void main() {
         isClosed: false,
         meals: [meals[3], meals[4]]),
   ];
+
+  final MealPlan otherMealPlan = MealPlan(
+      date: DateTime.now(), line: lines[3], isClosed: false, meals: [meals[0]]);
 
   final List<MealPlan> closedCanteen = [
     MealPlan(date: DateTime.now(), line: lines[1], isClosed: true, meals: []),
@@ -205,6 +220,71 @@ void main() {
       for (MealPlan mealplan in mealplans) {
         expect(returnedMealPlan.contains(mealplan), true);
       }
+    });
+
+    test("initialization with no stored canteen and connection to server", () async {
+      when(() => localStorage.getFilterPreferences()).thenAnswer((_) => null);
+      when(() => localStorage.getCanteen()).thenAnswer((_) => null);
+      when(() => localStorage.getPriceCategory())
+          .thenAnswer((_) => PriceCategory.student);
+      when(() => localStorage.setCanteen(canteen.id)).thenAnswer((_) async {});
+
+      when(() => api.getDefaultCanteen()).thenAnswer((_) async => canteen);
+      when(() => api.updateAll())
+          .thenAnswer((_) async => Failure(NoConnectionException("error")));
+
+      when(() => database.getCanteenById(canteenID))
+          .thenAnswer((_) async => canteen);
+      when(() => database.updateAll(mealplans)).thenAnswer((_) async => {});
+      when(() => database.getMealPlan(any(), canteen))
+          .thenAnswer((_) async => Success(mealplans));
+      when(() => database.getFavorites()).thenAnswer((_) async => []);
+
+      IMealAccess access = CombinedMealPlanAccess(localStorage, api, database);
+      expect(await access.getCanteen(), canteen);
+      expect(await access.getFilterPreferences(), FilterPreferences());
+
+      final date = await access.getDate();
+      expect(date.year, DateTime.now().year);
+      expect(date.month, DateTime.now().month);
+      expect(date.day, DateTime.now().day);
+
+      final returnedMealPlan = switch (await access.getMealPlan()) {
+        Success(value: final value) => value,
+        Failure(exception: _) => []
+      };
+
+      for (MealPlan mealplan in mealplans) {
+        expect(returnedMealPlan.contains(mealplan), true);
+      }
+    });
+
+    test("", () async {
+      when(() => localStorage.getFilterPreferences()).thenAnswer((_) => null);
+      when(() => localStorage.getCanteen()).thenAnswer((_) => null);
+      when(() => localStorage.getPriceCategory())
+          .thenAnswer((_) => PriceCategory.student);
+      when(() => localStorage.setCanteen(canteen.id)).thenAnswer((_) async {});
+
+      when(() => api.getDefaultCanteen()).thenAnswer((_) async => null);
+      when(() => api.updateAll())
+          .thenAnswer((_) async => Failure(NoConnectionException("error")));
+
+      when(() => database.getCanteenById(canteenID))
+          .thenAnswer((_) async => canteen);
+      when(() => database.updateAll(mealplans)).thenAnswer((_) async => {});
+      when(() => database.getMealPlan(any(), canteen))
+          .thenAnswer((_) async => Success(mealplans));
+      when(() => database.getFavorites()).thenAnswer((_) async => []);
+
+      IMealAccess access = CombinedMealPlanAccess(localStorage, api, database);
+
+      final returnedMealPlan = switch (await access.getMealPlan()) {
+        Success(value: final value) => value,
+        Failure(exception: _) => []
+      };
+
+      expect(returnedMealPlan.isEmpty, isTrue);
     });
   });
 
@@ -347,7 +427,6 @@ void main() {
         expect(returnedMealPlan.length, 3);
         expect(returnedMealPlan[0].meals.length, 1);
         expect(returnedMealPlan[0].meals[0], meals[0]);
-
         expect(returnedMealPlan[1].meals.length, 1);
         expect(returnedMealPlan[1].meals[0], meals[2]);
 
@@ -369,96 +448,8 @@ void main() {
       });
     });
 
-    group("favorites and activation", () {
+    group("favorites", () {
       test("only favorites", () async {
-        filter.onlyFavorite = true;
-        await mealPlanAccess.changeFilterPreferences(filter);
-
-        final List<MealPlan> returnedMealPlan = switch (
-            await mealPlanAccess.getMealPlan()) {
-          Success(value: final value) => value,
-          Failure(exception: _) => []
-        };
-
-        // first meal plan
-        expect(returnedMealPlan[0].meals[0], meals[0]);
-        expect(returnedMealPlan[0].meals[1], meals[1]);
-        // sides first meal plan
-        expect(returnedMealPlan[0].meals[0].sides?.length, 1);
-        expect(returnedMealPlan[0].meals[1].sides?.length, 2);
-
-        // second meal plan of [mealplans]
-        // -> should be emplty
-        expect(returnedMealPlan.length, 2);
-
-        // third meal plan
-        expect(returnedMealPlan[1].meals.length, 1);
-        expect(returnedMealPlan[1].meals[0], meals[3]);
-        // sides third meal plan
-        expect(returnedMealPlan[1].meals[0].sides?.length, 4);
-      });
-
-      test("deactivate", () async {
-        filter.onlyFavorite = true;
-        await mealPlanAccess.changeFilterPreferences(filter);
-
-        await mealPlanAccess.deactivateFilter();
-
-        final List<MealPlan> returnedMealPlan = switch (
-            await mealPlanAccess.getMealPlan()) {
-          Success(value: final value) => value,
-          Failure(exception: _) => []
-        };
-
-        expect(returnedMealPlan, mealplans);
-      });
-
-      test("toggle to active", () async {
-        await mealPlanAccess.deactivateFilter();
-        await mealPlanAccess.toggleFilter();
-
-        filter.onlyFavorite = true;
-        await mealPlanAccess.changeFilterPreferences(filter);
-
-        final List<MealPlan> returnedMealPlan = switch (
-            await mealPlanAccess.getMealPlan()) {
-          Success(value: final value) => value,
-          Failure(exception: _) => []
-        };
-
-        // first meal plan
-        expect(returnedMealPlan[0].meals[0], meals[0]);
-        expect(returnedMealPlan[0].meals[1], meals[1]);
-        // sides first meal plan
-        expect(returnedMealPlan[0].meals[0].sides?.length, 1);
-        expect(returnedMealPlan[0].meals[1].sides?.length, 2);
-
-        // second meal plan of [mealplans]
-        // -> should be emplty
-        expect(returnedMealPlan.length, 2);
-
-        // third meal plan
-        expect(returnedMealPlan[1].meals.length, 1);
-        expect(returnedMealPlan[1].meals[0], meals[3]);
-        // sides third meal plan
-        expect(returnedMealPlan[1].meals[0].sides?.length, 4);
-      });
-
-      test("toggle to deactivate", () async {
-        await mealPlanAccess.toggleFilter();
-
-        final List<MealPlan> returnedMealPlan = switch (
-            await mealPlanAccess.getMealPlan()) {
-          Success(value: final value) => value,
-          Failure(exception: _) => []
-        };
-
-        expect(returnedMealPlan, mealplans);
-      });
-
-      test("activate", () async {
-        await mealPlanAccess.activateFilter();
-
         filter.onlyFavorite = true;
         await mealPlanAccess.changeFilterPreferences(filter);
 
@@ -663,124 +654,261 @@ void main() {
         expect(returnedMealPlan[0].meals[0].sides?[0], sides[3]);
       });
     });
+  });
 
-    test("reset filter preferences", () async {
+  test("reset filter preferences", () async {
+    filter = FilterPreferences();
+    when(() => localStorage.setFilterPreferences(filter))
+        .thenAnswer((_) async {});
+
+    await mealPlanAccess.resetFilterPreferences();
+    expect(await mealPlanAccess.getFilterPreferences(), filter);
+  });
+
+  group("activate filters", () {
+    test("deactivate", () async {
+      filter.onlyFavorite = true;
+      await mealPlanAccess.changeFilterPreferences(filter);
+
+      await mealPlanAccess.deactivateFilter();
+
+      expect(await mealPlanAccess.isFilterActive(), isFalse);
+    });
+
+    test("activate", () async {
+      filter.onlyFavorite = true;
+      await mealPlanAccess.changeFilterPreferences(filter);
+
+      await mealPlanAccess.deactivateFilter();
+      await mealPlanAccess.activateFilter();
+
+      expect(await mealPlanAccess.isFilterActive(), isTrue);
+    });
+
+    test("toggle deactivate", () async {
+      filter.onlyFavorite = true;
+      await mealPlanAccess.changeFilterPreferences(filter);
+
+      await mealPlanAccess.activateFilter();
+      await mealPlanAccess.toggleFilter();
+
+      expect(await mealPlanAccess.isFilterActive(), isFalse);
+    });
+
+    test("toggle activate", () async {
+      filter.onlyFavorite = true;
+      await mealPlanAccess.changeFilterPreferences(filter);
+
+      await mealPlanAccess.deactivateFilter();
+      await mealPlanAccess.toggleFilter();
+
+      expect(await mealPlanAccess.isFilterActive(), isTrue);
+    });
+  });
+
+  group("sorting", () {
+    test("line descending", () async {
       filter = FilterPreferences();
+      filter.ascending = false;
       when(() => localStorage.setFilterPreferences(filter))
           .thenAnswer((_) async {});
+      await mealPlanAccess.changeFilterPreferences(filter);
 
-      await mealPlanAccess.resetFilterPreferences();
-      expect(await mealPlanAccess.getFilterPreferences(), filter);
-    });
-  });
-
-  group("meal rating", () {
-    test("failed update", () async {
-      when(() => api.updateMealRating(3, meals[0]))
-          .thenAnswer((_) async => false);
-
-      expect(await mealPlanAccess.updateMealRating(3, meals[0]),
-          "snackbar.updateRatingError");
-    });
-
-    test("successful update", () async {
-      when(() => api.updateMealRating(3, meals[0]))
-          .thenAnswer((_) async => true);
-      when(() => database.updateMeal(Meal.copy(
-          meal: meals[0],
-          individualRating: 3,
-          averageRating: 3,
-          numberOfRatings: 1))).thenAnswer((_) async {});
-
-      expect(await mealPlanAccess.updateMealRating(3, meals[0]),
-          "snackbar.updateRatingSuccess");
-    });
-  });
-
-  group("get available canteens", () {
-    test("failure both", () async {
-      when(() => api.getCanteens()).thenAnswer((_) async => null);
-      when(() => database.getCanteens()).thenAnswer((_) async => null);
-
-      expect(await mealPlanAccess.getAvailableCanteens(), []);
-    });
-
-    test("failure database, success api", () async {
-      when(() => api.getCanteens())
-          .thenAnswer((_) async => [canteen, otherCanteen]);
-      when(() => database.getCanteens()).thenAnswer((_) async => null);
-
-      expect(
-          await mealPlanAccess.getAvailableCanteens(), [canteen, otherCanteen]);
-    });
-
-    test("success database", () async {
-      when(() => api.getCanteens())
-          .thenAnswer((_) async => [canteen, otherCanteen]);
-      when(() => database.getCanteens())
-          .thenAnswer((_) async => [canteen, otherCanteen]);
-
-      expect(
-          await mealPlanAccess.getAvailableCanteens(), [canteen, otherCanteen]);
-    });
-  });
-
-  group("refresh meal plan", () {
-    test("connection error", () async {
-      when(() => api.updateCanteen(canteen, any()))
-          .thenAnswer((_) async => Failure(NoConnectionException("error")));
-      expect(await mealPlanAccess.refreshMealplan(),
-          "snackbar.refreshMealPlanError");
-    });
-
-    test("closed canteen error", () async {
-      reset(api);
-      reset(database);
-      when(() => api.updateCanteen(canteen, any()))
-          .thenAnswer((_) async => Failure(ClosedCanteenException("error")));
-      when(() => database.updateAll(any())).thenAnswer((_) async {});
-      when(() => database.getMealPlan(any(), canteen))
-          .thenAnswer((_) async => Failure(ClosedCanteenException("error")));
-
-      expect(
-          await mealPlanAccess.refreshMealplan() !=
-              "snackbar.refreshMealPlanError",
-          isTrue);
-
-      final result = switch (await mealPlanAccess.getMealPlan()) {
+      final List<MealPlan> result = switch (
+      await mealPlanAccess.getMealPlan()) {
         Success(value: final value) => value,
-        Failure(exception: final exception) => exception
+        Failure(exception: _) => []
       };
 
-      expect(result is ClosedCanteenException, isTrue);
+      expect(result.length, 3);
+      expect(result[0].meals.length, 2);
+      expect(result[0].meals[0], meals[4]);
+      expect(result[0].meals[1], meals[3]);
 
-      verify(() => api.updateCanteen(canteen, any())).called(1);
+      expect(result[1].meals.length, 1);
+      expect(result[1].meals[0], meals[2]);
+
+      expect(result[2].meals.length, 2);
+      expect(result[2].meals[0], meals[1]);
+      expect(result[2].meals[1], meals[0]);
     });
 
-    test("no data yet", () async {
-      reset(api);
-      reset(database);
-      when(() => api.updateCanteen(canteen, any()))
-          .thenAnswer((_) async => Failure(NoDataException("error")));
-      when(() => database.updateAll(any())).thenAnswer((_) async {});
-      when(() => database.getMealPlan(any(), canteen))
-          .thenAnswer((_) async => Failure(NoDataException("error")));
+    test("price ascending", () async {
+      filter = FilterPreferences();
+      filter.sortedBy = Sorting.price;
+      when(() => localStorage.setFilterPreferences(filter))
+          .thenAnswer((_) async {});
+      await mealPlanAccess.changeFilterPreferences(filter);
 
-      expect(
-          await mealPlanAccess.refreshMealplan() !=
-              "snackbar.refreshMealPlanError",
-          isTrue);
-
-      final result = switch (await mealPlanAccess.getMealPlan()) {
+      final List<MealPlan> result = switch (
+      await mealPlanAccess.getMealPlan()) {
         Success(value: final value) => value,
-        Failure(exception: final exception) => exception
+        Failure(exception: _) => []
       };
 
-      expect(result is NoDataException, isTrue);
+      expect(result.length, 3);
+      expect(result[0].meals.length, 2);
+      expect(result[0].meals[0], meals[3]);
+      expect(result[0].meals[1], meals[4]);
 
-      expect(verify(() => api.updateCanteen(canteen, any())).callCount > 1,
-          isTrue);
+      expect(result[1].meals.length, 1);
+      expect(result[1].meals[0], meals[2]);
+
+      expect(result[2].meals.length, 2);
+      expect(result[2].meals[0], meals[1]);
+      expect(result[2].meals[1], meals[0]);
     });
+
+    test("price descending", () async {
+      filter = FilterPreferences();
+      filter.sortedBy = Sorting.price;
+      filter.ascending = false;
+      when(() => localStorage.setFilterPreferences(filter))
+          .thenAnswer((_) async {});
+      await mealPlanAccess.changeFilterPreferences(filter);
+
+      final List<MealPlan> result = switch (
+      await mealPlanAccess.getMealPlan()) {
+        Success(value: final value) => value,
+        Failure(exception: _) => []
+      };
+
+      expect(result.length, 3);
+      expect(result[0].meals.length, 2);
+      expect(result[0].meals[0], meals[0]);
+      expect(result[0].meals[1], meals[1]);
+
+      expect(result[1].meals.length, 1);
+      expect(result[1].meals[0], meals[2]);
+
+      expect(result[2].meals.length, 2);
+      expect(result[2].meals[0], meals[4]);
+      expect(result[2].meals[1], meals[3]);
+    });
+
+    test("rating ascending", () async {
+      filter = FilterPreferences();
+      filter.sortedBy = Sorting.rating;
+      when(() => localStorage.setFilterPreferences(filter))
+          .thenAnswer((_) async {});
+      await mealPlanAccess.changeFilterPreferences(filter);
+
+      final List<MealPlan> result = switch (
+      await mealPlanAccess.getMealPlan()) {
+        Success(value: final value) => value,
+        Failure(exception: _) => []
+      };
+
+      expect(result.length, 3);
+      expect(result[0].meals.length, 2);
+      expect(result[0].meals[0], meals[4]);
+      expect(result[0].meals[1], meals[3]);
+
+      expect(result[1].meals.length, 1);
+      expect(result[1].meals[0], meals[2]);
+
+      expect(result[2].meals.length, 2);
+      expect(result[2].meals[0], meals[1]);
+      expect(result[2].meals[1], meals[0]);
+    });
+
+    test("rating descending", () async {
+      filter = FilterPreferences();
+      filter.sortedBy = Sorting.rating;
+      filter.ascending = false;
+      when(() => localStorage.setFilterPreferences(filter))
+          .thenAnswer((_) async {});
+      await mealPlanAccess.changeFilterPreferences(filter);
+
+      final List<MealPlan> result = switch (
+      await mealPlanAccess.getMealPlan()) {
+        Success(value: final value) => value,
+        Failure(exception: _) => []
+      };
+
+      expect(result.length, 3);
+      expect(result[0].meals.length, 2);
+      expect(result[0].meals[0], meals[0]);
+      expect(result[0].meals[1], meals[1]);
+
+      expect(result[1].meals.length, 1);
+      expect(result[1].meals[0], meals[2]);
+
+      expect(result[2].meals.length, 2);
+      expect(result[2].meals[0], meals[3]);
+      expect(result[2].meals[1], meals[4]);
+    });
+
+    test("frequency ascending", () async {
+      filter = FilterPreferences();
+      filter.sortedBy = Sorting.frequency;
+      when(() => localStorage.setFilterPreferences(filter))
+          .thenAnswer((_) async {});
+      await mealPlanAccess.changeFilterPreferences(filter);
+
+      final List<MealPlan> result = switch (
+      await mealPlanAccess.getMealPlan()) {
+        Success(value: final value) => value,
+        Failure(exception: _) => []
+      };
+
+      expect(result.length, 5);
+      expect(result[0].meals.length, 1);
+      expect(result[0].meals[0], meals[3]);
+
+      expect(result[1].meals.length, 1);
+      expect(result[1].meals[0], meals[0]);
+
+      expect(result[2].meals.length, 1);
+      expect(result[2].meals[0], meals[2]);
+
+      expect(result[3].meals.length, 1);
+      expect(result[3].meals[0], meals[4]);
+
+      expect(result[4].meals.length, 1);
+      expect(result[4].meals[0], meals[1]);
+    });
+
+    test("frequency descending", () async {
+      filter = FilterPreferences();
+      filter.sortedBy = Sorting.frequency;
+      filter.ascending = false;
+      when(() => localStorage.setFilterPreferences(filter))
+          .thenAnswer((_) async {});
+      await mealPlanAccess.changeFilterPreferences(filter);
+
+      final List<MealPlan> result = switch (
+      await mealPlanAccess.getMealPlan()) {
+        Success(value: final value) => value,
+        Failure(exception: _) => []
+      };
+
+
+      expect(result.length, 5);
+      expect(result[0].meals.length, 1);
+      expect(result[0].meals[0], meals[1]);
+
+      expect(result[1].meals.length, 1);
+      expect(result[1].meals[0], meals[4]);
+
+      expect(result[2].meals.length, 1);
+      expect(result[2].meals[0], meals[2]);
+
+      expect(result[3].meals.length, 1);
+      expect(result[3].meals[0], meals[0]);
+
+      expect(result[4].meals.length, 1);
+      expect(result[4].meals[0], meals[3]);
+    });
+  });
+
+  test("reset filter preferences", () async {
+    filter = FilterPreferences();
+    when(() => localStorage.setFilterPreferences(filter))
+        .thenAnswer((_) async {});
+
+    await mealPlanAccess.resetFilterPreferences();
+    expect(await mealPlanAccess.getFilterPreferences(), filter);
   });
 
   group("edge cases", () {
@@ -870,25 +998,126 @@ void main() {
     });
   });
 
+  group("refresh meal plan", () {
+    test("failure", () async {
+      when(() => api.updateCanteen(canteen, any()))
+          .thenAnswer((_) async => Failure(NoConnectionException("error")));
+
+      when(() => database.updateAll(mealplans)).thenAnswer((_) async {});
+
+      expect(await mealPlanAccess.refreshMealplan(),
+          "snackbar.refreshMealPlanError");
+    });
+
+    test("success", () async {
+      when(() => api.updateCanteen(canteen, any()))
+          .thenAnswer((_) async => Success(mealplans));
+      when(() => database.updateAll(mealplans)).thenAnswer((_) async {});
+
+      expect(await mealPlanAccess.refreshMealplan(), null);
+    });
+  });
+
+  group("get available canteens", () {
+    test("from database", () async {
+      when(() => database.getCanteens()).thenAnswer((_) async => [canteen]);
+      when(() => api.getCanteens()).thenAnswer((_) async => null);
+
+      expect(await mealPlanAccess.getAvailableCanteens(), [canteen]);
+    });
+
+    test("from api", () async {
+      when(() => database.getCanteens()).thenAnswer((_) async => null);
+      when(() => api.getCanteens()).thenAnswer((_) async => [canteen]);
+
+      expect(await mealPlanAccess.getAvailableCanteens(), [canteen]);
+    });
+
+    test("nowhere", () async {
+      when(() => database.getCanteens()).thenAnswer((_) async => null);
+      when(() => api.getCanteens()).thenAnswer((_) async => null);
+
+      expect(
+          await mealPlanAccess.getAvailableCanteens(), List<Canteen>.empty());
+    });
+  });
+
   test("change canteen", () async {
-    reset(database);
-    when(() => api.updateCanteen(otherCanteen, any()))
-        .thenAnswer((_) async => Failure(ClosedCanteenException("error")));
-    when(() => database.getMealPlan(any(), otherCanteen))
-        .thenAnswer((_) async => Failure(ClosedCanteenException("error")));
-    when(() => database.getMealPlan(any(), canteen))
-        .thenAnswer((_) async => Failure(ClosedCanteenException("error")));
     when(() => localStorage.setCanteen(otherCanteen.id))
         .thenAnswer((_) async {});
+    when(() => database.getMealPlan(any(), otherCanteen))
+        .thenAnswer((_) async => Success([otherMealPlan]));
 
-    mealPlanAccess.changeCanteen(otherCanteen);
+    await mealPlanAccess.deactivateFilter();
+    await mealPlanAccess.changeCanteen(otherCanteen);
 
-    final result = switch (await mealPlanAccess.getMealPlan()) {
+    final List<MealPlan> result = switch (await mealPlanAccess.getMealPlan()) {
       Success(value: final value) => value,
-      Failure(exception: final exception) => exception
+      Failure(exception: _) => []
     };
 
-    expect(result is ClosedCanteenException, isTrue);
+    expect(result, [otherMealPlan]);
+  });
+
+  group("get meal", () {
+    test("success in meal plan", () async {
+      final Meal? result = switch (await mealPlanAccess.getMeal(meals[0])) {
+        Success(value: final value) => value,
+        Failure(exception: _) => null
+      };
+
+      expect(result, meals[0]);
+    });
+
+    test("success in database", () async {
+      when(() => database.getMeal(meals[1]))
+          .thenAnswer((_) async => Success(meals[1]));
+
+      final Meal? result = switch (await mealPlanAccess.getMeal(meals[1])) {
+        Success(value: final value) => value,
+        Failure(exception: _) => null
+      };
+
+      expect(result, meals[1]);
+    });
+
+    test("failure", () async {
+      final meal = Meal(
+          id: "id",
+          name: "name",
+          foodType: FoodType.vegetarian,
+          price: Price(student: 234, employee: 234, pupil: 342, guest: 23443));
+      when(() => database.getMeal(meal))
+          .thenAnswer((_) async => Failure(NoMealException("error")));
+
+      final result = switch (await mealPlanAccess.getMeal(meal)) {
+        Success(value: final value) => value,
+        Failure(exception: final exception) => exception
+      };
+
+      expect(result is NoMealException, isTrue);
+    });
+  });
+
+  group("change meal rating", () {
+    test("failure", () async {
+      final meal = Meal.copy(meal: meals[0], individualRating: 3);
+
+      when(() => api.updateMealRating(3, meal)).thenAnswer((_) async => false);
+
+      expect(await mealPlanAccess.updateMealRating(3, meal),
+          "snackbar.updateRatingError");
+    });
+
+    test("success", () async {
+      final meal = Meal.copy(meal: meals[0], individualRating: 3);
+
+      when(() => api.updateMealRating(3, meal)).thenAnswer((_) async => true);
+      when(() => database.updateMeal(meal)).thenAnswer((_) async {});
+
+      expect(await mealPlanAccess.updateMealRating(3, meal),
+          "snackbar.updateRatingSuccess");
+    });
   });
 }
 

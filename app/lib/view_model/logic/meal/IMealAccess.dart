@@ -18,6 +18,7 @@ abstract class IMealAccess with ChangeNotifier {
 
   /// This method returns the meal with the committed id form the database or current mealplan.
   ///
+  /// /// Returns the meal with the committed id or an [NoMealException]
   Future<Result<Meal, NoMealException>> getMeal(Meal meal);
 
   /// This method updates all meal plans of the committed date of the committed canteen.
@@ -68,7 +69,9 @@ abstract class IMealAccess with ChangeNotifier {
   /// Toggle the activity of a filter.
   Future<void> toggleFilter();
 
+  /// Returns true if the filter is active.
   Future<bool> isFilterActive();
 
+  /// This method removes an image from the database.
   Future<void> removeImage(ImageData image);
 }

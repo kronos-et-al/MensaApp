@@ -8,17 +8,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../model/mocks/ApiMock.dart';
+import '../model/mocks/DatabaseMock.dart';
 
 void main() {
   final api = ApiMock();
-
-  final Meal meal = Meal(
-      id: "42",
-      name: "name",
-      foodType: FoodType.vegetarian,
-      price: Price(student: 100, employee: 200, pupil: 300, guest: 400));
-
-  ImageAccess images = ImageAccess(api);
+  final database = DatabaseMock();
 
   ImageData image = ImageData(
       id: "42",
@@ -26,6 +20,15 @@ void main() {
       imageRank: 42,
       positiveRating: 42,
       negativeRating: 42);
+
+  final Meal meal = Meal(
+      id: "42",
+      name: "name",
+      foodType: FoodType.vegetarian,
+      price: Price(student: 100, employee: 200, pupil: 300, guest: 400),
+      images: [image]);
+
+  ImageAccess images = ImageAccess(api, database);
 
   group("upvote", () {
     test("failed upvote", () async {
@@ -99,15 +102,18 @@ void main() {
     test("failed report", () async {
       when(() => api.reportImage(image, ReportCategory.noMeal))
           .thenAnswer((_) async => false);
-      expect(await images.reportImage(image, ReportCategory.noMeal),
+      expect(await images.reportImage(meal, image, ReportCategory.noMeal),
           "snackbar.reportImageError");
     });
 
     test("successful report", () async {
       when(() => api.reportImage(image, ReportCategory.noMeal))
           .thenAnswer((_) async => true);
-      expect(await images.reportImage(image, ReportCategory.noMeal),
+      when(() => database.removeImage(image)).thenAnswer((_) async {});
+
+      expect(await images.reportImage(meal, image, ReportCategory.noMeal),
           "snackbar.reportImageSuccess");
+      verify(() => database.removeImage(image)).called(1);
     });
   });
 }

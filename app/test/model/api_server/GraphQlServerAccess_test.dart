@@ -1,5 +1,4 @@
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
-import 'package:app/model/api_server/config.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
@@ -10,6 +9,8 @@ import 'package:app/view_model/repository/data_classes/settings/ReportCategory.d
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
+
+import 'config.dart';
 
 void main() async {
   final GraphQlServerAccess serverAccess = GraphQlServerAccess(

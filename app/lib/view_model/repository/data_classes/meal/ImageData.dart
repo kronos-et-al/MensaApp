@@ -44,6 +44,7 @@ class ImageData {
   /// Returns the id of the image.
   String get id => _id;
 
+  /// This method sets the individual rating.
   set individualRating(int value) {
     if(value != _individualRating) {
       if(value == 1) {
@@ -66,4 +67,14 @@ class ImageData {
     }
     _individualRating = value;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ImageData &&
+          runtimeType == other.runtimeType &&
+          _id == other._id;
+
+  @override
+  int get hashCode => _id.hashCode;
 }
