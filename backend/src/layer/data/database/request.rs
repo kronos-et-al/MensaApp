@@ -8,11 +8,11 @@ use crate::{
         DataError, RequestDataAccess, Result,
     },
     null_error,
-    util::{Additive, Allergen, Date, MealType, Price, Uuid},
+    util::{Additive, Allergen, Date, MealType, Price, Uuid}, layer::data::swka_parser::swka_link_creator::NUMBER_OF_WEEKS_TO_POLL,
 };
 
 /// We have for four weeks, including the current week
-const MAX_WEEKS_DATA: i64 = 4;
+const MAX_WEEKS_DATA: u32 = NUMBER_OF_WEEKS_TO_POLL;
 
 /// Class implementing all database requests arising from graphql manipulations.
 #[derive(Debug)]
@@ -109,7 +109,7 @@ impl RequestDataAccess for PersistentRequestData {
         // This should probably be inside the logic layer which currently does not exists for request.
         let today = Local::now().date_naive();
         let first_unknown_day =
-            today.week(chrono::Weekday::Mon).first_day() + Duration::weeks(MAX_WEEKS_DATA);
+            today.week(chrono::Weekday::Mon).first_day() + Duration::weeks(i64::from(MAX_WEEKS_DATA));
         if date >= first_unknown_day {
             return Ok(None);
         }
@@ -428,13 +428,13 @@ mod tests {
         assert_eq!(meals, provide_dummy_meals());
 
         let meals_in_future = request
-            .get_meals(line_id, Local::now().date_naive() + Duration::weeks(4))
+            .get_meals(line_id, Local::now().date_naive() + Duration::weeks(5))
             .await
             .unwrap();
         assert!(meals_in_future.is_none());
 
         let meals_in_near_future = request
-            .get_meals(line_id, Local::now().date_naive() + Duration::weeks(3))
+            .get_meals(line_id, Local::now().date_naive() + Duration::weeks(4))
             .await
             .unwrap();
         assert!(meals_in_near_future.is_some());

@@ -13,7 +13,7 @@ use crate::util::Date;
 
 const URL_SEPARATOR: char = '/';
 const WEEK_SELECTOR: &str = "?kw=";
-const NUMBER_OF_WEEKS_TO_POLL: u32 = 4;
+pub const NUMBER_OF_WEEKS_TO_POLL: u32 = 5;
 
 pub struct SwKaLinkCreator {
     base_url: String,
@@ -70,7 +70,7 @@ mod tests {
     use crate::layer::data::swka_parser::test::const_test_data as test_util;
     use crate::util::Date;
 
-    const URLS_FOR_NEXT_WEEKS: [&str; 28] = [
+    const URLS_FOR_NEXT_WEEKS: [&str; 35] = [
         "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=28",
         "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=28",
         "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_moltke/?kw=28",
@@ -99,6 +99,13 @@ mod tests {
         "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=31",
         "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=31",
         "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=31",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_adenauerring/?kw=32",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_gottesaue/?kw=32",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_moltke/?kw=32",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_x1moltkestrasse/?kw=32",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?kw=32",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_tiefenbronner/?kw=32",
+        "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_holzgarten/?kw=32",
     ];
 
     const URLS_FOR_CURRENT_WEEK: [&str; 7] = [
