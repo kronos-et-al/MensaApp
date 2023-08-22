@@ -1,15 +1,10 @@
-use mensa_app_backend::{
-    layer::{
-        data::{
-            database::factory::DataAccessFactory,
-        },
-    },
-    startup::config::ConfigReader,
-};
 use mensa_app_backend::interface::mealplan_management::MensaParseScheduling;
 use mensa_app_backend::layer::data::database::mealplan_management::PersistentMealplanManagementData;
 use mensa_app_backend::layer::data::swka_parser::swka_parse_manager::SwKaParseManager;
 use mensa_app_backend::layer::logic::mealplan_management::meal_plan_manager::MealPlanManager;
+use mensa_app_backend::{
+    layer::data::database::factory::DataAccessFactory, startup::config::ConfigReader,
+};
 
 async fn setup() -> MealPlanManager<SwKaParseManager, PersistentMealplanManagementData> {
     let reader = ConfigReader::default();
@@ -34,5 +29,4 @@ async fn start_full_parsing() {
 async fn start_update_parsing() {
     let mgmt = setup().await;
     mgmt.start_update_parsing().await;
-
 }
