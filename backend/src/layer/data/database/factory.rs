@@ -99,10 +99,10 @@ mod tests {
         let factory = DataAccessFactory::new(info, true)
             .await
             .expect("failed to access test database");
-        factory.get_command_data_access();
-        factory.get_image_review_data_access();
-        factory.get_mealplan_management_data_access();
-        factory.get_request_data_access();
+        _ = factory.get_command_data_access();
+        _ = factory.get_image_review_data_access();
+        _ = factory.get_mealplan_management_data_access();
+        _ = factory.get_request_data_access();
 
         std::mem::drop(factory); // drop database connection
 
