@@ -20,10 +20,6 @@ abstract class IDatabaseAccess {
   Future<Result<List<MealPlan>, MealPlanException>> getMealPlan(
       DateTime date, Canteen canteen);
 
-  /// Returns the meal with the id of the committed meal.
-  /// This method is used for applying changes on the graphical user interface.
-  Future<Result<Meal, NoMealException>> getMeal(Meal meal);
-
   /// Returns the [Meal] with the id of [meal].
   Future<Result<Meal, NoMealException>> getMeal(Meal meal);
 
