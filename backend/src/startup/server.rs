@@ -59,11 +59,14 @@ impl Server {
     /// # Errors
     /// - when the the config could not read environment variables
     /// - when crating a component fails
+    #[allow(clippy::cognitive_complexity)]
     pub async fn run() -> Result<()> {
         let config = ConfigReader::default();
 
         // logging
         Logger::init(config.read_log_info()?);
+
+        info!("Starting server...");
 
         // help text
         if config.should_print_help() {
@@ -102,14 +105,16 @@ impl Server {
         scheduler.start().await;
         graphql.start();
 
-        info!("server is running");
+        info!("Server is running");
 
         ctrl_c().await?;
 
-        info!("shutting down server...");
+        info!("Shutting down server...");
 
         scheduler.shutdown().await;
         graphql.shutdown().await;
+
+        info!("Server stopped.");
 
         Ok(())
     }
