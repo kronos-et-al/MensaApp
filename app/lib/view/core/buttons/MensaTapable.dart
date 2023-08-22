@@ -8,12 +8,6 @@ class MensaTapable extends StatelessWidget {
   final Function()? _onLongPress;
 
   /// Creates a tapable button.
-  /// @param key The key to use for this widget.
-  /// @param child The child of the button.
-  /// @param color The color of the button.
-  /// @param onTap The function to call when the icon is tapped.
-  /// @param onLongPress The function to call when the icon is long pressed.
-  /// @returns a widget that displays a tapable icon
   const MensaTapable(
       {super.key,
       required Widget child,

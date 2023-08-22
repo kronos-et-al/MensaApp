@@ -11,11 +11,8 @@ class MealPlan {
   final List<Meal> _meals;
 
   /// This constructor creates a new meal plan.
-  /// @param date The date of the meal plan
-  /// @param line The line of the meal plan
-  /// @param isClosed The information if the line is closed on the date of the meal plan
-  /// @param meals The meals of the meal plan
-  /// @return A new meal plan
+  ///
+  /// The values needed are the [date] as [DateTime] and the [line] of the meal plan, the information if the line is closed on the date of the meal plan and the [meals] of the meal plan.
   MealPlan({
     required DateTime date,
     required Line line,
@@ -27,14 +24,7 @@ class MealPlan {
         _meals = meals;
 
   /// This constructor creates a new meal plan with the committed values.
-  /// If any values are not committed these values are replaced with the values of the committed meal plan.
-  ///
-  /// @param mealPlan The meal plan that should be copied
-  /// @param date The date of the meal plan
-  /// @param line The line of the meal plan
-  /// @param isClosed The information if the line is closed on the date of the meal plan
-  /// @param meals The meals of the meal plan
-  /// @return A new meal plan with the committed values
+  /// If any values are not committed these values are replaced with the values of the committed [mealPlan].
   MealPlan.copy({
     required MealPlan mealPlan,
     DateTime? date,
@@ -46,20 +36,16 @@ class MealPlan {
         _isClosed = isClosed ?? mealPlan.isClosed,
         _meals = meals ?? mealPlan.meals;
 
-  /// This method returns the date of the meal plan.
-  /// @return The date of the meal plan
+  /// Returns the date of the meal plan.
   DateTime get date => _date;
 
-  /// This method returns the line of the meal plan.
-  /// @return The line of the meal plan
+  /// Returns the line of the meal plan.
   Line get line => _line;
 
-  /// This method returns the information if the line is closed on the date of the meal plan.
-  /// @return The information if the line is closed on the date of the meal plan
+  /// Returns the information if the line is closed on the date of the meal plan.
   bool get isClosed => _isClosed;
 
-  /// This method returns the meals of the meal plan.
-  /// @return The meals of the meal plan
+  /// Returns the meals of the meal plan.
   List<Meal> get meals => _meals;
 
   @override

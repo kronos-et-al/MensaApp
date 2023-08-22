@@ -7,11 +7,6 @@ class MensaAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double _appBarHeight;
 
   /// Creates a new MensaAppBar.
-  /// @param key The key to identify this widget.
-  /// @param bottom The bottom widget.
-  /// @param appBarHeight The height of the AppBar.
-  /// @param child The child widget.
-  /// @returns A new MensaAppBar.
   MensaAppBar(
       {super.key,
       PreferredSizeWidget? bottom,

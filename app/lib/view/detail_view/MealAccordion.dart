@@ -14,13 +14,6 @@ class MealAccordion extends StatelessWidget {
   final Color? _expandedColor;
 
   /// Creates a new MealAccordion.
-  /// @param key The key to identify this widget.
-  /// @param isExpanded Whether the accordion is expanded.
-  /// @param mainEntry The main entry to display.
-  /// @param sideEntry The side entry to display.
-  /// @param info The MealAccordionInfo to display in the expanded MealAccordion.
-  /// @param onTap The function that is called when the MealAccordion is tapped.
-  /// @returns A new MealAccordion.
   const MealAccordion(
       {super.key,
       required bool isExpanded,

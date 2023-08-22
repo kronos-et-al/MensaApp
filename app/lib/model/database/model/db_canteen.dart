@@ -14,10 +14,7 @@ class DBCanteen implements DatabaseModel {
   /// The name of the column for the name.
   static const String columnName = 'name';
 
-  /// Creates a new instance of a canteen.
-  /// @param _canteenID The id of the canteen.
-  /// @param _name The name of the canteen.
-  /// @returns A new instance of a canteen.
+  /// Creates a new instance of a canteen as it is represented in the database.
   DBCanteen(this._canteenID, this._name);
 
   @override
@@ -26,14 +23,11 @@ class DBCanteen implements DatabaseModel {
   }
 
   /// Creates a new instance of a canteen from a map.
-  /// @param map The map to create the instance from.
-  /// @returns A new instance of a canteen.
   static DBCanteen fromMap(Map<String, dynamic> map) {
     return DBCanteen(map[columnCanteenID], map[columnName]);
   }
 
   /// The string to create a table for the canteen.
-  /// @returns The string to create a table for the canteen.
   static String initTable() {
     return '''
     CREATE TABLE $tableName (
@@ -43,11 +37,9 @@ class DBCanteen implements DatabaseModel {
   ''';
   }
 
-  /// This method returns the name of the canteen.
-  /// @returns The name of the canteen.
+  /// Returns the name of the canteen.
   String get name => _name;
 
-  /// This method returns the id of the canteen.
-  /// @returns The id of the canteen.
+  /// Returns the id of the canteen.
   String get canteenID => _canteenID;
 }

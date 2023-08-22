@@ -5,7 +5,6 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 /// This widget is used to display the exception for no available data on the server.
 class MealPlanNoData extends StatelessWidget {
   /// Creates a no data widget
-  /// @return a widget that displays the exeption for no available data on the server
   const MealPlanNoData({super.key});
 
   @override

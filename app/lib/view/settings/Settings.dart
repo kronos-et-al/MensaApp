@@ -16,8 +16,6 @@ import 'package:url_launcher/url_launcher.dart';
 /// This class is the settings page of the mensa app.
 class Settings extends StatelessWidget {
   /// Creates a new settings page.
-  /// @param key The key to identify this widget.
-  /// @returns A new settings page.
   Settings({super.key}) {
     WidgetsFlutterBinding.ensureInitialized();
   }
@@ -131,7 +129,6 @@ class Settings extends StatelessWidget {
   }
 
   /// Launches the given url.
-  /// @param url The url to launch.
   Future<void> _launchUrl(Uri url) async {
     // todo: throw Exception is not that good
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {

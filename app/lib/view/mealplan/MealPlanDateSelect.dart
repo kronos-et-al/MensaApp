@@ -11,10 +11,6 @@ class MealPlanDateSelect extends StatelessWidget {
   final Function(DateTime) _onDateChanged;
 
   /// Creates a new meal plan date select.
-  /// @param key The key to identify this widget.
-  /// @param date The date to display.
-  /// @param onDateChanged The function to call when the date changes.
-  /// @returns A new meal plan date select.
   const MealPlanDateSelect(
       {super.key,
       required DateTime date,

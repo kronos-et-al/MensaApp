@@ -8,11 +8,6 @@ class MensaButtonGroup<T> extends StatelessWidget {
   final List<MensaButtonGroupEntry<T>> _entries;
 
   /// Creates a new MensaButtonGroup.
-  /// @param key The key to identify this widget.
-  /// @param value The value that is currently selected.
-  /// @param onChanged The function that is called when the value changes.
-  /// @param entries The entries that can be selected.
-  /// @returns A new MensaButtonGroup.
   const MensaButtonGroup(
       {super.key,
       required T value,

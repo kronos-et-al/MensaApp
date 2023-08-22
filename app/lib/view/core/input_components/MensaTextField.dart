@@ -5,9 +5,6 @@ class MensaTextField extends StatelessWidget {
   final TextEditingController _controller;
 
   /// Creates a new MensaTextField.
-  /// @param key The key to identify this widget.
-  /// @param controller The controller that is used to control the text field.
-  /// @returns A new MensaTextField.
   const MensaTextField({super.key, required TextEditingController controller})
       : _controller = controller;
 

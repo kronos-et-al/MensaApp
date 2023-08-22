@@ -13,8 +13,6 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
   late Future _doneInitialization;
 
   /// Stores the access to the database and loads the values that are stored there.
-  /// @param database The access to the database.
-  /// @return A new instance of the class.
   FavoriteMealAccess(this._database) {
     _doneInitialization = _init();
   }

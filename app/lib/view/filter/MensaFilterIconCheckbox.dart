@@ -8,9 +8,6 @@ class MensaFilterIconCheckbox<T> {
   final T value;
 
   /// Creates a MensaFilterIconCheckbox widget.
-  /// @param icon The icon to display.
-  /// @param text The text to display.
-  /// @param value The value of the checkbox.
   const MensaFilterIconCheckbox(
       {required IAllergenIcon icon, required String text, required this.value})
       : _icon = icon,

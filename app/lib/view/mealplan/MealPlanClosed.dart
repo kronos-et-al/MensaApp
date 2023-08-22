@@ -5,7 +5,6 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 /// This widget is used to display the exception for a closed canteen.
 class MealPlanClosed extends StatelessWidget {
   /// Creates a closed canteen widget.
-  /// @return a widget that displays the exception for a closed canteen
   const MealPlanClosed({super.key});
 
   @override

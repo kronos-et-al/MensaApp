@@ -9,11 +9,6 @@ class MensaCanteenSelect extends StatelessWidget {
   final Function(Canteen) _onCanteenSelected;
 
   /// Creates a new MensaCanteenSelect.
-  /// @param key The key to identify this widget.
-  /// @param availableCanteens The canteens that can be selected.
-  /// @param selectedCanteen The canteen that is currently selected.
-  /// @param onCanteenSelected The function that is called when the canteen changes.
-  /// @returns A new MensaCanteenSelect.
   const MensaCanteenSelect(
       {super.key,
       required List<Canteen> availableCanteens,
@@ -30,7 +25,7 @@ class MensaCanteenSelect extends StatelessWidget {
             dropdownColor: Theme.of(context).colorScheme.surface,
             selectedItemBuilder: (context) => _availableCanteens
                 .map((e) => Row(children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 40,
                       ),
                       Container(

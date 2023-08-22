@@ -36,15 +36,7 @@ class DBImage implements DatabaseModel {
   /// The name of the column for the individual rating.
   static const String columnIndividualRating = 'individualRating';
 
-  /// Creates a new image.
-  /// @param imageID The id of the image.
-  /// @param mealID The id of the meal.
-  /// @param url The url of the image.
-  /// @param imageRank The rank of the image.
-  /// @param positiveRating The positive rating of the image.
-  /// @param negativeRating The negative rating of the image.
-  /// @param individualRating The individual rating of the image.
-  /// @returns A new image.
+  /// Creates a new image as it is represented in the database.
   DBImage(this._imageID, this._mealID, this._url, this._imageRank,
       this._positiveRating, this._negativeRating, this._individualRating);
 
@@ -62,7 +54,6 @@ class DBImage implements DatabaseModel {
   }
 
   /// Creates a new image from a map.
-  /// @param map The map to create the image from.
   static DBImage fromMap(Map<String, dynamic> map) {
     return DBImage(
         map[columnImageID],
@@ -75,7 +66,6 @@ class DBImage implements DatabaseModel {
   }
 
   /// The string to create a table for an image.
-  /// @returns The string to create a table for an image.
   static String initTable() {
     return '''
     CREATE TABLE $tableName (
@@ -91,31 +81,24 @@ class DBImage implements DatabaseModel {
   ''';
   }
 
-  /// This method returns the url of the image.
-  /// @returns The url of the image.
+  /// Returns the url of the image.
   String get url => _url;
 
-  /// This method returns the id of the meal.
-  /// @returns The id of the meal.
+  /// Returns the id of the meal.
   String get mealID => _mealID;
 
-  /// This method returns the id of the image.
-  /// @returns The id of the image.
+  /// Returns the id of the image.
   String get imageID => _imageID;
 
-  /// This method returns the individual rating of the image.
-  /// @returns The individual rating of the image.
+  /// Returns the individual rating of the image.
   int get individualRating => _individualRating;
 
-  /// This method returns the negative rating of the image.
-  /// @returns The negative rating of the image.
+  /// Returns the negative rating of the image.
   int get negativeRating => _negativeRating;
 
-  /// This method returns the positive rating of the image.
-  /// @returns The positive rating of the image.
+  /// Returns the positive rating of the image.
   int get positiveRating => _positiveRating;
 
-  /// This method returns the rank of the image.
-  /// @returns The rank of the image.
+  /// Returns the rank of the image.
   double get imageRank => _imageRank;
 }

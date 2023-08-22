@@ -14,16 +14,6 @@ class MealPreviewImage extends StatelessWidget {
   final void Function()? _onImagePressed;
 
   /// Creates a MealPreviewImage.
-  /// @param meal The Meal to display.
-  /// @param enableUploadButton Whether to display the upload button if no image exists.
-  /// @param enableFavoriteButton Whether to display the favorite button.
-  /// @param borderRadius The border radius of the image.
-  /// @param height The height of the image.
-  /// @param width The width of the image.
-  /// @param key The key to use for this widget.
-  /// @param onUploadButtonPressed The function to call when the upload button is pressed.
-  /// @param onImagePressed The function to call when the image is pressed.
-  /// @return A MealPreviewImage.
   const MealPreviewImage(
       {super.key,
       required Meal meal,

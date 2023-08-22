@@ -14,9 +14,6 @@ class MealSideEntry extends StatelessWidget {
       NumberFormat.currency(locale: 'de_DE', symbol: '€');
 
   /// Creates a MealSideEntry.
-  /// @param side The Side to display.
-  /// @param key The key to use for this widget.
-  /// @return A MealSideEntry.
   MealSideEntry({Key? key, required Side side})
       : _side = side,
         super(key: key);

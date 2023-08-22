@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'IAllergenIcon.dart';
 
-/// This widget is used to display the icon for Gelatine
+/// This widget is used to display the icon for gelatin
 class AllergenGelatineIcon extends IAllergenIcon {
+  /// Creates an new gelatin icon.
   const AllergenGelatineIcon(
       {super.key, super.width, super.height, super.color});
 

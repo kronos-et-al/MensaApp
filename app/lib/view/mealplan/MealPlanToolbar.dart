@@ -6,10 +6,6 @@ class MealPlanToolbar extends StatelessWidget implements PreferredSizeWidget {
   final double _toolBarHeight;
 
   /// Creates a new meal plan toolbar.
-  /// @param key The key to identify this widget.
-  /// @param toolBarHeight The height of the toolbar.
-  /// @param child The child of the toolbar.
-  /// @returns A new meal plan toolbar.
   MealPlanToolbar(
       {super.key, double toolBarHeight = kToolbarHeight, required Widget child})
       : _toolBarHeight = toolBarHeight,

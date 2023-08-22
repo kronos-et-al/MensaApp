@@ -37,10 +37,6 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   late Future _doneInitialization;
 
   /// Stores the access to the api and database and loads the meal plan.
-  /// @param preferences The access to the local storage.
-  /// @param api The access to the api.
-  /// @param database The access to the database.
-  /// @return A new instance of the class.
   CombinedMealPlanAccess(this._preferences, this._api, this._database) {
     _doneInitialization = _init();
   }

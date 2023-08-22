@@ -11,83 +11,68 @@ import '../../repository/error_handling/Result.dart';
 
 /// This class is the interface for the access to the meal data. The access can be done via the database or the server.
 abstract class IMealAccess with ChangeNotifier {
-  /// This method requests the mealplan of the committed canteen for the committed day from the database.
+  /// This method requests the mealplan of the stored canteen for the stored day from the database.
   /// If the requested data is not stored there, the data is requested from the server.
-  /// @param date The date of the mealplan
-  /// @param canteen The canteen of the mealplan
-  /// @return The mealplan of the committed date of the committed canteen or an error
+  ///
+  /// Return the meal plan of the committed date of the committed canteen or an [MealPlanException].
   Future<Result<List<MealPlan>, MealPlanException>> getMealPlan();
 
   /// This method returns the meal with the committed id form the database or current mealplan.
+  ///
+  /// /// Returns the meal with the committed id or an [NoMealException]
   Future<Result<Meal, NoMealException>> getMeal(Meal meal);
 
   /// This method updates all meal plans of the committed date of the committed canteen.
-  /// It returns a string that should be displayed in a temporal message or null.
-  /// @param date The date of the mealplan
-  /// @param canteen The canteen of the mealplan
-  /// @param context The context of the app used for displaying temporal messages.
-  /// @return It returns a string that should be displayed in a temporal message or null.
+  /// It returns a string that should be displayed in a temporal message or null if no string should be displayed.
+  ///
+  /// Returns a string that should be displayed in a temporal message or null .
   Future<String?> refreshMealplan();
 
   /// This method updates the rating of the committed meal on the server.
-  /// It returns a non empty string that should be displayed in a temporal message,
+  /// Returns a non empty string that should be displayed in a temporal message,
   /// or a null, saying that nothing should be printed.
-  /// @param rating The new rating of the meal
-  /// @param meal The meal that should be updated
-  /// @param context The context of the app used for displaying temporal messages.
-  /// @return It returns a string that should be displayed in a temporal message.
   Future<String> updateMealRating(int rating, Meal meal);
 
-  /// This method returns the currently selected filter preferences.
-  /// @return The selected filter preferences.
+  /// Returns the currently selected [FilterPreferences].
   Future<FilterPreferences> getFilterPreferences();
 
-  /// This method resets the filter preferences.
+  /// Resets the [FilterPreferences].
   Future<void> resetFilterPreferences();
 
-  /// This method changes the FilterPreferences of the app.
-  /// @param filterPreferences The new FilterPreferences
-  /// @return The result of the update
+  /// Changes the [FilterPreferences] of the app.
   Future<void> changeFilterPreferences(FilterPreferences filterPreferences);
 
-  /// This method returns the currently selected Canteen.
-  /// @return The currently selected Canteen.
+  /// Returns the currently selected [Canteen].
   Future<Canteen> getCanteen();
 
-  /// This method returns all available canteens.
-  /// @return All available canteens.
+  /// Returns all available canteens.
   Future<List<Canteen>> getAvailableCanteens();
 
-  /// This method changes the last used canteen that is stored.
-  /// @param canteen The new canteen
-  /// @return The result of the update
+  /// Changes the last used canteen that is stored.
   Future<void> changeCanteen(Canteen canteen);
 
-  /// This method returns the currently displayed date.
-  /// @return The current displayed date.
+  /// Returns the currently displayed date.
   Future<DateTime> getDate();
 
-  /// This method changes the date of the mealplan that is displayed.
-  /// @param date The new date
-  /// @return The result of the update
+  /// Changes the date of the mealplan that is displayed.
   Future<void> changeDate(DateTime date);
 
   /// This method checks if settings or favorites are changed since the last time the mealplan was displayed.
   /// If they were changed it corrects the displayed data if needed.
   Future<void> switchToMealPlanView();
 
-  /// This method activates the filter.
-  /// @return The result of the update
+  /// Activate the filter.
   Future<void> activateFilter();
 
-  /// This method deactivates the filter.
-  /// @return The result of the update
+  /// Deactivate the filter.
   Future<void> deactivateFilter();
 
-  /// This method toggles the activity of a filter.
+  /// Toggle the activity of a filter.
   Future<void> toggleFilter();
 
+  /// Returns true if the filter is active.
   Future<bool> isFilterActive();
 
+  /// This method removes an image from the database.
   Future<void> removeImage(ImageData image);
 }
