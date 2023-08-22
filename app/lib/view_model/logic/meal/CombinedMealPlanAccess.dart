@@ -95,12 +95,11 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     // update all if connection to server is successful
     if (mealPlans.isNotEmpty) {
-      _database.updateAll(mealPlans);
-      _mealPlans = mealPlans;
+      await _database.updateAll(mealPlans);
     }
 
     // filter meal plans
-    await _filterMealPlans();
+    await _setNewMealPlan();
   }
 
   @override
