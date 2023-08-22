@@ -61,25 +61,23 @@ where
     async fn try_start_image_review(&self) -> ReviewerResult<()> {
         let today = Local::now().date_naive();
 
-        let images_by_rank_date = self
+        let images_for_date = self
             .data_access
             .get_images_for_date(NUMBER_OF_IMAGES_TO_CHECK, today)
             .await?;
-        self.review_images(images_by_rank_date).await;
+        self.review_images(images_for_date).await;
 
-        let images_next_week_by_rank_not_checked_last_week = self
+        let unvalidated_images_for_next_week = self
             .data_access
             .get_unvalidated_images_for_next_week(NUMBER_OF_IMAGES_TO_CHECK)
             .await?;
-        self.review_images(images_next_week_by_rank_not_checked_last_week)
-            .await;
+        self.review_images(unvalidated_images_for_next_week).await;
 
-        let images_by_last_checked_not_checked_last_week = self
+        let old_images = self
             .data_access
             .get_old_images(NUMBER_OF_IMAGES_TO_CHECK)
             .await?;
-        self.review_images(images_by_last_checked_not_checked_last_week)
-            .await;
+        self.review_images(old_images).await;
         Ok(())
     }
 
