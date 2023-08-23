@@ -211,9 +211,14 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     _mealPlans = mealPlan;
 
     await _filterMealPlans();
+    _removeUselessLines();
 
     notifyListeners();
     return null;
+  }
+
+  void _removeUselessLines() {
+    _mealPlans = _mealPlans.where((element) => !element.isClosed).toList();
   }
 
   @override
@@ -311,7 +316,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       return;
     }
 
-    _mealPlans = _mealPlans.where((element) => !element.isClosed).toList();
+    _removeUselessLines();
 
     _activeFilter = false;
     notifyListeners();
