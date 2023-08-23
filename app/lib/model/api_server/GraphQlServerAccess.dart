@@ -372,6 +372,7 @@ Meal _convertMeal(Fragment$mealInfo meal) {
     numberOfRatings: meal.ratings.ratingsCount,
     lastServed: _convertDate(meal.statistics.lastServed),
     nextServed: _convertDate(meal.statistics.nextServed),
+    numberOfOccurance: meal.statistics.frequency,
     relativeFrequency: _specifyFrequency(meal.statistics),
     images: meal.images.map((e) => _convertImage(e)).toList(),
     sides: meal.sides.map((e) => _convertSide(e)).toList(),
