@@ -2,7 +2,7 @@
 
 use async_trait::async_trait;
 
-use crate::util::{ReportReason, Uuid};
+use crate::util::{ReportReason, Uuid, Date};
 
 /// Interface for notification of administrators.
 #[async_trait]
@@ -34,4 +34,6 @@ pub struct ImageReportInfo {
     pub report_barrier: u32,
     /// User that reported the image.
     pub client_id: Uuid,
+    /// The date of the day the image was uploaded
+    pub upload_date: Date,
 }
