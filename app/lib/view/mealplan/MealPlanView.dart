@@ -23,6 +23,7 @@ import 'package:app/view_model/repository/data_classes/settings/MealPlanFormat.d
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_i18n/widgets/I18nText.dart';
 import 'package:provider/provider.dart';
 
@@ -33,6 +34,7 @@ class MealPlanView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return Consumer<IFavoriteMealAccess>(
         builder: (context, favoriteMealAccess, child) => Consumer<
                 IPreferenceAccess>(
@@ -141,9 +143,19 @@ class MealPlanView extends StatelessWidget {
                               onRefresh: () async {
                                 String? error =
                                     await mealAccess.refreshMealplan();
+                                if (!context.mounted) return;
                                 if (error != null) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: I18nText(error)));
+                                      SnackBar(
+                                          content: Text(
+                                            FlutterI18n.translate(
+                                                context, error),
+                                            style: TextStyle(
+                                                color:
+                                                    theme.colorScheme.onError),
+                                          ),
+                                          backgroundColor:
+                                              theme.colorScheme.error));
                                 }
                               },
                               child: (() {
