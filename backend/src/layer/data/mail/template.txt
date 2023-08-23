@@ -1,8 +1,9 @@
 The image at the url {{image_link}}
 with the id {{image_id}}
 was reported {{report_count}} times.
+Last reported by: {{client_id}}
 Reason: {{reason}}
-Image automatically hidden: {{image_got_hidden}}
+Image automatically hidden: {{image_got_hidden}} ({{report_barrier}} reports needed)
 
 Additional Data:
 Positive ratings: {{positive_rating_count}}

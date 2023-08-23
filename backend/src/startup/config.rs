@@ -57,7 +57,6 @@ impl ConfigReader {
         let info = LogInfo {
             log_config: read_var("LOG_CONFIG").unwrap_or_else(|_| DEFAULT_LOG_CONFIG.into()),
         };
-        info!("using log config: {}", info.log_config);
         Ok(info)
     }
 
@@ -86,6 +85,10 @@ impl ConfigReader {
             username: read_var("SMTP_USERNAME")?,
             password: read_var("SMTP_PASSWORD")?,
         };
+        info!(
+            "Sending mails to {} from {} using {}:{}",
+            info.admin_email_address, info.username, info.smtp_server, info.smtp_port
+        );
         Ok(info)
     }
 
@@ -101,6 +104,10 @@ impl ConfigReader {
             image_review_schedule: env::var("IMAGE_REVIEW_SCHEDULE")
                 .unwrap_or_else(|_| DEFAULT_NIGHTLY_SCHEDULE.into()),
         };
+        info!(
+            "Running full parsing on `{}`, update parsing on `{}` and image reviews on `{}`",
+            info.full_parse_schedule, info.update_parse_schedule, info.image_review_schedule
+        );
         Ok(info)
     }
 
@@ -111,6 +118,7 @@ impl ConfigReader {
         let info = FlickrInfo {
             api_key: read_var("FLICKR_API_KEY")?,
         };
+        info!("Using flickr api key `{}***`", &info.api_key[0..4]);
         Ok(info)
     }
 
@@ -140,7 +148,7 @@ impl ConfigReader {
             number_of_weeks_to_poll: get_max_weeks_data(),
         };
         info!(
-            "getting canteen data from {} for canteens {}",
+            "getting canteen data from <{}> for canteens {}",
             info.base_url,
             info.valid_canteens.join(", ")
         );
