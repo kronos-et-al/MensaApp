@@ -66,7 +66,7 @@ impl ConfigReader {
     pub fn read_database_info(&self) -> Result<DatabaseInfo> {
         let info = DatabaseInfo {
             connection: read_var("DATABASE_URL")?,
-            max_weeks_data: get_max_weeks_data()
+            max_weeks_data: get_max_weeks_data(),
         };
         Ok(info)
     }
