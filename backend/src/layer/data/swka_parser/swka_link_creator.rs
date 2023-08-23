@@ -13,20 +13,25 @@ use crate::util::Date;
 
 const URL_SEPARATOR: char = '/';
 const WEEK_SELECTOR: &str = "?kw=";
-pub const NUMBER_OF_WEEKS_TO_POLL: u32 = 5;
 
 pub struct SwKaLinkCreator {
     base_url: String,
     valid_canteens: Vec<String>,
+    number_of_weeks_to_poll: u32,
 }
 
 impl SwKaLinkCreator {
     /// Method for creating a [`SwKaLinkCreator`] instance.
     #[must_use]
-    pub fn new(base_url: String, valid_canteens: Vec<String>) -> Self {
+    pub fn new(
+        base_url: String,
+        valid_canteens: Vec<String>,
+        number_of_weeks_to_poll: u32,
+    ) -> Self {
         Self {
             base_url,
             valid_canteens,
+            number_of_weeks_to_poll,
         }
     }
 
@@ -57,7 +62,7 @@ impl SwKaLinkCreator {
     }
 
     fn get_all_urls_for_next_weeks_from_date(&self, date: Date) -> Vec<String> {
-        (0..NUMBER_OF_WEEKS_TO_POLL)
+        (0..self.number_of_weeks_to_poll)
             .flat_map(|week| Self::get_urls(self, date + Duration::weeks(week.into())))
             .collect()
     }

@@ -40,12 +40,13 @@ pub fn get_parse_info() -> SwKaInfo {
         valid_canteens: get_mensa_names(),
         client_timeout: get_client_timeout(),
         client_user_agent: get_client_user_agent(),
+        number_of_weeks_to_poll: 5,
     }
 }
 
 #[must_use]
 pub fn get_creator() -> SwKaLinkCreator {
-    SwKaLinkCreator::new(get_base_url(), get_mensa_names())
+    SwKaLinkCreator::new(get_base_url(), get_mensa_names(), 5)
 }
 
 #[must_use]
