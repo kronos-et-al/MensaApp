@@ -117,7 +117,7 @@ where
                 get_image_rank: info.rank,
                 report_barrier: Self::get_report_barrier(info.upload_date),
                 client_id: auth_info.client_id,
-                upload_date: info.upload_date,
+                image_age: Self::days_since(info.upload_date),
             };
 
             self.admin_notification

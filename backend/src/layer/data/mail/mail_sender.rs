@@ -1,5 +1,4 @@
 use async_trait::async_trait;
-use chrono::Local;
 use thiserror::Error;
 
 use lettre::{
@@ -92,7 +91,6 @@ impl MailSender {
     }
 
     fn get_report(info: &ImageReportInfo) -> String {
-        let today = Local::now().date_naive();
         let info_array_map = [
             ("image_link", &info.image_link as &dyn ToString),
             ("image_id", &info.image_id),
@@ -104,7 +102,7 @@ impl MailSender {
             ("get_image_rank", &info.get_image_rank),
             ("report_barrier", &info.report_barrier),
             ("client_id", &info.client_id),
-            ("image_age", &today.signed_duration_since(info.upload_date).num_days().to_string()),
+            ("image_age", &info.image_age),
         ];
 
         let info_map = info_array_map
@@ -126,7 +124,6 @@ mod test {
         layer::data::mail::mail_sender::MailSender,
         util::Uuid,
     };
-    use chrono::Local;
     use dotenvy;
     use std::env::{self, VarError};
     use tracing_test::traced_test;
@@ -185,9 +182,8 @@ mod test {
             report.contains(info.client_id.to_string().as_str()),
             "the template must contain all of the information from the report info"
         );
-        let today = Local::now().date_naive();
         assert!(
-            report.contains(today.signed_duration_since(info.upload_date).num_days().to_string().as_str()),
+            report.contains(info.image_age.to_string().as_str()),
             "the template must contain all of the information from the report info"
         );
     }
@@ -232,7 +228,7 @@ mod test {
             get_image_rank: 1.0,
             report_barrier: 1,
             client_id: Uuid::default(),
-            upload_date: Local::now().date_naive(),
+            image_age: 1,
         }
     }
 
