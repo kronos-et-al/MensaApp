@@ -51,6 +51,13 @@ void main() {
         price: Price(student: 123, employee: 123, pupil: 345, guest: 356),
         allergens: [Allergen.sn, Allergen.ka, Allergen.kr],
         additives: []),
+    Side(
+        id: "0sdfsdf1",
+        name: "Side vegan",
+        foodType: FoodType.vegan,
+        price: Price(student: 123, employee: 234, pupil: 345, guest: 356),
+        allergens: [],
+        additives: []),
   ];
 
   final ImageData image = ImageData(
@@ -119,6 +126,20 @@ void main() {
         sides: [sides[0], sides[1], sides[2], sides[3]],
         averageRating: 1,
         isFavorite: false),
+    Meal(
+        id: "100000",
+        name: "vegan Meal",
+        foodType: FoodType.vegan,
+        relativeFrequency: Frequency.newMeal,
+        price: Price(student: 200, employee: 300, pupil: 400, guest: 500),
+        allergens: [Allergen.lu, Allergen.ka],
+        additives: [Additive.antioxidantAgents],
+        images: [image],
+        sides: [sides[4]],
+        averageRating: 5,
+        numberOfRatings: 2,
+        individualRating: 1,
+        isFavorite: true),
   ];
 
   final List<Line> lines = [
@@ -151,11 +172,18 @@ void main() {
     database = SQLiteDatabaseAccess();
   });
 
+  test("get canteen by id", () async {
+    await database.updateCanteen(canteen);
+    Canteen? result = await database.getCanteenById(canteen.id);
+    expect(result?.id, canteen.id);
+    expect(result?.name, canteen.name);
+  });
+
   test("update all", () async {
     await database.updateAll(mealplans);
 
     final List<MealPlan> result = switch (
-    await database.getMealPlan(DateTime.now(), canteen)) {
+        await database.getMealPlan(DateTime.now(), canteen)) {
       Success(value: final value) => value,
       Failure(exception: _) => []
     };
@@ -163,14 +191,10 @@ void main() {
     expect(result.length, 3);
     for (int i = 0; i < 3; i++) {
       expect(result.map((e) => e.line.id).contains(lines[i].id), isTrue);
-      expect(result
-          .firstWhere((e) => e.line.id == lines[i].id)
-          .isClosed,
+      expect(result.firstWhere((e) => e.line.id == lines[i].id).isClosed,
           mealplans[i].isClosed);
       _hasMeals(mealplans[i].meals,
-          result
-              .firstWhere((e) => e.line.id == lines[i].id)
-              .meals);
+          result.firstWhere((e) => e.line.id == lines[i].id).meals);
     }
   });
 
@@ -190,12 +214,6 @@ void main() {
     expect(canteens?.length, 2);
     expect(canteens?.map((e) => e.id).contains(canteen.id), isTrue);
     expect(canteens?.map((e) => e.id).contains(otherCanteen.id), isTrue);
-  });
-
-  test("get canteen by id", () async {
-    Canteen? result = await database.getCanteenById(canteen.id);
-    expect(result?.id, canteen.id);
-    expect(result?.name, canteen.name);
   });
 
   test("remove image", () async {
@@ -225,12 +243,11 @@ void main() {
     test("get one favorite", () async {
       final Meal meal = switch (await database.getMealFavorite(meals[0].id)) {
         Success(value: final value) => value,
-        Failure(exception: _) =>
-            Meal(id: "id",
-                name: "name",
-                foodType: FoodType.vegetarian,
-                price: Price(
-                    student: 234, employee: 343, pupil: 345, guest: 543))
+        Failure(exception: _) => Meal(
+            id: "id",
+            name: "name",
+            foodType: FoodType.vegetarian,
+            price: Price(student: 234, employee: 343, pupil: 345, guest: 543))
       };
       expect(meal, meals[0]);
     });
@@ -246,6 +263,25 @@ void main() {
 
       expect(await database.getFavorites(), []);
     });
+  });
+
+  test("clean up", () async {
+    await database.updateAll([
+      MealPlan(
+          date: DateTime(2023, 8, 1),
+          line: lines[0],
+          isClosed: false,
+          meals: [meals[5]])
+    ]);
+    await database.cleanUp();
+
+    final result =
+        switch (await database.getMealPlan(DateTime(2023, 8, 1), canteen)) {
+      Success(value: final value) => value,
+      Failure(exception: final exception) => exception
+    };
+
+    expect(result is Exception, isTrue);
   });
 }
 
