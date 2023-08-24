@@ -552,7 +552,6 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     return result.map((sideRow) => DBMealPlanSide.fromMap(sideRow)).toList();
   }
 
-  // todo unused
   Future<DBImage?> _getDBImage(String imageID) async {
     var db = await database;
     var result = await db.query(DBImage.tableName,
@@ -582,7 +581,6 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     }
   }
 
-  // todo unused
   Future<DBFavorite?> _getDBFavorite(String favoriteID) async {
     var db = await database;
     var result = await db.query(DBFavorite.tableName,
