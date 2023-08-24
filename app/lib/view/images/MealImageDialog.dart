@@ -18,6 +18,7 @@ import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
@@ -123,14 +124,23 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                     .toString()),
                                 MensaIconButton(
                                     onPressed: () async {
+                                      String? result;
                                       if (meal.images![currentPage]
                                               .individualRating ==
                                           1) {
-                                        await imageAccess.deleteUpvote(
+                                        result = await imageAccess.deleteUpvote(
                                             meal.images![currentPage]);
                                       } else {
-                                        await imageAccess.upvoteImage(
+                                        result = await imageAccess.upvoteImage(
                                             meal.images![currentPage]);
+                                      }
+
+                                      if (result != null) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text(
+                                                    FlutterI18n.translate(
+                                                        context, result))));
                                       }
                                     },
                                     icon: meal.images![currentPage]
@@ -140,14 +150,23 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                         : const ThumbUpOutlinedIcon()),
                                 MensaIconButton(
                                     onPressed: () async {
+                                      String? result;
                                       if (meal.images![currentPage]
                                               .individualRating ==
                                           -1) {
-                                        await imageAccess.deleteDownvote(
+                                        result = await imageAccess.deleteDownvote(
                                             meal.images![currentPage]);
                                       } else {
-                                        await imageAccess.downvoteImage(
+                                        result = await imageAccess.downvoteImage(
                                             meal.images![currentPage]);
+                                      }
+
+                                      if (result != null) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                            content: Text(
+                                                FlutterI18n.translate(
+                                                    context, result))));
                                       }
                                     },
                                     icon: meal.images![currentPage]
