@@ -61,18 +61,15 @@ class Favorites extends StatelessWidget {
 
           return Scaffold(
               appBar: appBar,
-              body: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ListView.builder(
+              body: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: mealPlan.length,
                     itemBuilder: (context, index) {
                       return MealListEntry(meal: mealPlan[index]);
                     },
-                  )
-                ],
-              ));
+                  )));
         },
       ),
     );
