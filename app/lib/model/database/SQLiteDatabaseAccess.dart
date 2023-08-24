@@ -675,8 +675,9 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   }
 
   @override
-  Future<Canteen> getCanteenById(String id) {
-    return Future.value(Canteen(id: id, name: 'Canteen $id'));
+  Future<Canteen> getCanteenById(String id) async {
+    DBCanteen? canteen = await _getDBCanteen(id);
+    return DatabaseTransformer.fromDBCanteen(canteen!);
   }
 
   @override
