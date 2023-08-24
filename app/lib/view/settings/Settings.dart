@@ -7,6 +7,7 @@ import 'package:app/view_model/logic/preference/IPreferenceAccess.dart';
 import 'package:app/view_model/repository/data_classes/settings/MensaColorScheme.dart';
 import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,7 @@ class Settings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return Consumer<IPreferenceAccess>(
         builder: (context, storage, child) => Scaffold(
               appBar: MensaAppBar(
@@ -122,7 +124,33 @@ class Settings extends StatelessWidget {
                                 )
                               ],
                             )
-                          ])
+                          ]),
+                      const SizedBox(height: 16),
+                      Row(children: [
+                        GestureDetector(
+                            onLongPress: () async {
+                              await Clipboard.setData(ClipboardData(
+                                  text: storage.getClientIdentifier()));
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      backgroundColor:
+                                          theme.colorScheme.primary,
+                                      content: Text(
+                                        FlutterI18n.translate(context,
+                                            "settings.snackBarCopiedToClipboard"),
+                                        style: TextStyle(
+                                            color: theme.colorScheme.onPrimary),
+                                      )));
+                            },
+                            child: Text(
+                                FlutterI18n.translate(
+                                    context, "settings.clientID",
+                                    translationParams: {
+                                      "clientID": storage.getClientIdentifier()
+                                    }),
+                                textAlign: TextAlign.left)),
+                      ]),
                     ])),
               ),
             ));
