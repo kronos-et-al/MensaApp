@@ -17,6 +17,7 @@ import 'package:app/view/detail_view/RatingsOverview.dart';
 import 'package:app/view/detail_view/UploadImageDialog.dart';
 import 'package:app/view/images/MealImageDialog.dart';
 import 'package:app/view_model/logic/favorite/IFavoriteMealAccess.dart';
+import 'package:app/view_model/logic/image/IImageAccess.dart';
 import 'package:app/view_model/logic/meal/IMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
@@ -47,6 +48,7 @@ class DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
     IMealAccess mealAccess = Provider.of<IMealAccess>(context);
+    IImageAccess imageAccess = Provider.of<IImageAccess>(context);
     ThemeData themeData = Theme.of(context);
     return FutureBuilder(
         future: mealAccess.getMeal(widget._meal),

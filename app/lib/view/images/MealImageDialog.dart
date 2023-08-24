@@ -18,6 +18,7 @@ import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
 /// This widget is used to display the images of a meal.
@@ -34,6 +35,7 @@ class MealImageDialog extends StatefulWidget {
 class _MealImageDialogState extends State<MealImageDialog> {
   int currentPage = 0;
   final PageController pageController = PageController();
+  bool isClosing = false;
 
   @override
   void initState() {
@@ -60,13 +62,19 @@ class _MealImageDialogState extends State<MealImageDialog> {
             switch (snapshot.requireData) {
               case Success<Meal, NoMealException> value:
                 Meal meal = value.value;
-                print('current page: $currentPage, length: ${meal.images!.length}');
+                if (!isClosing &&
+                    (meal.images == null || meal.images!.isEmpty)) {
+                  isClosing = true;
+                  SchedulerBinding.instance.addPostFrameCallback((_) {
+                    Navigator.of(context).pop();
+                  });
+                }
                 return MensaFullscreenDialog(
                     appBar: MensaAppBar(
                         appBarHeight: kToolbarHeight,
                         child: Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 8),
                           child: Row(
                             children: [
                               MensaIconButton(
@@ -101,7 +109,8 @@ class _MealImageDialogState extends State<MealImageDialog> {
                       },
                     ),
                     actions: (meal.images!.isEmpty ||
-                            currentPage >= meal.images!.length || currentPage == -1)
+                            currentPage >= meal.images!.length ||
+                            currentPage == -1)
                         ? const SizedBox(
                             height: 64,
                           )

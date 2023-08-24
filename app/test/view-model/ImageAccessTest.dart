@@ -103,7 +103,7 @@ void main() {
       when(() => api.reportImage(image, ReportCategory.noMeal))
           .thenAnswer((_) async => false);
       expect(await images.reportImage(meal, image, ReportCategory.noMeal),
-          "snackbar.reportImageError");
+          false);
     });
 
     test("successful report", () async {
@@ -112,7 +112,7 @@ void main() {
       when(() => database.removeImage(image)).thenAnswer((_) async {});
 
       expect(await images.reportImage(meal, image, ReportCategory.noMeal),
-          "snackbar.reportImageSuccess");
+          true);
       verify(() => database.removeImage(image)).called(1);
     });
   });

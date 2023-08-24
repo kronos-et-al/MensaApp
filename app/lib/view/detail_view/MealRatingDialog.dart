@@ -53,34 +53,37 @@ class _MealRatingDialogState extends State<MealRatingDialog> {
                 const Spacer(),
                 MensaButton(
                     onPressed: () async {
-                      final temporalMessage =
+                      final result =
                           await context.read<IMealAccess>().updateMealRating(
                                 rating!,
                                 meal,
                               );
                       if (!context.mounted) return;
 
-                      if (temporalMessage.isNotEmpty) {
+                      if (result) {
                         final snackBar = SnackBar(
                             content: Text(
-                              FlutterI18n.translate(context, temporalMessage),
+                              FlutterI18n.translate(context, "snackbar.updateRatingSuccess"),
                               style: TextStyle(
                                   color:
-                                      Theme.of(context).colorScheme.onSurface),
+                                      Theme.of(context).colorScheme.onPrimary),
                             ),
                             backgroundColor:
-                                Theme.of(context).colorScheme.surface);
+                                Theme.of(context).colorScheme.primary);
 
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       } else {
-                        widget._onRatingChanged?.call(Meal.copy(
-                            meal: meal,
-                            individualRating: rating,
-                            averageRating:
-                                (meal.averageRating! * meal.numberOfRatings! +
-                                        rating!) /
-                                    (meal.numberOfRatings! + 1),
-                            numberOfRatings: meal.numberOfRatings! + 1));
+                        final snackBar = SnackBar(
+                            content: Text(
+                              FlutterI18n.translate(context, "snackbar.updateRatingError"),
+                              style: TextStyle(
+                                  color:
+                                  Theme.of(context).colorScheme.onError),
+                            ),
+                            backgroundColor:
+                            Theme.of(context).colorScheme.error);
+
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
                       Navigator.pop(context);
                     },

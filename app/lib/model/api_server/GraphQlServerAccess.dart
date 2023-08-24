@@ -19,6 +19,7 @@ import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
+import 'package:app/view_model/repository/error_handling/ImageUploadException.dart';
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
 import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 
@@ -116,7 +117,7 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   @override
-  Future<bool> linkImage(String url, Meal meal) async {
+  Future<Result<bool, ImageUploadException>> linkImage(String url, Meal meal) async {
     const requestName = "addImage";
     final hash = _generateHashOfParameters(
         requestName, [..._serializeUuid(meal.id), ..._serializeString(url)]);
@@ -125,7 +126,15 @@ class GraphQlServerAccess implements IServerAccess {
     final result = await _client.mutate$LinkImage(Options$Mutation$LinkImage(
         variables:
             Variables$Mutation$LinkImage(imageUrl: url, mealId: meal.id)));
-    return result.parsedData?.addImage ?? false;
+    if (result.hasException) {
+      if (result.exception!.linkException != null) {
+        return Failure(ImageUploadException("Verbindungsfehler"));
+      } else if (result.exception!.graphqlErrors.isNotEmpty) {
+        return Failure(ImageUploadException(result.exception!.graphqlErrors[0].message ?? "Unbekannter Fehler"));
+      }
+      return Failure(ImageUploadException("Unbekannter Fehler"));
+    }
+    return Success(result.parsedData?.addImage ?? false);
   }
 
   @override

@@ -222,18 +222,18 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   }
 
   @override
-  Future<String> updateMealRating(int rating, Meal meal) async {
+  Future<bool> updateMealRating(int rating, Meal meal) async {
     await _doneInitialization;
 
     final result = await _api.updateMealRating(rating, meal);
 
     if (!result) {
-      return "snackbar.updateRatingError";
+      return false;
     }
 
     _changeRatingOfMeal(meal, rating);
     notifyListeners();
-    return "snackbar.updateRatingSuccess";
+    return true;
   }
 
   @override
