@@ -99,7 +99,7 @@ void main() async {
     var result = await serverAccess.updateAll();
 
     var _ = switch (result) {
-      Success(value: final _) => true, // TODO
+      Success(value: final _) => true,
       Failure(exception: final exception) => expect(exception.toString(), ""),
     };
   });
@@ -110,7 +110,7 @@ void main() async {
         DateTime(2020, 11, 1));
 
     var _ = switch (result) {
-      Success(value: final _) => true, //TODO
+      Success(value: final _) => true,
       Failure(exception: final exception) => expect(exception.toString(), ""),
     };
   });
@@ -132,7 +132,7 @@ void main() async {
         DateTime(2020, 11, 2));
 
     var _ = switch (result) {
-      Success(value: final _) => true, // TODO better testing?
+      Success(value: final _) => true,
       Failure(exception: final exception) =>
         expect(exception, true, reason: "exception while request"),
     };

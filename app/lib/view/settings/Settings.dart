@@ -130,7 +130,7 @@ class Settings extends StatelessWidget {
 
   /// Launches the given url.
   Future<void> _launchUrl(Uri url) async {
-    // todo: throw Exception is not that good
+    // todo: throw Exception is not that good -> show banner
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch $url');
     }
