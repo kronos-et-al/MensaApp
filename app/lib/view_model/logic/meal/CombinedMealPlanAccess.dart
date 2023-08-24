@@ -676,9 +676,4 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   Future<bool> isFilterActive() async {
     return Future.value(_activeFilter);
   }
-
-  @override
-  Future<void> removeImage(ImageData image) async {
-    //Todo
-  }
 }

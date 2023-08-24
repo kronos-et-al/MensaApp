@@ -72,7 +72,4 @@ abstract class IMealAccess with ChangeNotifier {
 
   /// Returns true if the filter is active.
   Future<bool> isFilterActive();
-
-  /// This method removes an image from the database.
-  Future<void> removeImage(ImageData image);
 }
