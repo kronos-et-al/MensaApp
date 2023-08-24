@@ -268,7 +268,7 @@ void main() {
       }
     });
 
-    test("", () async {
+    test("initialization with no stored canteen and connection to server", () async {
       when(() => localStorage.getFilterPreferences()).thenAnswer((_) => null);
       when(() => localStorage.getCanteen()).thenAnswer((_) => null);
       when(() => localStorage.getPriceCategory())
