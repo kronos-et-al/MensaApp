@@ -411,9 +411,9 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         meal.id,
         meal.name,
         meal.foodType,
-        meal.individualRating ?? 0,
-        meal.numberOfRatings ?? 0,
-        meal.averageRating ?? 0);
+        meal.individualRating,
+        meal.numberOfRatings,
+        meal.averageRating);
 
     await Future.wait(
         meal.allergens?.map((e) => _insertMealAllergen(e, dbMeal)).toList() ??
@@ -442,9 +442,9 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         meal.id,
         meal.name,
         meal.foodType,
-        meal.individualRating ?? 0,
-        meal.numberOfRatings ?? 0,
-        meal.averageRating ?? 0);
+        meal.individualRating,
+        meal.numberOfRatings,
+        meal.averageRating);
     DBMealPlanMeal mealPlanMeal = DBMealPlanMeal(
         mealPlan.mealPlanID,
         dbMeal.mealID,

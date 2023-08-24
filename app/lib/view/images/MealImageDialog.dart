@@ -71,7 +71,8 @@ class _MealImageDialogState extends State<MealImageDialog> {
                     Navigator.of(context).pop();
                   });
                 }
-                ImageData currentImage = meal.images![currentPage];
+                ImageData? currentImage =
+                    currentPage >= 0 ? meal.images![currentPage] : null;
                 return MensaFullscreenDialog(
                     appBar: MensaAppBar(
                         appBarHeight: kToolbarHeight,
@@ -82,7 +83,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
                             children: [
                               MensaIconButton(
                                   semanticLabel: FlutterI18n.translate(
-                                      context, "semantics.image.close"),
+                                      context, "semantics.imageClose"),
                                   onPressed: () => Navigator.of(context).pop(),
                                   icon: const NavigationCloseIcon()),
                               const Spacer(),
@@ -97,7 +98,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
                           return Center(
                               child: MensaButton(
                             semanticLabel: FlutterI18n.translate(
-                                context, "semantics.image.upload"),
+                                context, "semantics.imageUpload"),
                             onPressed: () {
                               showDialog(
                                 context: context,
@@ -112,6 +113,21 @@ class _MealImageDialogState extends State<MealImageDialog> {
                             child: Image.network(
                           meal.images![index].url,
                           fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) => Text(
+                              FlutterI18n.translate(
+                                  context, "image.loadingError")),
+                          frameBuilder:
+                              (context, child, frame, wasSynchronouslyLoaded) {
+                            if (wasSynchronouslyLoaded) {
+                              return child;
+                            }
+                            return AnimatedOpacity(
+                              opacity: frame == null ? 0 : 1,
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeOut,
+                              child: child,
+                            );
+                          },
                         ));
                       },
                     ),
@@ -131,27 +147,27 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                 MensaIconButton(
                                     semanticLabel: FlutterI18n.translate(
                                         context,
-                                        currentImage.individualRating == 1
-                                            ? "semantics.image.ratings.removeUpvote"
-                                            : "semantics.image.ratings.addUpvote"),
+                                        currentImage?.individualRating == 1
+                                            ? "semantics.imageRatingsRemoveUpvote"
+                                            : "semantics.imageRatingsAddUpvote"),
                                     onPressed: () async {
-                                      if (currentImage.individualRating == 1) {
+                                      if (currentImage?.individualRating == 1) {
                                         await imageAccess
-                                            .deleteUpvote(currentImage);
+                                            .deleteUpvote(currentImage!);
                                       } else {
                                         await imageAccess
-                                            .upvoteImage(currentImage);
+                                            .upvoteImage(currentImage!);
                                       }
                                     },
-                                    icon: currentImage.individualRating == 1
+                                    icon: currentImage?.individualRating == 1
                                         ? const ThumbUpFilledIcon()
                                         : const ThumbUpOutlinedIcon()),
                                 MensaIconButton(
                                     semanticLabel: FlutterI18n.translate(
                                         context,
-                                        currentImage.individualRating == -1
-                                            ? "semantics.image.ratings.removeDownvote"
-                                            : "semantics.image.ratings.addDownvote"),
+                                        currentImage?.individualRating == -1
+                                            ? "semantics.imageRatingsRemoveDownvote"
+                                            : "semantics.imageRatingsAddDownvote"),
                                     onPressed: () async {
                                       if (meal.images![currentPage]
                                               .individualRating ==
@@ -173,7 +189,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                 const Spacer(),
                                 MensaIconButton(
                                     semanticLabel: FlutterI18n.translate(
-                                        context, "semantics.image.report"),
+                                        context, "semantics.imageReport"),
                                     onPressed: () {
                                       showDialog(
                                         context: context,
@@ -185,7 +201,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                     icon: const ImageReportIcon()),
                               ],
                             )));
-              case Failure<Meal, NoMealException> value:
+              case Failure<Meal, NoMealException> _:
                 Navigator.of(context).pop();
                 return const Center(child: Text("Fehler beim Laden"));
             }

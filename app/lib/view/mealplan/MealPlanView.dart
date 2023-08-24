@@ -25,7 +25,6 @@ import 'package:app/view_model/repository/error_handling/MealPlanException.dart'
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:flutter_i18n/widgets/I18nText.dart';
 import 'package:provider/provider.dart';
 
 /// This class is the view for the meal plan.

@@ -130,7 +130,7 @@ class GraphQlServerAccess implements IServerAccess {
       if (result.exception!.linkException != null) {
         return Failure(ImageUploadException("Verbindungsfehler"));
       } else if (result.exception!.graphqlErrors.isNotEmpty) {
-        return Failure(ImageUploadException(result.exception!.graphqlErrors[0].message ?? "Unbekannter Fehler"));
+        return Failure(ImageUploadException(result.exception!.graphqlErrors[0].message));
       }
       return Failure(ImageUploadException("Unbekannter Fehler"));
     }

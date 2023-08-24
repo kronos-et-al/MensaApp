@@ -15,5 +15,7 @@
   "linkTextFieldDescription": "Flickr Link zu Bild",
   "linkSmallTextOwnImages": "Es dürfen nur eigene Bilder hochgeladen werden.",
   "linkSmallTextDisplayed": "Die hochgeladenen Bilder werden anderen Nutzern angezeigt.",
-  "linkButton": "Hochladen"
+  "linkButton": "Hochladen",
+
+  "loadingError": "Bild konnte nicht geladen werden"
 }

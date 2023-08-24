@@ -181,22 +181,19 @@ class DetailsPageState extends State<DetailsPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          widget._line != null
-                                              ? Row(
-                                                  children: [
-                                                    const Padding(
-                                                      padding:
-                                                          EdgeInsets.all(8),
-                                                      child: MealLineIcon(),
-                                                    ),
-                                                    Text(
-                                                      widget._line!.name,
-                                                      style: const TextStyle(
-                                                          fontSize: 16),
-                                                    )
-                                                  ],
-                                                )
-                                              : const SizedBox(),
+                                          Row(
+                                            children: [
+                                              const Padding(
+                                                padding: EdgeInsets.all(8),
+                                                child: MealLineIcon(),
+                                              ),
+                                              Text(
+                                                widget._line.name,
+                                                style: const TextStyle(
+                                                    fontSize: 16),
+                                              )
+                                            ],
+                                          ),
                                           const SizedBox(height: 8),
                                           MealPreviewImage(
                                               enableUploadButton: true,
@@ -314,8 +311,7 @@ class DetailsPageState extends State<DetailsPage> {
                                           Row(children: [
                                             MensaRatingInput(
                                               value: meal.individualRating
-                                                      ?.toDouble() ??
-                                                  0,
+                                                      .toDouble(),
                                               disabled: true,
                                               color: Theme.of(context)
                                                   .colorScheme
@@ -326,9 +322,9 @@ class DetailsPageState extends State<DetailsPage> {
                                             ),
                                             const Spacer(),
                                             MensaButton(
-                                              semanticLabel: FlutterI18n.translate(
-                                                  context,
-                                                  "semantics.mealRatingEdit"),
+                                              semanticLabel:
+                                                  FlutterI18n.translate(context,
+                                                      "semantics.mealRatingEdit"),
                                               text: FlutterI18n.translate(
                                                   context,
                                                   "ratings.editRating"),
