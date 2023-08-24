@@ -190,18 +190,6 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
             '${DBCanteen.tableName}.${DBCanteen.columnCanteenID} = ${DBLine.tableName}.${DBLine.columnCanteenID} AND ${DBLine.tableName}.${DBLine.columnLineID} = ${DBMealPlan.tableName}.${DBMealPlan.columnLineID} AND ${DBCanteen.tableName}.${DBCanteen.columnCanteenID} = ? AND ${DBMealPlan.tableName}.${DBMealPlan.columnDate} = ?',
         whereArgs: [canteen.id, _dateFormat.format(date)]);
     if (result.isNotEmpty) {
-      // todo remove commented code
-      /*List<MealPlan> mealPlans = await Future.wait(result.map((plan) async {
-        DBMealPlan dbMealPlan= DBMealPlan.fromMap(plan);
-        var dbLine = await _getDBLine(dbMealPlan.lineID);
-        var dbCanteen = await _getDBCanteen(dbLine!.canteenID);
-        List<Meal> meals = await Future.wait((await _getDBMeals(dbMealPlan.mealPlanID)).map<Future<Meal>>((dbMeal) async {
-          bool isFavorite = await _isFavorite(dbMeal.mealID);
-          return _getMeal(dbMeal.mealID, isFavorite);
-        }));
-        return DatabaseTransformer.fromDBMealPlan(dbMealPlan, dbLine, dbCanteen!, meals);
-      }));
-      return Success(mealPlans);*/
       List<MealPlan> mealPlans = List.empty(growable: true);
       for (DBMealPlan dbMealPlan
           in result.map((plan) => DBMealPlan.fromMap(plan))) {
@@ -307,44 +295,6 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     await _insertMeal(meal);
   }
 
-  // todo delete commented code
-  /*Future<Meal?> _getMeal(DBMeal dbMeal) async {
-    DBMeal? dbMeal = await _getDBMeal(dbMealPlanMeal.mealID);
-    if (dbMeal == null) {
-      return null;
-    }
-    List<Allergen>? allergens = await _getMealAllergens(dbMeal.mealID);
-    List<Additive>? additives = await _getMealAdditives(dbMeal.mealID);
-    List<DBMealPlanSide> mealPlanSides =
-        await _getDBMealPlanSides(dbMealPlanMeal.mealPlanID, dbMeal.mealID);
-    List<DBSide> dbSides = List<DBSide>.empty(growable: true);
-    Map<DBSide, List<Allergen>> sideAllergens = <DBSide, List<Allergen>>{};
-    Map<DBSide, List<Additive>> sideAdditives = <DBSide, List<Additive>>{};
-    Map<DBSide, DBMealPlanSide> dbMealPlanSides = <DBSide, DBMealPlanSide>{};
-    for (DBMealPlanSide mealPlanSide in mealPlanSides) {
-      DBSide? dbSide = await _getDBSide(mealPlanSide.sideID);
-      if (dbSide == null) {
-        continue;
-      }
-      sideAllergens[dbSide] = (await _getSideAllergens(dbSide.sideID))!;
-      sideAdditives[dbSide] = (await _getSideAdditive(dbSide.sideID))!;
-      dbMealPlanSides[dbSide] = mealPlanSide;
-      dbSides.add(dbSide);
-    }
-    var images = await _getDBImages(dbMeal.mealID);
-    return DatabaseTransformer.fromDBMeal(
-        dbMealPlanMeal,
-        dbMeal,
-        allergens!,
-        additives!,
-        dbSides,
-        dbMealPlanSides,
-        sideAllergens,
-        sideAdditives,
-        images,
-        isFavorite);
-  }*/
-
   Future<int> _insertLine(Line line) async {
     var db = await database;
     var dbLine = DBLine(line.id, line.canteen.id, line.name, line.position);
@@ -402,9 +352,9 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         meal.id,
         meal.name,
         meal.foodType,
-        meal.individualRating ?? 0,
-        meal.numberOfRatings ?? 0,
-        meal.averageRating ?? 0);
+        meal.individualRating,
+        meal.numberOfRatings,
+        meal.averageRating);
 
     await Future.wait(
         meal.allergens?.map((e) => _insertMealAllergen(e, dbMeal)).toList() ??
@@ -433,9 +383,9 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         meal.id,
         meal.name,
         meal.foodType,
-        meal.individualRating ?? 0,
-        meal.numberOfRatings ?? 0,
-        meal.averageRating ?? 0);
+        meal.individualRating,
+        meal.numberOfRatings,
+        meal.averageRating);
     DBMealPlanMeal mealPlanMeal = DBMealPlanMeal(
         mealPlan.mealPlanID,
         dbMeal.mealID,

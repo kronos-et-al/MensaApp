@@ -68,7 +68,7 @@ class MealGridEntry extends StatelessWidget {
                           MensaRatingInput(
                             disabled: true,
                             onChanged: (v) {},
-                            value: _meal.averageRating ?? 0,
+                            value: _meal.averageRating,
                             size: 20,
                             color: Theme.of(context).colorScheme.onSurface,
                           )

@@ -28,7 +28,7 @@ class _MealRatingDialogState extends State<MealRatingDialog> {
   @override
   Widget build(BuildContext context) {
     Meal meal = widget._meal;
-    rating = rating ?? meal.individualRating ?? 0;
+    rating = rating ?? meal.individualRating;
     return MensaDialog(
         title:
             "${meal.name} ${FlutterI18n.translate(context, "ratings.dialogTitle")}",

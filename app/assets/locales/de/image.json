@@ -1,8 +1,9 @@
 {
   "reportImageTitle": "Bild melden",
-  "reportDescription": "Bitte gib an, warum das Bild entfernt werder sollte.",
+  "reportDescription": "Bitte gib an, warum das Bild entfernt werden sollte.",
   "reportSelectReson": "Grund wählen",
   "reportButton": "Bild melden",
+  "newImageButton": "Bild hinzufügen",
 
   "linkImageTitle": "Bild hochladen",
   "linkDescription": "Bitte befolge die folgenden Schirtte, um ein Bild hinzufügen zu können.",
@@ -15,5 +16,9 @@
   "linkTextFieldDescription": "Flickr Link zu Bild",
   "linkSmallTextOwnImages": "Es dürfen nur eigene Bilder hochgeladen werden.",
   "linkSmallTextDisplayed": "Die hochgeladenen Bilder werden anderen Nutzern angezeigt.",
-  "linkButton": "Hochladen"
+  "linkButton": "Hochladen",
+
+  "uploadException": {
+    "noMeal": "Fehler beim Laden"
+  }
 }

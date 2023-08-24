@@ -4,6 +4,8 @@ import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/meal/Price.dart';
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
+import 'package:app/view_model/repository/error_handling/ImageUploadException.dart';
+import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -88,13 +90,21 @@ void main() {
 
   group("link image", () {
     test("failed request", () async {
-      when(() => api.linkImage("url", meal)).thenAnswer((_) async => false);
-      expect(await images.linkImage("url", meal), "snackbar.linkImageError");
+      when(() => api.linkImage("url", meal)).thenAnswer((_) async => Failure(ImageUploadException("error")));
+      final result = switch (await images.linkImage("url", meal)) {
+        Success(value: final value) => value,
+        Failure(exception: final exception) => exception
+      };
+      expect(result is ImageUploadException, isTrue);
     });
 
     test("successful request", () async {
-      when(() => api.linkImage("url", meal)).thenAnswer((_) async => true);
-      expect(await images.linkImage("url", meal), "snackbar.linkImageSuccess");
+      when(() => api.linkImage("url", meal)).thenAnswer((_) async => const Success(true));
+      final result = switch (await images.linkImage("url", meal)) {
+        Success(value: final value) => value,
+        Failure(exception: final exception) => exception
+      };
+      expect(result, isTrue);
     });
   });
 

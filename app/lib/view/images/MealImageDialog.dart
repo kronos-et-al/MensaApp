@@ -99,7 +99,8 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                     UploadImageDialog(meal: meal),
                               );
                             },
-                            text: 'Bild hinzufügen',
+                            text: FlutterI18n.translate(
+                                context, "image.newImageButton"),
                           ));
                         }
                         return Center(
@@ -154,19 +155,21 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                       if (meal.images![currentPage]
                                               .individualRating ==
                                           -1) {
-                                        result = await imageAccess.deleteDownvote(
-                                            meal.images![currentPage]);
+                                        result =
+                                            await imageAccess.deleteDownvote(
+                                                meal.images![currentPage]);
                                       } else {
-                                        result = await imageAccess.downvoteImage(
-                                            meal.images![currentPage]);
+                                        result =
+                                            await imageAccess.downvoteImage(
+                                                meal.images![currentPage]);
                                       }
 
                                       if (result != null) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
-                                            content: Text(
-                                                FlutterI18n.translate(
-                                                    context, result))));
+                                                content: Text(
+                                                    FlutterI18n.translate(
+                                                        context, result))));
                                       }
                                     },
                                     icon: meal.images![currentPage]
@@ -191,7 +194,9 @@ class _MealImageDialogState extends State<MealImageDialog> {
                             )));
               case Failure<Meal, NoMealException> value:
                 Navigator.of(context).pop();
-                return const Center(child: Text("Fehler beim Laden"));
+                return Center(
+                    child: Text(FlutterI18n.translate(
+                        context, "image.uploadException.noMeal")));
             }
           } else {
             return const Center(child: CircularProgressIndicator());

@@ -292,8 +292,7 @@ class DetailsPageState extends State<DetailsPage> {
                                           Row(children: [
                                             MensaRatingInput(
                                               value: meal.individualRating
-                                                      ?.toDouble() ??
-                                                  0,
+                                                      .toDouble(),
                                               disabled: true,
                                               color: Theme.of(context)
                                                   .colorScheme
