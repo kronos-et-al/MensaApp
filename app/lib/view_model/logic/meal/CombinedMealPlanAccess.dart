@@ -156,6 +156,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   Future<Result<List<MealPlan>, MealPlanException>> getMealPlan() async {
     await _doneInitialization;
 
+    await _filterMealPlans();
+
     // no data for date
     if (_noDataYet) {
       return Future.value(Failure(NoDataException("no data to date")));
