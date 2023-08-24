@@ -304,6 +304,18 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     await _insertMeal(meal);
   }
 
+  @override
+  Future<void> updateImage(ImageData image) async {
+    var db = await database;
+    DBImage? dbImage = await _getDBImage(image.id);
+    if (dbImage != null) {
+      dbImage = DBImage(image.id, dbImage.mealID, image.url, image.imageRank,
+          image.positiveRating, image.negativeRating, image.individualRating);
+      await db.update(DBImage.tableName, dbImage.toMap(),
+          where: '${DBImage.columnImageID} = ?', whereArgs: [image.id]);
+    }
+  }
+
   Future<int> _insertLine(Line line) async {
     var db = await database;
     var dbLine = DBLine(line.id, line.canteen.id, line.name, line.position);
@@ -357,13 +369,8 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     await db.delete(DBImage.tableName,
         where: '${DBImage.columnMealID} = ?', whereArgs: [meal.id]);
 
-    DBMeal dbMeal = DBMeal(
-        meal.id,
-        meal.name,
-        meal.foodType,
-        meal.individualRating,
-        meal.numberOfRatings,
-        meal.averageRating);
+    DBMeal dbMeal = DBMeal(meal.id, meal.name, meal.foodType,
+        meal.individualRating, meal.numberOfRatings, meal.averageRating);
 
     await Future.wait(
         meal.allergens?.map((e) => _insertMealAllergen(e, dbMeal)).toList() ??
@@ -388,13 +395,8 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     await db.delete(DBImage.tableName,
         where: '${DBImage.columnMealID} = ?', whereArgs: [meal.id]);
 
-    DBMeal dbMeal = DBMeal(
-        meal.id,
-        meal.name,
-        meal.foodType,
-        meal.individualRating,
-        meal.numberOfRatings,
-        meal.averageRating);
+    DBMeal dbMeal = DBMeal(meal.id, meal.name, meal.foodType,
+        meal.individualRating, meal.numberOfRatings, meal.averageRating);
     DBMealPlanMeal mealPlanMeal = DBMealPlanMeal(
         mealPlan.mealPlanID,
         dbMeal.mealID,
@@ -668,5 +670,95 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     var db = await database;
     await db.delete(DBImage.tableName,
         where: '${DBImage.columnImageID} = ?', whereArgs: [image.id]);
+  }
+
+  @override
+  Future<void> cleanUp() async {
+    var db = await database;
+    print("Cleaning up database");
+
+    List<DBMealPlan> mealPlans = (await db.query(DBMealPlan.tableName,
+            where: '${DBMealPlan.columnDate} < ?',
+            whereArgs: [
+          _dateFormat.format(DateTime.now().subtract(const Duration(days: 1)))
+        ]))
+        .map((e) => DBMealPlan.fromMap(e))
+        .toList();
+
+    for (DBMealPlan mealPlan in mealPlans) {
+      List<DBMealPlanMeal> mealPlanMeals = (await db.query(
+              DBMealPlanMeal.tableName,
+              where: '${DBMealPlanMeal.columnMealPlanID} = ?',
+              whereArgs: [mealPlan.mealPlanID]))
+          .map((e) => DBMealPlanMeal.fromMap(e))
+          .toList();
+      List<DBMealPlanSide> mealPlanSides = (await db.query(
+              DBMealPlanSide.tableName,
+              where: '${DBMealPlanSide.columnMealPlanID} = ?',
+              whereArgs: [mealPlan.mealPlanID]))
+          .map((e) => DBMealPlanSide.fromMap(e))
+          .toList();
+      for (DBMealPlanSide mealPlanSide in mealPlanSides) {
+        if ((await db.query(DBMealPlanSide.tableName,
+                    where: '${DBMealPlanSide.columnSideID} = ?',
+                    whereArgs: [mealPlanSide.sideID]))
+                .length >
+            1) {
+          print("Side ${mealPlanSide.sideID} is used in another meal plan");
+          continue;
+        }
+        db.delete(DBSide.tableName,
+            where: '${DBSide.columnSideID} = ?',
+            whereArgs: [mealPlanSide.sideID]);
+        db.delete(DBSideAllergen.tableName,
+            where: '${DBSideAllergen.columnSideID} = ?',
+            whereArgs: [mealPlanSide.sideID]);
+        db.delete(DBSideAdditive.tableName,
+            where: '${DBSideAdditive.columnSideID} = ?',
+            whereArgs: [mealPlanSide.sideID]);
+        db.delete(DBMealPlanSide.tableName,
+            where: '${DBMealPlanSide.columnSideID} = ?',
+            whereArgs: [mealPlanSide.sideID]);
+        print("Deleted side ${mealPlanSide.sideID}");
+      }
+      for (DBMealPlanMeal mealPlanMeal in mealPlanMeals) {
+        if ((await db.query(DBFavorite.tableName,
+                where: '${DBFavorite.columnMealID} = ?',
+                whereArgs: [mealPlanMeal.mealID]))
+            .isNotEmpty) {
+          print("Meal ${mealPlanMeal.mealID} is a favorite");
+          continue;
+        }
+        if ((await db.query(DBMealPlanMeal.tableName,
+                    where: '${DBMealPlanMeal.columnMealID} = ?',
+                    whereArgs: [mealPlanMeal.mealID]))
+                .length >
+            1) {
+          print("Meal ${mealPlanMeal.mealID} is used in another meal plan");
+          continue;
+        }
+        db.delete(DBMeal.tableName,
+            where: '${DBMeal.columnMealID} = ?',
+            whereArgs: [mealPlanMeal.mealID]);
+        db.delete(DBMealAllergen.tableName,
+            where: '${DBMealAllergen.columnMealID} = ?',
+            whereArgs: [mealPlanMeal.mealID]);
+        db.delete(DBMealAdditive.tableName,
+            where: '${DBMealAdditive.columnMealID} = ?',
+            whereArgs: [mealPlanMeal.mealID]);
+        db.delete(DBImage.tableName,
+            where: '${DBImage.columnMealID} = ?',
+            whereArgs: [mealPlanMeal.mealID]);
+        db.delete(DBMealPlanMeal.tableName,
+            where: '${DBMealPlanMeal.columnMealID} = ?',
+            whereArgs: [mealPlanMeal.mealID]);
+        print("Deleted meal ${mealPlanMeal.mealID}");
+      }
+      db.delete(DBMealPlan.tableName,
+          where: '${DBMealPlan.columnMealPlanID} = ?',
+          whereArgs: [mealPlan.mealPlanID]);
+      print("Deleted meal plan ${mealPlan.mealPlanID}: ${mealPlan.date}");
+    }
+    print("cleanUp done");
   }
 }
