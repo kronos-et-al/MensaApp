@@ -162,7 +162,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                             .upvoteImage(currentImage!);
                                       }
 
-                                      if (result != null) {
+                                      if (result != null && context.mounted) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                                 content: Text(
@@ -181,19 +181,18 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                             : "semantics.imageRatingsAddDownvote"),
                                     onPressed: () async {
                                       String? result;
-                                      if (meal.images![currentPage]
-                                              .individualRating ==
+                                      if (currentImage!.individualRating ==
                                           -1) {
                                         result =
                                             await imageAccess.deleteDownvote(
-                                                meal.images![currentPage]);
+                                                currentImage!);
                                       } else {
                                         result =
                                             await imageAccess.downvoteImage(
-                                                meal.images![currentPage]);
+                                                currentImage!);
                                       }
 
-                                      if (result != null) {
+                                      if (result != null && context.mounted) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                                 content: Text(
