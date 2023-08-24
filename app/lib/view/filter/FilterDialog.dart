@@ -22,6 +22,7 @@ import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 /// This widget is used to display the filter dialog.
@@ -221,6 +222,7 @@ class _FilterDialogState extends State<FilterDialog> {
                               preferences = preferences;
                             });
                           },
+                          label: NumberFormat.currency(decimalDigits: 2, symbol: "€", locale: FlutterI18n.currentLocale(context)?.languageCode).format(preferences.price / 100),
                           value: preferences.price.toDouble(),
                           min: 0,
                           max: 1000),
