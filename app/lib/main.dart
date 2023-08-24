@@ -40,7 +40,8 @@ void main() {
       "reportReason",
       "additive",
       "allergen",
-      "mealplanException"
+      "mealplanException",
+      "semantics"
     ], useCountryCode: false, basePath: 'assets/locales', fallbackDir: 'de'),
     missingTranslationHandler: (key, locale) {
       if (kDebugMode) {

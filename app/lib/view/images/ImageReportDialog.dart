@@ -66,6 +66,7 @@ class _ImageReportState extends State<ImageReportDialog> {
               children: [
                 const Spacer(),
                 MensaButton(
+                  semanticLabel: FlutterI18n.translate(context, "semantics.imageSubmitReport"),
                     onPressed: () async {
                       var result = await context
                           .read<IImageAccess>()

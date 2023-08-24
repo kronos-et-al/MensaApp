@@ -4,6 +4,7 @@ import 'package:app/view/core/buttons/MensaButton.dart';
 import 'package:app/view/core/icons/LogoIcon.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 
 /// Displays a Meal's image.
 class MealPreviewImage extends StatelessWidget {
@@ -47,9 +48,7 @@ class MealPreviewImage extends StatelessWidget {
           width: _width,
           height: _height,
           decoration: BoxDecoration(
-            borderRadius: _borderRadius,
-            color: theme.colorScheme.primary
-          ),
+              borderRadius: _borderRadius, color: theme.colorScheme.primary),
           child: ClipRRect(
               borderRadius: _borderRadius,
               child: Stack(children: [
@@ -61,6 +60,8 @@ class MealPreviewImage extends StatelessWidget {
                     if (_enableUploadButton) const SizedBox(height: 16),
                     if (_enableUploadButton)
                       MensaButton(
+                          semanticLabel: FlutterI18n.translate(
+                              context, "semantics.imageUpload"),
                           onPressed: _onUploadButtonPressed,
                           text: "Bild hochladen")
                   ],

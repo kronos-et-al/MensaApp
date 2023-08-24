@@ -91,48 +91,64 @@ class DetailsPageState extends State<DetailsPage> {
                         child: Scaffold(
                       appBar: MensaAppBar(
                         appBarHeight: kToolbarHeight * 1.25,
-                        child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                MensaIconButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(),
-                                    icon: const NavigationBackIcon()),
-                                const Spacer(),
-                                Consumer<IFavoriteMealAccess>(
-                                    builder: (context, favoriteMealAccess,
-                                            child) =>
-                                        MensaIconButton(
-                                            onPressed: () => {
-                                                  if (meal.isFavorite)
-                                                    {
-                                                      favoriteMealAccess
-                                                          .removeFavoriteMeal(
-                                                              meal)
-                                                    }
-                                                  else
-                                                    {
-                                                      favoriteMealAccess
-                                                          .addFavoriteMeal(meal, widget._date, widget._line)
-                                                    }
-                                                },
-                                            icon: meal.isFavorite
-                                                ? const FavoriteFilledIcon()
-                                                : const FavoriteOutlinedIcon())),
-                                MensaIconButton(
-                                    onPressed: () => {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) =>
-                                                UploadImageDialog(meal: meal),
-                                          )
-                                        },
-                                    icon: const NavigationAddImageIcon()),
-                              ],
-                            )),
+                        child: Semantics(
+                            header: true,
+                            child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    MensaIconButton(
+                                        semanticLabel: FlutterI18n.translate(
+                                            context, "semantics.mealClose"),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        icon: const NavigationBackIcon()),
+                                    const Spacer(),
+                                    Consumer<IFavoriteMealAccess>(
+                                        builder: (context, favoriteMealAccess,
+                                                child) =>
+                                            MensaIconButton(
+                                                semanticLabel: FlutterI18n.translate(
+                                                    context,
+                                                    meal.isFavorite
+                                                        ? "semantics.mealFavoriteRemove"
+                                                        : "semantics.mealFavoriteAdd"),
+                                                onPressed: () => {
+                                                      if (meal.isFavorite)
+                                                        {
+                                                          favoriteMealAccess
+                                                              .removeFavoriteMeal(
+                                                                  meal)
+                                                        }
+                                                      else
+                                                        {
+                                                          favoriteMealAccess
+                                                              .addFavoriteMeal(
+                                                                  meal,
+                                                                  widget._date,
+                                                                  widget._line)
+                                                        }
+                                                    },
+                                                icon: meal.isFavorite
+                                                    ? const FavoriteFilledIcon()
+                                                    : const FavoriteOutlinedIcon())),
+                                    MensaIconButton(
+                                        semanticLabel: FlutterI18n.translate(
+                                            context, "semantics.imageUpload"),
+                                        onPressed: () => {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    UploadImageDialog(
+                                                        meal: meal),
+                                              )
+                                            },
+                                        icon: const NavigationAddImageIcon()),
+                                  ],
+                                ))),
                       ),
                       body: Column(
                         children: [
@@ -310,6 +326,9 @@ class DetailsPageState extends State<DetailsPage> {
                                             ),
                                             const Spacer(),
                                             MensaButton(
+                                              semanticLabel: FlutterI18n.translate(
+                                                  context,
+                                                  "semantics.mealRatingEdit"),
                                               text: FlutterI18n.translate(
                                                   context,
                                                   "ratings.editRating"),

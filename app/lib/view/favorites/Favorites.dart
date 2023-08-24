@@ -20,12 +20,12 @@ class Favorites extends StatelessWidget {
             return Scaffold(
                 appBar: MensaAppBar(
                     appBarHeight: kToolbarHeight,
-                    child: Center(
+                    child: Semantics(header: true, child: Center(
                       child: Text(
                           FlutterI18n.translate(context, "common.favorites"),
                           style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold)),
-                    )),
+                    ))),
                 body: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [],

@@ -28,12 +28,14 @@ class Settings extends StatelessWidget {
         builder: (context, storage, child) => Scaffold(
               appBar: MensaAppBar(
                 appBarHeight: kToolbarHeight,
-                child: Center(
-                    child: Text(
-                  FlutterI18n.translate(context, "common.settings"),
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
-                )),
+                child: Semantics(
+                    header: true,
+                    child: Center(
+                        child: Text(
+                      FlutterI18n.translate(context, "common.settings"),
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ))),
               ),
               body: SingleChildScrollView(
                 child: Padding(
@@ -89,6 +91,8 @@ class Settings extends StatelessWidget {
                           children: [
                             Expanded(
                               child: MensaLink(
+                                  semanticLabel: FlutterI18n.translate(
+                                      context, "semantics.settingsGithub"),
                                   onPressed: () => _launchUrl(Uri.parse(
                                       'https://github.com/kronos-et-al/MensaApp')),
                                   text: FlutterI18n.translate(
@@ -105,6 +109,9 @@ class Settings extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: MensaLink(
+                                      semanticLabel: FlutterI18n.translate(
+                                          context,
+                                          "semantics.settingsPrivacy"),
                                       onPressed: () => _launchUrl(Uri.parse(
                                           'https://mensa-ka.de/privacy.html')),
                                       text: FlutterI18n.translate(
@@ -117,6 +124,9 @@ class Settings extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: MensaLink(
+                                      semanticLabel: FlutterI18n.translate(
+                                          context,
+                                          "semantics.settingsContact"),
                                       onPressed: () => _launchUrl(Uri.parse(
                                           'mailto:contact@mensa-ka.de')),
                                       text: FlutterI18n.translate(

@@ -24,6 +24,7 @@ class MealPlanDateSelect extends StatelessWidget {
         'E dd.MM.yyyy', FlutterI18n.currentLocale(context)?.languageCode);
     return Row(children: [
       MensaTapable(
+        semanticLabel: FlutterI18n.translate(context, 'semantics.mealPlanPrevDay'),
         child: const Padding(
             padding: EdgeInsets.all(12), child: NavigationArrowLeftIcon()),
         onTap: () {
@@ -32,6 +33,7 @@ class MealPlanDateSelect extends StatelessWidget {
         },
       ),
       MensaTapable(
+          semanticLabel: FlutterI18n.translate(context, 'semantics.mealPlanDatePicker'),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Text(
@@ -49,6 +51,7 @@ class MealPlanDateSelect extends StatelessWidget {
                 ).then((value) => _onDateChanged(value ?? DateTime.now()))
               }),
       MensaTapable(
+        semanticLabel: FlutterI18n.translate(context, 'semantics.mealPlanNextDay'),
         child: const Padding(
             padding: EdgeInsets.all(12), child: NavigationArrowRightIcon()),
         onTap: () {
