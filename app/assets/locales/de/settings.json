@@ -7,5 +7,7 @@
   "gitHubLink": "Auf Github ansehen",
   "legalInformation": "Rechtliche Informationen",
   "privacyPolicy": "Datenschutzerklärung",
-  "contactDetails": "Kontakt"
+  "contactDetails": "Kontakt",
+  "clientID": "Client ID: {clientID}",
+  "snackBarCopiedToClipboard": "In die Zwischenablage kopiert"
 }

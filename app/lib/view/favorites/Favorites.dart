@@ -20,12 +20,12 @@ class Favorites extends StatelessWidget {
             return Scaffold(
                 appBar: MensaAppBar(
                     appBarHeight: kToolbarHeight,
-                    child: Center(
+                    child: Semantics(header: true, child: Center(
                       child: Text(
                           FlutterI18n.translate(context, "common.favorites"),
                           style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold)),
-                    )),
+                    ))),
                 body: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [],
@@ -61,18 +61,18 @@ class Favorites extends StatelessWidget {
 
           return Scaffold(
               appBar: appBar,
-              body: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ListView.builder(
+              body: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: mealPlan.length,
                     itemBuilder: (context, index) {
-                      return MealListEntry(meal: mealPlan[index]);
+                      return MealListEntry(
+                          meal: mealPlan[index].meal,
+                          line: mealPlan[index].servedLine,
+                          date: mealPlan[index].servedDate);
                     },
-                  )
-                ],
-              ));
+                  )));
         },
       ),
     );

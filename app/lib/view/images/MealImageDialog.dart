@@ -14,12 +14,13 @@ import 'package:app/view/detail_view/UploadImageDialog.dart';
 import 'package:app/view/images/ImageReportDialog.dart';
 import 'package:app/view_model/logic/image/IImageAccess.dart';
 import 'package:app/view_model/logic/meal/IMealAccess.dart';
+import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
 
 /// This widget is used to display the images of a meal.
@@ -70,15 +71,18 @@ class _MealImageDialogState extends State<MealImageDialog> {
                     Navigator.of(context).pop();
                   });
                 }
+                ImageData currentImage = meal.images![currentPage];
                 return MensaFullscreenDialog(
                     appBar: MensaAppBar(
                         appBarHeight: kToolbarHeight,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 8),
+                              horizontal: 8, vertical: 4),
                           child: Row(
                             children: [
                               MensaIconButton(
+                                  semanticLabel: FlutterI18n.translate(
+                                      context, "semantics.image.close"),
                                   onPressed: () => Navigator.of(context).pop(),
                                   icon: const NavigationCloseIcon()),
                               const Spacer(),
@@ -92,6 +96,8 @@ class _MealImageDialogState extends State<MealImageDialog> {
                         if (index >= meal.images!.length) {
                           return Center(
                               child: MensaButton(
+                            semanticLabel: FlutterI18n.translate(
+                                context, "semantics.image.upload"),
                             onPressed: () {
                               showDialog(
                                 context: context,
@@ -124,52 +130,38 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                 Text(meal.images![currentPage].positiveRating
                                     .toString()),
                                 MensaIconButton(
+                                    semanticLabel: FlutterI18n.translate(
+                                        context,
+                                        currentImage.individualRating == 1
+                                            ? "semantics.image.ratings.removeUpvote"
+                                            : "semantics.image.ratings.addUpvote"),
                                     onPressed: () async {
-                                      String? result;
-                                      if (meal.images![currentPage]
-                                              .individualRating ==
-                                          1) {
-                                        result = await imageAccess.deleteUpvote(
-                                            meal.images![currentPage]);
+                                      if (currentImage.individualRating == 1) {
+                                        await imageAccess
+                                            .deleteUpvote(currentImage);
                                       } else {
-                                        result = await imageAccess.upvoteImage(
-                                            meal.images![currentPage]);
-                                      }
-
-                                      if (result != null) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                                content: Text(
-                                                    FlutterI18n.translate(
-                                                        context, result))));
+                                        await imageAccess
+                                            .upvoteImage(currentImage);
                                       }
                                     },
-                                    icon: meal.images![currentPage]
-                                                .individualRating ==
-                                            1
+                                    icon: currentImage.individualRating == 1
                                         ? const ThumbUpFilledIcon()
                                         : const ThumbUpOutlinedIcon()),
                                 MensaIconButton(
+                                    semanticLabel: FlutterI18n.translate(
+                                        context,
+                                        currentImage.individualRating == -1
+                                            ? "semantics.image.ratings.removeDownvote"
+                                            : "semantics.image.ratings.addDownvote"),
                                     onPressed: () async {
-                                      String? result;
                                       if (meal.images![currentPage]
                                               .individualRating ==
                                           -1) {
-                                        result =
-                                            await imageAccess.deleteDownvote(
-                                                meal.images![currentPage]);
+                                        await imageAccess.deleteDownvote(
+                                            meal.images![currentPage]);
                                       } else {
-                                        result =
-                                            await imageAccess.downvoteImage(
-                                                meal.images![currentPage]);
-                                      }
-
-                                      if (result != null) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                                content: Text(
-                                                    FlutterI18n.translate(
-                                                        context, result))));
+                                        await imageAccess.downvoteImage(
+                                            meal.images![currentPage]);
                                       }
                                     },
                                     icon: meal.images![currentPage]
@@ -181,6 +173,8 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                     .toString()),
                                 const Spacer(),
                                 MensaIconButton(
+                                    semanticLabel: FlutterI18n.translate(
+                                        context, "semantics.image.report"),
                                     onPressed: () {
                                       showDialog(
                                         context: context,

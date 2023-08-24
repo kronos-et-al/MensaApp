@@ -50,6 +50,8 @@ class _FilterDialogState extends State<FilterDialog> {
               child: Row(
                 children: [
                   MensaIconButton(
+                      semanticLabel: FlutterI18n.translate(
+                          context, "semantics.filterClose"),
                       onPressed: () => Navigator.of(context).pop(),
                       icon: const NavigationBackIcon()),
                   Text(
@@ -59,6 +61,8 @@ class _FilterDialogState extends State<FilterDialog> {
                   ),
                   const Spacer(),
                   MensaIconButton(
+                      semanticLabel: FlutterI18n.translate(
+                          context, "semantics.filterRestore"),
                       onPressed: () {
                         context.read<IMealAccess>().resetFilterPreferences();
                         setState(() {
@@ -371,6 +375,8 @@ class _FilterDialogState extends State<FilterDialog> {
             children: [
               Expanded(
                   child: MensaCtaButton(
+                      semanticLabel: FlutterI18n.translate(
+                          context, "semantics.filterStore"),
                       onPressed: () {
                         context
                             .read<IMealAccess>()

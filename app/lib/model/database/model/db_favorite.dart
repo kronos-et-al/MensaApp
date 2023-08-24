@@ -6,6 +6,8 @@ class DBFavorite implements DatabaseModel {
   final String _mealID;
   final String _lastDate;
   final FoodType _foodType;
+  final DateTime _servedDate;
+  final String _servedLineId;
   final int _priceStudent;
   final int _priceEmployee;
   final int _pricePupil;
@@ -35,6 +37,12 @@ class DBFavorite implements DatabaseModel {
   /// The name of the column for the price for guests.
   static const String columnPriceGuest = 'priceGuest';
 
+  /// The name of the column for the served date.
+  static const String columnServedDate = 'servedDate';
+
+  /// The name of the column for the served line id.
+  static const String columnServedLineId = 'servedLineId';
+
   /// Creates a new instance of a favorite.
   DBFavorite(
       this._mealID,
@@ -43,7 +51,9 @@ class DBFavorite implements DatabaseModel {
       this._priceStudent,
       this._priceEmployee,
       this._pricePupil,
-      this._priceGuest);
+      this._priceGuest,
+      this._servedDate,
+      this._servedLineId);
 
   @override
   Map<String, dynamic> toMap() {
@@ -54,7 +64,9 @@ class DBFavorite implements DatabaseModel {
       columnPriceStudent: _priceStudent,
       columnPriceEmployee: _priceEmployee,
       columnPricePupil: _pricePupil,
-      columnPriceGuest: _priceGuest
+      columnPriceGuest: _priceGuest,
+      columnServedDate: _servedDate.toIso8601String(),
+      columnServedLineId: _servedLineId
     };
   }
 
@@ -67,7 +79,9 @@ class DBFavorite implements DatabaseModel {
         map[columnPriceStudent],
         map[columnPriceEmployee],
         map[columnPricePupil],
-        map[columnPriceGuest]);
+        map[columnPriceGuest],
+        DateTime.parse(map[columnServedDate]),
+        map[columnServedLineId]);
   }
 
   /// Returns a string to create a table for a favorite.
@@ -80,7 +94,9 @@ class DBFavorite implements DatabaseModel {
       $columnPriceStudent INTEGER CHECK($columnPriceStudent > 0),
       $columnPriceEmployee INTEGER CHECK($columnPriceEmployee > 0),
       $columnPricePupil INTEGER CHECK($columnPricePupil > 0),
-      $columnPriceGuest INTEGER CHECK($columnPriceGuest > 0)
+      $columnPriceGuest INTEGER CHECK($columnPriceGuest > 0),
+      $columnServedDate TEXT NOT NULL,
+      $columnServedLineId TEXT NOT NULL
     )
   ''';
   }
@@ -105,4 +121,10 @@ class DBFavorite implements DatabaseModel {
 
   /// This method returns the id of the favorite.
   String get mealID => _mealID;
+
+  /// This method returns the served date of the favorite.
+  DateTime get servedDate => _servedDate;
+
+  /// This method returns the served line id of the favorite.
+  String get servedLineId => _servedLineId;
 }

@@ -93,6 +93,8 @@ class UploadImageDialog extends StatelessWidget {
             children: [
               const Spacer(),
               MensaButton(
+                  semanticLabel: FlutterI18n.translate(
+                      context, "semantics.imageSubmitUpload"),
                   onPressed: () async {
                     final result = await context
                         .read<IImageAccess>()

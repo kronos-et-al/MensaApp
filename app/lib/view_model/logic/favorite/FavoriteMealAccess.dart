@@ -1,5 +1,7 @@
 import 'package:app/view_model/logic/favorite/IFavoriteMealAccess.dart';
+import 'package:app/view_model/repository/data_classes/meal/FavoriteMeal.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
+import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/interface/IDatabaseAccess.dart';
 import 'package:flutter/material.dart';
 
@@ -7,7 +9,7 @@ import 'package:flutter/material.dart';
 class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
   final IDatabaseAccess _database;
 
-  late List<Meal> _favorites;
+  late List<FavoriteMeal> _favorites;
 
   // waits until _init() is finished initializing
   late Future _doneInitialization;
@@ -22,21 +24,22 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
   }
 
   @override
-  Future<void> addFavoriteMeal(Meal meal) async {
+  Future<void> addFavoriteMeal(
+      Meal meal, DateTime servedDate, Line servedLine) async {
     await _doneInitialization;
 
     if (await isFavoriteMeal(meal)) {
       return;
     }
 
-    await _database.addFavorite(meal);
+    await _database.addFavorite(meal, servedDate, servedLine);
     _favorites = await _database.getFavorites();
     meal.setFavorite();
     notifyListeners();
   }
 
   @override
-  Future<List<Meal>> getFavoriteMeals() async {
+  Future<List<FavoriteMeal>> getFavoriteMeals() async {
     await _doneInitialization;
     return _favorites;
   }
@@ -45,14 +48,14 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
   Future<bool> isFavoriteMeal(Meal meal) async {
     await _doneInitialization;
     return Future.value(
-        _favorites.map((favorite) => favorite.id).contains(meal.id));
+        _favorites.map((favorite) => favorite.meal.id).contains(meal.id));
   }
 
   @override
   Future<void> removeFavoriteMeal(Meal meal) async {
     await _doneInitialization;
 
-    if (!_favorites.contains(meal)) {
+    if (!_favorites.map((favorite) => favorite.meal.id).contains(meal.id)) {
       return;
     }
 

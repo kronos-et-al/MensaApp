@@ -7,6 +7,7 @@ import 'package:app/view_model/logic/preference/IPreferenceAccess.dart';
 import 'package:app/view_model/repository/data_classes/settings/MensaColorScheme.dart';
 import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -22,16 +23,19 @@ class Settings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return Consumer<IPreferenceAccess>(
         builder: (context, storage, child) => Scaffold(
               appBar: MensaAppBar(
                 appBarHeight: kToolbarHeight,
-                child: Center(
-                    child: Text(
-                  FlutterI18n.translate(context, "common.settings"),
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
-                )),
+                child: Semantics(
+                    header: true,
+                    child: Center(
+                        child: Text(
+                      FlutterI18n.translate(context, "common.settings"),
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ))),
               ),
               body: SingleChildScrollView(
                 child: Padding(
@@ -87,6 +91,8 @@ class Settings extends StatelessWidget {
                           children: [
                             Expanded(
                               child: MensaLink(
+                                  semanticLabel: FlutterI18n.translate(
+                                      context, "semantics.settingsGithub"),
                                   onPressed: () => _launchUrl(Uri.parse(
                                       'https://github.com/kronos-et-al/MensaApp')),
                                   text: FlutterI18n.translate(
@@ -103,6 +109,9 @@ class Settings extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: MensaLink(
+                                      semanticLabel: FlutterI18n.translate(
+                                          context,
+                                          "semantics.settingsPrivacy"),
                                       onPressed: () => _launchUrl(Uri.parse(
                                           'https://mensa-ka.de/privacy.html')),
                                       text: FlutterI18n.translate(
@@ -115,6 +124,9 @@ class Settings extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: MensaLink(
+                                      semanticLabel: FlutterI18n.translate(
+                                          context,
+                                          "semantics.settingsContact"),
                                       onPressed: () => _launchUrl(Uri.parse(
                                           'mailto:contact@mensa-ka.de')),
                                       text: FlutterI18n.translate(
@@ -122,7 +134,33 @@ class Settings extends StatelessWidget {
                                 )
                               ],
                             )
-                          ])
+                          ]),
+                      const SizedBox(height: 16),
+                      Row(children: [
+                        GestureDetector(
+                            onLongPress: () async {
+                              await Clipboard.setData(ClipboardData(
+                                  text: storage.getClientIdentifier()));
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      backgroundColor:
+                                          theme.colorScheme.primary,
+                                      content: Text(
+                                        FlutterI18n.translate(context,
+                                            "settings.snackBarCopiedToClipboard"),
+                                        style: TextStyle(
+                                            color: theme.colorScheme.onPrimary),
+                                      )));
+                            },
+                            child: Text(
+                                FlutterI18n.translate(
+                                    context, "settings.clientID",
+                                    translationParams: {
+                                      "clientID": storage.getClientIdentifier()
+                                    }),
+                                textAlign: TextAlign.left)),
+                      ]),
                     ])),
               ),
             ));

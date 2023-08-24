@@ -87,18 +87,30 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     };
 
     // get meal plans form server
+    if (_mealPlans.isEmpty) {
+      await refreshAll();
+    } else {
+      await _setNewMealPlan();
+      refreshAll();
+    }
+  }
+
+  Future<void> refreshAll() async {
     List<MealPlan> mealPlans = switch (await _api.updateAll()) {
       Success(value: final mealplan) => mealplan,
       Failure(exception: final exception) =>
-        _convertMealPlanExceptionToMealPlan(exception)
+          _convertMealPlanExceptionToMealPlan(exception)
     };
 
     // update all if connection to server is successful
     if (mealPlans.isNotEmpty) {
       await _database.updateAll(mealPlans);
     }
+    _mealPlans = switch (await _database.getMealPlan(_displayedDate, _activeCanteen)) {
+      Success(value: final mealplan) => mealplan,
+      Failure() => []
+    };
 
-    // filter meal plans
     await _setNewMealPlan();
   }
 
@@ -645,7 +657,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     for (final mealPlan in _mealPlans) {
       for (final meal in mealPlan.meals) {
-        if (favorites.map((favorite) => favorite.id).contains(meal.id)) {
+        if (favorites.map((favorite) => favorite.meal.id).contains(meal.id)) {
           meal.setFavorite();
           changed = true;
         }
@@ -658,10 +670,5 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   @override
   Future<bool> isFilterActive() async {
     return Future.value(_activeFilter);
-  }
-
-  @override
-  Future<void> removeImage(ImageData image) async {
-    //Todo
   }
 }

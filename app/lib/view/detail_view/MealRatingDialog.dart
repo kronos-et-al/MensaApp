@@ -52,6 +52,8 @@ class _MealRatingDialogState extends State<MealRatingDialog> {
               children: [
                 const Spacer(),
                 MensaButton(
+                    semanticLabel: FlutterI18n.translate(
+                        context, "semantics.mealRatingSubmit"),
                     onPressed: () async {
                       final result =
                           await context.read<IMealAccess>().updateMealRating(
@@ -63,7 +65,8 @@ class _MealRatingDialogState extends State<MealRatingDialog> {
                       if (result) {
                         final snackBar = SnackBar(
                             content: Text(
-                              FlutterI18n.translate(context, "snackbar.updateRatingSuccess"),
+                              FlutterI18n.translate(
+                                  context, "snackbar.updateRatingSuccess"),
                               style: TextStyle(
                                   color:
                                       Theme.of(context).colorScheme.onPrimary),
@@ -75,13 +78,13 @@ class _MealRatingDialogState extends State<MealRatingDialog> {
                       } else {
                         final snackBar = SnackBar(
                             content: Text(
-                              FlutterI18n.translate(context, "snackbar.updateRatingError"),
+                              FlutterI18n.translate(
+                                  context, "snackbar.updateRatingError"),
                               style: TextStyle(
-                                  color:
-                                  Theme.of(context).colorScheme.onError),
+                                  color: Theme.of(context).colorScheme.onError),
                             ),
                             backgroundColor:
-                            Theme.of(context).colorScheme.error);
+                                Theme.of(context).colorScheme.error);
 
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }

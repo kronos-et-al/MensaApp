@@ -29,6 +29,7 @@ class MealListLine extends StatelessWidget {
             return MealListEntry(
               meal: _mealPlan.meals[index],
               line: _mealPlan.line,
+              date: _mealPlan.date,
             );
           },
         ),

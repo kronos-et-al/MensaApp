@@ -28,6 +28,7 @@ class MealPlanFilter extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   MensaButton(
+                    semanticLabel: FlutterI18n.translate(context, "semantics.filterDeactivate"),
                       onPressed: () => mealAccess.deactivateFilter(),
                       text: FlutterI18n.translate(
                           context, "mealplanException.filterButton")),

@@ -76,72 +76,85 @@ class MealPlanView extends StatelessWidget {
                         }
                         return Scaffold(
                             appBar: MensaAppBar(
-                              appBarHeight: kToolbarHeight,
-                              bottom: MealPlanToolbar(
+                                appBarHeight: kToolbarHeight,
+                                bottom: MealPlanToolbar(
+                                    child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8),
+                                        child: Row(
+                                          children: [
+                                            MensaTapable(
+                                              semanticLabel: FlutterI18n
+                                                  .translate(
+                                                      context,
+                                                      mealPlanFormat == MealPlanFormat
+                                                          .grid
+                                                          ? 'semantics.mealPlanToggleList'
+                                                          : 'semantics.mealPlanToggleGrid'),
+                                                child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            12),
+                                                    child: mealPlanFormat ==
+                                                            MealPlanFormat.grid
+                                                        ? const NavigationListOutlinedIcon()
+                                                        : const NavigationGridOutlinedIcon()),
+                                                onTap: () {
+                                                  preferenceAccess
+                                                      .setMealPlanFormat(
+                                                          mealPlanFormat ==
+                                                                  MealPlanFormat
+                                                                      .grid
+                                                              ? MealPlanFormat
+                                                                  .list
+                                                              : MealPlanFormat
+                                                                  .grid);
+                                                }),
+                                            const Spacer(),
+                                            MealPlanDateSelect(
+                                              date: date,
+                                              onDateChanged: (date) =>
+                                                  mealAccess.changeDate(date),
+                                            ),
+                                            const Spacer(),
+                                            MensaTapable(
+                                              semanticLabel: FlutterI18n.translate(context, "semantics.mealPlanFilter"),
+                                                child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            12),
+                                                    child: filterActive
+                                                        ? const NavigationFilterOutlinedIcon()
+                                                        : const NavigationFilterOutlinedDisabledIcon()),
+                                                onLongPress: () => {
+                                                      mealAccess.toggleFilter(),
+                                                    },
+                                                onTap: () => {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (context) =>
+                                                            const FilterDialog(),
+                                                      )
+                                                    })
+                                          ],
+                                        ))),
+                                child: Semantics(
+                                  header: true,
                                   child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8),
-                                      child: Row(
-                                        children: [
-                                          MensaTapable(
-                                              child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8),
-                                                  child: mealPlanFormat ==
-                                                          MealPlanFormat.grid
-                                                      ? const NavigationListOutlinedIcon()
-                                                      : const NavigationGridOutlinedIcon()),
-                                              onTap: () {
-                                                preferenceAccess
-                                                    .setMealPlanFormat(
-                                                        mealPlanFormat ==
-                                                                MealPlanFormat
-                                                                    .grid
-                                                            ? MealPlanFormat
-                                                                .list
-                                                            : MealPlanFormat
-                                                                .grid);
-                                              }),
-                                          const Spacer(),
-                                          MealPlanDateSelect(
-                                            date: date,
-                                            onDateChanged: (date) =>
-                                                mealAccess.changeDate(date),
-                                          ),
-                                          const Spacer(),
-                                          MensaTapable(
-                                              child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8),
-                                                  child: filterActive
-                                                      ? const NavigationFilterOutlinedIcon()
-                                                      : const NavigationFilterOutlinedDisabledIcon()),
-                                              onLongPress: () => {
-                                                    mealAccess.toggleFilter(),
-                                                  },
-                                              onTap: () => {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          const FilterDialog(),
-                                                    )
-                                                  })
-                                        ],
-                                      ))),
-                              child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                                  child: Row(children: [
-                                    Expanded(
-                                        child: MensaCanteenSelect(
-                                            selectedCanteen: selectedCanteen,
-                                            availableCanteens:
-                                                availableCanteens,
-                                            onCanteenSelected: (canteen) =>
-                                                mealAccess
-                                                    .changeCanteen(canteen)))
-                                  ])),
-                            ),
+                                      padding:
+                                          const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                                      child: Row(children: [
+                                        Expanded(
+                                            child: MensaCanteenSelect(
+                                                selectedCanteen:
+                                                    selectedCanteen,
+                                                availableCanteens:
+                                                    availableCanteens,
+                                                onCanteenSelected: (canteen) =>
+                                                    mealAccess.changeCanteen(
+                                                        canteen)))
+                                      ])),
+                                )),
                             body: RefreshIndicator(
                               onRefresh: () async {
                                 String? error =

@@ -1,4 +1,6 @@
+import 'package:app/view_model/repository/data_classes/meal/FavoriteMeal.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
+import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
 import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 
@@ -29,14 +31,14 @@ abstract class IDatabaseAccess {
 
   /// This method adds a favorite.
   /// If the favorite does already exists, it does nothing.
-  Future<void> addFavorite(Meal meal);
+  Future<void> addFavorite(Meal meal, DateTime servedDate, Line servedLine);
 
   /// This method removes a favorite.
   /// If the favorite does not exists, it does nothing.
   Future<void> deleteFavorite(Meal meal);
 
   /// Returns all Favorites.
-  Future<List<Meal>> getFavorites();
+  Future<List<FavoriteMeal>> getFavorites();
 
   /// This method returns the canteen with the committed id.
   /// If no canteen with the committed id exists, it returns 'null'.
