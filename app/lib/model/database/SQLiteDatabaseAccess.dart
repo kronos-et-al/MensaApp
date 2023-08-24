@@ -304,6 +304,18 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     await _insertMeal(meal);
   }
 
+  @override
+  Future<void> updateImage(ImageData image) async {
+    var db = await database;
+    DBImage? dbImage = await _getDBImage(image.id);
+    if (dbImage != null) {
+      dbImage = DBImage(image.id, dbImage.mealID, image.url, image.imageRank,
+          image.positiveRating, image.negativeRating, image.individualRating);
+      await db.update(DBImage.tableName, dbImage.toMap(),
+          where: '${DBImage.columnImageID} = ?', whereArgs: [image.id]);
+    }
+  }
+
   Future<int> _insertLine(Line line) async {
     var db = await database;
     var dbLine = DBLine(line.id, line.canteen.id, line.name, line.position);

@@ -27,6 +27,7 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
     }
 
     image.individualRating = 0;
+    _database.updateImage(image);
     notifyListeners();
     return null;
   }
@@ -40,6 +41,7 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
     }
 
     image.individualRating = 0;
+    _database.updateImage(image);
     notifyListeners();
     return null;
   }
@@ -53,6 +55,7 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
     }
 
     image.individualRating = -1;
+    _database.updateImage(image);
     notifyListeners();
     return null;
   }
@@ -94,6 +97,7 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
     }
 
     image.individualRating = 1;
+    _database.updateImage(image);
     notifyListeners();
     return null;
   }

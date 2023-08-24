@@ -17,6 +17,9 @@ abstract class IDatabaseAccess {
   /// This method updates a meal in the database with the same id as [meal] with the attributes of [meal].
   Future<void> updateMeal(Meal meal);
 
+  /// This method updates a meal in the database with the same id as [image] with the attributes of [image].
+  Future<void> updateImage(ImageData image);
+
   /// Returns the [MealPlan] of the committed date of the committed canteen.
   /// If the mealplan does not exists, it returns an [MealPlanException].
   Future<Result<List<MealPlan>, MealPlanException>> getMealPlan(
