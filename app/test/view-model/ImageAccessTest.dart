@@ -32,6 +32,8 @@ void main() {
 
   ImageAccess images = ImageAccess(api, database);
 
+  setUp(() => when(() => database.updateImage(image)).thenAnswer((_) async {}));
+
   group("upvote", () {
     test("failed upvote", () async {
       when(() => api.upvoteImage(image)).thenAnswer((_) async => false);

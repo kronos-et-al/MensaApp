@@ -147,45 +147,8 @@ void main() {
     MealPlan(date: DateTime.now(), line: lines[3], isClosed: false, meals: []),
   ];
 
-  setUp(() => database = SQLiteDatabaseAccess());
-
-  group("favorites", () {
-    test("add favorite", () async {
-      await database.addFavorite(meals[0]);
-
-      expect(await database.getFavorites(), [meals[0]]);
-    });
-
-    test("add favorite again", () async {
-      await database.addFavorite(meals[0]);
-
-      expect(await database.getFavorites(), [meals[0]]);
-    });
-
-    test("get one favorite", () async {
-      final Meal meal = switch (await database.getMealFavorite(meals[0].id)) {
-        Success(value: final value) => value,
-        Failure(exception: _) =>
-            Meal(id: "id",
-                name: "name",
-                foodType: FoodType.vegetarian,
-                price: Price(
-                    student: 234, employee: 343, pupil: 345, guest: 543))
-      };
-      expect(meal, meals[0]);
-    });
-
-    test("delete favorite", () async {
-      await database.deleteFavorite(meals[0]);
-
-      expect(await database.getFavorites(), []);
-    });
-
-    test("delete favorite again", () async {
-      await database.deleteFavorite(meals[0]);
-
-      expect(await database.getFavorites(), []);
-    });
+  setUpAll(() async {
+    database = SQLiteDatabaseAccess();
   });
 
   test("update all", () async {
@@ -230,9 +193,9 @@ void main() {
   });
 
   test("get canteen by id", () async {
-    Canteen result = await database.getCanteenById(canteen.id);
-    expect(result.id, canteen.id);
-    expect(result.name, canteen.name);
+    Canteen? result = await database.getCanteenById(canteen.id);
+    expect(result?.id, canteen.id);
+    expect(result?.name, canteen.name);
   });
 
   test("remove image", () async {
@@ -242,6 +205,47 @@ void main() {
       Failure(exception: _) => meals[0]
     };
     expect(storedMeal.images?.isEmpty, isTrue);
+  });
+
+  group("favorites", () {
+    test("add favorite", () async {
+      await database.addFavorite(meals[0], DateTime.now(), lines[0]);
+
+      final result = await database.getFavorites();
+      expect(result.map((e) => e.meal).contains(meals[0]), isTrue);
+    });
+
+    test("add favorite again", () async {
+      await database.addFavorite(meals[0], DateTime.now(), lines[0]);
+
+      final result = await database.getFavorites();
+      expect(result.map((e) => e.meal).contains(meals[0]), isTrue);
+    });
+
+    test("get one favorite", () async {
+      final Meal meal = switch (await database.getMealFavorite(meals[0].id)) {
+        Success(value: final value) => value,
+        Failure(exception: _) =>
+            Meal(id: "id",
+                name: "name",
+                foodType: FoodType.vegetarian,
+                price: Price(
+                    student: 234, employee: 343, pupil: 345, guest: 543))
+      };
+      expect(meal, meals[0]);
+    });
+
+    test("delete favorite", () async {
+      await database.deleteFavorite(meals[0]);
+
+      expect(await database.getFavorites(), []);
+    });
+
+    test("delete favorite again", () async {
+      await database.deleteFavorite(meals[0]);
+
+      expect(await database.getFavorites(), []);
+    });
   });
 }
 

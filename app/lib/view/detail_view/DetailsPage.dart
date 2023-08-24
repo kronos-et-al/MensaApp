@@ -55,6 +55,7 @@ class DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // These provider are necessary for the synchronization of each other. They need to be initialized even if they are unused.
     IMealAccess mealAccess = Provider.of<IMealAccess>(context);
     IImageAccess imageAccess = Provider.of<IImageAccess>(context);
     ThemeData themeData = Theme.of(context);

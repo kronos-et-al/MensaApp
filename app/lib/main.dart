@@ -100,7 +100,7 @@ class MensaApp extends StatelessWidget {
                           db,
                         )),
                 ChangeNotifierProvider<IFavoriteMealAccess>(
-                    create: (context) => FavoriteMealAccess(db)),
+                    create: (context) => FavoriteMealAccess(db, api)),
                 ChangeNotifierProvider<IPreferenceAccess>(
                     create: (context) =>
                         PreferenceAccess(sharedPreferencesAccess)),

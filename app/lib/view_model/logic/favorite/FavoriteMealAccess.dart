@@ -2,12 +2,15 @@ import 'package:app/view_model/logic/favorite/IFavoriteMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/FavoriteMeal.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
+import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:app/view_model/repository/interface/IDatabaseAccess.dart';
+import 'package:app/view_model/repository/interface/IServerAccess.dart';
 import 'package:flutter/material.dart';
 
 /// This class is the interface for the access to the favorite meals data that are stored in the database.
 class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
   final IDatabaseAccess _database;
+  final IServerAccess _api;
 
   late List<FavoriteMeal> _favorites;
 
@@ -15,11 +18,25 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
   late Future _doneInitialization;
 
   /// Stores the access to the database and loads the values that are stored there.
-  FavoriteMealAccess(this._database) {
+  FavoriteMealAccess(this._database, this._api) {
     _doneInitialization = _init();
   }
 
   Future<void> _init() async {
+    final favorites = await _database.getFavorites();
+
+    //update favorites
+    for (final favorite in favorites) {
+      final Meal? meal = switch (await _api.getMeal(favorite.meal, favorite.servedLine, favorite.servedDate)) {
+        Success(value: final value) => value,
+        Failure(exception: _) => null
+      };
+
+      if (meal != null) {
+        _database.updateMeal(meal);
+      }
+    }
+
     _favorites = await _database.getFavorites();
   }
 
