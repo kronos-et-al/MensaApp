@@ -73,7 +73,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
                   });
                 }
                 ImageData? currentImage =
-                    currentPage >= 0 ? meal.images![currentPage] : null;
+                currentPage >= 0 ? meal.images![currentPage] : null;
                 return MensaFullscreenDialog(
                     appBar: MensaAppBar(
                         appBarHeight: kToolbarHeight,
@@ -98,130 +98,130 @@ class _MealImageDialogState extends State<MealImageDialog> {
                         if (index >= meal.images!.length) {
                           return Center(
                               child: MensaButton(
-                            semanticLabel: FlutterI18n.translate(
-                                context, "semantics.imageUpload"),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) =>
-                                    UploadImageDialog(meal: meal),
-                              );
-                            },
-                            text: FlutterI18n.translate(
-                                context, "image.newImageButton"),
-                          ));
+                                semanticLabel: FlutterI18n.translate(
+                                    context, "semantics.imageUpload"),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        UploadImageDialog(meal: meal),
+                                  );
+                                },
+                                text: FlutterI18n.translate(
+                                    context, "image.newImageButton"),
+                              ));
                         }
                         return Center(
                             child: Image.network(
-                          meal.images![index].url,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) => Text(
-                              FlutterI18n.translate(
-                                  context, "image.loadingError")),
-                          frameBuilder:
-                              (context, child, frame, wasSynchronouslyLoaded) {
-                            if (wasSynchronouslyLoaded) {
-                              return child;
-                            }
-                            return AnimatedOpacity(
-                              opacity: frame == null ? 0 : 1,
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.easeOut,
-                              child: child,
-                            );
-                          },
-                        ));
+                              meal.images![index].url,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Text(
+                                      FlutterI18n.translate(
+                                          context, "image.loadingError")),
+                              frameBuilder:
+                                  (context, child, frame,
+                                  wasSynchronouslyLoaded) {
+                                if (wasSynchronouslyLoaded) {
+                                  return child;
+                                }
+                                return AnimatedOpacity(
+                                  opacity: frame == null ? 0 : 1,
+                                  duration: const Duration(milliseconds: 500),
+                                  curve: Curves.easeOut,
+                                  child: child,
+                                );
+                              },
+                            ));
                       },
                     ),
                     actions: (meal.images!.isEmpty ||
-                            currentPage >= meal.images!.length ||
-                            currentPage == -1)
+                        currentPage >= meal.images!.length ||
+                        currentPage == -1)
                         ? const SizedBox(
-                            height: 64,
-                          )
+                      height: 64,
+                    )
                         : Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 8),
-                            child: Row(
-                              children: [
-                                Text(meal.images![currentPage].positiveRating
-                                    .toString()),
-                                MensaIconButton(
-                                    semanticLabel: FlutterI18n.translate(
-                                        context,
-                                        currentImage?.individualRating == 1
-                                            ? "semantics.imageRatingsRemoveUpvote"
-                                            : "semantics.imageRatingsAddUpvote"),
-                                    onPressed: () async {
-                                      String? result;
-                                      if (currentImage?.individualRating == 1) {
-                                        result = await imageAccess
-                                            .deleteUpvote(currentImage!);
-                                      } else {
-                                        result = await imageAccess
-                                            .upvoteImage(currentImage!);
-                                      }
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 8),
+                        child: Row(
+                          children: [
+                            Text(meal.images![currentPage].positiveRating
+                                .toString()),
+                            MensaIconButton(
+                                semanticLabel: FlutterI18n.translate(
+                                    context,
+                                    currentImage?.individualRating == 1
+                                        ? "semantics.imageRatingsRemoveUpvote"
+                                        : "semantics.imageRatingsAddUpvote"),
+                                onPressed: () async {
+                                  String? result;
+                                  if (currentImage?.individualRating == 1) {
+                                    result = await imageAccess
+                                        .deleteUpvote(currentImage!);
+                                  } else {
+                                    result = await imageAccess
+                                        .upvoteImage(currentImage!);
+                                  }
 
-                                      if (result != null && context.mounted) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                                content: Text(
-                                                    FlutterI18n.translate(
-                                                        context, result))));
-                                      }
-                                    },
-                                    icon: currentImage?.individualRating == 1
-                                        ? const ThumbUpFilledIcon()
-                                        : const ThumbUpOutlinedIcon()),
-                                MensaIconButton(
-                                    semanticLabel: FlutterI18n.translate(
-                                        context,
-                                        currentImage?.individualRating == -1
-                                            ? "semantics.imageRatingsRemoveDownvote"
-                                            : "semantics.imageRatingsAddDownvote"),
-                                    onPressed: () async {
-                                      String? result;
-                                      if (currentImage!.individualRating ==
-                                          -1) {
-                                        result =
-                                            await imageAccess.deleteDownvote(
-                                                currentImage!);
-                                      } else {
-                                        result =
-                                            await imageAccess.downvoteImage(
-                                                currentImage!);
-                                      }
+                                  if (result != null && context.mounted) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                        content: Text(
+                                            FlutterI18n.translate(
+                                                context, result))));
+                                  }
+                                },
+                                icon: currentImage?.individualRating == 1
+                                    ? const ThumbUpFilledIcon()
+                                    : const ThumbUpOutlinedIcon()),
+                            MensaIconButton(
+                                semanticLabel: FlutterI18n.translate(
+                                    context,
+                                    currentImage?.individualRating == -1
+                                        ? "semantics.imageRatingsRemoveDownvote"
+                                        : "semantics.imageRatingsAddDownvote"),
+                                onPressed: () async {
+                                  String? result;
+                                  if (currentImage!.individualRating == -1) {
+                                    result =
+                                    await imageAccess.deleteDownvote(
+                                        currentImage!);
+                                  } else {
+                                    result =
+                                    await imageAccess.downvoteImage(
+                                        currentImage!);
+                                  }
 
-                                      if (result != null && context.mounted) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                                content: Text(
-                                                    FlutterI18n.translate(
-                                                        context, result))));
-                                      }
-                                    },
-                                    icon: meal.images![currentPage]
-                                                .individualRating ==
-                                            -1
-                                        ? const ThumbDownFilledIcon()
-                                        : const ThumbDownOutlinedIcon()),
-                                Text(meal.images![currentPage].negativeRating
-                                    .toString()),
-                                const Spacer(),
-                                MensaIconButton(
-                                    semanticLabel: FlutterI18n.translate(
-                                        context, "semantics.imageReport"),
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => ImageReportDialog(
+                                  if (result != null && context.mounted) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                        content: Text(
+                                            FlutterI18n.translate(
+                                                context, result))));
+                                  }
+                                },
+                                icon: currentImage?.individualRating == -1
+                                    ? const ThumbDownFilledIcon()
+                                    : const ThumbDownOutlinedIcon()),
+                            Text(meal.images![currentPage].negativeRating
+                                .toString()),
+                            const Spacer(),
+                            MensaIconButton(
+                                semanticLabel: FlutterI18n.translate(
+                                    context, "semantics.imageReport"),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        ImageReportDialog(
                                             meal: meal,
                                             image: meal.images![currentPage]),
-                                      );
-                                    },
-                                    icon: const ImageReportIcon()),
-                              ],
-                            )));
+                                  );
+                                },
+                                icon: const ImageReportIcon()),
+                          ],
+                        )));
               case Failure<Meal, NoMealException> _:
                 Navigator.of(context).pop();
                 return Center(
