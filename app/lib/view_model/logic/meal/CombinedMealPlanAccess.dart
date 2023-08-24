@@ -87,18 +87,30 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     };
 
     // get meal plans form server
+    if (_mealPlans.isEmpty) {
+      await refreshAll();
+    } else {
+      await _setNewMealPlan();
+      refreshAll();
+    }
+  }
+
+  Future<void> refreshAll() async {
     List<MealPlan> mealPlans = switch (await _api.updateAll()) {
       Success(value: final mealplan) => mealplan,
       Failure(exception: final exception) =>
-        _convertMealPlanExceptionToMealPlan(exception)
+          _convertMealPlanExceptionToMealPlan(exception)
     };
 
     // update all if connection to server is successful
     if (mealPlans.isNotEmpty) {
       await _database.updateAll(mealPlans);
     }
+    _mealPlans = switch (await _database.getMealPlan(_displayedDate, _activeCanteen)) {
+      Success(value: final mealplan) => mealplan,
+      Failure() => []
+    };
 
-    // filter meal plans
     await _setNewMealPlan();
   }
 
