@@ -18,6 +18,8 @@
   "linkSmallTextDisplayed": "Die hochgeladenen Bilder werden anderen Nutzern angezeigt.",
   "linkButton": "Hochladen",
 
+  "loadingError": "Bild konnte nicht geladen werden",
+
   "uploadException": {
     "noMeal": "Fehler beim Laden"
   }

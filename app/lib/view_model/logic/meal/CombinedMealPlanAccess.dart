@@ -1,6 +1,5 @@
 import 'package:app/view_model/logic/meal/IMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/filter/FilterPreferences.dart';
-import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
@@ -156,6 +155,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   @override
   Future<Result<List<MealPlan>, MealPlanException>> getMealPlan() async {
     await _doneInitialization;
+
+    await _filterMealPlans();
 
     // no data for date
     if (_noDataYet) {

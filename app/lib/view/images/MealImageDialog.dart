@@ -57,6 +57,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
     IImageAccess imageAccess = Provider.of<IImageAccess>(context);
     IMealAccess mealAccess = Provider.of<IMealAccess>(context);
     currentPage = min(currentPage, widget._meal.images!.length - 1);
+    ThemeData theme = Theme.of(context);
     return FutureBuilder(
         future: mealAccess.getMeal(widget._meal),
         builder: (context, snapshot) {
@@ -71,7 +72,8 @@ class _MealImageDialogState extends State<MealImageDialog> {
                     Navigator.of(context).pop();
                   });
                 }
-                ImageData currentImage = meal.images![currentPage];
+                ImageData? currentImage =
+                currentPage >= 0 ? meal.images![currentPage] : null;
                 return MensaFullscreenDialog(
                     appBar: MensaAppBar(
                         appBarHeight: kToolbarHeight,
@@ -82,7 +84,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
                             children: [
                               MensaIconButton(
                                   semanticLabel: FlutterI18n.translate(
-                                      context, "semantics.image.close"),
+                                      context, "semantics.imageClose"),
                                   onPressed: () => Navigator.of(context).pop(),
                                   icon: const NavigationCloseIcon()),
                               const Spacer(),
@@ -96,97 +98,141 @@ class _MealImageDialogState extends State<MealImageDialog> {
                         if (index >= meal.images!.length) {
                           return Center(
                               child: MensaButton(
-                            semanticLabel: FlutterI18n.translate(
-                                context, "semantics.image.upload"),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) =>
-                                    UploadImageDialog(meal: meal),
-                              );
-                            },
-                            text: FlutterI18n.translate(
-                                context, "image.newImageButton"),
-                          ));
+                                semanticLabel: FlutterI18n.translate(
+                                    context, "semantics.imageUpload"),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        UploadImageDialog(meal: meal),
+                                  );
+                                },
+                                text: FlutterI18n.translate(
+                                    context, "image.newImageButton"),
+                              ));
                         }
                         return Center(
                             child: Image.network(
-                          meal.images![index].url,
-                          fit: BoxFit.contain,
-                        ));
+                              meal.images![index].url,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Text(
+                                      FlutterI18n.translate(
+                                          context, "image.loadingError")),
+                              frameBuilder:
+                                  (context, child, frame,
+                                  wasSynchronouslyLoaded) {
+                                if (wasSynchronouslyLoaded) {
+                                  return child;
+                                }
+                                return AnimatedOpacity(
+                                  opacity: frame == null ? 0 : 1,
+                                  duration: const Duration(milliseconds: 500),
+                                  curve: Curves.easeOut,
+                                  child: child,
+                                );
+                              },
+                            ));
                       },
                     ),
                     actions: (meal.images!.isEmpty ||
-                            currentPage >= meal.images!.length ||
-                            currentPage == -1)
+                        currentPage >= meal.images!.length ||
+                        currentPage == -1)
                         ? const SizedBox(
-                            height: 64,
-                          )
+                      height: 64,
+                    )
                         : Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 8),
-                            child: Row(
-                              children: [
-                                Text(meal.images![currentPage].positiveRating
-                                    .toString()),
-                                MensaIconButton(
-                                    semanticLabel: FlutterI18n.translate(
-                                        context,
-                                        currentImage.individualRating == 1
-                                            ? "semantics.image.ratings.removeUpvote"
-                                            : "semantics.image.ratings.addUpvote"),
-                                    onPressed: () async {
-                                      if (currentImage.individualRating == 1) {
-                                        await imageAccess
-                                            .deleteUpvote(currentImage);
-                                      } else {
-                                        await imageAccess
-                                            .upvoteImage(currentImage);
-                                      }
-                                    },
-                                    icon: currentImage.individualRating == 1
-                                        ? const ThumbUpFilledIcon()
-                                        : const ThumbUpOutlinedIcon()),
-                                MensaIconButton(
-                                    semanticLabel: FlutterI18n.translate(
-                                        context,
-                                        currentImage.individualRating == -1
-                                            ? "semantics.image.ratings.removeDownvote"
-                                            : "semantics.image.ratings.addDownvote"),
-                                    onPressed: () async {
-                                      if (meal.images![currentPage]
-                                              .individualRating ==
-                                          -1) {
-                                        await imageAccess.deleteDownvote(
-                                            meal.images![currentPage]);
-                                      } else {
-                                        await imageAccess.downvoteImage(
-                                            meal.images![currentPage]);
-                                      }
-                                    },
-                                    icon: meal.images![currentPage]
-                                                .individualRating ==
-                                            -1
-                                        ? const ThumbDownFilledIcon()
-                                        : const ThumbDownOutlinedIcon()),
-                                Text(meal.images![currentPage].negativeRating
-                                    .toString()),
-                                const Spacer(),
-                                MensaIconButton(
-                                    semanticLabel: FlutterI18n.translate(
-                                        context, "semantics.image.report"),
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => ImageReportDialog(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 8),
+                        child: Row(
+                          children: [
+                            Text(meal.images![currentPage].positiveRating
+                                .toString()),
+                            MensaIconButton(
+                                semanticLabel: FlutterI18n.translate(
+                                    context,
+                                    currentImage?.individualRating == 1
+                                        ? "semantics.imageRatingsRemoveUpvote"
+                                        : "semantics.imageRatingsAddUpvote"),
+                                onPressed: () async {
+                                  String? result;
+                                  if (currentImage?.individualRating == 1) {
+                                    result = await imageAccess
+                                        .deleteUpvote(currentImage!);
+                                  } else {
+                                    result = await imageAccess
+                                        .upvoteImage(currentImage!);
+                                  }
+
+                                  if (result != null && context.mounted) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                        backgroundColor: theme.colorScheme
+                                            .error,
+                                        content: Text(
+                                            FlutterI18n.translate(
+                                                context, result),
+                                            style: TextStyle(
+                                                color: theme.colorScheme
+                                                    .onError))));
+                                  }
+                                },
+                                icon: currentImage?.individualRating == 1
+                                    ? const ThumbUpFilledIcon()
+                                    : const ThumbUpOutlinedIcon()),
+                            MensaIconButton(
+                                semanticLabel: FlutterI18n.translate(
+                                    context,
+                                    currentImage?.individualRating == -1
+                                        ? "semantics.imageRatingsRemoveDownvote"
+                                        : "semantics.imageRatingsAddDownvote"),
+                                onPressed: () async {
+                                  String? result;
+                                  if (currentImage!.individualRating == -1) {
+                                    result =
+                                    await imageAccess.deleteDownvote(
+                                        currentImage!);
+                                  } else {
+                                    result =
+                                    await imageAccess.downvoteImage(
+                                        currentImage!);
+                                  }
+
+                                  if (result != null && context.mounted) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                        backgroundColor: theme.colorScheme
+                                            .error,
+                                        content: Text(
+                                            FlutterI18n.translate(
+                                                context, result),
+                                            style: TextStyle(
+                                                color: theme.colorScheme
+                                                    .onError))));
+                                  }
+                                },
+                                icon: currentImage?.individualRating == -1
+                                    ? const ThumbDownFilledIcon()
+                                    : const ThumbDownOutlinedIcon()),
+                            Text(meal.images![currentPage].negativeRating
+                                .toString()),
+                            const Spacer(),
+                            MensaIconButton(
+                                semanticLabel: FlutterI18n.translate(
+                                    context, "semantics.imageReport"),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        ImageReportDialog(
                                             meal: meal,
                                             image: meal.images![currentPage]),
-                                      );
-                                    },
-                                    icon: const ImageReportIcon()),
-                              ],
-                            )));
-              case Failure<Meal, NoMealException> value:
+                                  );
+                                },
+                                icon: const ImageReportIcon()),
+                          ],
+                        )));
+              case Failure<Meal, NoMealException> _:
                 Navigator.of(context).pop();
                 return Center(
                     child: Text(FlutterI18n.translate(

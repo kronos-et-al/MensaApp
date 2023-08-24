@@ -10,13 +10,11 @@ import 'package:provider/provider.dart';
 /// This widget is used to display a dialog to rate a meal.
 class MealRatingDialog extends StatefulWidget {
   final Meal _meal;
-  final Function(Meal)? _onRatingChanged;
 
   /// Creates a new MealRatingDialog.
   const MealRatingDialog(
       {super.key, required Meal meal, Function(Meal)? onRatingChanged})
-      : _meal = meal,
-        _onRatingChanged = onRatingChanged;
+      : _meal = meal;
 
   @override
   State<MealRatingDialog> createState() => _MealRatingDialogState();
