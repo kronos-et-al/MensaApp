@@ -197,6 +197,8 @@ void main() {
     when(() => api.updateAll())
         .thenAnswer((_) async => Failure(NoConnectionException("error")));
 
+    when(() => database.updateCanteen(canteen)).thenAnswer((_) async {});
+    when(() => database.updateCanteen(otherCanteen)).thenAnswer((_) async {});
     when(() => database.cleanUp()).thenAnswer((_) async {});
     when(() => database.getCanteenById(canteenID))
         .thenAnswer((_) async => canteen);

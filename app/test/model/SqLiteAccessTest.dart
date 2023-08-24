@@ -193,9 +193,9 @@ void main() {
   });
 
   test("get canteen by id", () async {
-    Canteen result = await database.getCanteenById(canteen.id);
-    expect(result.id, canteen.id);
-    expect(result.name, canteen.name);
+    Canteen? result = await database.getCanteenById(canteen.id);
+    expect(result?.id, canteen.id);
+    expect(result?.name, canteen.name);
   });
 
   test("remove image", () async {
