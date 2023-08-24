@@ -5,13 +5,18 @@ import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/meal/Price.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
+import 'package:app/view_model/repository/error_handling/NoMealException.dart';
+import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../model/mocks/ApiMock.dart';
 import '../model/mocks/DatabaseMock.dart';
 
 void main() {
   final database = DatabaseMock();
+
+  final api = ApiMock();
 
   late FavoriteMealAccess favorites;
 
@@ -38,10 +43,12 @@ void main() {
       canteen: Canteen(id: "id", name: "name"),
       position: 1);
 
-  setUp(() {
+  setUpAll(() {
     when(() => database.getFavorites())
         .thenAnswer((_) async => _getFavoriteMeals(meals, line));
-    favorites = FavoriteMealAccess(database);
+    when(() => api.getMeal(meal1, line, any())).thenAnswer((_) async => Failure(NoMealException("error")));
+    when(() => api.getMeal(meal2, line, any())).thenAnswer((_) async => Failure(NoMealException("error")));
+    favorites = FavoriteMealAccess(database, api);
   });
 
   test("Test initialisation", () async {
@@ -84,6 +91,7 @@ void main() {
     });
 
     test("remove meal from meals (that is in meals)", () async {
+      when(() => database.getFavorites()).thenAnswer((_) async => _getFavoriteMeals(meals, line));
       when(() => database.deleteFavorite(meal1)).thenAnswer((_) async {});
       await favorites.removeFavoriteMeal(meal1);
       verify(() => database.deleteFavorite(meal1)).called(1);
