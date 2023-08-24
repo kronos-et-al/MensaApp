@@ -58,6 +58,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
     IImageAccess imageAccess = Provider.of<IImageAccess>(context);
     IMealAccess mealAccess = Provider.of<IMealAccess>(context);
     currentPage = min(currentPage, widget._meal.images!.length - 1);
+    ThemeData theme = Theme.of(context);
     return FutureBuilder(
         future: mealAccess.getMeal(widget._meal),
         builder: (context, snapshot) {
@@ -167,9 +168,14 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                   if (result != null && context.mounted) {
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(SnackBar(
+                                        backgroundColor: theme.colorScheme
+                                            .error,
                                         content: Text(
                                             FlutterI18n.translate(
-                                                context, result))));
+                                                context, result),
+                                            style: TextStyle(
+                                                color: theme.colorScheme
+                                                    .onError))));
                                   }
                                 },
                                 icon: currentImage?.individualRating == 1
@@ -196,9 +202,14 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                   if (result != null && context.mounted) {
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(SnackBar(
+                                        backgroundColor: theme.colorScheme
+                                            .error,
                                         content: Text(
                                             FlutterI18n.translate(
-                                                context, result))));
+                                                context, result),
+                                            style: TextStyle(
+                                                color: theme.colorScheme
+                                                    .onError))));
                                   }
                                 },
                                 icon: currentImage?.individualRating == -1
