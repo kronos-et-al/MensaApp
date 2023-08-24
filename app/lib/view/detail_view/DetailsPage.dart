@@ -25,6 +25,7 @@ import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 /// This widget is used to display the details of a meal.
@@ -50,6 +51,7 @@ class DetailsPage extends StatefulWidget {
 class DetailsPageState extends State<DetailsPage> {
   int? expandedAccordionIndex;
   Meal? localMeal;
+  DateFormat dateFormat = DateFormat.yMMMMd("de_DE");
 
   @override
   Widget build(BuildContext context) {
@@ -189,6 +191,7 @@ class DetailsPageState extends State<DetailsPage> {
                                               ),
                                               Text(
                                                 widget._line.name,
+                                                /*"${widget._line.name} | ${dateFormat.format(widget._date)}",*/
                                                 style: const TextStyle(
                                                     fontSize: 16),
                                               )
@@ -232,6 +235,10 @@ class DetailsPageState extends State<DetailsPage> {
                                             mainEntry:
                                                 MealMainEntry(meal: meal),
                                             info: MealAccordionInfo(
+                                                lastServed: meal.lastServed,
+                                                nextServed: meal.nextServed,
+                                                frequency:
+                                                    meal.numberOfOccurance,
                                                 additives: meal.additives ?? [],
                                                 allergens:
                                                     meal.allergens ?? []),
@@ -311,7 +318,7 @@ class DetailsPageState extends State<DetailsPage> {
                                           Row(children: [
                                             MensaRatingInput(
                                               value: meal.individualRating
-                                                      .toDouble(),
+                                                  .toDouble(),
                                               disabled: true,
                                               color: Theme.of(context)
                                                   .colorScheme

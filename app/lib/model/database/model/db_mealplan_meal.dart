@@ -13,6 +13,7 @@ class DBMealPlanMeal implements DatabaseModel {
   final int _priceGuest;
   final String _lastServed;
   final String _nextServed;
+  final int? _frequency;
   final Frequency _relativeFrequency;
 
   /// The name of the table in the database.
@@ -42,6 +43,9 @@ class DBMealPlanMeal implements DatabaseModel {
   /// The name of the column for the date when the meal will be served next.
   static const String columnNextServed = 'nextServed';
 
+  /// The name of the column that stores the frequency.
+  static const String columnFrequency = 'frequency';
+
   /// The name of the column that stores the relative frequency.
   static const String columnRelativeFrequency = 'relativeFrequency';
 
@@ -55,6 +59,7 @@ class DBMealPlanMeal implements DatabaseModel {
       this._priceGuest,
       this._lastServed,
       this._nextServed,
+      this._frequency,
       this._relativeFrequency);
 
   @override
@@ -68,6 +73,7 @@ class DBMealPlanMeal implements DatabaseModel {
       columnPriceGuest: _priceGuest,
       columnLastServed: _lastServed,
       columnNextServed: _nextServed,
+      columnFrequency: _frequency,
       columnRelativeFrequency: _relativeFrequency.name
     };
   }
@@ -83,6 +89,7 @@ class DBMealPlanMeal implements DatabaseModel {
         map[columnPriceGuest],
         map[columnLastServed],
         map[columnNextServed],
+        map[columnFrequency],
         Frequency.values.byName(map[columnRelativeFrequency]));
   }
 
@@ -97,6 +104,7 @@ class DBMealPlanMeal implements DatabaseModel {
         '$columnPriceGuest INTEGER, '
         '$columnLastServed TEXT, '
         '$columnNextServed TEXT, '
+        '$columnFrequency INTEGER, '
         '$columnRelativeFrequency TEXT, '
         'PRIMARY KEY ($columnMealPlanID, $columnMealID), '
         'FOREIGN KEY ($columnMealPlanID) REFERENCES ${DBMealPlan.tableName}(${DBMealPlan.columnMealPlanID}), '
@@ -127,6 +135,9 @@ class DBMealPlanMeal implements DatabaseModel {
 
   /// Returns the data when the meal will be served next.
   String get nextServed => _nextServed;
+
+  /// Returns the frequency of the meal.
+  int? get frequency => _frequency;
 
   /// Returns the relative frequency of the meal.
   Frequency get relativeFrequency => _relativeFrequency;

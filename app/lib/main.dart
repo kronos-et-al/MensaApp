@@ -41,7 +41,8 @@ void main() {
       "additive",
       "allergen",
       "mealplanException",
-      "semantics"
+      "semantics",
+      "mealDetails"
     ], useCountryCode: false, basePath: 'assets/locales', fallbackDir: 'de'),
     missingTranslationHandler: (key, locale) {
       if (kDebugMode) {
