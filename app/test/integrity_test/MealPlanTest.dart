@@ -1,5 +1,3 @@
-import 'dart:js_util';
-
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
 import 'package:app/model/database/SQLiteDatabaseAccess.dart';
 import 'package:app/model/local_storage/SharedPreferenceAccess.dart';
@@ -67,7 +65,7 @@ Future<void> main() async {
   test("refresh mealplan", () async {
     final result = await access.refreshMealplan();
 
-    expect(result, not(null));
+    expect(result != null, isTrue);
   });
 }
 

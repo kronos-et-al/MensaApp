@@ -34,6 +34,7 @@ class MealPlanView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // These provider are necessary for the synchronization of each other. They need to be initialized even if they are unused.
     IImageAccess imageAccess = Provider.of<IImageAccess>(context);
     IFavoriteMealAccess favoriteMealAccess =
         Provider.of<IFavoriteMealAccess>(context);

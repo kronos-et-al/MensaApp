@@ -191,11 +191,11 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                   if (currentImage!.individualRating == -1) {
                                     result =
                                     await imageAccess.deleteDownvote(
-                                        currentImage!);
+                                        currentImage);
                                   } else {
                                     result =
                                     await imageAccess.downvoteImage(
-                                        currentImage!);
+                                        currentImage);
                                   }
 
                                   if (result != null && context.mounted) {
