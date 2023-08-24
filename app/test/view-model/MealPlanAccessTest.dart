@@ -197,6 +197,7 @@ void main() {
     when(() => api.updateAll())
         .thenAnswer((_) async => Failure(NoConnectionException("error")));
 
+    when(() => database.cleanUp()).thenAnswer((_) async {});
     when(() => database.getCanteenById(canteenID))
         .thenAnswer((_) async => canteen);
     when(() => database.updateAll(mealplans)).thenAnswer((_) async => {});
