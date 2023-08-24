@@ -111,6 +111,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     };
 
     await _setNewMealPlan();
+    _database.cleanUp();
   }
 
   @override

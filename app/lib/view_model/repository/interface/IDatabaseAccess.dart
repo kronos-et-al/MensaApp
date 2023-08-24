@@ -49,4 +49,7 @@ abstract class IDatabaseAccess {
 
   /// This method removes the committed image from the database.
   Future<void> removeImage(ImageData image);
+
+  /// This method removes old meal plans and unused meals from the database
+  Future<void> cleanUp();
 }
