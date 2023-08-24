@@ -33,7 +33,7 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
       };
 
       if (meal != null) {
-        _database.updateMeal(meal);
+        await _database.updateMeal(meal);
       }
     }
 
