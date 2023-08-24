@@ -67,21 +67,34 @@ class _ImageReportState extends State<ImageReportDialog> {
                 const Spacer(),
                 MensaButton(
                     onPressed: () async {
-                      var temporalMessage = await context
+                      var result = await context
                           .read<IImageAccess>()
                           .reportImage(widget._meal, widget._image, _reason);
                       if (!context.mounted) return;
                       Navigator.pop(context);
 
-                      if (temporalMessage.isNotEmpty) {
+                      if (result) {
                         final snackBar = SnackBar(
                           content: Text(
-                            FlutterI18n.translate(context, temporalMessage),
+                            FlutterI18n.translate(
+                                context, "snackbar.reportImageSuccess"),
                             style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurface),
+                                color: Theme.of(context).colorScheme.onPrimary),
                           ),
                           backgroundColor:
-                              Theme.of(context).colorScheme.surface,
+                              Theme.of(context).colorScheme.primary,
+                        );
+
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else {
+                        final snackBar = SnackBar(
+                          content: Text(
+                            FlutterI18n.translate(
+                                context, "snackbar.reportImageError"),
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onError),
+                          ),
+                          backgroundColor: Theme.of(context).colorScheme.error,
                         );
 
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);

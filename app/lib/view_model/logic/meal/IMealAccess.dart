@@ -31,7 +31,7 @@ abstract class IMealAccess with ChangeNotifier {
   /// This method updates the rating of the committed meal on the server.
   /// Returns a non empty string that should be displayed in a temporal message,
   /// or a null, saying that nothing should be printed.
-  Future<String> updateMealRating(int rating, Meal meal);
+  Future<bool> updateMealRating(int rating, Meal meal);
 
   /// Returns the currently selected [FilterPreferences].
   Future<FilterPreferences> getFilterPreferences();

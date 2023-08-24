@@ -1106,7 +1106,7 @@ void main() {
       when(() => api.updateMealRating(3, meal)).thenAnswer((_) async => false);
 
       expect(await mealPlanAccess.updateMealRating(3, meal),
-          "snackbar.updateRatingError");
+          false);
     });
 
     test("success", () async {
@@ -1116,7 +1116,7 @@ void main() {
       when(() => database.updateMeal(meal)).thenAnswer((_) async {});
 
       expect(await mealPlanAccess.updateMealRating(3, meal),
-          "snackbar.updateRatingSuccess");
+          true);
     });
   });
 }

@@ -71,18 +71,18 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
   }
 
   @override
-  Future<String> reportImage(
+  Future<bool> reportImage(
       Meal meal, ImageData image, ReportCategory reportReason) async {
     final result = await _api.reportImage(image, reportReason);
 
     if (!result) {
-      return "snackbar.reportImageError";
+      return false;
     }
 
     _database.removeImage(image);
     meal.removeImage(image);
     notifyListeners();
-    return "snackbar.reportImageSuccess";
+    return true;
   }
 
   @override
