@@ -15,21 +15,22 @@ class MensaDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4.0)),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                  child: Text(_title,
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold))),
-              _content ?? Container(),
-              _actions ?? Container(),
-            ]));
+    return Center(
+        child: SingleChildScrollView(
+      child: Dialog(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
+          child: Column(children: [
+            Align(alignment: AlignmentDirectional.centerStart, child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                child: Text(_title,
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold), textAlign: TextAlign.left,))),
+            _content ?? Container(),
+            _actions ?? Container()
+          ])),
+    ));
   }
 }
