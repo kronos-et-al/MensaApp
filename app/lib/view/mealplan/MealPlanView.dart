@@ -15,6 +15,7 @@ import 'package:app/view/mealplan/MealPlanNoData.dart';
 import 'package:app/view/mealplan/MealPlanToolbar.dart';
 import 'package:app/view/mealplan/MensaCanteenSelect.dart';
 import 'package:app/view_model/logic/favorite/IFavoriteMealAccess.dart';
+import 'package:app/view_model/logic/image/IImageAccess.dart';
 import 'package:app/view_model/logic/meal/IMealAccess.dart';
 import 'package:app/view_model/logic/preference/IPreferenceAccess.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
@@ -34,6 +35,9 @@ class MealPlanView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    IImageAccess imageAccess = Provider.of<IImageAccess>(context);
+    IFavoriteMealAccess favoriteMealAccess =
+        Provider.of<IFavoriteMealAccess>(context);
     ThemeData theme = Theme.of(context);
     return Consumer<IFavoriteMealAccess>(
         builder: (context, favoriteMealAccess, child) => Consumer<
