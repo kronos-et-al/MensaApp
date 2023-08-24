@@ -225,6 +225,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     _mealPlans = mealPlan;
 
+    await _updateFavorites();
+
     await _filterMealPlans();
     _removeUselessLines();
 
@@ -599,6 +601,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   Future<void> _setNewMealPlan() async {
     _noDataYet = false;
     _mealPlans = await _getMealPlanFromDatabaseAndServer();
+
+    await _updateFavorites();
 
     await _filterMealPlans();
     notifyListeners();
