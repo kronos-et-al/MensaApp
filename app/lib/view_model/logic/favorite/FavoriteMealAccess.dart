@@ -23,6 +23,12 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
   }
 
   Future<void> _init() async {
+    _favorites = await _database.getFavorites();
+    refreshFavoriteMeals();
+  }
+
+  @override
+  Future<void> refreshFavoriteMeals() async {
     final favorites = await _database.getFavorites();
 
     //update favorites
@@ -38,6 +44,7 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
     }
 
     _favorites = await _database.getFavorites();
+    notifyListeners();
   }
 
   @override

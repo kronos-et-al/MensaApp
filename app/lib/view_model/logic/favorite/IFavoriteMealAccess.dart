@@ -9,6 +9,9 @@ abstract class IFavoriteMealAccess with ChangeNotifier {
   /// This method adds the committed meal to the favorite meals in the database.
   Future<void> addFavoriteMeal(Meal meal, DateTime servedDate, Line servedLine);
 
+  /// This method refreshes the favorite meals in the database.
+  Future<void> refreshFavoriteMeals();
+
   /// This method removes the committed meal from the favorite meals in the database.
   Future<void> removeFavoriteMeal(Meal meal);
 
