@@ -87,7 +87,7 @@ class MealPlanView extends StatelessWidget {
                                           MensaTapable(
                                               child: Padding(
                                                   padding:
-                                                      const EdgeInsets.all(8),
+                                                      const EdgeInsets.all(12),
                                                   child: mealPlanFormat ==
                                                           MealPlanFormat.grid
                                                       ? const NavigationListOutlinedIcon()
@@ -113,7 +113,7 @@ class MealPlanView extends StatelessWidget {
                                           MensaTapable(
                                               child: Padding(
                                                   padding:
-                                                      const EdgeInsets.all(8),
+                                                      const EdgeInsets.all(12),
                                                   child: filterActive
                                                       ? const NavigationFilterOutlinedIcon()
                                                       : const NavigationFilterOutlinedDisabledIcon()),

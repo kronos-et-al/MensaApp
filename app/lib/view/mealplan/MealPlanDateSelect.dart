@@ -25,7 +25,7 @@ class MealPlanDateSelect extends StatelessWidget {
     return Row(children: [
       MensaTapable(
         child: const Padding(
-            padding: EdgeInsets.all(8), child: NavigationArrowLeftIcon()),
+            padding: EdgeInsets.all(12), child: NavigationArrowLeftIcon()),
         onTap: () {
           DateTime before = _date.subtract(const Duration(days: 1));
           _onDateChanged(before.isBefore(DateTime(1923)) ? _date : before);
@@ -33,7 +33,7 @@ class MealPlanDateSelect extends StatelessWidget {
       ),
       MensaTapable(
           child: Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(12),
             child: Text(
               dateFormat.format(_date),
               style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
@@ -50,7 +50,7 @@ class MealPlanDateSelect extends StatelessWidget {
               }),
       MensaTapable(
         child: const Padding(
-            padding: EdgeInsets.all(8), child: NavigationArrowRightIcon()),
+            padding: EdgeInsets.all(12), child: NavigationArrowRightIcon()),
         onTap: () {
           DateTime after = _date.add(const Duration(days: 1));
           _onDateChanged(

@@ -15,6 +15,6 @@ class MensaIconButton extends StatelessWidget {
   /// Builds the widget.
   @override
   Widget build(BuildContext context) {
-    return IconButton(onPressed: _onPressed, icon: _icon);
+    return IconButton(onPressed: _onPressed, icon: _icon, padding: const EdgeInsets.all(12),);
   }
 }
