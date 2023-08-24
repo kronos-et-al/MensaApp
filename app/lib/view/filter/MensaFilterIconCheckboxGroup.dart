@@ -25,10 +25,6 @@ class MensaFilterIconCheckboxGroup<T> extends StatelessWidget {
       count--;
     }
     double spacing = ((width - (count * 80)) / (count - 1));
-    print('count: $count');
-    print('width: $width');
-    print('width: ${width - (count * 80)}');
-    print('spacing: $spacing');
     return Wrap(
         runAlignment: WrapAlignment.center,
         spacing: spacing,

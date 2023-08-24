@@ -99,12 +99,12 @@ class _FilterDialogState extends State<FilterDialog> {
                             });
                           },
                           entries: _getAllFoodTypeEntries(context)),
+                      const SizedBox(
+                        height: 8,
+                      ),
                       _getValueCategory(preferences.categories) == 0
                           ? Column(
                               children: [
-                                const SizedBox(
-                                  height: 8,
-                                ),
                                 MensaCheckbox(
                                   label: FlutterI18n.translate(
                                       context, "filter.foodTypeSelectionBeef"),
@@ -114,8 +114,7 @@ class _FilterDialogState extends State<FilterDialog> {
                                           .contains(FoodType.beefAw),
                                   onChanged: (value) {
                                     if (value) {
-                                      preferences.categories
-                                          .add(FoodType.beef);
+                                      preferences.categories.add(FoodType.beef);
                                       preferences.categories
                                           .add(FoodType.beefAw);
                                     } else {
@@ -138,8 +137,7 @@ class _FilterDialogState extends State<FilterDialog> {
                                           .contains(FoodType.porkAw),
                                   onChanged: (value) {
                                     if (value) {
-                                      preferences.categories
-                                          .add(FoodType.pork);
+                                      preferences.categories.add(FoodType.pork);
                                       preferences.categories
                                           .add(FoodType.porkAw);
                                     } else {
@@ -160,8 +158,7 @@ class _FilterDialogState extends State<FilterDialog> {
                                       .contains(FoodType.fish),
                                   onChanged: (value) {
                                     if (value) {
-                                      preferences.categories
-                                          .add(FoodType.fish);
+                                      preferences.categories.add(FoodType.fish);
                                     } else {
                                       preferences.categories
                                           .remove(FoodType.fish);
@@ -170,10 +167,49 @@ class _FilterDialogState extends State<FilterDialog> {
                                       preferences = preferences;
                                     });
                                   },
+                                ),
+                                MensaCheckbox(
+                                  label: FlutterI18n.translate(context,
+                                      "filter.foodTypeSelectionUnknown"),
+                                  value: preferences.categories
+                                      .contains(FoodType.unknown),
+                                  onChanged: (value) {
+                                    if (value) {
+                                      preferences.categories
+                                          .add(FoodType.unknown);
+                                    } else {
+                                      preferences.categories
+                                          .remove(FoodType.unknown);
+                                    }
+                                    setState(() {
+                                      preferences = preferences;
+                                    });
+                                  },
                                 )
                               ],
                             )
-                          : Container(),
+                          : Column(
+                              children: [
+                                MensaCheckbox(
+                                  label: FlutterI18n.translate(context,
+                                      "filter.foodTypeSelectionUnknown"),
+                                  value: preferences.categories
+                                      .contains(FoodType.unknown),
+                                  onChanged: (value) {
+                                    if (value) {
+                                      preferences.categories
+                                          .add(FoodType.unknown);
+                                    } else {
+                                      preferences.categories
+                                          .remove(FoodType.unknown);
+                                    }
+                                    setState(() {
+                                      preferences = preferences;
+                                    });
+                                  },
+                                )
+                              ],
+                            ),
                       const SizedBox(
                         height: 16,
                       ),
@@ -222,7 +258,12 @@ class _FilterDialogState extends State<FilterDialog> {
                               preferences = preferences;
                             });
                           },
-                          label: NumberFormat.currency(decimalDigits: 2, symbol: "€", locale: FlutterI18n.currentLocale(context)?.languageCode).format(preferences.price / 100),
+                          label: NumberFormat.currency(
+                                  decimalDigits: 2,
+                                  symbol: "€",
+                                  locale: FlutterI18n.currentLocale(context)
+                                      ?.languageCode)
+                              .format(preferences.price / 100),
                           value: preferences.price.toDouble(),
                           min: 0,
                           max: 1000),
@@ -296,13 +337,16 @@ class _FilterDialogState extends State<FilterDialog> {
                         height: 8,
                       ),
                       MensaSortSelect(
-                        entries: Sorting.values.map((e) => MensaSortSelectEntry(
-                            label: FlutterI18n.translate(
-                                context, "filter.sorting.${e.name}"),
-                            value: e
-                        )).toList(),
+                        entries: Sorting.values
+                            .map((e) => MensaSortSelectEntry(
+                                label: FlutterI18n.translate(
+                                    context, "filter.sorting.${e.name}"),
+                                value: e))
+                            .toList(),
                         selectedEntry: preferences.sortedBy,
-                        sortDirection: preferences.ascending ? SortDirection.ascending : SortDirection.descending,
+                        sortDirection: preferences.ascending
+                            ? SortDirection.ascending
+                            : SortDirection.descending,
                         onEntrySelected: (v) => {
                           setState(() {
                             preferences.sortedBy = v;
@@ -310,7 +354,8 @@ class _FilterDialogState extends State<FilterDialog> {
                         },
                         onSortDirectionSelected: (v) => {
                           setState(() {
-                            preferences.ascending = v == SortDirection.ascending;
+                            preferences.ascending =
+                                v == SortDirection.ascending;
                           })
                         },
                       ),
