@@ -40,7 +40,7 @@ class MealAccordionInfo extends StatelessWidget {
         Text(
           FlutterI18n.translate(
               context,
-              _allergens.isEmpty
+              _additives.isEmpty
                   ? "additive.additiveTitleEmpty"
                   : "additive.additiveTitle"),
           style: const TextStyle(fontWeight: FontWeight.bold),
