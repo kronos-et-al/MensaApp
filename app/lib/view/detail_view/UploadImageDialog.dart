@@ -38,25 +38,28 @@ class UploadImageDialog extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       RichText(
-                        text: TextSpan(children: [
-                          TextSpan(
-                              text: FlutterI18n.translate(
-                                  context, "image.linkFirstPoint")),
-                          TextSpan(
-                            text: FlutterI18n.translate(
-                                context, "image.linkFirstLink"),
-                            style: const TextStyle(
-                                color: Colors.blue,
-                                decoration: TextDecoration.underline),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                _launchURL();
-                              },
-                          ),
-                          TextSpan(
-                              text: FlutterI18n.translate(
-                                  context, "image.linkFirstPointSecondText"))
-                        ]),
+                        text: TextSpan(
+                            style: TextStyle(
+                                color: theme.colorScheme.onBackground),
+                            children: [
+                              TextSpan(
+                                  text: FlutterI18n.translate(
+                                      context, "image.linkFirstPoint")),
+                              TextSpan(
+                                text: FlutterI18n.translate(
+                                    context, "image.linkFirstLink"),
+                                style: TextStyle(
+                                    color: theme.colorScheme.primary,
+                                    decoration: TextDecoration.underline),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    _launchURL();
+                                  },
+                              ),
+                              TextSpan(
+                                  text: FlutterI18n.translate(context,
+                                      "image.linkFirstPointSecondText"))
+                            ]),
                       ),
                       Text(FlutterI18n.translate(
                           context, "image.linkSecondPoint")),
@@ -113,7 +116,8 @@ class UploadImageDialog extends StatelessWidget {
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text(
-                              FlutterI18n.translate(context, "snackbar.linkImageError"),
+                              FlutterI18n.translate(
+                                  context, "snackbar.linkImageError"),
                               style:
                                   TextStyle(color: theme.colorScheme.onError),
                             ),
