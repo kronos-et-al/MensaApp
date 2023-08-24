@@ -15,6 +15,7 @@ pub struct SwKaInfo {
     pub valid_canteens: Vec<String>,
     pub client_timeout: std::time::Duration,
     pub client_user_agent: String,
+    pub number_of_weeks_to_poll: u32,
 }
 
 pub struct SwKaParseManager {
@@ -32,6 +33,7 @@ impl SwKaParseManager {
             link_creator: SwKaLinkCreator::new(
                 parse_info.base_url.clone(),
                 parse_info.valid_canteens.clone(),
+                parse_info.number_of_weeks_to_poll,
             ),
             request: SwKaHtmlRequest::new(parse_info.client_timeout, parse_info.client_user_agent)?,
             html_parser: HTMLParser::new(),

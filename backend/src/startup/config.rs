@@ -26,6 +26,7 @@ const DEFAULT_USER_AGENT: &str = "MensaKa 0.1";
 const DEFAULT_CLIENT_TIMEOUT: u64 = 6000;
 const DEFAULT_HTTP_PORT: u16 = 80;
 const DEFAULT_SMTP_PORT: u16 = 465;
+const DEFAULT_PARSE_WEEKS: u32 = 4;
 
 /// Class for reading configuration from environment variables.
 pub struct ConfigReader {}
@@ -65,6 +66,7 @@ impl ConfigReader {
     pub fn read_database_info(&self) -> Result<DatabaseInfo> {
         let info = DatabaseInfo {
             connection: read_var("DATABASE_URL")?,
+            max_weeks_data: get_max_weeks_data(),
         };
         Ok(info)
     }
@@ -143,6 +145,7 @@ impl ConfigReader {
             client_user_agent: env::var("USER_AGENT")
                 .unwrap_or_else(|_| String::from(DEFAULT_USER_AGENT)),
             valid_canteens: canteens,
+            number_of_weeks_to_poll: get_max_weeks_data(),
         };
         info!(
             "getting canteen data from <{}> for canteens {}",
@@ -168,6 +171,14 @@ impl ConfigReader {
 
 fn read_var(var: &str) -> Result<String> {
     env::var(var).map_err(|e| ServerError::MissingEnvVar(var.to_string(), e))
+}
+
+fn get_max_weeks_data() -> u32 {
+    read_var("PARSE_WEEKS")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(DEFAULT_PARSE_WEEKS)
+        + 1 // +1 for current week
 }
 
 #[cfg(test)]
