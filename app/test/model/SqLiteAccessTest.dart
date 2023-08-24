@@ -151,15 +151,17 @@ void main() {
 
   group("favorites", () {
     test("add favorite", () async {
-      await database.addFavorite(meals[0]);
+      await database.addFavorite(meals[0], DateTime.now(), lines[0]);
 
-      expect(await database.getFavorites(), [meals[0]]);
+      final result = await database.getFavorites();
+      expect(result.map((e) => e.meal).contains(meals[0]), isTrue);
     });
 
     test("add favorite again", () async {
-      await database.addFavorite(meals[0]);
+      await database.addFavorite(meals[0], DateTime.now(), lines[0]);
 
-      expect(await database.getFavorites(), [meals[0]]);
+      final result = await database.getFavorites();
+      expect(result.map((e) => e.meal).contains(meals[0]), isTrue);
     });
 
     test("get one favorite", () async {

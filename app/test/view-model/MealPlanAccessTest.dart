@@ -4,6 +4,7 @@ import 'package:app/view_model/repository/data_classes/filter/FilterPreferences.
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
 import 'package:app/view_model/repository/data_classes/filter/Sorting.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
+import 'package:app/view_model/repository/data_classes/meal/FavoriteMeal.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/meal/Price.dart';
@@ -177,7 +178,11 @@ void main() {
         meals: [meals[3], meals[4]]),
   ];
 
-  final List<Meal> favorites = [meals[0], meals[1], meals[3]];
+  final List<FavoriteMeal> favorites = [
+    FavoriteMeal(meals[0], DateTime.now(), lines[0]),
+    FavoriteMeal(meals[1], DateTime.now(), lines[0]),
+    FavoriteMeal(meals[3], DateTime.now(), lines[2])
+  ];
 
   setUpAll(() {
     registerFallbackValue(FilterPreferencesFake());
@@ -222,7 +227,8 @@ void main() {
       }
     });
 
-    test("initialization with no stored canteen and connection to server", () async {
+    test("initialization with no stored canteen and connection to server",
+        () async {
       when(() => localStorage.getFilterPreferences()).thenAnswer((_) => null);
       when(() => localStorage.getCanteen()).thenAnswer((_) => null);
       when(() => localStorage.getPriceCategory())
@@ -715,7 +721,7 @@ void main() {
       await mealPlanAccess.changeFilterPreferences(filter);
 
       final List<MealPlan> result = switch (
-      await mealPlanAccess.getMealPlan()) {
+          await mealPlanAccess.getMealPlan()) {
         Success(value: final value) => value,
         Failure(exception: _) => []
       };
@@ -741,7 +747,7 @@ void main() {
       await mealPlanAccess.changeFilterPreferences(filter);
 
       final List<MealPlan> result = switch (
-      await mealPlanAccess.getMealPlan()) {
+          await mealPlanAccess.getMealPlan()) {
         Success(value: final value) => value,
         Failure(exception: _) => []
       };
@@ -768,7 +774,7 @@ void main() {
       await mealPlanAccess.changeFilterPreferences(filter);
 
       final List<MealPlan> result = switch (
-      await mealPlanAccess.getMealPlan()) {
+          await mealPlanAccess.getMealPlan()) {
         Success(value: final value) => value,
         Failure(exception: _) => []
       };
@@ -794,7 +800,7 @@ void main() {
       await mealPlanAccess.changeFilterPreferences(filter);
 
       final List<MealPlan> result = switch (
-      await mealPlanAccess.getMealPlan()) {
+          await mealPlanAccess.getMealPlan()) {
         Success(value: final value) => value,
         Failure(exception: _) => []
       };
@@ -821,7 +827,7 @@ void main() {
       await mealPlanAccess.changeFilterPreferences(filter);
 
       final List<MealPlan> result = switch (
-      await mealPlanAccess.getMealPlan()) {
+          await mealPlanAccess.getMealPlan()) {
         Success(value: final value) => value,
         Failure(exception: _) => []
       };
@@ -847,7 +853,7 @@ void main() {
       await mealPlanAccess.changeFilterPreferences(filter);
 
       final List<MealPlan> result = switch (
-      await mealPlanAccess.getMealPlan()) {
+          await mealPlanAccess.getMealPlan()) {
         Success(value: final value) => value,
         Failure(exception: _) => []
       };
@@ -878,11 +884,10 @@ void main() {
       await mealPlanAccess.changeFilterPreferences(filter);
 
       final List<MealPlan> result = switch (
-      await mealPlanAccess.getMealPlan()) {
+          await mealPlanAccess.getMealPlan()) {
         Success(value: final value) => value,
         Failure(exception: _) => []
       };
-
 
       expect(result.length, 5);
       expect(result[0].meals.length, 1);
@@ -1105,8 +1110,7 @@ void main() {
 
       when(() => api.updateMealRating(3, meal)).thenAnswer((_) async => false);
 
-      expect(await mealPlanAccess.updateMealRating(3, meal),
-          false);
+      expect(await mealPlanAccess.updateMealRating(3, meal), false);
     });
 
     test("success", () async {
@@ -1115,8 +1119,7 @@ void main() {
       when(() => api.updateMealRating(3, meal)).thenAnswer((_) async => true);
       when(() => database.updateMeal(meal)).thenAnswer((_) async {});
 
-      expect(await mealPlanAccess.updateMealRating(3, meal),
-          true);
+      expect(await mealPlanAccess.updateMealRating(3, meal), true);
     });
   });
 }

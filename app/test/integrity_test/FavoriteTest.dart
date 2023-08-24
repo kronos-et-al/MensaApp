@@ -3,6 +3,8 @@ import 'package:app/view_model/logic/favorite/FavoriteMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/meal/Price.dart';
+import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
+import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -15,16 +17,22 @@ void main() {
       foodType: FoodType.vegetarian,
       price: Price(student: 1, employee: 23, pupil: 5, guest: 15));
 
+  final line = Line(
+      id: "id",
+      name: "name",
+      canteen: Canteen(id: "id", name: "name"),
+      position: 1);
+
   test("add favorite meal", () async {
-    await access.addFavoriteMeal(meal);
+    await access.addFavoriteMeal(meal, DateTime.now(), line);
 
     expect(await access.isFavoriteMeal(meal), isTrue);
     final result = await access.getFavoriteMeals();
-    expect(result.contains(meal), isTrue);
+    expect(result.map((e) => e.meal).contains(meal), isTrue);
 
     // check if changes are updated in database
     final favorites = await database.getFavorites();
-    expect(favorites.contains(meal), isTrue);
+    expect(favorites.map((e) => e.meal).contains(meal), isTrue);
   });
 
   test("delete favorite meal", () async {
@@ -32,10 +40,10 @@ void main() {
 
     expect(await access.isFavoriteMeal(meal), isFalse);
     final result = await access.getFavoriteMeals();
-    expect(result.contains(meal), isFalse);
+    expect(result.map((e) => e.meal).contains(meal), isFalse);
 
     // check if changes are updated in database
     final favorites = await database.getFavorites();
-    expect(favorites.contains(meal), isFalse);
+    expect(favorites.map((e) => e.meal).contains(meal), isFalse);
   });
 }

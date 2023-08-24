@@ -64,7 +64,7 @@ void main() async {
             name: "Best meal",
             foodType: FoodType.vegetarian,
             price: Price(student: 1, employee: 23, pupil: 5, guest: 15)));
-    expect(deleted, true);
+    expect(deleted is Success, true);
   });
 
   test('report image', () async {
