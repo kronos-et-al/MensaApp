@@ -144,6 +144,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
             _dateFormat.parse(dbFavorite.lastDate),
             null,
             null,
+            null,
             true);
         DBLine? dbLine = await _getDBLine(dbFavorite.servedLineId);
         DBCanteen? dbCanteen = await _getDBCanteen(dbLine!.canteenID);
@@ -178,6 +179,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
             {},
             (await _getDBImages(dbMeal.mealID)),
             _dateFormat.parse(dbFavorite.lastDate),
+            null,
             null,
             null,
             await _isFavorite(dbMeal.mealID)));
@@ -230,6 +232,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
           foodType: dbMeal.foodType,
           lastServed: _dateFormat.parse(dbMealPlanMeal.lastServed),
           nextServed: _dateFormat.parse(dbMealPlanMeal.nextServed),
+          numberOfOccurance: dbMealPlanMeal.frequency,
           relativeFrequency: dbMealPlanMeal.relativeFrequency,
           additives: await _getMealAdditives(dbMeal.mealID),
           allergens: await _getMealAllergens(dbMeal.mealID),
@@ -406,6 +409,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         meal.price.guest,
         _dateFormat.format(meal.lastServed ?? DateTime.now()),
         _dateFormat.format(meal.nextServed ?? DateTime.now()),
+        meal.numberOfOccurance,
         meal.relativeFrequency ?? Frequency.normal);
     await Future.wait(
         meal.allergens?.map((e) => _insertMealAllergen(e, dbMeal)).toList() ??
@@ -627,9 +631,12 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   }
 
   @override
-  Future<Canteen> getCanteenById(String id) async {
+  Future<Canteen?> getCanteenById(String id) async {
     DBCanteen? canteen = await _getDBCanteen(id);
-    return DatabaseTransformer.fromDBCanteen(canteen!);
+    if (canteen == null) {
+      return null;
+    }
+    return DatabaseTransformer.fromDBCanteen(canteen);
   }
 
   @override
@@ -670,6 +677,14 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     var db = await database;
     await db.delete(DBImage.tableName,
         where: '${DBImage.columnImageID} = ?', whereArgs: [image.id]);
+  }
+
+  @override
+  Future<void> updateCanteen(Canteen canteen) async {
+    var db = await database;
+    await db.insert(
+        DBCanteen.tableName, DBCanteen(canteen.id, canteen.name).toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   @override

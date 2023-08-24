@@ -54,11 +54,12 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     final canteenString = _preferences.getCanteen();
     Canteen? canteen;
     // get default canteen from server if canteen id not saved in local storage
-    if (canteenString == null || canteenString.isEmpty) {
+    if (canteenString == null || canteenString.isEmpty || await _database.getCanteenById(canteenString) == null) {
       canteen = await _api.getDefaultCanteen();
 
       // save canteen id in local storage
       if (canteen != null) {
+        await _database.updateCanteen(canteen);
         _preferences.setCanteen(canteen.id);
       }
     } else {

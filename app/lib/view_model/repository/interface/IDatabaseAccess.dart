@@ -17,8 +17,11 @@ abstract class IDatabaseAccess {
   /// This method updates a meal in the database with the same id as [meal] with the attributes of [meal].
   Future<void> updateMeal(Meal meal);
 
-  /// This method updates a meal in the database with the same id as [image] with the attributes of [image].
+  /// This method updates a image in the database with the same id as [image] with the attributes of [image].
   Future<void> updateImage(ImageData image);
+
+  /// This method updates a canteen in the database with the same id as [canteen] with the attributes of [canteen].
+  Future<void> updateCanteen(Canteen canteen);
 
   /// Returns the [MealPlan] of the committed date of the committed canteen.
   /// If the mealplan does not exists, it returns an [MealPlanException].
@@ -45,7 +48,7 @@ abstract class IDatabaseAccess {
 
   /// This method returns the canteen with the committed id.
   /// If no canteen with the committed id exists, it returns 'null'.
-  Future<Canteen> getCanteenById(String id);
+  Future<Canteen?> getCanteenById(String id);
 
   /// This method returns all canteens or null if no canteen is stored.
   Future<List<Canteen>?> getCanteens();

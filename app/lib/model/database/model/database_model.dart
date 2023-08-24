@@ -37,6 +37,7 @@ class DatabaseTransformer {
       List<DBImage> images,
       DateTime? lastServed,
       DateTime? nextServed,
+      int? frequency,
       Frequency? relativeFrequency,
       bool isFavorite) {
     return Meal(
@@ -55,6 +56,7 @@ class DatabaseTransformer {
         averageRating: dbMeal.averageRating,
         lastServed: lastServed,
         nextServed: nextServed,
+        numberOfOccurance: frequency,
         relativeFrequency: relativeFrequency,
         images: images.map((image) => fromDBImage(image)).toList(),
         isFavorite: isFavorite);
