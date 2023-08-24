@@ -20,7 +20,7 @@ class MensaCanteenSelect extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonHideUnderline(
+    return Container(color: Theme.of(context).colorScheme.background, child: DropdownButtonHideUnderline(
         child: DropdownButton(
             dropdownColor: Theme.of(context).colorScheme.surface,
             selectedItemBuilder: (context) => _availableCanteens
@@ -29,6 +29,7 @@ class MensaCanteenSelect extends StatelessWidget {
                         width: 40,
                       ),
                       Container(
+                        color: Theme.of(context).colorScheme.background,
                         alignment: Alignment.center,
                         constraints: BoxConstraints(
                             minWidth: MediaQuery.of(context).size.width -
@@ -49,6 +50,6 @@ class MensaCanteenSelect extends StatelessWidget {
                     value: e.id, child: Center(child: Text(e.name))))
                 .toList(),
             onChanged: (value) => _onCanteenSelected(_availableCanteens
-                .firstWhere((element) => element.id == value))));
+                .firstWhere((element) => element.id == value)))));
   }
 }

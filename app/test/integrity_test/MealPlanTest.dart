@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
 import 'package:app/model/database/SQLiteDatabaseAccess.dart';
 import 'package:app/model/local_storage/SharedPreferenceAccess.dart';
@@ -11,10 +13,16 @@ import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../model/api_server/config.dart';
 
 Future<void> main() async {
+  if (Platform.isWindows || Platform.isLinux) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
+
   final Map<String, Object> values = <String, Object>{'counter': 1};
   SharedPreferences.setMockInitialValues(values);
 

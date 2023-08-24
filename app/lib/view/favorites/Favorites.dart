@@ -20,12 +20,15 @@ class Favorites extends StatelessWidget {
             return Scaffold(
                 appBar: MensaAppBar(
                     appBarHeight: kToolbarHeight,
-                    child: Semantics(header: true, child: Center(
-                      child: Text(
-                          FlutterI18n.translate(context, "common.favorites"),
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
-                    ))),
+                    child: Semantics(
+                        header: true,
+                        child: Center(
+                          child: Text(
+                              FlutterI18n.translate(
+                                  context, "common.favorites"),
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold)),
+                        ))),
                 body: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [],
@@ -61,18 +64,22 @@ class Favorites extends StatelessWidget {
 
           return Scaffold(
               appBar: appBar,
-              body: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: mealPlan.length,
-                    itemBuilder: (context, index) {
-                      return MealListEntry(
-                          meal: mealPlan[index].meal,
-                          line: mealPlan[index].servedLine,
-                          date: mealPlan[index].servedDate);
-                    },
-                  )));
+              body: RefreshIndicator(
+                  onRefresh: () async {
+                    await favoriteAccess.refreshFavoriteMeals();
+                  },
+                  child: Column(children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: mealPlan.length,
+                      itemBuilder: (context, index) {
+                        return MealListEntry(
+                            meal: mealPlan[index].meal,
+                            line: mealPlan[index].servedLine,
+                            date: mealPlan[index].servedDate);
+                      },
+                    )
+                  ])));
         },
       ),
     );
