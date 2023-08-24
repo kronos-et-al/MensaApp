@@ -34,4 +34,6 @@ pub struct ImageReportInfo {
     pub report_barrier: u32,
     /// User that reported the image.
     pub client_id: Uuid,
+    /// The age of the image in days
+    pub image_age: i64,
 }

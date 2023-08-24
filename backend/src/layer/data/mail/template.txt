@@ -9,3 +9,4 @@ Additional Data:
 Positive ratings: {{positive_rating_count}}
 Negative ratings: {{negative_rating_count}}
 Rank: {{get_image_rank}}
+Image age: {{image_age}}

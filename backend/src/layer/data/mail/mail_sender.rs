@@ -102,6 +102,7 @@ impl MailSender {
             ("get_image_rank", &info.get_image_rank),
             ("report_barrier", &info.report_barrier),
             ("client_id", &info.client_id),
+            ("image_age", &info.image_age),
         ];
 
         let info_map = info_array_map
@@ -181,6 +182,10 @@ mod test {
             report.contains(info.client_id.to_string().as_str()),
             "the template must contain all of the information from the report info"
         );
+        assert!(
+            report.contains(info.image_age.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
     }
 
     #[tokio::test]
@@ -223,6 +228,7 @@ mod test {
             get_image_rank: 1.0,
             report_barrier: 1,
             client_id: Uuid::default(),
+            image_age: 1,
         }
     }
 
