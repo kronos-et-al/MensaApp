@@ -20,6 +20,7 @@ import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
 
 /// This widget is used to display the images of a meal.
