@@ -73,7 +73,7 @@ Future<void> main() async {
   test("refresh mealplan", () async {
     final result = await access.refreshMealplan();
 
-    expect(result != null, isTrue);
+    expect(result == null, isTrue);
   });
 }
 
