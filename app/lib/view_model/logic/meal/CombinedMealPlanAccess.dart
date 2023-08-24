@@ -650,7 +650,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     for (final mealPlan in _mealPlans) {
       for (final meal in mealPlan.meals) {
-        if (favorites.map((favorite) => favorite.id).contains(meal.id)) {
+        if (favorites.map((favorite) => favorite.meal.id).contains(meal.id)) {
           meal.setFavorite();
           changed = true;
         }

@@ -67,7 +67,10 @@ class Favorites extends StatelessWidget {
                     shrinkWrap: true,
                     itemCount: mealPlan.length,
                     itemBuilder: (context, index) {
-                      return MealListEntry(meal: mealPlan[index]);
+                      return MealListEntry(
+                          meal: mealPlan[index].meal,
+                          line: mealPlan[index].servedLine,
+                          date: mealPlan[index].servedDate);
                     },
                   )));
         },

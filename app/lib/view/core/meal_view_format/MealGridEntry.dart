@@ -10,14 +10,20 @@ import 'package:flutter/material.dart';
 /// Displays a Meal as a Gallery Entry.
 class MealGridEntry extends StatelessWidget {
   final Meal _meal;
-  final Line? _line;
+  final Line _line;
+  final DateTime _date;
   final double _width;
 
   /// Creates a MealGridEntry.
   const MealGridEntry(
-      {super.key, required Meal meal, Line? line, required double width})
+      {super.key,
+      required Meal meal,
+      required Line line,
+      required DateTime date,
+      required double width})
       : _meal = meal,
         _line = line,
+        _date = date,
         _width = width;
 
   @override
@@ -32,6 +38,7 @@ class MealGridEntry extends StatelessWidget {
                           builder: (context) => DetailsPage(
                                 meal: _meal,
                                 line: _line,
+                                date: _date,
                               )))
                     },
                 child: Container(
@@ -54,6 +61,7 @@ class MealGridEntry extends StatelessWidget {
                                   builder: (context) => DetailsPage(
                                         meal: _meal,
                                         line: _line,
+                                        date: _date,
                                       )))
                             },
                         borderRadius: const BorderRadius.only(

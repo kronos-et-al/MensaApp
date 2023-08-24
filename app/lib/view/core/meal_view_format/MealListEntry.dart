@@ -12,16 +12,19 @@ import 'package:provider/provider.dart';
 /// Displays a Meal as a List Entry.
 class MealListEntry extends StatelessWidget {
   final Meal _meal;
-  final Line? _line;
+  final Line _line;
+  final DateTime _date;
 
   // TODO use locale
   final NumberFormat _priceFormat =
       NumberFormat.currency(locale: 'de_DE', symbol: '€');
 
   /// Creates a MealListEntry.
-  MealListEntry({super.key, required Meal meal, Line? line})
+  MealListEntry(
+      {super.key, required Meal meal, required Line line, required DateTime date})
       : _meal = meal,
-        _line = line;
+        _line = line,
+        _date = date;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +36,7 @@ class MealListEntry extends StatelessWidget {
                     builder: (context) => DetailsPage(
                       meal: _meal,
                       line: _line,
+                      date: _date,
                     ),
                   ))
                 },
@@ -50,9 +54,13 @@ class MealListEntry extends StatelessWidget {
                         height: 86,
                         width: 86,
                         onImagePressed: () => {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => DetailsPage(meal: _meal, line: _line,)))
-                        },
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => DetailsPage(
+                                        meal: _meal,
+                                        line: _line,
+                                        date: _date,
+                                      )))
+                            },
                         displayFavorite: true,
                         borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(8),
@@ -97,7 +105,8 @@ class MealListEntry extends StatelessWidget {
                                   Consumer<IPreferenceAccess>(
                                       builder: (context, prefs, child) {
                                     return Text(_priceFormat.format(_meal.price
-                                        .getPrice(prefs.getPriceCategory()) /
+                                            .getPrice(
+                                                prefs.getPriceCategory()) /
                                         100));
                                   }),
                                 ]),

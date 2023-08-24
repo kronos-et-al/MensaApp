@@ -5,6 +5,7 @@ import 'package:app/model/database/model/database_model.dart';
 import 'package:app/model/database/model/db_mealplan_side.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
 import 'package:app/view_model/repository/data_classes/meal/Additive.dart';
+import 'package:app/view_model/repository/data_classes/meal/FavoriteMeal.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/meal/Price.dart';
@@ -91,16 +92,20 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   }
 
   @override
-  Future<int> addFavorite(Meal meal) async {
+  Future<int> addFavorite(
+      Meal meal, DateTime servedDate, Line servedLine) async {
     var db = await database;
     var favorite = DBFavorite(
-        meal.id,
-        _dateFormat.format(meal.lastServed ?? DateTime.now()),
-        meal.foodType,
-        meal.price.student,
-        meal.price.employee,
-        meal.price.pupil,
-        meal.price.guest);
+      meal.id,
+      _dateFormat.format(meal.lastServed ?? DateTime.now()),
+      meal.foodType,
+      meal.price.student,
+      meal.price.employee,
+      meal.price.pupil,
+      meal.price.guest,
+      servedDate,
+      servedLine.id,
+    );
     await _insertMeal(meal);
     return await db.insert(DBFavorite.tableName, favorite.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
@@ -114,15 +119,15 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   }
 
   @override
-  Future<List<Meal>> getFavorites() async {
+  Future<List<FavoriteMeal>> getFavorites() async {
     var db = await database;
-    var meals = List<Meal>.empty(growable: true);
+    var meals = List<FavoriteMeal>.empty(growable: true);
     var dbFavoritesListResult = await db.query(DBFavorite.tableName);
     for (Map<String, dynamic> favoriteMap in dbFavoritesListResult) {
       DBFavorite? dbFavorite = DBFavorite.fromMap(favoriteMap);
       DBMeal? dbMeal = await _getDBMeal(dbFavorite.mealID);
       if (dbMeal != null) {
-        meals.add(DatabaseTransformer.fromDBMeal(
+        Meal meal = DatabaseTransformer.fromDBMeal(
             dbMeal,
             Price(
                 student: dbFavorite.priceStudent,
@@ -139,7 +144,11 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
             _dateFormat.parse(dbFavorite.lastDate),
             null,
             null,
-            true));
+            true);
+        DBLine? dbLine = await _getDBLine(dbFavorite.servedLineId);
+        DBCanteen? dbCanteen = await _getDBCanteen(dbLine!.canteenID);
+        Line line = DatabaseTransformer.fromDBLine(dbLine, dbCanteen!);
+        meals.add(FavoriteMeal(meal, dbFavorite.servedDate, line));
       }
     }
     return meals;

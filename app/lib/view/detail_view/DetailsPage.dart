@@ -30,12 +30,18 @@ import 'package:provider/provider.dart';
 /// This widget is used to display the details of a meal.
 class DetailsPage extends StatefulWidget {
   final Meal _meal;
-  final Line? _line;
+  final Line _line;
+  final DateTime _date;
 
   /// Creates a new DetailsPage.
-  const DetailsPage({super.key, required Meal meal, Line? line})
+  const DetailsPage(
+      {super.key,
+      required Meal meal,
+      required Line line,
+      required DateTime date})
       : _meal = meal,
-        _line = line;
+        _line = line,
+        _date = date;
 
   @override
   State<StatefulWidget> createState() => DetailsPageState();
@@ -110,7 +116,7 @@ class DetailsPageState extends State<DetailsPage> {
                                                   else
                                                     {
                                                       favoriteMealAccess
-                                                          .addFavoriteMeal(meal)
+                                                          .addFavoriteMeal(meal, widget._date, widget._line)
                                                     }
                                                 },
                                             icon: meal.isFavorite
