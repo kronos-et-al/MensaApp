@@ -28,23 +28,26 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
   }
 
   @override
-  Future<void> refreshFavoriteMeals() async {
+  Future<bool> refreshFavoriteMeals() async {
     final favorites = await _database.getFavorites();
 
     //update favorites
     for (final favorite in favorites) {
       final Meal? meal = switch (await _api.getMeal(favorite.meal, favorite.servedLine, favorite.servedDate)) {
         Success(value: final value) => value,
-        Failure(exception: _) => null
+        Failure(exception: _) => null,
       };
 
       if (meal != null) {
         await _database.updateMeal(meal);
+      } else {
+        return false;
       }
     }
 
     _favorites = await _database.getFavorites();
     notifyListeners();
+    return true;
   }
 
   @override

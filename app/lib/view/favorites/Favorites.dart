@@ -12,6 +12,7 @@ class Favorites extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return Consumer<IFavoriteMealAccess>(
       builder: (context, favoriteAccess, child) => FutureBuilder(
         future: Future.wait([favoriteAccess.getFavoriteMeals()]),
@@ -66,7 +67,16 @@ class Favorites extends StatelessWidget {
               appBar: appBar,
               body: RefreshIndicator(
                   onRefresh: () async {
-                    await favoriteAccess.refreshFavoriteMeals();
+                    bool result = await favoriteAccess.refreshFavoriteMeals();
+                    if (!result && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          backgroundColor: theme.colorScheme.error,
+                          content: Text(
+                            FlutterI18n.translate(
+                                context, "snackbar.refreshFavoriteError"),
+                            style: TextStyle(color: theme.colorScheme.onError),
+                          )));
+                    }
                   },
                   child: Column(children: [
                     ListView.builder(
