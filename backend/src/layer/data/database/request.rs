@@ -11,13 +11,12 @@ use crate::{
     util::{Additive, Allergen, Date, MealType, Price, Uuid},
 };
 
-/// We have for four weeks, including the current week
-const MAX_WEEKS_DATA: i64 = 4;
-
 /// Class implementing all database requests arising from graphql manipulations.
 #[derive(Debug)]
 pub struct PersistentRequestData {
     pub(super) pool: Pool<Postgres>,
+    /// Number of weeks, including the current week, we get/have data for.
+    pub(super) max_weeks_data: u32,
 }
 
 #[async_trait]
@@ -108,8 +107,8 @@ impl RequestDataAccess for PersistentRequestData {
         // If date too far into the future, return `None`.
         // This should probably be inside the logic layer which currently does not exists for request.
         let today = Local::now().date_naive();
-        let first_unknown_day =
-            today.week(chrono::Weekday::Mon).first_day() + Duration::weeks(MAX_WEEKS_DATA);
+        let first_unknown_day = today.week(chrono::Weekday::Mon).first_day()
+            + Duration::weeks(i64::from(self.max_weeks_data));
         if date >= first_unknown_day {
             return Ok(None);
         }
@@ -299,10 +298,14 @@ mod tests {
     use sqlx::PgPool;
 
     const WRONG_UUID: Uuid = Uuid::from_u128(7u128);
+    const MAX_WEEKS_DATA: u32 = 5;
 
     #[sqlx::test(fixtures("canteen"))]
     async fn test_get_canteen(pool: PgPool) {
-        let request = PersistentRequestData { pool };
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
 
         let canteen_id_strs = [
             "10728cc4-1e07-4e18-a9d9-ca45b9782413",
@@ -329,7 +332,10 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen"))]
     async fn test_get_canteens(pool: PgPool) {
-        let request = PersistentRequestData { pool };
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
 
         let canteen = request.get_canteens().await.unwrap();
         assert!(canteen.len() == 3);
@@ -340,7 +346,10 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen", "line"))]
     async fn test_get_line(pool: PgPool) {
-        let request = PersistentRequestData { pool };
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
 
         let lines = request
             .get_lines(Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap())
@@ -355,7 +364,10 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen", "line"))]
     async fn test_get_lines(pool: PgPool) {
-        let request = PersistentRequestData { pool };
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
 
         let line_id_strs = [
             "3e8c11fa-906a-4c6a-bc71-28756c6b00ae",
@@ -378,7 +390,10 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_get_meal(pool: PgPool) {
-        let request = PersistentRequestData { pool };
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
 
         let meal_id_strs = [
             "f7337122-b018-48ad-b420-6202dc3cb4ff",
@@ -415,7 +430,10 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_get_meals(pool: PgPool) {
-        let request = PersistentRequestData { pool };
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
 
         let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
 
@@ -428,13 +446,19 @@ mod tests {
         assert_eq!(meals, provide_dummy_meals());
 
         let meals_in_future = request
-            .get_meals(line_id, Local::now().date_naive() + Duration::weeks(4))
+            .get_meals(
+                line_id,
+                Local::now().date_naive() + Duration::weeks(i64::from(MAX_WEEKS_DATA)),
+            )
             .await
             .unwrap();
         assert!(meals_in_future.is_none());
 
         let meals_in_near_future = request
-            .get_meals(line_id, Local::now().date_naive() + Duration::weeks(3))
+            .get_meals(
+                line_id,
+                Local::now().date_naive() + Duration::weeks(i64::from(MAX_WEEKS_DATA) - 1),
+            )
             .await
             .unwrap();
         assert!(meals_in_near_future.is_some());
@@ -448,7 +472,10 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_get_sides(pool: PgPool) {
-        let request = PersistentRequestData { pool };
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
         let date = Local::now().date_naive();
         let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
 
@@ -463,7 +490,10 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "image"))]
     async fn test_get_visible_images(pool: PgPool) {
-        let request = PersistentRequestData { pool };
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
         let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         let client_id = Uuid::parse_str("c51d2d81-3547-4f07-af58-ed613c6ece67").unwrap();
 
@@ -506,7 +536,10 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "image", "rating"))]
     async fn test_get_personal_rating(pool: PgPool) {
-        let request = PersistentRequestData { pool };
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
         let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         let client_id = Uuid::parse_str("c51d2d81-3547-4f07-af58-ed613c6ece67").unwrap();
 
@@ -524,7 +557,10 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "image", "rating"))]
     async fn test_get_personal_upvote(pool: PgPool) {
-        let request = PersistentRequestData { pool };
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
         let client_id = Uuid::parse_str("c51d2d81-3547-4f07-af58-ed613c6ece67").unwrap();
 
@@ -547,7 +583,10 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "image", "rating"))]
     async fn test_get_personal_downvote(pool: PgPool) {
-        let request = PersistentRequestData { pool };
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
         let client_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
 
@@ -570,7 +609,10 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "additive"))]
     async fn test_get_additives(pool: PgPool) {
-        let request = PersistentRequestData { pool };
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
         let food_ids = [
             "f7337122-b018-48ad-b420-6202dc3cb4ff",
             "73cf367b-a536-4b49-ad0c-cb984caa9a08",
@@ -602,7 +644,10 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "allergen"))]
     async fn test_get_allergens(pool: PgPool) {
-        let request = PersistentRequestData { pool };
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
         let food_ids = [
             "f7337122-b018-48ad-b420-6202dc3cb4ff",
             "73cf367b-a536-4b49-ad0c-cb984caa9a08",

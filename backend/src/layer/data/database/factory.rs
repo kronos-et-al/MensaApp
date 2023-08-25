@@ -12,11 +12,14 @@ use super::{
 pub struct DatabaseInfo {
     /// Connection string to database of format `postgres://<username>:<password>@<host>:<port>/<database>`.
     pub connection: String,
+    /// Number of weeks, including the current we /get meal plan data for.
+    pub max_weeks_data: u32,
 }
 
 /// This class is responsible for instantiating the database access implementations classes.
 pub struct DataAccessFactory {
     pool: Pool<Postgres>,
+    pub max_weeks_data: u32,
 }
 
 const MAX_DB_CONNECTIONS: u32 = 20;
@@ -27,19 +30,22 @@ impl DataAccessFactory {
     /// If wished, database migrations can be applied to create the wanted relations.
     /// # Errors
     /// if a migrations should, but could not run
+    /// if the connection to the database could not be established
     pub async fn new(info: DatabaseInfo, should_migrate: bool) -> Result<Self> {
         let pool = PgPoolOptions::new()
             .max_connections(MAX_DB_CONNECTIONS)
             .connect(&info.connection)
-            .await
-            .expect("cannot connect to database");
+            .await?;
 
         if should_migrate {
             sqlx::migrate!().run(&pool).await?;
             info!("Successfully run database migrations");
         }
 
-        Ok(Self { pool })
+        Ok(Self {
+            pool,
+            max_weeks_data: info.max_weeks_data,
+        })
     }
 
     /// Returns a object for accessing database requests for api commands.
@@ -71,6 +77,7 @@ impl DataAccessFactory {
     pub fn get_request_data_access(&self) -> PersistentRequestData {
         PersistentRequestData {
             pool: self.pool.clone(),
+            max_weeks_data: self.max_weeks_data,
         }
     }
 }
@@ -95,6 +102,7 @@ mod tests {
 
         let info = DatabaseInfo {
             connection: connection.clone(),
+            max_weeks_data: 4,
         };
         let factory = DataAccessFactory::new(info, true)
             .await
