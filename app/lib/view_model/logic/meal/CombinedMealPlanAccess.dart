@@ -158,6 +158,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   Future<Result<List<MealPlan>, MealPlanException>> getMealPlan() async {
     await _doneInitialization;
 
+    await _updateFavorites();
     await _filterMealPlans();
 
     // no data for date
@@ -664,8 +665,11 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     for (final mealPlan in _mealPlans) {
       for (final meal in mealPlan.meals) {
-        if (favorites.map((favorite) => favorite.meal.id).contains(meal.id)) {
+        if (favorites.any((favorite) => favorite.meal.id == meal.id)) {
           meal.setFavorite();
+          changed = true;
+        } else {
+          meal.deleteFavorite();
           changed = true;
         }
       }
