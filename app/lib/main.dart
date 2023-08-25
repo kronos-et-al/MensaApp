@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
-import 'package:app/model/api_server/config.dart';
 import 'package:app/model/database/SQLiteDatabaseAccess.dart';
 import 'package:app/model/local_storage/SharedPreferenceAccess.dart';
 import 'package:app/view/core/MainPage.dart';
@@ -19,6 +18,7 @@ import 'package:app/view_model/repository/interface/ILocalStorage.dart';
 import 'package:app/view_model/repository/interface/IServerAccess.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +26,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 /// The main function of the app.
-void main() {
+void main() async {
+  await dotenv.load(fileName: ".env");
   final FlutterI18nDelegate delegate = FlutterI18nDelegate(
     translationLoader: NamespaceFileTranslationLoader(namespaces: [
       "common",
@@ -89,7 +90,7 @@ class MensaApp extends StatelessWidget {
           ILocalStorage sharedPreferencesAccess =
               SharedPreferenceAccess(sharedPreferences.requireData);
           IDatabaseAccess db = SQLiteDatabaseAccess();
-          IServerAccess api = GraphQlServerAccess(testServer, testApiKey,
+          IServerAccess api = GraphQlServerAccess(dotenv.env["API_URL"] ?? "", dotenv.env["API_KEY"] ?? "",
               sharedPreferencesAccess.getClientIdentifier() ?? "");
           return MultiProvider(
               providers: [
