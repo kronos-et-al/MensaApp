@@ -544,7 +544,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       }
     }
 
-    final price = meal.price.getPrice(_priceCategory);
+    final price = meal.price.getPrice(_preferences.getPriceCategory() ?? PriceCategory.student);
 
     // check price
     if (_filter.price < price) {
