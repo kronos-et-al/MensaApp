@@ -10,7 +10,7 @@ use crate::interface::{
     persistent_data::{model::Image, DataError, ImageReviewDataAccess},
 };
 
-pub type ReviewerResult<T> = std::result::Result<T, ReviewerError>;
+pub type ReviewerResult<T> = Result<T, ReviewerError>;
 
 /// Enum describing the possible ways, the image review can fail.
 #[derive(Debug, Error)]
@@ -85,7 +85,7 @@ where
         let images = join_all(images.into_iter().map(|image| self.review_image(image))).await;
         images
             .into_iter()
-            .filter_map(std::result::Result::err)
+            .filter_map(Result::err)
             .for_each(|error| warn!("Error reviewing image: {error}"));
     }
 
@@ -109,8 +109,6 @@ where
 
 #[cfg(test)]
 mod test {
-    use tracing_test::traced_test;
-
     use crate::{
         interface::{image_review::ImageReviewScheduling, persistent_data::model::Image},
         layer::logic::image_review::{
@@ -128,7 +126,7 @@ mod test {
     };
 
     #[tokio::test]
-    #[traced_test]
+    #[tracing_test::traced_test]
     async fn test_start_image_review() {
         let image_reviewer = ImageReviewer::new(
             ImageReviewDatabaseMock::default(),
@@ -146,14 +144,14 @@ mod test {
     async fn test_full_review() {
         let image_reviewer = get_image_reviewer();
         assert!(image_reviewer.try_start_image_review().await.is_ok());
-        assert!(image_reviewer.data_access.get_images_for_date_calls() == 1);
-        assert!(
+        assert_eq!(image_reviewer.data_access.get_images_for_date_calls(), 1);
+        assert_eq!(
             image_reviewer
                 .data_access
-                .get_unvalidated_images_for_next_week_calls()
-                == 1
+                .get_unvalidated_images_for_next_week_calls(),
+            1
         );
-        assert!(image_reviewer.data_access.get_old_images_calls() == 1);
+        assert_eq!(image_reviewer.data_access.get_old_images_calls(), 1);
     }
 
     #[tokio::test]
@@ -220,9 +218,18 @@ mod test {
         exp_delete_calls: u32,
         exp_check_calls: u32,
     ) {
-        assert!(image_reviewer.image_hoster.get_existence_calls() == exp_existence_calls);
-        assert!(image_reviewer.data_access.get_delete_image_calls() == exp_delete_calls);
-        assert!(image_reviewer.data_access.get_mark_as_checked_calls() == exp_check_calls);
+        assert_eq!(
+            image_reviewer.image_hoster.get_existence_calls(),
+            exp_existence_calls
+        );
+        assert_eq!(
+            image_reviewer.data_access.get_delete_image_calls(),
+            exp_delete_calls
+        );
+        assert_eq!(
+            image_reviewer.data_access.get_mark_as_checked_calls(),
+            exp_check_calls
+        );
     }
 
     fn get_image_reviewer() -> ImageReviewer<ImageReviewDatabaseMock, ImageHosterMock> {
