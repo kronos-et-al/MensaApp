@@ -10,7 +10,7 @@ use std::{
 };
 
 use async_graphql::{
-    extensions::Tracing,
+    extensions::{Tracing, ApolloTracing},
     http::{playground_source, GraphQLPlaygroundConfig},
     EmptySubscription, Schema,
 };
@@ -155,6 +155,7 @@ pub(super) fn construct_schema(
         .data(data_access_box)
         .data(command_box)
         .extension(Tracing)
+        .extension(ApolloTracing)
         .finish()
 }
 
