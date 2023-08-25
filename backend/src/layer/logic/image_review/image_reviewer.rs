@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use chrono::Local;
 use futures::future::join_all;
 use thiserror::Error;
-use tracing::{info, warn};
+use tracing::{error, info, warn};
 
 use crate::interface::{
     image_hoster::{ImageHoster, ImageHosterError},
@@ -40,7 +40,7 @@ where
 {
     async fn start_image_review(&self) {
         if let Err(error) = self.try_start_image_review().await {
-            warn!("Error reviewing images: {error}");
+            error!("Error reviewing images: {error}");
         }
     }
 }

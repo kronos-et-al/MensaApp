@@ -22,7 +22,7 @@ const DEFAULT_BASE_URL: &str = "https://www.sw-ka.de/de/hochschulgastronomie/spe
 const DEFAULT_UPDATE_PARSE_SCHEDULE: &str = "0 */15 10-15 * * *";
 const DEFAULT_NIGHTLY_SCHEDULE: &str = "0 0 2 * * *";
 const DEFAULT_LOG_CONFIG: &str = "warn,mensa_app_backend=info";
-const DEFAULT_USER_AGENT: &str = "MensaKa 0.1";
+const DEFAULT_USER_AGENT: &str = concat!("MensaKa ", env!("CARGO_PKG_VERSION"));
 const DEFAULT_CLIENT_TIMEOUT: u64 = 6000;
 const DEFAULT_HTTP_PORT: u16 = 80;
 const DEFAULT_SMTP_PORT: u16 = 465;
