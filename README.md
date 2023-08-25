@@ -12,8 +12,7 @@ menu information in university catering facilities.**
 
 The goal of this application is to provide easy access to the meal plans of the canteens of the [Studierendenwerk Karlsruhe](https://www.sw-ka.de/de/hochschulgastronomie/speiseplan) providing an Android-App (iOS is also planned) and a GraphQL API.
 
-<img src="doc/img/gallery_view.png" alt="gallery view" width=25%/><img src="doc/img/detail_view.png" alt="meal detail view" width=25%/><img src="doc/img/favorites.png" alt="favorites" width=25%/><img src="doc/img/list_view.png" alt="list view" width=25%/>
-<!-- TODO more and better images -->
+<img src="doc/img/gallery_view.png" alt="gallery view" width=25%/><img src="doc/img/list_view.png" alt="list view" width=25%/><img src="doc/img/favorites.png" alt="favorites" width=25%/><img src="doc/img/detail_view.png" alt="meal detail view" width=25%/>
 
 ## Features
 - Access meal plans for all canteens of the Studierendenwerk Karlsruhe in Karlsruhe and Pforzheim (Germany)
