@@ -30,6 +30,9 @@ impl DataAccessFactory {
     /// If wished, database migrations can be applied to create the wanted relations.
     /// # Errors
     /// if a migrations should, but could not run
+    ///
+    /// # Panics
+    /// if the connection to the database could not be established
     pub async fn new(info: DatabaseInfo, should_migrate: bool) -> Result<Self> {
         let pool = PgPoolOptions::new()
             .max_connections(MAX_DB_CONNECTIONS)

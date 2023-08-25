@@ -16,6 +16,10 @@ pub struct MensaParseMock {
 }
 
 impl MensaParseMock {
+    /// A function to get the number of calls to the function of the same name
+    ///
+    /// # Panics
+    /// if the mutex could not be acquired
     #[must_use]
     pub fn get_update_calls(&self) -> u32 {
         *self
@@ -24,6 +28,10 @@ impl MensaParseMock {
             .expect("failed to lock mutex for `update_calls` counter")
     }
 
+    /// A function to get the number of calls to the function of the same name
+    ///
+    /// # Panics
+    /// if the mutex could not be acquired
     #[must_use]
     pub fn get_full_calls(&self) -> u32 {
         *self
@@ -65,6 +73,10 @@ pub struct ImageReviewMock {
 }
 
 impl ImageReviewMock {
+    /// A function to get the number of calls to the function of the same name
+    ///
+    /// # Panics
+    /// if the mutex could not be acquired
     #[must_use]
     pub fn get_calls(&self) -> u32 {
         *self
