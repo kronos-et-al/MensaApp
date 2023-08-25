@@ -1,4 +1,3 @@
-use crate::layer::trigger::graphql::util::TRACE_MUTATION_MESSAGE;
 use crate::util::{ReportReason, Uuid};
 use async_graphql::{Context, Object, Result};
 use tracing::{instrument, trace};
@@ -28,7 +27,7 @@ impl MutationRoot {
         #[graphql(desc = "Id of the meal to link an image to.")] meal_id: Uuid,
         #[graphql(desc = "Flickr url to the image.")] image_url: String,
     ) -> Result<bool> {
-        trace!(TRACE_MUTATION_MESSAGE);
+        trace!("Mutated `addImage`");
         let command = ctx.get_command();
         let auth_info = ctx.get_auth_info();
 
@@ -47,7 +46,7 @@ impl MutationRoot {
         #[graphql(desc = "Id of the meal to rate to.")] meal_id: Uuid,
         #[graphql(desc = "The new rating of the main dish.")] rating: u32,
     ) -> Result<bool> {
-        trace!(TRACE_MUTATION_MESSAGE);
+        trace!("Mutated `setRating`");
         let command = ctx.get_command();
         let auth_info = ctx.get_auth_info();
 
@@ -65,7 +64,7 @@ impl MutationRoot {
         ctx: &Context<'_>,
         #[graphql(desc = "Id of the image to add the upvote to.")] image_id: Uuid,
     ) -> Result<bool> {
-        trace!(TRACE_MUTATION_MESSAGE);
+        trace!("Mutated `addUpvote`");
         let command = ctx.get_command();
         let auth_info = ctx.get_auth_info();
 
@@ -83,7 +82,7 @@ impl MutationRoot {
         ctx: &Context<'_>,
         #[graphql(desc = "Id of the image to remove the upvote from.")] image_id: Uuid,
     ) -> Result<bool> {
-        trace!(TRACE_MUTATION_MESSAGE);
+        trace!("Mutated `removeUpvote`");
         let command = ctx.get_command();
         let auth_info = ctx.get_auth_info();
 
@@ -101,7 +100,7 @@ impl MutationRoot {
         ctx: &Context<'_>,
         #[graphql(desc = "Id of the image to add the downvote to.")] image_id: Uuid,
     ) -> Result<bool> {
-        trace!(TRACE_MUTATION_MESSAGE);
+        trace!("Mutated `addDownvote`");
         let command = ctx.get_command();
         let auth_info = ctx.get_auth_info();
 
@@ -119,7 +118,7 @@ impl MutationRoot {
         ctx: &Context<'_>,
         #[graphql(desc = "Id of the image to remove the downvote from.")] image_id: Uuid,
     ) -> Result<bool> {
-        trace!(TRACE_MUTATION_MESSAGE);
+        trace!("Mutated `removeDownvote`");
         let command = ctx.get_command();
         let auth_info = ctx.get_auth_info();
 
@@ -138,7 +137,7 @@ impl MutationRoot {
         #[graphql(desc = "Id of the image to report.")] image_id: Uuid,
         #[graphql(desc = "The reason for reporting the image.")] reason: ReportReason,
     ) -> Result<bool> {
-        trace!(TRACE_MUTATION_MESSAGE);
+        trace!("Mutated `reportImage`");
         let command = ctx.get_command();
         let auth_info = ctx.get_auth_info();
 

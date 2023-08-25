@@ -181,10 +181,7 @@ impl HTMLParser {
             )));
         }
         // Here we have two vectors of the same length: One containing Date and one containing ParseCanteen. In order to get one containing tuples of both we use zip()
-        Ok(dates
-            .into_iter()
-            .zip(canteen_for_all_days.into_iter())
-            .collect())
+        Ok(dates.into_iter().zip(canteen_for_all_days).collect())
     }
 
     fn get_root_node(document: &Html) -> Result<ElementRef, ParseError> {

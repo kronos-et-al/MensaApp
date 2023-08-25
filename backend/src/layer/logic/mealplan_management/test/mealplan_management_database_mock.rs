@@ -32,6 +32,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     async fn get_similar_meal(
         &self,
         _similar_name: &str,
+        _meal_type: MealType,
         _allergens: &[Allergen],
         _additives: &[Additive],
     ) -> Result<Option<Uuid>> {
@@ -41,6 +42,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     async fn get_similar_side(
         &self,
         _similar_name: &str,
+        _meal_type: MealType,
         _allergens: &[Allergen],
         _additives: &[Additive],
     ) -> Result<Option<Uuid>> {

@@ -9,7 +9,10 @@ pub fn print_help() {
         "{}",
         "==================================================".bright_black()
     );
-    println!("{}", "   MensaApp Backend v0.1 🥘  ".green());
+    println!(
+        "{}",
+        format!("   MensaApp Backend v{} 🥘  ", env!("CARGO_PKG_VERSION")).green()
+    );
     println!(
         "{}",
         "==================================================".bright_black()
@@ -17,9 +20,12 @@ pub fn print_help() {
     println!("This binary runs the backend to for the mensa app,");
     println!("including a graphql server.");
     println!("For more information, ");
-    println!("see https://github.com/kronos-et-al/MensaApp");
+    println!("see {}", env!("CARGO_PKG_REPOSITORY"));
     println!();
-    println!("{}", "Licensed under the MIT license.".italic());
+    println!(
+        "{}",
+        format!("Licensed under the {} license.", env!("CARGO_PKG_LICENSE")).italic()
+    );
     println!();
     println!();
     println!("{}", "Available commands:".blue());
