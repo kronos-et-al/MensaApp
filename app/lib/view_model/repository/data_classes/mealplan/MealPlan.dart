@@ -48,15 +48,6 @@ class MealPlan {
   /// Returns the meals of the meal plan.
   List<Meal> get meals => _meals;
 
-  /// Returns the date, the line and if the line is closed on the date of the meal plan as a map.
-  Map<String, dynamic> toMap() {
-    return {
-      'date': _date,
-      'lineID': _line.id,
-      'isClosed': _isClosed,
-    };
-  }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

@@ -1,5 +1,4 @@
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
-import 'package:app/model/api_server/config.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
@@ -10,6 +9,8 @@ import 'package:app/view_model/repository/data_classes/settings/ReportCategory.d
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
+
+import 'config.dart';
 
 void main() async {
   final GraphQlServerAccess serverAccess = GraphQlServerAccess(
@@ -63,7 +64,7 @@ void main() async {
             name: "Best meal",
             foodType: FoodType.vegetarian,
             price: Price(student: 1, employee: 23, pupil: 5, guest: 15)));
-    expect(deleted, true);
+    expect(deleted is Success, true);
   });
 
   test('report image', () async {
@@ -98,7 +99,7 @@ void main() async {
     var result = await serverAccess.updateAll();
 
     var _ = switch (result) {
-      Success(value: final _) => true, // TODO
+      Success(value: final _) => true,
       Failure(exception: final exception) => expect(exception.toString(), ""),
     };
   });
@@ -109,7 +110,7 @@ void main() async {
         DateTime(2020, 11, 1));
 
     var _ = switch (result) {
-      Success(value: final _) => true, //TODO
+      Success(value: final _) => true,
       Failure(exception: final exception) => expect(exception.toString(), ""),
     };
   });
@@ -131,7 +132,7 @@ void main() async {
         DateTime(2020, 11, 2));
 
     var _ = switch (result) {
-      Success(value: final _) => true, // TODO better testing?
+      Success(value: final _) => true,
       Failure(exception: final exception) =>
         expect(exception, true, reason: "exception while request"),
     };

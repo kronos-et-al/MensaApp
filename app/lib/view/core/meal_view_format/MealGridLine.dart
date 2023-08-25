@@ -30,6 +30,7 @@ class MealGridLine extends StatelessWidget {
                       .map((e) => MealGridEntry(
                             meal: e,
                             line: _mealPlan.line,
+                            date: _mealPlan.date,
                             width: constraints.maxWidth * 0.9,
                           ))
                       .toList(),

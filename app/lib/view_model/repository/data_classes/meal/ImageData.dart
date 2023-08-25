@@ -3,13 +3,13 @@ class ImageData {
   final String _id;
   final String _url;
   final double _imageRank;
-  final int _positiveRating;
-  final int _negativeRating;
+  int _positiveRating;
+  int _negativeRating;
 
   int _individualRating;
 
   /// This constructor creates an image with the committed values.
-  /// 
+  ///
   /// The required values are the [id], [url], [imageRank] and the number of positive and negative ratings of the image.
   ImageData({
     required String id,
@@ -44,26 +44,37 @@ class ImageData {
   /// Returns the id of the image.
   String get id => _id;
 
-  /// Sets the value of [_individualRating] to the value of an upvote.
-  void upvote() {
-    _individualRating = 1;
+  /// This method sets the individual rating.
+  set individualRating(int value) {
+    if(value != _individualRating) {
+      if(value == 1) {
+        _positiveRating++;
+        if(_individualRating == -1) {
+          _negativeRating--;
+        }
+      } else if(value == -1) {
+        _negativeRating++;
+        if(_individualRating == 1) {
+          _positiveRating--;
+        }
+      } else {
+        if(_individualRating == 1) {
+          _positiveRating--;
+        } else if(_individualRating == -1) {
+          _negativeRating--;
+        }
+      }
+    }
+    _individualRating = value;
   }
 
-  /// Sets the value of [_individualRating] to the value of a downvote.
-  void downvote() {
-    _individualRating = -1;
-  }
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ImageData &&
+          runtimeType == other.runtimeType &&
+          _id == other._id;
 
-  /// Sets the value of [_individualRating] to the value of no vote.
-  void deleteRating() {
-    _individualRating = 0;
-  }
-
-  /// Returns the information that are stored in a map.
-  Map<String, dynamic> toMap() {
-    return {
-      'imageID': _id,
-      'url': _url,
-    };
-  }
+  @override
+  int get hashCode => _id.hashCode;
 }

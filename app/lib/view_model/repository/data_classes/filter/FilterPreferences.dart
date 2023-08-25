@@ -118,10 +118,9 @@ class FilterPreferences {
     _frequency = [Frequency.newMeal];
   }
 
-  // todo wollen wir hier auch neue Gerichte?
-  /// Sets the frequency so only rare meals are shown.
+  /// only rare meals are to be shown
   setRareFrequency() {
-    _frequency = [Frequency.rare];
+    _frequency = [Frequency.rare, Frequency.newMeal];
   }
 
   /// Sets the frequency so all meals are shown.

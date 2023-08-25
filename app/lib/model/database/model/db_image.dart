@@ -49,7 +49,7 @@ class DBImage implements DatabaseModel {
       columnImageRank: _imageRank,
       columnPositiveRating: _positiveRating,
       columnNegativeRating: _negativeRating,
-      columnIndividualRating: _negativeRating
+      columnIndividualRating: _individualRating
     };
   }
 

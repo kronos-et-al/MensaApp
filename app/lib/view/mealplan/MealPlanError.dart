@@ -28,8 +28,9 @@ class MealPlanError extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     MensaButton(
+                        semanticLabel: FlutterI18n.translate(
+                            context, "semantics.mealPlanRefresh"),
                         onPressed: () async {
-                          // Mach das einfach als lokale Variable
                           final temporalMessage =
                               await mealAccess.refreshMealplan() ?? "";
                           if (!context.mounted) return;

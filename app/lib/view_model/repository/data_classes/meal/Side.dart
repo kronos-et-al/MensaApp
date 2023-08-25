@@ -49,38 +49,7 @@ class Side {
   /// Returns the id of the side.
   String get id => _id;
 
-  /// Returns all attributes needed for the database.
-  Map<String, dynamic> toMap() {
-    return {
-      'sideID': _id,
-      'mealID': 0, // TODO implement mealID
-      'name': _name,
-      'foodType': _foodType,
-      ..._price.toMap(),
-    };
-  }
-
-  /// Returns the additives as a map.
-  List<Map<String, dynamic>> additiveToMap() {
-    return _additives
-        .map((additive) => {
-              'sideID': _id,
-              'additive': additive,
-            })
-        .toList();
-  }
-
-  /// Returns the allerens as a map.
-  List<Map<String, dynamic>> allergenToMap() {
-    return _allergens
-        .map((allergen) => {
-              'sideID': _id,
-              'allergen': allergen,
-            })
-        .toList();
-  }
-
-  /// Returns the name of the side.
+  /// This method returns the name of the side.
   String get name => _name;
 
   /// Returns the food type of the side.

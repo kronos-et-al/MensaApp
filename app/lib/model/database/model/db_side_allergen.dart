@@ -22,12 +22,12 @@ class DBSideAllergen implements DatabaseModel {
 
   @override
   Map<String, dynamic> toMap() {
-    return {columnSideID: _sideID, columnAllergen: _allergen};
+    return {columnSideID: _sideID, columnAllergen: _allergen.name};
   }
 
   /// Creates a new instance of a side allergen from a map.
   static DBSideAllergen fromMap(Map<String, dynamic> map) {
-    return DBSideAllergen(map[columnSideID], map[columnAllergen]);
+    return DBSideAllergen(map[columnSideID], Allergen.values.byName(map[columnAllergen]));
   }
 
   /// The string to create a table for an allergen of a side.

@@ -1,19 +1,26 @@
 {
   "reportImageTitle": "Bild melden",
-  "reportDescription": "Bitte gib an, warum das Bild entfernt werder sollte.",
+  "reportDescription": "Bitte gib an, warum das Bild entfernt werden sollte.",
   "reportSelectReson": "Grund wählen",
   "reportButton": "Bild melden",
+  "newImageButton": "Bild hinzufügen",
 
   "linkImageTitle": "Bild hochladen",
   "linkDescription": "Bitte befolge die folgenden Schirtte, um ein Bild hinzufügen zu können.",
   "linkFirstPoint": "1. Bild bei ",
   "linkFirstLink": "Flickr",
   "linkFirstPointSecondText": " hochladen",
-  "linkSecondPoint": "2. Bild unter Creative Commonce-Lizenz hochladen",
+  "linkSecondPoint": "2. Bild unter \"No known copyright restrictions\", \"Public Domain Dedication (CC0)\" oder \"Public Domain Mark\" Lizenz hochladen",
   "linkThirdPoint": "3. Link zu Bild kopieren",
   "linkFourthPoint": "Link unten einfügen",
   "linkTextFieldDescription": "Flickr Link zu Bild",
   "linkSmallTextOwnImages": "Es dürfen nur eigene Bilder hochgeladen werden.",
   "linkSmallTextDisplayed": "Die hochgeladenen Bilder werden anderen Nutzern angezeigt.",
-  "linkButton": "Hochladen"
+  "linkButton": "Hochladen",
+
+  "loadingError": "Bild konnte nicht geladen werden",
+
+  "uploadException": {
+    "noMeal": "Fehler beim Laden"
+  }
 }

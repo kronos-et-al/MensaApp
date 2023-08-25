@@ -43,7 +43,7 @@ class RatingsOverview extends StatelessWidget {
             const SizedBox(height: 4),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               MensaRatingInput(
-                value: _meal.averageRating ?? 0,
+                value: _meal.averageRating,
                 onChanged: (p0) => {},
                 disabled: true,
                 color: Theme.of(context).colorScheme.onSurface,

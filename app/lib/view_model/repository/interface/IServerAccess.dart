@@ -1,5 +1,6 @@
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
+import 'package:app/view_model/repository/error_handling/ImageUploadException.dart';
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
 
 import '../data_classes/meal/ImageData.dart';
@@ -28,7 +29,7 @@ abstract class IServerAccess {
 
   /// This method link the committed url to the committed image.
   /// Returns 'true' if the linking was uploaded successfully, otherwise 'false'.
-  Future<bool> linkImage(String url, Meal meal);
+  Future<Result<bool, ImageUploadException>> linkImage(String url, Meal meal);
 
   /// This method adds an upvote to an image.
   /// Returns 'true' if the rating was updated successfully, otherwise 'false'.

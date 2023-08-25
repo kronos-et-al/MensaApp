@@ -33,7 +33,7 @@ class DBMealPlan implements DatabaseModel {
       columnMealPlanID: _mealPlanID,
       columnLineID: _lineID,
       columnDate: _date,
-      columnIsClosed: _isClosed
+      columnIsClosed: _isClosed ? 1 : 0
     };
   }
 
@@ -47,12 +47,12 @@ class DBMealPlan implements DatabaseModel {
   static String initTable() {
     return '''
     CREATE TABLE $tableName (
-      $columnMealPlanID TEXT NOT NULL,
+      $columnMealPlanID TEXT PRIMARY KEY NOT NULL,
       $columnLineID TEXT NOT NULL,
       $columnDate TEXT,
-      $columnIsClosed BOOLEAN NOT NULL,
+      $columnIsClosed NUMBER NOT NULL,
       FOREIGN KEY($columnLineID) REFERENCES ${DBLine.tableName}(${DBLine.columnLineID}),
-      PRIMARY KEY($columnMealPlanID, $columnDate)
+      UNIQUE($columnLineID, $columnDate)
     )
   ''';
   }

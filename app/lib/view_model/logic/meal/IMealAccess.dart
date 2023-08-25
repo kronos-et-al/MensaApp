@@ -1,6 +1,7 @@
 import 'package:app/view_model/repository/data_classes/filter/FilterPreferences.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
+import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../repository/data_classes/meal/Meal.dart';
@@ -15,11 +16,10 @@ abstract class IMealAccess with ChangeNotifier {
   /// Return the meal plan of the committed date of the committed canteen or an [MealPlanException].
   Future<Result<List<MealPlan>, MealPlanException>> getMealPlan();
 
-  /// This method returns the meal with the committed id form the database.
-  /// If the requested data is not stored there, the data is requested from the server.
+  /// This method returns the meal with the committed id form the database or current mealplan.
   ///
-  /// Returns the meal with the committed id or an [Exception]
-  Future<Result<Meal, Exception>> getWholeFavorite(String id);
+  /// /// Returns the meal with the committed id or an [NoMealException]
+  Future<Result<Meal, NoMealException>> getMeal(Meal meal);
 
   /// This method updates all meal plans of the committed date of the committed canteen.
   /// It returns a string that should be displayed in a temporal message or null if no string should be displayed.
@@ -30,7 +30,7 @@ abstract class IMealAccess with ChangeNotifier {
   /// This method updates the rating of the committed meal on the server.
   /// Returns a non empty string that should be displayed in a temporal message,
   /// or a null, saying that nothing should be printed.
-  Future<String> updateMealRating(int rating, Meal meal);
+  Future<bool> updateMealRating(int rating, Meal meal);
 
   /// Returns the currently selected [FilterPreferences].
   Future<FilterPreferences> getFilterPreferences();
@@ -68,4 +68,7 @@ abstract class IMealAccess with ChangeNotifier {
 
   /// Toggle the activity of a filter.
   Future<void> toggleFilter();
+
+  /// Returns true if the filter is active.
+  Future<bool> isFilterActive();
 }

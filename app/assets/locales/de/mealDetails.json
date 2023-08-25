@@ -1,0 +1,6 @@
+{
+  "lastServed": "Zuletzt angeboten am {lastServed}",
+  "nextServed": "Wird wieder angeboten am {nextServed}",
+  "frequency": "Wurde in den letzten drei Monaten {frequency}-Mal angeboten"
+
+}

@@ -17,12 +17,4 @@ class Canteen {
 
   /// Returns the name of the canteen.
   String get name => _name;
-
-  /// Returns all attributes as a map.
-  Map<String, dynamic> toMap() {
-    return {
-      'canteenID': _id,
-      'name': _name,
-    };
-  }
 }
