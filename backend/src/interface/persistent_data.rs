@@ -5,13 +5,14 @@ use crate::interface::persistent_data::model::{ApiKey, Canteen, Image, Line, Mea
 use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason, Uuid};
 use async_trait::async_trait;
 use sqlx::migrate::MigrateError;
+use std::collections::HashMap;
 use std::num::TryFromIntError;
 use thiserror::Error;
 
 pub type Result<T> = std::result::Result<T, DataError>;
 
 /// Enumerations for possible data request faults
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Clone)]
 pub enum DataError {
     /// Requested data does not exist
     #[error("the requested item could not be found in the database")]
@@ -230,4 +231,53 @@ pub trait RequestDataAccess {
     async fn get_additives(&self, food_id: Uuid) -> Result<Vec<Additive>>;
     /// Returns all allergens related to the given food_id (food_id can be a meal_id or side_id).
     async fn get_allergens(&self, food_id: Uuid) -> Result<Vec<Allergen>>;
+
+    // ---- vectorized versions
+
+    /// Returns the canteen from the database.
+    async fn get_canteen_multi(&self, id: &[Uuid]) -> Result<HashMap<Uuid, Option<Canteen>>> {
+        todo!()
+    }
+    /// Returns all canteens from the database.
+    async fn get_canteens_multi(&self) -> Result<HashMap<Uuid, Vec<Canteen>>> { todo!() }
+    /// Returns the line from the database.
+    async fn get_line_multi(&self, id: &[Uuid]) -> Result<HashMap<Uuid, Option<Line>>> { todo!() }
+    /// Returns all lines of a canteen from the database.
+    async fn get_lines_multi(&self, canteen_id: &[Uuid]) -> Result<HashMap<Uuid, Vec<Line>>> { todo!() }
+    /// Returns the meal related to all the params.
+    async fn get_meal_multi(
+        &self,
+        meal_line_date: &[(Uuid, Uuid, Date)],
+    ) -> Result<HashMap<(Uuid, Uuid, Date), Option<Meal>>> { todo!() }
+    /// Returns all meals related to all the params. Null is returned when there is not any information available yet.
+    async fn get_meals_multi(
+        &self,
+        line_date: &[(Uuid, Date)],
+    ) -> Result<HashMap<(Uuid, Date), Option<Vec<Meal>>>> { todo!() }
+    /// Returns all sides of a line at the given day from the database.
+    async fn get_sides_multi(&self, line_date: &[(Uuid, Date)]) -> Result<HashMap<(Uuid, Date), Vec<Side>>> { todo!() }
+    /// Returns all images, which are related to the given user or meal. Images reported by the user will not be returned.
+    async fn get_visible_images_multi(
+        &self,
+        meal_client: &[(Uuid, Option<Uuid>)],
+    ) -> Result<HashMap<(Uuid, Option<Uuid>), Vec<Image>>> { todo!() }
+    /// Returns the rating done by the given user for the given meal.
+    async fn get_personal_rating_multi(
+        &self,
+        meal_client: &[(Uuid, Uuid)],
+    ) -> Result<HashMap<(Uuid, Uuid), Option<u32>>> { todo!() }
+    /// Checks if the given image got an upvote by the given user
+    async fn get_personal_upvote_multi(
+        &self,
+        image_client: &[(Uuid, Uuid)],
+    ) -> Result<HashMap<(Uuid, Uuid), bool>> { todo!() }
+    /// Checks if the given image got an downvote by the given user
+    async fn get_personal_downvote_multi(
+        &self,
+        image_client: &[(Uuid, Uuid)],
+    ) -> Result<HashMap<(Uuid, Uuid), bool>> { todo!() }
+    /// Returns all additives related to the given food_id (food_id can be a meal_id or side_id).
+    async fn get_additives_multi(&self, food_id: Uuid) -> Result<HashMap<Uuid, Vec<Additive>>> { todo!() }
+    /// Returns all allergens related to the given food_id (food_id can be a meal_id or side_id).
+    async fn get_allergens_multi(&self, food_id: Uuid) -> Result<HashMap<Uuid, Vec<Allergen>>> { todo!() }
 }
