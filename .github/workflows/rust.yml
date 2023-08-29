@@ -125,8 +125,9 @@ jobs:
         cargo install sqlx-cli --no-default-features --features native-tls,postgres
         cargo sqlx database setup
     - name: Check docs
-      run: RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
+      run: RUSTDOCFLAGS="-D warnings" cargo test --doc
     - name: Check prepared sql query information
       run: cargo sqlx prepare --check
+    - uses: taiki-e/install-action@nextest
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo nextest run
