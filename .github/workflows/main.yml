@@ -25,6 +25,8 @@ jobs:
         distribution: 'zulu'
         java-version: '11'
     - uses: subosito/flutter-action@v2
+      with:
+        cache: true
     - run: flutter upgrade
     - run: flutter pub get
     - run: flutter test
