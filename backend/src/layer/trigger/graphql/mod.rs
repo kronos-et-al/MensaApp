@@ -6,5 +6,6 @@ pub mod query;
 pub mod server;
 mod types;
 pub mod util;
+pub mod dataloader;
 
 mod tests;

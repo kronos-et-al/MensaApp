@@ -12,7 +12,7 @@ use std::{
 use async_graphql::{
     extensions::{Tracing, ApolloTracing},
     http::{playground_source, GraphQLPlaygroundConfig},
-    EmptySubscription, Schema,
+    EmptySubscription, Schema, dataloader::DataLoader,
 };
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
@@ -33,7 +33,7 @@ use crate::interface::{
 use super::{
     mutation::MutationRoot,
     query::QueryRoot,
-    util::{read_auth_from_header, CommandBox, DataBox},
+    util::{read_auth_from_header, CommandBox, DataBox}, dataloader::CanteenDataLoader,
 };
 
 type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
@@ -148,11 +148,12 @@ pub(super) fn construct_schema(
     data_access: impl RequestDataAccess + Sync + Send + 'static,
     command: impl Command + Sync + Send + 'static,
 ) -> GraphQLSchema {
-    let data_access_box: DataBox = Box::new(data_access);
+    // let data_access_box: DataBox = Box::new(data_access);
     let command_box: CommandBox = Box::new(command);
 
     Schema::build(QueryRoot, MutationRoot, EmptySubscription)
-        .data(data_access_box)
+        // .data(data_access_box)
+        .data(DataLoader::new(CanteenDataLoader::new(data_access), tokio::spawn))
         .data(command_box)
         .extension(Tracing)
         .extension(ApolloTracing)

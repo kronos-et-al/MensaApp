@@ -14,7 +14,7 @@ pub struct ApiKey {
 }
 
 /// Struct for database-operations. Related to the database entity 'canteen'.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Canteen {
     /// Identification of the canteen
     pub id: Uuid,

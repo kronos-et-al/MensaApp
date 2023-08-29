@@ -7,6 +7,7 @@ use async_trait::async_trait;
 use sqlx::migrate::MigrateError;
 use std::collections::HashMap;
 use std::num::TryFromIntError;
+use std::sync::Arc;
 use thiserror::Error;
 
 pub type Result<T> = std::result::Result<T, DataError>;
@@ -19,7 +20,7 @@ pub enum DataError {
     NoSuchItem,
     /// Error occurred during data request or an internal connection fault.
     #[error("internal error ocurred: {0}")]
-    InternalError(#[from] sqlx::Error),
+    InternalError(Arc<sqlx::Error>),
     /// Failed to convert integers.
     #[error("error converting type: {0}")]
     TypeConversionError(#[from] TryFromIntError),
@@ -28,7 +29,19 @@ pub enum DataError {
     UnexpectedNullError(String),
     /// Database migration could not be run.
     #[error("error while running database migration: {0}")]
-    MigrateError(#[from] MigrateError),
+    MigrateError(Arc<MigrateError>),
+}
+
+impl From<sqlx::Error> for DataError {
+    fn from(value: sqlx::Error) -> Self {
+        Self::InternalError(Arc::new(value))
+    }
+}
+
+impl From<MigrateError> for DataError {
+    fn from(value: MigrateError) -> Self {
+        Self::MigrateError(Arc::new(value))
+    }
 }
 
 /// Extracts a value from an option by returning an [`DataError::UnexpectedNullError`] using [`std::ops::Try`] (`?`).
@@ -200,7 +213,7 @@ pub trait CommandDataAccess: Sync + Send {
 
 #[async_trait]
 /// An interface for graphql query data. The GraphQL component uses this interface for database access.
-pub trait RequestDataAccess {
+pub trait RequestDataAccess: Send + Sync {
     /// Returns the canteen from the database.
     async fn get_canteen(&self, id: Uuid) -> Result<Option<Canteen>>;
     /// Returns all canteens from the database.
@@ -238,8 +251,6 @@ pub trait RequestDataAccess {
     async fn get_canteen_multi(&self, id: &[Uuid]) -> Result<HashMap<Uuid, Option<Canteen>>> {
         todo!()
     }
-    /// Returns all canteens from the database.
-    async fn get_canteens_multi(&self) -> Result<HashMap<Uuid, Vec<Canteen>>> { todo!() }
     /// Returns the line from the database.
     async fn get_line_multi(&self, id: &[Uuid]) -> Result<HashMap<Uuid, Option<Line>>> { todo!() }
     /// Returns all lines of a canteen from the database.

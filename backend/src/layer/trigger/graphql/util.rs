@@ -1,4 +1,4 @@
-use async_graphql::Context;
+use async_graphql::{Context, dataloader::DataLoader};
 
 use crate::{
     interface::{
@@ -9,22 +9,29 @@ use crate::{
 };
 use base64::{engine::general_purpose, Engine};
 
+use super::dataloader::CanteenDataLoader;
+
 pub type DataBox = Box<dyn RequestDataAccess + Sync + Send + 'static>;
 pub type CommandBox = Box<dyn Command + Sync + Send + 'static>;
 
 pub trait ApiUtil {
     fn get_command(&self) -> &(dyn Command + Sync + Send);
     fn get_data_access(&self) -> &(dyn RequestDataAccess + Sync + Send);
+    fn get_canteen_loader(&self) -> &DataLoader<CanteenDataLoader>;
     fn get_auth_info(&self) -> AuthInfo;
 }
 
 impl<'a> ApiUtil for Context<'a> {
-    fn get_command(&self) -> &'a (dyn Command + Sync + Send) {
+    fn get_command(&self) -> &(dyn Command + Sync + Send) {
         self.data_unchecked::<CommandBox>().as_ref()
     }
 
-    fn get_data_access(&self) -> &'a (dyn RequestDataAccess + Sync + Send) {
+    fn get_data_access(&self) -> &(dyn RequestDataAccess + Sync + Send) {
         self.data_unchecked::<DataBox>().as_ref()
+    }
+    
+    fn get_canteen_loader(&self) -> &DataLoader<CanteenDataLoader> {
+        self.data_unchecked::<DataLoader<CanteenDataLoader>>()
     }
 
     fn get_auth_info(&self) -> AuthInfo {

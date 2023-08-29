@@ -19,10 +19,18 @@ impl QueryRoot {
     #[instrument(skip(self, ctx))]
     async fn get_canteens(&self, ctx: &Context<'_>) -> Result<Vec<Canteen>> {
         trace!("Queried `getCanteens`");
-        let data = ctx.get_data_access();
-        let canteens = data
-            .get_canteens()
+        // let data = ctx.get_data_access();
+        // let canteens = data
+        //     .get_canteens()
+        //     .await?
+        //     .into_iter()
+        //     .map(Into::into)
+        //     .collect();
+        let canteens = ctx
+            .get_canteen_loader()
+            .load_one(())
             .await?
+            .ok_or("data could not be loaded")? // todo better error
             .into_iter()
             .map(Into::into)
             .collect();
@@ -38,9 +46,16 @@ impl QueryRoot {
         #[graphql(desc = "Id of the canteen to get.")] canteen_id: Uuid,
     ) -> Result<Option<Canteen>> {
         trace!("Queried `getCanteen`");
-        let data = ctx.get_data_access();
-        let canteen = data.get_canteen(canteen_id).await?.map(Into::into);
-        Ok(canteen)
+        // let data = ctx.get_data_access();
+        // let canteen = data.get_canteen(canteen_id).await?.map(Into::into);
+        // Ok(canteen)
+        let x = ctx
+            .get_canteen_loader()
+            .load_one(canteen_id)
+            .await?
+            .unwrap_or(None)  // todo handle this case, when id is not valid at only _one_ place!
+            .map(Into::into);
+        Ok(x)
     }
 
     /// This query returns the main dish (including its price and sides) identified by the specified ID, the line and the date.

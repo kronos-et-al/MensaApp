@@ -6,7 +6,7 @@ use tracing::instrument;
 
 use super::line::Line;
 
-#[derive(SimpleObject, Debug)]
+#[derive(SimpleObject, Debug, Clone)]
 #[graphql(complex)]
 pub struct Canteen {
     /// The id of the canteen.

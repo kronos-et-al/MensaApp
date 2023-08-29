@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use async_trait::async_trait;
 use chrono::{Duration, Local};
 use sqlx::{Pool, Postgres};
@@ -302,6 +304,24 @@ impl RequestDataAccess for PersistentRequestData {
         .fetch_all(&self.pool)
         .await?;
         Ok(res)
+    }
+
+    // --- multi ---
+
+    async fn get_canteen_multi(&self, id: &[Uuid]) -> Result<HashMap<Uuid, Option<Canteen>>> {
+        let x: HashMap<_, _> = sqlx::query_as!(
+            Canteen,
+            "SELECT canteen_id as id, name FROM canteen WHERE canteen_id = ANY ($1)",
+            id
+        )
+        .fetch_all(&self.pool)
+        .await?
+        .into_iter()
+        .map(|c| (c.id, Some(c)))
+        .collect();
+
+        // todo when id has no canteen, a None entry should be in the HashMap 
+        Ok(x)
     }
 }
 
