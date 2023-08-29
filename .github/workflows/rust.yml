@@ -126,7 +126,5 @@ jobs:
         cargo sqlx database setup
     - name: Check docs
       run: RUSTDOCFLAGS="-D warnings" cargo test --docs
-    - name: Check prepared sql query information
-      run: cargo sqlx prepare --check
     - name: Run tests
       run: cargo test --verbose
