@@ -59,21 +59,16 @@ jobs:
       run: |
         cargo install sqlx-cli --no-default-features --features native-tls,postgres
         cargo sqlx database setup
-    - name: Check docs
-      run: RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
-    - name: Check linter warnings
-      run: | 
-          rustup component add clippy
-          cargo clippy --all-targets -- -D warnings
     - name: Check prepared sql query information
       run: cargo sqlx prepare --check
     - name: Build
       run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+    - name: Check linter warnings
+      run: | 
+          rustup component add clippy
+          cargo clippy --all-targets -- -D warnings
 
-  test:
-    name:                       coverage
+  coverage:
     runs-on:                    ubuntu-latest
     defaults:
       run:
@@ -116,3 +111,42 @@ jobs:
           token:                ${{secrets.CODECOV_TOKEN}}
           fail_ci_if_error:     true
 
+
+  test:
+    runs-on: ubuntu-latest
+    container: rust:latest
+    defaults:
+      run:
+        working-directory: ./backend
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    - name: Setup database
+      run: |
+        cargo install sqlx-cli --no-default-features --features native-tls,postgres
+        cargo sqlx database setup
+    - name: Check docs
+      run: RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
+    - name: Check prepared sql query information
+      run: cargo sqlx prepare --check
+    - name: Run tests
+      run: cargo test --verbose
