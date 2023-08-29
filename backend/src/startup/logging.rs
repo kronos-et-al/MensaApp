@@ -10,7 +10,10 @@ pub struct LogInfo {
 pub struct Logger;
 
 impl Logger {
-    // Initializes the logger.
+    /// Initializes the logger.
+    ///
+    /// # Panics
+    /// if the logging config could not be read from the .env file or if the subscriber could not be set
     pub fn init(info: LogInfo) {
         let env_filter = EnvFilter::builder()
             .parse(info.log_config)

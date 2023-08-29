@@ -1,4 +1,3 @@
-
 import 'package:app/model/local_storage/SharedPreferenceAccess.dart';
 import 'package:app/view_model/repository/data_classes/filter/FilterPreferences.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
@@ -9,7 +8,10 @@ import 'package:app/view_model/repository/data_classes/settings/MealPlanFormat.d
 import 'package:app/view_model/repository/data_classes/settings/MensaColorScheme.dart';
 import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'mocks/SharedPreferencesMock.dart';
 
 /// This class tests the shared preferences access.
 Future<void> main() async {
@@ -17,7 +19,10 @@ Future<void> main() async {
   final Map<String, Object> values = <String, Object>{'counter': 1};
   SharedPreferences.setMockInitialValues(values);
 
+  SharedPreferencesMock mock = SharedPreferencesMock();
+
   SharedPreferenceAccess pref = SharedPreferenceAccess(await SharedPreferences.getInstance());
+  SharedPreferenceAccess prefMock = SharedPreferenceAccess(mock);
 
   FilterPreferences filter = FilterPreferences(
       categories: [FoodType.vegetarian, FoodType.vegan],
@@ -31,45 +36,73 @@ Future<void> main() async {
   );
   late FilterPreferences filterResult;
 
+  group("empty preferences", () {
+    test("id", () {
+      when(() => mock.getString('clientIdentifier')).thenReturn(null);
+      when(() => mock.setString('clientIdentifier', any())).thenAnswer((_) async => true);
+      prefMock.getClientIdentifier();
+
+      verify(() => mock.setString('clientIdentifier', any())).called(1);
+    });
+
+    test("color scheme", () {
+      when(() => mock.getString('colorScheme')).thenReturn(null);
+
+      expect(prefMock.getColorScheme(), MensaColorScheme.system);
+    });
+
+    test("price category", () {
+      when(() => mock.getString('priceCategory')).thenReturn(null);
+
+      expect(prefMock.getPriceCategory(), PriceCategory.student);
+    });
+
+    test("meal plan format", () {
+      when(() => mock.getString('mealPlanFormat')).thenReturn(null);
+
+      expect(prefMock.getMealPlanFormat(), MealPlanFormat.grid);
+    });
+  });
+
   /// This method tests the access to the client identifier.
   test('Client Identifier Test', () async {
     String id = "test";
     pref.setClientIdentifier(id);
-    expect(await pref.getClientIdentifier(), id);
+    expect(pref.getClientIdentifier(), id);
   });
 
   /// This method test the access to the meal plan format.
   test('Meal Plan Format Test', () async {
     MealPlanFormat format = MealPlanFormat.list;
     pref.setMealPlanFormat(format);
-    expect(await pref.getMealPlanFormat(), format);
+    expect(pref.getMealPlanFormat(), format);
   });
 
   /// This method tests the access to the color scheme.
   test('Color Scheme Test', () async {
     MensaColorScheme scheme = MensaColorScheme.light;
     pref.setColorScheme(scheme);
-    expect(await pref.getColorScheme(), scheme);
+    expect(pref.getColorScheme(), scheme);
   });
 
   /// This method tests the access to the price category.
   test('Price Category Test', () async {
     PriceCategory category = PriceCategory.employee;
     pref.setPriceCategory(category);
-    expect(await pref.getPriceCategory(), category);
+    expect(pref.getPriceCategory(), category);
   });
 
   /// This method tests the access to the canteen.
   test('Canteen Test', () async {
     String canteen = "test";
     pref.setCanteen(canteen);
-    expect(await pref.getCanteen(), canteen);
+    expect(pref.getCanteen(), canteen);
   });
 
   /// This method prepares the access to the filter preferences.
   setUp(() async {
     pref.setFilterPreferences(filter);
-    filterResult = await pref.getFilterPreferences() ?? FilterPreferences();
+    filterResult = pref.getFilterPreferences() ?? FilterPreferences();
   });
 
   /// This group tests the access to the filter preferences

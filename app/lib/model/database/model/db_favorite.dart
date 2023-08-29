@@ -1,14 +1,13 @@
 import 'package:app/model/database/model/database_model.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 
-import 'db_line.dart';
-
 /// This class represents a favorite in the database.
 class DBFavorite implements DatabaseModel {
-  final String _favoriteID;
-  final String _lineID;
+  final String _mealID;
   final String _lastDate;
   final FoodType _foodType;
+  final DateTime _servedDate;
+  final String _servedLineId;
   final int _priceStudent;
   final int _priceEmployee;
   final int _pricePupil;
@@ -18,10 +17,7 @@ class DBFavorite implements DatabaseModel {
   static const String tableName = 'favorite';
 
   /// The name of the column for the favorite id.
-  static const String columnFavoriteID = 'favoriteID';
-
-  /// The name of the column for the line id.
-  static const String columnLineID = 'lineID';
+  static const String columnMealID = 'mealID';
 
   /// The name of the column for the last date.
   static const String columnLastDate = 'lastDate';
@@ -41,102 +37,94 @@ class DBFavorite implements DatabaseModel {
   /// The name of the column for the price for guests.
   static const String columnPriceGuest = 'priceGuest';
 
+  /// The name of the column for the served date.
+  static const String columnServedDate = 'servedDate';
+
+  /// The name of the column for the served line id.
+  static const String columnServedLineId = 'servedLineId';
+
   /// Creates a new instance of a favorite.
-  /// @param _favoriteID The id of the favorite.
-  /// @param _lineID The id of the line.
-  /// @param _lastDate The last date of the favorite.
-  /// @param _foodType The food type of the favorite.
-  /// @param _priceStudent The price for students.
-  /// @param _priceEmployee The price for employees.
-  /// @param _pricePupil The price for pupils.
-  /// @param _priceGuest The price for guests.
-  /// @returns A new instance of a favorite.
   DBFavorite(
-      this._favoriteID,
-      this._lineID,
+      this._mealID,
       this._lastDate,
       this._foodType,
       this._priceStudent,
       this._priceEmployee,
       this._pricePupil,
-      this._priceGuest);
+      this._priceGuest,
+      this._servedDate,
+      this._servedLineId);
 
   @override
   Map<String, dynamic> toMap() {
     return {
-      columnFavoriteID: _favoriteID,
-      columnLineID: _lineID,
+      columnMealID: _mealID,
       columnLastDate: _lastDate,
       columnFoodType: _foodType.name,
       columnPriceStudent: _priceStudent,
       columnPriceEmployee: _priceEmployee,
       columnPricePupil: _pricePupil,
-      columnPriceGuest: _priceGuest
+      columnPriceGuest: _priceGuest,
+      columnServedDate: _servedDate.toIso8601String(),
+      columnServedLineId: _servedLineId
     };
   }
 
   /// Creates a favorite from a map.
-  /// @param map The map to create a favorite from.
-  /// @returns A new instance of a favorite.
   static DBFavorite fromMap(Map<String, dynamic> map) {
     return DBFavorite(
-        map[columnFavoriteID],
-        map[columnLineID],
+        map[columnMealID],
         map[columnLastDate],
         FoodType.values.byName(map[columnFoodType]),
         map[columnPriceStudent],
         map[columnPriceEmployee],
         map[columnPricePupil],
-        map[columnPriceGuest]);
+        map[columnPriceGuest],
+        DateTime.parse(map[columnServedDate]),
+        map[columnServedLineId]);
   }
 
-  /// The string to create a table for a favorite.
-  /// @returns The string to create a table for a favorite.
+  /// Returns a string to create a table for a favorite.
   static String initTable() {
     return '''
     CREATE TABLE $tableName (
-      $columnFavoriteID TEXT PRIMARY KEY,
-      $columnLineID TEXT NOT NULL,
+      $columnMealID TEXT PRIMARY KEY,
       $columnLastDate TEXT NOT NULL,
       $columnFoodType TEXT,
       $columnPriceStudent INTEGER CHECK($columnPriceStudent > 0),
       $columnPriceEmployee INTEGER CHECK($columnPriceEmployee > 0),
       $columnPricePupil INTEGER CHECK($columnPricePupil > 0),
       $columnPriceGuest INTEGER CHECK($columnPriceGuest > 0),
-      FOREIGN KEY($columnLineID) REFERENCES ${DBLine.tableName}(${DBLine.columnLineID})
+      $columnServedDate TEXT NOT NULL,
+      $columnServedLineId TEXT NOT NULL
     )
   ''';
   }
 
   /// This method returns the price for guests.
-  /// @returns The price for guests.
   int get priceGuest => _priceGuest;
 
   /// This method returns the price for pupils.
-  /// @returns The price for pupils.
   int get pricePupil => _pricePupil;
 
   /// This method returns the price for employees.
-  /// @returns The price for employees.
   int get priceEmployee => _priceEmployee;
 
   /// This method returns the price for students.
-  /// @returns The price for students.
   int get priceStudent => _priceStudent;
 
   /// This method returns the food type of the favorite.
-  /// @returns The food type of the favorite.
   FoodType get foodType => _foodType;
 
   /// This method returns the last date of the favorite.
-  /// @returns The last date of the favorite.
   String get lastDate => _lastDate;
 
-  /// This method returns the id of the line.
-  /// @returns The id of the line.
-  String get lineID => _lineID;
-
   /// This method returns the id of the favorite.
-  /// @returns The id of the favorite.
-  String get favoriteID => _favoriteID;
+  String get mealID => _mealID;
+
+  /// This method returns the served date of the favorite.
+  DateTime get servedDate => _servedDate;
+
+  /// This method returns the served line id of the favorite.
+  String get servedLineId => _servedLineId;
 }

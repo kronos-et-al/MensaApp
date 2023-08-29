@@ -7,9 +7,6 @@ class MealListLine extends StatelessWidget {
   final MealPlan _mealPlan;
 
   /// Creates a MealListLine.
-  /// @param mealPlan The MealPlan to display.
-  /// @param key The key to use for this widget.
-  /// @return A MealListLine.
   const MealListLine({super.key, required MealPlan mealPlan})
       : _mealPlan = mealPlan;
 
@@ -32,6 +29,7 @@ class MealListLine extends StatelessWidget {
             return MealListEntry(
               meal: _mealPlan.meals[index],
               line: _mealPlan.line,
+              date: _mealPlan.date,
             );
           },
         ),

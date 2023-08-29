@@ -3,8 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'IAllergenIcon.dart';
 
-/// This widget is used to display the icon for Molluscs
+/// This widget is used to display the icon for molluscs
 class AllergenMolluscsIcon extends IAllergenIcon {
+  /// Creates an new molluscs icon.
   const AllergenMolluscsIcon(
       {super.key, super.width, super.height, super.color});
 

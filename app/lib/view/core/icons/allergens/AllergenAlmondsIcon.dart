@@ -3,8 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'IAllergenIcon.dart';
 
-/// This widget is used to display the icon for Almonds
+/// This widget is used to display the icon for almonds
 class AllergenAlmondsIcon extends IAllergenIcon {
+  /// Creates an new almond icon.
   const AllergenAlmondsIcon(
       {super.key, super.width, super.height, super.color});
 

@@ -4,6 +4,7 @@ import 'package:app/view/core/selection_components/MensaDropdown.dart';
 import 'package:app/view/core/selection_components/MensaDropdownEntry.dart';
 import 'package:app/view_model/logic/image/IImageAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
+import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
@@ -12,13 +13,13 @@ import 'package:provider/provider.dart';
 /// This widget is used to display the report dialog for an image.
 class ImageReportDialog extends StatefulWidget {
   final ImageData _image;
+  final Meal _meal;
 
   /// Creates a new image report dialog.
-  /// @param key The key to identify this widget.
-  /// @param image The image to report.
-  /// @return a widget that displays the report dialog for an image
-  const ImageReportDialog({super.key, required ImageData image})
-      : _image = image;
+  const ImageReportDialog(
+      {super.key, required ImageData image, required Meal meal})
+      : _image = image,
+        _meal = meal;
 
   @override
   State<StatefulWidget> createState() => _ImageReportState();
@@ -65,19 +66,36 @@ class _ImageReportState extends State<ImageReportDialog> {
               children: [
                 const Spacer(),
                 MensaButton(
+                  semanticLabel: FlutterI18n.translate(context, "semantics.imageSubmitReport"),
                     onPressed: () async {
-                      var temporalMessage = await context
+                      var result = await context
                           .read<IImageAccess>()
-                          .reportImage(widget._image, _reason);
+                          .reportImage(widget._meal, widget._image, _reason);
                       if (!context.mounted) return;
                       Navigator.pop(context);
 
-                      if (temporalMessage.isNotEmpty) {
+                      if (result) {
                         final snackBar = SnackBar(
                           content: Text(
-                              FlutterI18n.translate(context, temporalMessage)),
+                            FlutterI18n.translate(
+                                context, "snackbar.reportImageSuccess"),
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary),
+                          ),
                           backgroundColor:
-                              Theme.of(context).colorScheme.onError,
+                              Theme.of(context).colorScheme.primary,
+                        );
+
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else {
+                        final snackBar = SnackBar(
+                          content: Text(
+                            FlutterI18n.translate(
+                                context, "snackbar.reportImageError"),
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onError),
+                          ),
+                          backgroundColor: Theme.of(context).colorScheme.error,
                         );
 
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);

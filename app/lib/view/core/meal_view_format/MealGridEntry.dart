@@ -10,18 +10,20 @@ import 'package:flutter/material.dart';
 /// Displays a Meal as a Gallery Entry.
 class MealGridEntry extends StatelessWidget {
   final Meal _meal;
-  final Line? _line;
+  final Line _line;
+  final DateTime _date;
   final double _width;
 
   /// Creates a MealGridEntry.
-  /// @param meal The Meal to display.
-  /// @param width The width of the entry.
-  /// @param key The key to use for this widget.
-  /// @return A MealGridEntry.
   const MealGridEntry(
-      {super.key, required Meal meal, Line? line, required double width})
+      {super.key,
+      required Meal meal,
+      required Line line,
+      required DateTime date,
+      required double width})
       : _meal = meal,
         _line = line,
+        _date = date,
         _width = width;
 
   @override
@@ -36,11 +38,12 @@ class MealGridEntry extends StatelessWidget {
                           builder: (context) => DetailsPage(
                                 meal: _meal,
                                 line: _line,
+                                date: _date,
                               )))
                     },
                 child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(10),
                     color: Theme.of(context).colorScheme.surface,
                     border: Border.all(
                         color: _meal.isFavorite
@@ -58,27 +61,28 @@ class MealGridEntry extends StatelessWidget {
                                   builder: (context) => DetailsPage(
                                         meal: _meal,
                                         line: _line,
+                                        date: _date,
                                       )))
                             },
                         borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(8),
                             topRight: Radius.circular(8))),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     MealMainEntry(meal: _meal),
                     Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: Row(children: [
-                          SizedBox(width: 32),
+                          const SizedBox(width: 32),
                           MensaRatingInput(
                             disabled: true,
                             onChanged: (v) {},
-                            value: _meal.averageRating ?? 0,
+                            value: _meal.averageRating,
                             size: 20,
                             color: Theme.of(context).colorScheme.onSurface,
                           )
                         ])),
                     Padding(
-                        padding: EdgeInsets.symmetric(vertical: 4),
+                        padding: const EdgeInsets.symmetric(vertical: 4),
                         child: Column(
                           children: _meal.sides
                                   ?.map((e) => MealSideEntry(side: e))

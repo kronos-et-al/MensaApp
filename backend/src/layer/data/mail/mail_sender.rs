@@ -12,7 +12,7 @@ use crate::{
 };
 
 use string_template::Template;
-use tracing::{info, warn};
+use tracing::{error, info};
 
 pub type MailResult<T> = std::result::Result<T, MailError>;
 
@@ -43,7 +43,7 @@ pub struct MailSender {
 impl AdminNotification for MailSender {
     async fn notify_admin_image_report(&self, info: ImageReportInfo) {
         if let Err(error) = self.try_notify_admin_image_report(&info) {
-            warn!("Error notifying administrator: {error}");
+            error!("Error notifying administrator: {error}");
         }
     }
 }
@@ -74,8 +74,8 @@ impl MailSender {
             .body(report)?;
         self.mailer.send(&email)?;
         info!(
-            "Notified administrators about image report for image with id {} at {}",
-            info.image_id, info.image_link
+            ?info,
+            "Notified administrators about image report for image with id {}", info.image_id,
         );
         Ok(())
     }
@@ -91,8 +91,8 @@ impl MailSender {
     }
 
     fn get_report(info: &ImageReportInfo) -> String {
-        let info_array_map: [(&str, &dyn ToString); 8] = [
-            ("image_link", &info.image_link),
+        let info_array_map = [
+            ("image_link", &info.image_link as &dyn ToString),
             ("image_id", &info.image_id),
             ("report_count", &info.report_count),
             ("reason", &info.reason),
@@ -100,6 +100,9 @@ impl MailSender {
             ("positive_rating_count", &info.positive_rating_count),
             ("negative_rating_count", &info.negative_rating_count),
             ("get_image_rank", &info.get_image_rank),
+            ("report_barrier", &info.report_barrier),
+            ("client_id", &info.client_id),
+            ("image_age", &info.image_age),
         ];
 
         let info_map = info_array_map
@@ -171,6 +174,18 @@ mod test {
             report.contains(info.get_image_rank.to_string().as_str()),
             "the template must contain all of the information from the report info"
         );
+        assert!(
+            report.contains(info.report_barrier.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(info.client_id.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(info.image_age.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
     }
 
     #[tokio::test]
@@ -211,6 +226,9 @@ mod test {
             positive_rating_count: 10,
             negative_rating_count: 20,
             get_image_rank: 1.0,
+            report_barrier: 1,
+            client_id: Uuid::default(),
+            image_age: 1,
         }
     }
 

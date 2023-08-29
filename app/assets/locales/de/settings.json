@@ -3,9 +3,11 @@
   "priceCategory": "Preiskategorie",
   "about": "Über die App",
   "version": "Softwareversion:",
-  "licence": "Diese Software ist unter MIT Lizenz Open Source verfügbar.",
+  "licence": "Der Quellcode der App ist unter der MIT-Lizenz verfügbar.",
   "gitHubLink": "Auf Github ansehen",
   "legalInformation": "Rechtliche Informationen",
   "privacyPolicy": "Datenschutzerklärung",
-  "contactDetails": "Kontakt"
+  "contactDetails": "Kontakt",
+  "clientID": "Client ID: {clientID}",
+  "snackBarCopiedToClipboard": "In die Zwischenablage kopiert"
 }

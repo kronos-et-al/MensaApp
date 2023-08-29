@@ -6,7 +6,7 @@ use crate::layer::logic::mealplan_management::relation_resolver::RelationResolve
 use crate::util::Date;
 use async_trait::async_trait;
 use chrono::Local;
-use tracing::{trace, warn};
+use tracing::{error, trace, warn};
 
 pub struct MealPlanManager<Parser, DataAccess>
 where
@@ -57,7 +57,7 @@ where
                 self.start_resolving(parse_canteens, today).await;
             }
             Err(error) => {
-                warn!("canteens parsed with error and can't be resolved: {error}");
+                error!("canteens parsed with error and can't be resolved: {error}");
             }
         }
     }
@@ -74,7 +74,7 @@ where
                 }
             }
             Err(error) => {
-                warn!("canteens parsed with error and can't be resolved: {error}");
+                error!("canteens parsed with error and can't be resolved: {error}");
             }
         }
     }

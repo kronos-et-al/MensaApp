@@ -2,28 +2,29 @@ import 'package:app/view/core/icons/MealIcon.dart';
 import 'package:app/view/core/information_display/MealPreviewImage.dart';
 import 'package:app/view/core/input_components/MensaRatingInput.dart';
 import 'package:app/view/detail_view/DetailsPage.dart';
+import 'package:app/view_model/logic/preference/IPreferenceAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
-import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 /// Displays a Meal as a List Entry.
 class MealListEntry extends StatelessWidget {
   final Meal _meal;
-  final Line? _line;
+  final Line _line;
+  final DateTime _date;
 
   // TODO use locale
   final NumberFormat _priceFormat =
       NumberFormat.currency(locale: 'de_DE', symbol: '€');
 
   /// Creates a MealListEntry.
-  /// @param meal The Meal to display.
-  /// @param key The key to use for this widget.
-  /// @return A MealListEntry.flutter
-  MealListEntry({super.key, required Meal meal, Line? line})
+  MealListEntry(
+      {super.key, required Meal meal, required Line line, required DateTime date})
       : _meal = meal,
-        _line = line;
+        _line = line,
+        _date = date;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +36,7 @@ class MealListEntry extends StatelessWidget {
                     builder: (context) => DetailsPage(
                       meal: _meal,
                       line: _line,
+                      date: _date,
                     ),
                   ))
                 },
@@ -52,9 +54,13 @@ class MealListEntry extends StatelessWidget {
                         height: 86,
                         width: 86,
                         onImagePressed: () => {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => DetailsPage(meal: _meal, line: _line,)))
-                        },
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => DetailsPage(
+                                        meal: _meal,
+                                        line: _line,
+                                        date: _date,
+                                      )))
+                            },
                         displayFavorite: true,
                         borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(8),
@@ -90,15 +96,19 @@ class MealListEntry extends StatelessWidget {
                                   MensaRatingInput(
                                     size: 20,
                                     onChanged: (v) => {},
-                                    value: _meal.averageRating ?? 0,
+                                    value: _meal.averageRating,
                                     disabled: true,
                                     color:
                                         Theme.of(context).colorScheme.onSurface,
                                   ),
                                   const Spacer(),
-                                  Text(_priceFormat.format(_meal.price
-                                          .getPrice(PriceCategory.student) /
-                                      100)),
+                                  Consumer<IPreferenceAccess>(
+                                      builder: (context, prefs, child) {
+                                    return Text(_priceFormat.format(_meal.price
+                                            .getPrice(
+                                                prefs.getPriceCategory()) /
+                                        100));
+                                  }),
                                 ]),
                               ],
                             )))

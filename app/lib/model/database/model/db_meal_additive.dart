@@ -17,10 +17,7 @@ class DBMealAdditive implements DatabaseModel {
   /// The name of the column for the additive.
   static const String columnAdditive = 'additive';
 
-  /// Creates a new instance of a meal additive.
-  /// @param _mealID The id of the meal.
-  /// @param _additive The additive of the meal.
-  /// @returns A new instance of a meal additive.
+  /// Creates a new instance of a meal additive as it is represented in the database.
   DBMealAdditive(this._mealID, this._additive);
 
   @override
@@ -29,14 +26,11 @@ class DBMealAdditive implements DatabaseModel {
   }
 
   /// Creates a new instance of a meal additive from a map.
-  /// @param map The map to create the instance from.
-  /// @returns A new instance of a meal additive.
   static DBMealAdditive fromMap(Map<String, dynamic> map) {
-    return DBMealAdditive(map[columnMealID], map[columnAdditive]);
+    return DBMealAdditive(map[columnMealID], Additive.values.byName(map[columnAdditive]));
   }
 
   /// The string to create a table for an additive of a meal.
-  /// @returns The string to create a table for an additive of a meal.
   static String initTable() {
     return '''
     CREATE TABLE $tableName (
@@ -48,11 +42,9 @@ class DBMealAdditive implements DatabaseModel {
   ''';
   }
 
-  /// This method returns the additive of the meal.
-  /// @returns The additive of the meal.
+  /// Returns the additive of the meal.
   Additive get additive => _additive;
 
-  /// This method returns the id of the meal.
-  /// @returns The id of the meal.
+  /// Returns the id of the meal.
   String get mealID => _mealID;
 }

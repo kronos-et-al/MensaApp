@@ -11,9 +11,6 @@ class RatingsOverview extends StatelessWidget {
   final Color? _backgroundColor;
 
   /// Creates a new RatingsOverview.
-  /// @param key The key to identify this widget.
-  /// @param meal The meal to display the ratings for.
-  /// @return A new RatingsOverview.
   RatingsOverview({super.key, required Meal meal, Color? backgroundColor})
       : _meal = meal,
         _backgroundColor = backgroundColor;
@@ -46,7 +43,7 @@ class RatingsOverview extends StatelessWidget {
             const SizedBox(height: 4),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               MensaRatingInput(
-                value: _meal.averageRating ?? 0,
+                value: _meal.averageRating,
                 onChanged: (p0) => {},
                 disabled: true,
                 color: Theme.of(context).colorScheme.onSurface,

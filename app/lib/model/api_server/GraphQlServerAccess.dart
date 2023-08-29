@@ -19,6 +19,7 @@ import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
+import 'package:app/view_model/repository/error_handling/ImageUploadException.dart';
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
 import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 
@@ -41,6 +42,10 @@ class GraphQlServerAccess implements IServerAccess {
 
   GraphQlServerAccess._(this._clientId, String server, this._apiKey) {
     _client = GraphQLClient(
+        defaultPolicies: DefaultPolicies(
+          query: Policies(fetch: FetchPolicy.networkOnly),
+          mutate: Policies(fetch: FetchPolicy.networkOnly),
+        ),
         link: AuthLink(getToken: () => _currentAuth).concat(HttpLink(server)),
         cache: GraphQLCache());
     _authenticate(""); // provide default authentication with client id
@@ -50,11 +55,6 @@ class GraphQlServerAccess implements IServerAccess {
   /// To connect to the server, its address has to be provided as `address`.
   /// To authenticate commands to the server, an api key has also to be specified.
   /// The client identifier is necessary to request user specific information from the server.
-  ///
-  /// @param address the address of the server
-  /// @param apiKey the api key to authenticate commands to the server
-  /// @param clientId the client identifier to request user specific information from the server
-  /// @return an instance of the server access class
   factory GraphQlServerAccess(String address, String apiKey, String clientId) {
     return GraphQlServerAccess._(clientId, address, apiKey);
   }
@@ -117,7 +117,7 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   @override
-  Future<bool> linkImage(String url, Meal meal) async {
+  Future<Result<bool, ImageUploadException>> linkImage(String url, Meal meal) async {
     const requestName = "addImage";
     final hash = _generateHashOfParameters(
         requestName, [..._serializeUuid(meal.id), ..._serializeString(url)]);
@@ -126,8 +126,15 @@ class GraphQlServerAccess implements IServerAccess {
     final result = await _client.mutate$LinkImage(Options$Mutation$LinkImage(
         variables:
             Variables$Mutation$LinkImage(imageUrl: url, mealId: meal.id)));
-
-    return result.parsedData?.addImage ?? false;
+    if (result.hasException) {
+      if (result.exception!.linkException != null) {
+        return Failure(ImageUploadException("Verbindungsfehler"));
+      } else if (result.exception!.graphqlErrors.isNotEmpty) {
+        return Failure(ImageUploadException(result.exception!.graphqlErrors[0].message));
+      }
+      return Failure(ImageUploadException("Unbekannter Fehler"));
+    }
+    return Success(result.parsedData?.addImage ?? false);
   }
 
   @override
@@ -179,6 +186,7 @@ class GraphQlServerAccess implements IServerAccess {
       final date = today.add(Duration(days: offset));
       final result = await _client.query$GetMealPlanForDay(
           Options$Query$GetMealPlanForDay(
+            fetchPolicy: FetchPolicy.networkOnly,
               variables: Variables$Query$GetMealPlanForDay(
                   date: _dateFormat.format(date))));
 
@@ -206,6 +214,7 @@ class GraphQlServerAccess implements IServerAccess {
   Future<Result<Meal, Exception>> getMeal(
       Meal meal, Line line, DateTime date) async {
     final result = await _client.query$GetMeal(Options$Query$GetMeal(
+      fetchPolicy: FetchPolicy.networkOnly,
         variables: Variables$Query$GetMeal(
             date: _dateFormat.format(date), mealId: meal.id, lineId: line.id)));
 
@@ -227,6 +236,7 @@ class GraphQlServerAccess implements IServerAccess {
       Canteen canteen, DateTime date) async {
     final result = await _client.query$GetCanteenDate(
         Options$Query$GetCanteenDate(
+          fetchPolicy: FetchPolicy.networkOnly,
             variables: Variables$Query$GetCanteenDate(
                 canteenId: canteen.id, date: _dateFormat.format(date))));
 
@@ -371,6 +381,7 @@ Meal _convertMeal(Fragment$mealInfo meal) {
     numberOfRatings: meal.ratings.ratingsCount,
     lastServed: _convertDate(meal.statistics.lastServed),
     nextServed: _convertDate(meal.statistics.nextServed),
+    numberOfOccurance: meal.statistics.frequency,
     relativeFrequency: _specifyFrequency(meal.statistics),
     images: meal.images.map((e) => _convertImage(e)).toList(),
     sides: meal.sides.map((e) => _convertSide(e)).toList(),

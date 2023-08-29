@@ -12,11 +12,9 @@ class MealRatingDialog extends StatefulWidget {
   final Meal _meal;
 
   /// Creates a new MealRatingDialog.
-  /// @param key The key to identify this widget.
-  /// @param meal The meal to rate.
-  const MealRatingDialog({Key? key, required Meal meal})
-      : _meal = meal,
-        super(key: key);
+  const MealRatingDialog(
+      {super.key, required Meal meal, Function(Meal)? onRatingChanged})
+      : _meal = meal;
 
   @override
   State<MealRatingDialog> createState() => _MealRatingDialogState();
@@ -28,7 +26,7 @@ class _MealRatingDialogState extends State<MealRatingDialog> {
   @override
   Widget build(BuildContext context) {
     Meal meal = widget._meal;
-    rating = rating ?? meal.individualRating ?? 0;
+    rating = rating ?? meal.individualRating;
     return MensaDialog(
         title:
             "${meal.name} ${FlutterI18n.translate(context, "ratings.dialogTitle")}",
@@ -52,25 +50,43 @@ class _MealRatingDialogState extends State<MealRatingDialog> {
               children: [
                 const Spacer(),
                 MensaButton(
+                    semanticLabel: FlutterI18n.translate(
+                        context, "semantics.mealRatingSubmit"),
                     onPressed: () async {
-                      final temporalMessage =
+                      final result =
                           await context.read<IMealAccess>().updateMealRating(
                                 rating!,
                                 meal,
                               );
                       if (!context.mounted) return;
-                      Navigator.pop(context);
 
-                      if (temporalMessage.isNotEmpty) {
+                      if (result) {
                         final snackBar = SnackBar(
-                          content: Text(
-                              FlutterI18n.translate(context, temporalMessage)),
-                          backgroundColor:
-                              Theme.of(context).colorScheme.onError,
-                        );
+                            content: Text(
+                              FlutterI18n.translate(
+                                  context, "snackbar.updateRatingSuccess"),
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary),
+                            ),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary);
+
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else {
+                        final snackBar = SnackBar(
+                            content: Text(
+                              FlutterI18n.translate(
+                                  context, "snackbar.updateRatingError"),
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onError),
+                            ),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.error);
 
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
+                      Navigator.pop(context);
                     },
                     text: FlutterI18n.translate(context, "ratings.saveRating"))
               ],

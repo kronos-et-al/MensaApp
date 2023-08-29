@@ -7,42 +7,38 @@ class MensaSlider extends StatelessWidget {
   final double _min;
   final double _max;
   final int? _divisions;
+  final String? _label;
 
   /// Creates a new MensaSlider.
-  /// @param key The key to identify this widget.
-  /// @param onChanged The function that is called when the value is changed.
-  /// @param value The current value.
-  /// @param min The minimum value.
-  /// @param max The maximum value.
-  /// @param divisions The number of discrete divisions.
-  /// @returns A new MensaSlider.
   const MensaSlider(
       {super.key,
       required Function(double)? onChanged,
       required double value,
       double min = 0.0,
       double max = 1.0,
-      int? divisions})
+      int? divisions,
+      String? label})
       : _onChanged = onChanged,
         _value = value,
         _min = min,
         _max = max,
-        _divisions = divisions;
+        _divisions = divisions,
+        _label = label;
 
   /// Builds the widget.
-  /// @param context The context in which the widget is built.
-  /// @returns The widget.
   @override
   Widget build(BuildContext context) {
     return SliderTheme(
         data: SliderThemeData(
           trackHeight: 2,
+          showValueIndicator: ShowValueIndicator.always,
           inactiveTrackColor: Theme.of(context).colorScheme.surface,
         ),
         child: Slider(
           min: _min,
           max: _max,
           divisions: _divisions,
+          label: _label,
           value: _value,
           onChanged: _onChanged,
         ));

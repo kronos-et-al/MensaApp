@@ -9,11 +9,6 @@ class MensaCanteenSelect extends StatelessWidget {
   final Function(Canteen) _onCanteenSelected;
 
   /// Creates a new MensaCanteenSelect.
-  /// @param key The key to identify this widget.
-  /// @param availableCanteens The canteens that can be selected.
-  /// @param selectedCanteen The canteen that is currently selected.
-  /// @param onCanteenSelected The function that is called when the canteen changes.
-  /// @returns A new MensaCanteenSelect.
   const MensaCanteenSelect(
       {super.key,
       required List<Canteen> availableCanteens,
@@ -25,15 +20,16 @@ class MensaCanteenSelect extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonHideUnderline(
+    return Container(color: Theme.of(context).colorScheme.background, child: DropdownButtonHideUnderline(
         child: DropdownButton(
             dropdownColor: Theme.of(context).colorScheme.surface,
             selectedItemBuilder: (context) => _availableCanteens
                 .map((e) => Row(children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 40,
                       ),
                       Container(
+                        color: Theme.of(context).colorScheme.background,
                         alignment: Alignment.center,
                         constraints: BoxConstraints(
                             minWidth: MediaQuery.of(context).size.width -
@@ -54,6 +50,6 @@ class MensaCanteenSelect extends StatelessWidget {
                     value: e.id, child: Center(child: Text(e.name))))
                 .toList(),
             onChanged: (value) => _onCanteenSelected(_availableCanteens
-                .firstWhere((element) => element.id == value))));
+                .firstWhere((element) => element.id == value)))));
   }
 }

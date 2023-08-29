@@ -191,15 +191,7 @@ async fn graphql_handler(
     async {
         let response = schema.execute(request).await;
         if response.is_err() {
-            debug!(
-                "Error handling request: {}",
-                response
-                    .errors
-                    .iter()
-                    .map(ToString::to_string)
-                    .collect::<Vec<_>>()
-                    .join(", ")
-            );
+            debug!(errors = ?response.errors, "Error handling request");
         }
         response.into()
     }
@@ -258,7 +250,11 @@ mod tests {
             .unwrap();
 
         assert_eq!(
-            "{\"data\":{\"apiVersion\":\"1.0\"}}", resp,
+            format!(
+                "{{\"data\":{{\"apiVersion\":\"{}\"}}}}",
+                env!("CARGO_PKG_VERSION")
+            ),
+            resp,
             "wrong data returned on graphql version health check."
         );
 

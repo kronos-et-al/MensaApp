@@ -1,5 +1,8 @@
+import 'package:app/view_model/repository/data_classes/meal/FavoriteMeal.dart';
+import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
+import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 
 import '../data_classes/meal/Meal.dart';
 import '../data_classes/mealplan/Canteen.dart';
@@ -9,46 +12,50 @@ import '../error_handling/Result.dart';
 /// This is an interface to the database of the client.
 abstract class IDatabaseAccess {
   /// This method updates all mealplans with the committed mealplans.
-  /// @param mealplans The mealplans that should be updated
-  /// @return The result of the update
   Future<void> updateAll(List<MealPlan> mealplans);
 
-  /// This method returns the mealplan of the committed date of the committed canteen.
-  /// @param date The date of the mealplan
-  /// @param canteen The canteen of the mealplan
-  /// @return The mealplan of the committed date of the committed canteen or an error
+  /// This method updates a meal in the database with the same id as [meal] with the attributes of [meal].
+  Future<void> updateMeal(Meal meal);
+
+  /// This method updates a image in the database with the same id as [image] with the attributes of [image].
+  Future<void> updateImage(ImageData image);
+
+  /// This method updates a canteen in the database with the same id as [canteen] with the attributes of [canteen].
+  Future<void> updateCanteen(Canteen canteen);
+
+  /// Returns the [MealPlan] of the committed date of the committed canteen.
+  /// If the mealplan does not exists, it returns an [MealPlanException].
   Future<Result<List<MealPlan>, MealPlanException>> getMealPlan(
       DateTime date, Canteen canteen);
 
-  /// This method returns a favorite meal.
-  /// @param id The id of the meal
-  /// @return The favorite meal with the committed id or an error
+  /// Returns the [Meal] with the id of [meal].
+  Future<Result<Meal, NoMealException>> getMeal(Meal meal);
+
+  /// Returns the favorite meal with the committed id.
+  /// If the [Meal] is not a favorite, it returns an [Exception].
   Future<Result<Meal, Exception>> getMealFavorite(String id);
 
-  /// This method returns a favorite meals line.
-  /// @param the meal whose line is requested
-  /// @return the line that once offered the meal
-  Future<Line?> getFavoriteMealsLine(Meal meal);
+  /// This method adds a favorite.
+  /// If the favorite does already exists, it does nothing.
+  Future<void> addFavorite(Meal meal, DateTime servedDate, Line servedLine);
 
-  /// this method returns a favorite meals date.
-  /// @param the meal whose date is requested
-  /// @return the date that once had offered the meal
-  Future<DateTime?> getFavoriteMealsDate(Meal meal);
-
-  /// This method adds a favorite. If the favorite does already exists, it does nothing.
-  /// @param meal The meal that should be added as favorite
-  /// @return The result of the update
-  Future<void> addFavorite(Meal meal);
-
-  /// This method removes a favorite. If the favorite does not exists, it does nothing.
-  /// @param meal The meal that should be removed as favorite
-  /// @return The result of the update
+  /// This method removes a favorite.
+  /// If the favorite does not exists, it does nothing.
   Future<void> deleteFavorite(Meal meal);
 
-  /// This method returns all Favorites.
-  /// @return all Favorites
-  Future<List<Meal>> getFavorites();
+  /// Returns all Favorites.
+  Future<List<FavoriteMeal>> getFavorites();
 
   /// This method returns the canteen with the committed id.
-  Future<Canteen> getCanteenById(String id);
+  /// If no canteen with the committed id exists, it returns 'null'.
+  Future<Canteen?> getCanteenById(String id);
+
+  /// This method returns all canteens or null if no canteen is stored.
+  Future<List<Canteen>?> getCanteens();
+
+  /// This method removes the committed image from the database.
+  Future<void> removeImage(ImageData image);
+
+  /// This method removes old meal plans and unused meals from the database
+  Future<void> cleanUp();
 }

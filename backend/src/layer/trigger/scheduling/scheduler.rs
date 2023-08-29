@@ -35,6 +35,11 @@ pub struct Scheduler {
 
 impl Scheduler {
     /// Creates a new scheduler with time plans specified in `info` and actions specified in the `scheduling`s.
+    ///
+    /// # Panics
+    /// 1. If the scheduler could not be initialised
+    /// 2. If the schedules could not be created (invalid cron syntax)
+    /// 3. If the jobs could not be scheduled
     pub async fn new(
         info: ScheduleInfo,
         image_scheduling: impl ImageReviewScheduling + 'static,
@@ -193,7 +198,7 @@ mod tests {
 
         tokio::time::sleep(Duration::from_secs(10)).await;
 
-        info!("shutting down");
+        println!("shutting down");
         scheduler.shutdown().await;
 
         assert!(

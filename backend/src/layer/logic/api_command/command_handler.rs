@@ -1,5 +1,6 @@
 use async_trait::async_trait;
 use chrono::Local;
+use tracing::info;
 
 use crate::{
     interface::{
@@ -103,6 +104,7 @@ where
             let will_be_hidden = Self::will_be_hidden(&info);
             if will_be_hidden {
                 self.command_data.hide_image(image_id).await?;
+                info!(image = ?info, "Automatically hid image {image_id} because reported {} times.", info.report_count);
             }
             let report_info = ImageReportInfo {
                 reason,
@@ -113,6 +115,9 @@ where
                 positive_rating_count: info.upvotes,
                 negative_rating_count: info.downvotes,
                 get_image_rank: info.rank,
+                report_barrier: Self::get_report_barrier(info.upload_date),
+                client_id: auth_info.client_id,
+                image_age: Self::days_since(info.upload_date),
             };
 
             self.admin_notification
@@ -218,24 +223,24 @@ mod test {
     #[tokio::test]
     async fn test_report_image() {
         let handler = get_handler().await.unwrap();
-        let auth_info = Some(InnerAuthInfo {
+        let auth_info = InnerAuthInfo {
             api_ident: "YWpzZGg4Mn".into(),
             hash: "zsqn7BQuQZDKhEs2kgjKRA5sAFStu6P+WnF8bEtmU6VVZ7SZn6FB8cUFadoT6s7j9y1MqYMMb3DPctimykn+mg==".into(),
             client_id: Uuid::try_from("b637365e-9ec5-47cf-8e39-eab3e10de4e5").unwrap(),
-        });
+        };
         let image_id = Uuid::try_from("afa781ab-278f-441a-9241-f70e1013ed42").unwrap();
         let reason = ReportReason::Advert;
         assert!(handler.report_image(image_id, reason, None).await.is_err());
         assert!(handler
-            .report_image(image_id, reason, auth_info.clone())
+            .report_image(image_id, reason, Some(auth_info.clone()))
             .await
             .is_ok());
-        let auth_info = Some(InnerAuthInfo {
+        let auth_info = InnerAuthInfo {
             hash: "x2D2nVGg9oCyt44TB/pA5LACvo5ZghPVJDMNCfAZOiME8hS1CF4NKaFK3chfbwVEnmZxlVRfmWK2nGHE7yBknQ==".into(),
-            ..auth_info.unwrap()
-        });
+            ..auth_info
+        };
         assert!(handler
-            .report_image(IMAGE_ID_TO_FAIL, reason, auth_info.clone())
+            .report_image(IMAGE_ID_TO_FAIL, reason, Some(auth_info.clone()))
             .await
             .is_err());
     }
@@ -243,24 +248,24 @@ mod test {
     #[tokio::test]
     async fn test_add_image_upvote() {
         let handler = get_handler().await.unwrap();
-        let auth_info = Some(InnerAuthInfo {
+        let auth_info = InnerAuthInfo {
             api_ident: "YWpzZGg4Mn".into(),
             hash: "AQPykbV6530qtbsE93KZsgl0KvORCz5LYH+HhzUSiX1FAFUjo/52y7rnTRq9tlUN3dzRa8xHxWg5y2PwIkItdg==".into(),
             client_id: Uuid::try_from("4c57fc70-4839-4398-be08-d151c0dbb246").unwrap(),
-        });
+        };
         let image_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
 
         assert!(handler.add_image_upvote(image_id, None).await.is_err()); // No auth information present
         assert!(handler
-            .add_image_upvote(image_id, auth_info.clone())
+            .add_image_upvote(image_id, Some(auth_info.clone()))
             .await
             .is_ok());
-        let auth_info = Some(InnerAuthInfo {
+        let auth_info = InnerAuthInfo {
             hash: "nNfedG2cgeaOutiLzHSUDbYWRS0tDVwK482ULfqDkV0h/nZl6ZN5bwesenmr+CZBJrc2MT1Ps/I+5sKDy2qdCw==".into(),
-            ..auth_info.unwrap()
-        });
+            ..auth_info
+        };
         assert!(handler
-            .add_image_upvote(IMAGE_ID_TO_FAIL, auth_info.clone())
+            .add_image_upvote(IMAGE_ID_TO_FAIL, Some(auth_info.clone()))
             .await
             .is_err());
     }
@@ -268,25 +273,25 @@ mod test {
     #[tokio::test]
     async fn test_add_image_downvote() {
         let handler = get_handler().await.unwrap();
-        let auth_info = Some(InnerAuthInfo {
+        let auth_info = InnerAuthInfo {
             api_ident: "YWpzZGg4Mn".into(),
             hash: "Xz+c2URLRn6rDa58ExTWPXsj3FXnXu/3nPmV62XqypXkQnJTCwI/m9idDRyBqVjqh9ysPKd9tm6JngY/BSYh3Q==".into(),
             client_id: Uuid::default(),
-        });
+        };
         let image_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
 
         assert!(handler.add_image_downvote(image_id, None).await.is_err()); // No auth information present
         assert!(handler
-            .add_image_downvote(image_id, auth_info.clone())
+            .add_image_downvote(image_id, Some(auth_info.clone()))
             .await
             .is_ok());
 
-        let auth_info = Some(InnerAuthInfo {
+        let auth_info = InnerAuthInfo {
                 hash: "jFEnp7ky0dbUrisVR5Rh6GOAywS1GGePT6TBbuIumbPjoRHkOgO1vW9iJPc64evEX6YuvdNZTpu4JET2bYxJdw==".into(),
-                ..auth_info.unwrap()
-            });
+                ..auth_info
+            };
         assert!(handler
-            .add_image_downvote(IMAGE_ID_TO_FAIL, auth_info.clone())
+            .add_image_downvote(IMAGE_ID_TO_FAIL, Some(auth_info.clone()))
             .await
             .is_err());
     }
@@ -294,25 +299,25 @@ mod test {
     #[tokio::test]
     async fn test_remove_image_upvote() {
         let handler = get_handler().await.unwrap();
-        let auth_info = Some(InnerAuthInfo {
+        let auth_info = InnerAuthInfo {
             api_ident: "YWpzZGg4Mn".into(),
             hash: "8jYXv/+3YqO9j9zJnrkSGy4Bx1VZLgXoW95RodDWZ/PmzcAqqhyKiv2gI09JCBUuBOZoDMkNPhCjbesBkCGaxg==".into(),
             client_id: Uuid::try_from("4c57fc70-4839-4398-be08-d151c0dbb246").unwrap(),
-        });
+        };
         let image_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
 
         assert!(handler.remove_image_upvote(image_id, None).await.is_err()); // No auth information present
 
         assert!(handler
-            .remove_image_upvote(image_id, auth_info.clone())
+            .remove_image_upvote(image_id, Some(auth_info.clone()))
             .await
             .is_ok());
-        let auth_info = Some(InnerAuthInfo {
+        let auth_info = InnerAuthInfo {
             hash: "75irLLawyqHZ6RyENq6LgVH91qViG8K9p30xefHUygKYBTkHeAAxMX7zfvmil4FuIr1FcKhFcO7YnubS6JhBrA==".into(),
-            ..auth_info.unwrap()
-        });
+            ..auth_info
+        };
         assert!(handler
-            .remove_image_upvote(IMAGE_ID_TO_FAIL, auth_info.clone())
+            .remove_image_upvote(IMAGE_ID_TO_FAIL, Some(auth_info.clone()))
             .await
             .is_err());
     }
@@ -320,25 +325,25 @@ mod test {
     #[tokio::test]
     async fn test_remove_image_downvote() {
         let handler = get_handler().await.unwrap();
-        let auth_info = Some(InnerAuthInfo {
+        let auth_info = InnerAuthInfo {
             api_ident: "YWpzZGg4Mn".into(),
             hash: "lb4TH+zjHTl0Z9zijEZ7KtOFIBFHvY70rmZtX+Xk/fa++fGJtAS10EjFOqAgx/0scDJDbhpdn9WS5Yy5zCYeoQ==".into(),
             client_id: Uuid::try_from("4c57fc70-4839-4398-be08-d151c0dbb246").unwrap(),
-        });
+        };
         let image_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
 
         assert!(handler.remove_image_downvote(image_id, None).await.is_err()); // No auth information present
         assert!(handler
-            .remove_image_downvote(image_id, auth_info.clone())
+            .remove_image_downvote(image_id, Some(auth_info.clone()))
             .await
             .is_ok());
 
-        let auth_info = Some(InnerAuthInfo {
+        let auth_info = InnerAuthInfo {
                 hash: "Jv4OClK/9hYeTQPdInfwjoNtUmVmoLp4+q7LEI5gKhDJLdeaEX+cER7BvFU5JTuzQhG7T8sae55fgYF+ybK7cQ==".into(),
-                ..auth_info.unwrap()
-            });
+                ..auth_info
+            };
         assert!(handler
-            .remove_image_downvote(IMAGE_ID_TO_FAIL, auth_info.clone())
+            .remove_image_downvote(IMAGE_ID_TO_FAIL, Some(auth_info.clone()))
             .await
             .is_err());
     }
@@ -346,11 +351,11 @@ mod test {
     #[tokio::test]
     async fn test_add_image() {
         let handler = get_handler().await.unwrap();
-        let auth_info = Some(InnerAuthInfo {
+        let auth_info = InnerAuthInfo {
             api_ident: "YWpzZGg4Mn".into(),
             hash: "ozNFvc9F0FWdrkFuncTpWA8z+ugwwox4El21hNiHoJW1conWnAOL0q7g4iNWEdDViFyTBjmDhK17FKpmReAgrA==".into(),
             client_id: Uuid::default(),
-        });
+        };
         let meal_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
         let image_url = "http://test.de";
 
@@ -359,23 +364,27 @@ mod test {
             .await
             .is_err());
         assert!(handler
-            .add_image(meal_id, image_url.to_string(), auth_info.clone())
+            .add_image(meal_id, image_url.to_string(), Some(auth_info.clone()))
             .await
             .is_ok());
-        let auth_info = Some(InnerAuthInfo {
+        let auth_info = InnerAuthInfo {
             hash: "JWN194mSo+ZAMH4ohZ4WO1//k3NH9ztxIFuWjdrKy6ct3+Y4P7zqQs1JiE7p63TkCDRVqlobEqi7bIGuAjGFZg==".into(),
-            ..auth_info.unwrap()
-        });
+            ..auth_info
+        };
         assert!(handler
-            .add_image(meal_id, INVALID_URL.to_string(), auth_info.clone())
+            .add_image(meal_id, INVALID_URL.to_string(), Some(auth_info.clone()))
             .await
             .is_err());
-        let auth_info = Some(InnerAuthInfo {
+        let auth_info = InnerAuthInfo {
             hash: "TLvbxrv6azE4FpA2sROa8CD8ACdRGjj1M6OtLl1h4Q/NYypCKagZz0C2c4SEsoGjRpIbMAaKprFMcavssf2z2w==".into(),
-            ..auth_info.unwrap()
-        });
+            ..auth_info
+        };
         handler
-            .add_image(MEAL_ID_TO_FAIL, image_url.to_string(), auth_info.clone())
+            .add_image(
+                MEAL_ID_TO_FAIL,
+                image_url.to_string(),
+                Some(auth_info.clone()),
+            )
             .await
             .unwrap_err();
     }
@@ -383,24 +392,24 @@ mod test {
     #[tokio::test]
     async fn test_set_meal_rating() {
         let handler = get_handler().await.unwrap();
-        let auth_info = Some(InnerAuthInfo {
+        let auth_info = InnerAuthInfo {
             api_ident: "YWpzZGg4Mn".into(),
             hash: "rHh8opE3qYEupyehP6ttMLVpgV0lTmGJE4rV53oFUUGCdQkzZnUu2snS/Hr4ZyYZ/1D7WiLonHSldbYSMLVBVQ==".into(),
             client_id: Uuid::default(),
-        });
+        };
         let meal_id = Uuid::try_from("94cf40a7-ade4-4c1f-b718-89b2d418c2d0").unwrap();
         assert!(handler.set_meal_rating(meal_id, 0, None).await.is_err());
         assert!(handler
-            .set_meal_rating(meal_id, 2, auth_info.clone())
+            .set_meal_rating(meal_id, 2, Some(auth_info.clone()))
             .await
             .is_ok());
 
-        let auth_info = Some(InnerAuthInfo {
+        let auth_info = InnerAuthInfo {
             hash: "0gdAkgRigzK+vV4IkP20QdUBZPco1E8zQC01F8WiPNO5BMEyKd+W/PiC7abF68B/s8wRW1MgY/7VdscEaKBQDA==".into(),
-            ..auth_info.unwrap()
-        });
+            ..auth_info
+        };
         assert!(handler
-            .set_meal_rating(MEAL_ID_TO_FAIL, 2, auth_info.clone())
+            .set_meal_rating(MEAL_ID_TO_FAIL, 2, Some(auth_info.clone()))
             .await
             .is_err());
     }

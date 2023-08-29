@@ -24,12 +24,7 @@ class DBLine implements DatabaseModel {
   /// The name of the column for the position.
   static const String columnPosition = 'position';
 
-  /// Creates a new instance of a line of a canteen.
-  /// @param _lineID The id of the line.
-  /// @param _canteenID The id of the canteen.
-  /// @param _name The name of the line.
-  /// @param _position The position of the line.
-  /// @returns A new instance of a line of a canteen.
+  /// Creates a new instance of a line of a canteen as it is represented in the database.
   DBLine(this._lineID, this._canteenID, this._name, this._position);
 
   @override
@@ -43,14 +38,12 @@ class DBLine implements DatabaseModel {
   }
 
   /// Creates a new instance of a line of a canteen from a map.
-  /// @param map The map to create the instance from.
   static DBLine fromMap(Map<String, dynamic> map) {
     return DBLine(map[columnLineID], map[columnCanteenID], map[columnName],
         map[columnPosition]);
   }
 
   /// The string to create a table for a line of a canteen.
-  /// @returns The string to create a table for a line of a canteen.
   static String initTable() {
     return '''
     CREATE TABLE $tableName (
@@ -63,19 +56,15 @@ class DBLine implements DatabaseModel {
   ''';
   }
 
-  /// This method returns the position of the line.
-  /// @returns The position of the line.
+  /// Returns the position of the line.
   int get position => _position;
 
-  /// This method returns the name of the line.
-  /// @returns The name of the line.
+  /// Returns the name of the line.
   String get name => _name;
 
-  /// This method returns the id of the canteen.
-  /// @returns The id of the canteen.
+  /// Returns the id of the canteen.
   String get canteenID => _canteenID;
 
-  /// This method returns the id of the line.
-  /// @returns The id of the line.
+  /// Returns the id of the line.
   String get lineID => _lineID;
 }

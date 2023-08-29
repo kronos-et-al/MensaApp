@@ -5,6 +5,7 @@ import 'package:app/view/core/selection_components/MensaDropdown.dart';
 import 'package:app/view/core/selection_components/MensaDropdownEntry.dart';
 import 'package:app/view/filter/MensaSortSelectEntry.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 
 /// This widget is used to display a sort select.
 class MensaSortSelect<T> extends StatelessWidget {
@@ -15,13 +16,6 @@ class MensaSortSelect<T> extends StatelessWidget {
   final Function(SortDirection) _onSortDirectionSelected;
 
   /// Creates a new sort select.
-  /// @param key The key to identify this widget.
-  /// @param entries The entries to display.
-  /// @param selectedEntry The selected entry.
-  /// @param sortDirection The sort direction.
-  /// @param onEntrySelected The function to call when an entry is selected.
-  /// @param onSortDirectionSelected The function to call when the sort direction is selected.
-  /// @returns A new sort select.
   const MensaSortSelect(
       {super.key,
       required List<MensaSortSelectEntry<T>> entries,
@@ -53,6 +47,11 @@ class MensaSortSelect<T> extends StatelessWidget {
           width: 8,
         ),
         MensaTapable(
+          semanticLabel: FlutterI18n.translate(
+              context,
+              _sortDirection == SortDirection.ascending
+                  ? "semantics.filterSortAscending"
+                  : "semantics.filterSortDescending"),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: _sortDirection == SortDirection.ascending
