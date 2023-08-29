@@ -42,15 +42,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cargo/bin/
-          ~/.cargo/registry/index/
-          ~/.cargo/registry/cache/
-          ~/.cargo/git/db/
-          target/
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    - run: rustup toolchain install stable --profile minimal
+    - uses: Swatinem/rust-cache@v2
     - name: Check formatting
       run: |
         rustup component add rustfmt
@@ -87,17 +80,9 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - name:                   Checkout repository
-        uses:                   actions/checkout@v2
-      - uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - uses:                   actions/checkout@v2
+      - run: rustup toolchain install stable --profile minimal
+      - uses: Swatinem/rust-cache@v2
       - name: Setup database
         run: |
           cargo install sqlx-cli --no-default-features --features native-tls,postgres
@@ -131,15 +116,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cargo/bin/
-          ~/.cargo/registry/index/
-          ~/.cargo/registry/cache/
-          ~/.cargo/git/db/
-          target/
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    - run: rustup toolchain install stable --profile minimal
+    - uses: Swatinem/rust-cache@v2
     - name: Setup database
       run: |
         cargo install sqlx-cli --no-default-features --features native-tls,postgres
