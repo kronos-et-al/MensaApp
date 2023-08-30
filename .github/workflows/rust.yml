@@ -23,6 +23,11 @@ env:
 
 
 jobs:
+  build_test_and_coverage:
+    runs-on: ubuntu-latest
+    needs: [build_rust, test, coverage]
+
+
   build_rust:
     runs-on: ubuntu-latest
     container: rust:latest
@@ -56,6 +61,8 @@ jobs:
         cargo sqlx database setup
     - name: Check prepared sql query information
       run: cargo sqlx prepare --check
+    - name: Check docs
+      run: RUSTDOCFLAGS="-D warnings" cargo test --doc
     - name: Build
       run: cargo build --verbose
     - name: Check linter warnings
@@ -128,7 +135,5 @@ jobs:
       run: |
         cargo install sqlx-cli --no-default-features --features native-tls,postgres
         cargo sqlx database setup
-    - name: Check docs
-      run: RUSTDOCFLAGS="-D warnings" cargo test --doc
     - name: Run tests
       run: cargo test --verbose
