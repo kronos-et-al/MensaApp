@@ -32,5 +32,4 @@ jobs:
     - run: touch .env
     - run: flutter pub get
     - run: flutter test
-    - run: flutter build apk
-    - run: flutter build appbundle
+    - run: flutter build apk --debug
