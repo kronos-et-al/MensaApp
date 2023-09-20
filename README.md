@@ -5,7 +5,7 @@
 
 <a href='https://play.google.com/store/apps/details?id=de.mensa_ka.app&pli=1&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width=100em/></a>
 
-| 🚧   | This project is still work in production! |
+| 🚧   | This project is still work in progress! |
 | --- | :---------------------------------------- |
 
 
@@ -34,7 +34,8 @@ This app will soon be available on Google Play. We also plan to release an iOS-A
 Feel free to integrate our api in your own application. You can access it at [`https://api.mensa-ka.de`](https://api.mensa-ka.de).
 For now, you can only use graphql queries (and no mutations) because they require authentication with an api key (see [here](doc/ApiAuth.md)).
 
-## Technology
+## Architecture
+![architecture](doc/img/architecture.svg)
 This application consists of a [Flutter](https://flutter.dev/) app (see [app](app/README.md)) and a [Rust](https://www.rust-lang.org/) server (see [backend](backend/README.md)).
 They communicate using a [GraphQL](https://graphql.org/) API and the backend stores its data in a [PostgreSQL](https://www.postgresql.org/) database.
 For more details on these parts, see their readmes in the sub-folders.
