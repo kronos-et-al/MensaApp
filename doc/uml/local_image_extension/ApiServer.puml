@@ -1,0 +1,36 @@
+@startuml
+
+class ApiServer {
+    {static} new(info: ServerInfo, data_access: RequestDataAccess, command: Command) <<create>>
+    start()
+    shutdown()
+}
+
+struct ServerInfo {
+    port: u16
+    image_directory: String
+}
+
+ApiServer .> ServerInfo
+
+interface Command
+interface FileAccess
+ApiServer .u.> Command
+ApiServer .u.> FileAccess
+
+
+class QueryRoot{
+}
+
+
+class MutationRoot {
+    add_image(meal_id: Uuid, image: Upload): Boolean
+    ...()
+
+}
+
+ApiServer ..> QueryRoot
+ApiServer ..> MutationRoot
+
+
+@enduml

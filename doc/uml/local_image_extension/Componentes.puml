@@ -1,0 +1,26 @@
+@startuml
+package Trigger {
+ [ApiServer]
+}
+
+package Logic {
+ component Command {
+  component ImageProcessing #lightgreen
+ }
+ component "ImageReview" #tomato
+}
+
+package Data {
+ component FileHandler #lightgreen
+
+ component GoogleVisionApi #lightgreen
+ component FlickrApi #tomato
+ Command --> [GoogleVisionApi]
+ Command --> [FileHandler]
+
+
+}
+
+[ApiServer] --> Command
+[ApiServer] --> [FileHandler]
+@enduml

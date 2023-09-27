@@ -1,0 +1,21 @@
+@startuml
+
+interface ImageStorage {
+    save_image(id: Uuid, image: DynamicImage)
+}
+
+class FileHandler {
+    {static} new(info: FileHandlerInfo) <<create>>
+}
+
+struct FileHandlerInfo {
+    image_directory: String
+}
+
+FileHandler .> FileHandlerInfo
+
+
+FileHandler .u.|> ImageAccess
+FileHandler .u.|> ImageStorage
+
+@enduml

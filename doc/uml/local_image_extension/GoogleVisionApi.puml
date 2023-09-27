@@ -1,0 +1,18 @@
+@startuml GoogleVisionApi
+interface ImageValidation {
+    validate_image(image: &DynamicImage) -> bool
+}
+
+class GoogleVisionApi {
+    {static} new(info: GoogleVisionInfo) <<create>>
+}
+
+struct GoogleVisionInfo {
+    ' todo auth
+    auth
+}
+
+GoogleVisionApi .> GoogleVisionInfo
+
+GoogleVisionApi .u.|> ImageValidation
+@enduml

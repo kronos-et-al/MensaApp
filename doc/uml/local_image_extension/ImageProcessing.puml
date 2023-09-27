@@ -1,0 +1,23 @@
+@startuml
+
+class ImageProcessing {
+    {static} new(info: ImageInfo) <<create>>
+    ' compresses and converts image to jpeg
+    preprocess_image(image: DynamicImage) -> DynamicImage | ImageError
+}
+
+enum ImageError {
+    UnsuportedFormat
+    ' todo
+}
+
+ImageProcessing .> ImageError
+
+
+struct ImageInfo {
+    reduced_image_size: (u32, u32)
+}
+
+ImageProcessing .> ImageInfo
+
+@enduml
