@@ -1,4 +1,4 @@
-use std::{env::VarError, num::ParseIntError, sync::Arc};
+use std::{env::VarError, num::ParseIntError};
 use thiserror::Error;
 use tokio::signal::ctrl_c;
 use tracing::info;
@@ -8,13 +8,14 @@ use crate::{
     layer::{
         data::{
             database::factory::DataAccessFactory,
-            flickr_api::flickr_api_handler::FlickrApiHandler,
             mail::mail_sender::{MailError, MailSender},
             swka_parser::swka_parse_manager::SwKaParseManager,
         },
         logic::{
-            api_command::command_handler::CommandHandler,
-            image_review::image_reviewer::ImageReviewer,
+            api_command::{
+                command_handler::CommandHandler,
+                test::mocks::{CommandFileHandlerMock, CommandImageValidationMock},
+            },
             mealplan_management::meal_plan_manager::MealPlanManager,
         },
         trigger::{graphql::server::GraphQLServer, scheduling::scheduler::Scheduler},
@@ -78,28 +79,21 @@ impl Server {
         let factory =
             DataAccessFactory::new(config.read_database_info()?, config.should_migrate()).await?;
         let command_data = factory.get_command_data_access();
-        let image_review_data = factory.get_image_review_data_access();
         let mealplan_management_data = factory.get_mealplan_management_data_access();
         let request_data = factory.get_request_data_access();
 
         let mail = MailSender::new(config.read_mail_info()?)?;
-        let flickr = FlickrApiHandler::new(config.read_flickr_info()?);
-        let flickr = Arc::new(flickr);
         let parser = SwKaParseManager::new(config.read_swka_info()?)?;
+        let file_handler = CommandFileHandlerMock; // todo
+        let google_vision = CommandImageValidationMock; // todo
 
         // logic layer
-        let command = CommandHandler::new(command_data, mail, flickr.clone()).await?;
-        let image_review = ImageReviewer::new(image_review_data, flickr);
+        let command = CommandHandler::new(command_data, mail, file_handler, google_vision).await?;
         let mealplan_management = MealPlanManager::new(mealplan_management_data, parser);
 
         // trigger layer
         let mut graphql = GraphQLServer::new(config.read_graphql_info()?, request_data, command);
-        let mut scheduler = Scheduler::new(
-            config.read_schedule_info()?,
-            image_review,
-            mealplan_management,
-        )
-        .await;
+        let mut scheduler = Scheduler::new(config.read_schedule_info()?, mealplan_management).await;
 
         // run server
         scheduler.start().await;

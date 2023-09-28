@@ -2,11 +2,11 @@ use lazy_static::lazy_static;
 use mensa_app_backend::{
     interface::api_command::{AuthInfo, Command, InnerAuthInfo},
     layer::{
-        data::{
-            database::factory::DataAccessFactory, flickr_api::flickr_api_handler::FlickrApiHandler,
-            mail::mail_sender::MailSender,
+        data::{database::factory::DataAccessFactory, mail::mail_sender::MailSender},
+        logic::api_command::{
+            command_handler::CommandHandler,
+            test::mocks::{CommandFileHandlerMock, CommandImageValidationMock},
         },
-        logic::api_command::command_handler::CommandHandler,
     },
     startup::config::ConfigReader,
     util::{ReportReason, Uuid},
@@ -113,17 +113,21 @@ async fn test_remove_image_downvote() {
         .unwrap();
 }
 
+// todo redo / remove test?
 async fn setup_cmd() -> impl Command {
     let reader = ConfigReader::default();
 
     let mail = MailSender::new(reader.read_mail_info().unwrap()).unwrap();
-    let hoster = FlickrApiHandler::new(reader.read_flickr_info().unwrap());
+    let file_handler = CommandFileHandlerMock; // todo
+    let image_validation = CommandImageValidationMock; // todo
 
     let factory = DataAccessFactory::new(reader.read_database_info().unwrap(), true)
         .await
         .unwrap();
     let data = factory.get_command_data_access();
-    CommandHandler::new(data, mail, hoster).await.unwrap()
+    CommandHandler::new(data, mail, file_handler, image_validation)
+        .await
+        .unwrap()
 }
 
 fn get_auth_info(hash: &str) -> AuthInfo {

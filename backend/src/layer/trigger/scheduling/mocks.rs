@@ -5,9 +5,7 @@ use std::sync::{Arc, Mutex};
 use async_trait::async_trait;
 use tracing::debug;
 
-use crate::interface::{
-    image_review::ImageReviewScheduling, mealplan_management::MensaParseScheduling,
-};
+use crate::interface::mealplan_management::MensaParseScheduling;
 
 #[derive(Default, Clone)]
 pub struct MensaParseMock {
@@ -63,38 +61,6 @@ impl MensaParseScheduling for MensaParseMock {
             .full_calls
             .lock()
             .expect("failed to lock mutex for `full_calls` counter") += 1;
-        return;
-    }
-}
-
-#[derive(Default, Clone)]
-pub struct ImageReviewMock {
-    calls: Arc<Mutex<u32>>,
-}
-
-impl ImageReviewMock {
-    /// A function to get the number of calls to the function of the same name
-    ///
-    /// # Panics
-    /// if the mutex could not be acquired
-    #[must_use]
-    pub fn get_calls(&self) -> u32 {
-        *self
-            .calls
-            .lock()
-            .expect("failed to lock mutex for `calls` counter")
-    }
-}
-
-#[async_trait]
-impl ImageReviewScheduling for ImageReviewMock {
-    /// Start the image review process.
-    async fn start_image_review(&self) {
-        // debug!("start_image_review");
-        *self
-            .calls
-            .lock()
-            .expect("failed to lock mutex for `calls` counter") += 1;
         return;
     }
 }

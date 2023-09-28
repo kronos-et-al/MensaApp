@@ -6,7 +6,8 @@ use crate::{
     interface::{
         admin_notification::{AdminNotification, ImageReportInfo},
         api_command::{AuthInfo, Command, CommandError, Result},
-        image_hoster::ImageHoster,
+        file_handler::FileHandler,
+        image_validation::ImageValidation,
         persistent_data::{model::Image, CommandDataAccess},
     },
     layer::logic::api_command::auth::{authenticator::Authenticator, command_type::CommandType},
@@ -15,23 +16,26 @@ use crate::{
 
 const REPORT_FACTOR: f64 = 1.0 / 35.0;
 
-pub struct CommandHandler<DataAccess, Notify, Hoster>
+pub struct CommandHandler<DataAccess, Notify, File, Validation>
 where
     DataAccess: CommandDataAccess,
     Notify: AdminNotification,
-    Hoster: ImageHoster,
+    File: FileHandler,
+    Validation: ImageValidation,
 {
     command_data: DataAccess,
     admin_notification: Notify,
-    image_hoster: Hoster,
+    file_handler: File,
+    image_validation: Validation,
     auth: Authenticator,
 }
 
-impl<DataAccess, Notify, Hoster> CommandHandler<DataAccess, Notify, Hoster>
+impl<DataAccess, Notify, File, Validation> CommandHandler<DataAccess, Notify, File, Validation>
 where
     DataAccess: CommandDataAccess,
     Notify: AdminNotification,
-    Hoster: ImageHoster,
+    File: FileHandler,
+    Validation: ImageValidation,
 {
     /// A function that creates a new [`CommandHandler`]
     ///
@@ -40,7 +44,8 @@ where
     pub async fn new(
         command_data: DataAccess,
         admin_notification: Notify,
-        image_hoster: Hoster,
+        file_handler: File,
+        image_validation: Validation,
     ) -> Result<Self> {
         let keys: Vec<String> = command_data
             .get_api_keys()
@@ -51,7 +56,8 @@ where
         Ok(Self {
             command_data,
             admin_notification,
-            image_hoster,
+            file_handler,
+            image_validation,
             auth: Authenticator::new(keys),
         })
     }
@@ -79,11 +85,12 @@ where
 }
 
 #[async_trait]
-impl<DataAccess, Notify, Hoster> Command for CommandHandler<DataAccess, Notify, Hoster>
+impl<DataAccess, Notify, File, Image> Command for CommandHandler<DataAccess, Notify, File, Image>
 where
     DataAccess: CommandDataAccess,
     Notify: AdminNotification,
-    Hoster: ImageHoster,
+    File: FileHandler,
+    Image: ImageValidation,
 {
     async fn report_image(
         &self,
@@ -171,21 +178,13 @@ where
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
         let command_type = CommandType::AddImage {
             meal_id,
-            url: image_url.clone(),
+            url: image_url,
         };
         self.auth.authn_command(&auth_info, &command_type)?;
 
-        let image_meta_data = self.image_hoster.validate_url(&image_url).await?;
-        self.image_hoster.check_licence(&image_meta_data.id).await?;
-        self.command_data
-            .link_image(
-                meal_id,
-                auth_info.client_id,
-                image_meta_data.id,
-                image_meta_data.image_url,
-            )
-            .await?;
-        Ok(())
+        _ = &self.file_handler;
+        _ = &self.image_validation;
+        todo!() // todo
     }
 
     async fn set_meal_rating(&self, meal_id: Uuid, rating: u32, auth_info: AuthInfo) -> Result<()> {
@@ -207,11 +206,12 @@ mod test {
     use crate::interface::api_command::{Command, InnerAuthInfo, Result};
     use crate::interface::persistent_data::model::Image;
     use crate::layer::logic::api_command::test::mocks::{
-        IMAGE_ID_TO_FAIL, INVALID_URL, MEAL_ID_TO_FAIL,
+        CommandFileHandlerMock, CommandImageValidationMock, IMAGE_ID_TO_FAIL, INVALID_URL,
+        MEAL_ID_TO_FAIL,
     };
     use crate::layer::logic::api_command::{
         command_handler::CommandHandler,
-        test::mocks::{CommandAdminNotificationMock, CommandDatabaseMock, CommandImageHosterMock},
+        test::mocks::{CommandAdminNotificationMock, CommandDatabaseMock},
     };
     use crate::util::{ReportReason, Uuid};
 
@@ -415,12 +415,24 @@ mod test {
     }
 
     async fn get_handler() -> Result<
-        CommandHandler<CommandDatabaseMock, CommandAdminNotificationMock, CommandImageHosterMock>,
+        CommandHandler<
+            CommandDatabaseMock,
+            CommandAdminNotificationMock,
+            CommandFileHandlerMock,
+            CommandImageValidationMock,
+        >,
     > {
         let command_data = CommandDatabaseMock;
         let admin_notification = CommandAdminNotificationMock;
-        let image_hoster = CommandImageHosterMock;
-        CommandHandler::new(command_data, admin_notification, image_hoster).await
+        let file_handler = CommandFileHandlerMock;
+        let image_validation = CommandImageValidationMock;
+        CommandHandler::new(
+            command_data,
+            admin_notification,
+            file_handler,
+            image_validation,
+        )
+        .await
     }
 
     #[test]
@@ -433,7 +445,8 @@ mod test {
         assert!(CommandHandler::<
             CommandDatabaseMock,
             CommandAdminNotificationMock,
-            CommandImageHosterMock,
+            CommandFileHandlerMock,
+            CommandImageValidationMock,
         >::will_be_hidden(&image));
     }
 }

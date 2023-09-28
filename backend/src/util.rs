@@ -5,12 +5,16 @@
 use std::fmt::Display;
 
 use async_graphql::Enum;
+use image::DynamicImage;
 
 /// Date type used in multiple places.
 pub type Date = chrono::NaiveDate;
 
-// Uuid type used in multiple places.
+/// Uuid type used in multiple places.
 pub type Uuid = uuid::Uuid;
+
+/// An in memory representation of an image containing pixels.
+pub type ImageResource = DynamicImage;
 
 /// This enum lists every possible allergen a meal can have.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type)]

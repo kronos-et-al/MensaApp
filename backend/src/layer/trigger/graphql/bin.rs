@@ -1,7 +1,10 @@
 use mensa_app_backend::layer::{
     logic::api_command::{
         command_handler::CommandHandler,
-        test::mocks::{CommandAdminNotificationMock, CommandDatabaseMock, CommandImageHosterMock},
+        test::mocks::{
+            CommandAdminNotificationMock, CommandDatabaseMock, CommandFileHandlerMock,
+            CommandImageValidationMock,
+        },
     },
     trigger::graphql::{server::GraphQLServerInfo, *},
 };
@@ -26,7 +29,8 @@ async fn main() {
         CommandHandler::new(
             CommandDatabaseMock,
             CommandAdminNotificationMock,
-            CommandImageHosterMock,
+            CommandFileHandlerMock,
+            CommandImageValidationMock,
         )
         .await
         .expect("could not create command mock"),

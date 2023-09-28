@@ -6,7 +6,7 @@ use thiserror::Error;
 
 use crate::util::{ReportReason, Uuid};
 
-use super::{image_hoster::ImageHosterError, persistent_data::DataError};
+use super::persistent_data::DataError;
 
 pub type Result<T> = std::result::Result<T, CommandError>;
 
@@ -77,7 +77,4 @@ pub enum CommandError {
     /// Error marking something went wrong with the data.
     #[error("Data error occurred: {0}")]
     DataError(#[from] DataError),
-    /// Error marking something went wrong with the image hoster.
-    #[error("Image hoster error occurred: {0}")]
-    ImageHosterError(#[from] ImageHosterError),
 }

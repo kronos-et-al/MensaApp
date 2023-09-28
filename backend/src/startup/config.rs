@@ -5,8 +5,8 @@ use tracing::info;
 
 use crate::layer::{
     data::{
-        database::factory::DatabaseInfo, flickr_api::flickr_api_handler::FlickrInfo,
-        mail::mail_info::MailInfo, swka_parser::swka_parse_manager::SwKaInfo,
+        database::factory::DatabaseInfo, mail::mail_info::MailInfo,
+        swka_parser::swka_parse_manager::SwKaInfo,
     },
     trigger::{graphql::server::GraphQLServerInfo, scheduling::scheduler::ScheduleInfo},
 };
@@ -111,17 +111,6 @@ impl ConfigReader {
         Ok(info)
     }
 
-    /// Reads the config for the flickr api from environment variables.
-    /// # Errors
-    /// when the environment variables are not set and no default is provided internally.
-    pub fn read_flickr_info(&self) -> Result<FlickrInfo> {
-        let info = FlickrInfo {
-            api_key: read_var("FLICKR_API_KEY")?,
-        };
-        info!("Using flickr api key `{}***`", &info.api_key[0..4]);
-        Ok(info)
-    }
-
     /// Reads the config for the homepage of the "Studierendenwerk Karlsruhe" (Sw Ka) and its canteens from environment variables.
     /// # Errors
     /// when the environment variables are not set and no default is provided internally.
@@ -189,7 +178,6 @@ mod tests {
     fn test_conf_reader() {
         let reader = ConfigReader::default();
         reader.read_database_info().ok();
-        reader.read_flickr_info().ok();
         reader.read_graphql_info().ok();
         reader.read_log_info().ok();
         reader.read_mail_info().ok();

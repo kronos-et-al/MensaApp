@@ -1,6 +1,4 @@
-use async_trait::async_trait;
 use mensa_app_backend::{
-    interface::image_review::ImageReviewScheduling,
     layer::{
         data::{
             database::factory::DataAccessFactory, swka_parser::swka_parse_manager::SwKaParseManager,
@@ -51,15 +49,5 @@ async fn setup(info: ScheduleInfo) -> Scheduler {
     let parser = SwKaParseManager::new(reader.read_swka_info().unwrap()).unwrap();
 
     let mealplan_management = MealPlanManager::new(mealplan_management_data, parser);
-    Scheduler::new(info, ImageSchedulingMock::default(), mealplan_management).await
-}
-
-#[derive(Default)]
-struct ImageSchedulingMock {}
-
-#[async_trait]
-impl ImageReviewScheduling for ImageSchedulingMock {
-    async fn start_image_review(&self) {
-        return;
-    }
+    Scheduler::new(info, mealplan_management).await
 }
