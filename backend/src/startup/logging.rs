@@ -1,3 +1,4 @@
+//! Module for setting up the logging framework.
 use tracing_subscriber::{EnvFilter, FmtSubscriber};
 
 /// Struct containing all configurations available for the logging system.

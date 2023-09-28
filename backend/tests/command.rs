@@ -5,7 +5,7 @@ use mensa_app_backend::{
         data::{database::factory::DataAccessFactory, mail::mail_sender::MailSender},
         logic::api_command::{
             command_handler::CommandHandler,
-            test::mocks::{CommandFileHandlerMock, CommandImageValidationMock},
+            mocks::{CommandFileHandlerMock, CommandImageValidationMock},
         },
     },
     startup::config::ConfigReader,

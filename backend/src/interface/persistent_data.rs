@@ -8,6 +8,7 @@ use sqlx::migrate::MigrateError;
 use std::num::TryFromIntError;
 use thiserror::Error;
 
+/// Result returned from data access operations, potentially containing a [`DataError`].
 pub type Result<T> = std::result::Result<T, DataError>;
 
 /// Enumerations for possible data request faults

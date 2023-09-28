@@ -11,7 +11,7 @@ use super::price::Price;
 
 #[derive(SimpleObject, Debug)]
 #[graphql(complex)]
-pub struct Side {
+pub(in super::super) struct Side {
     /// The id of the side
     id: Uuid,
     /// The name of the side

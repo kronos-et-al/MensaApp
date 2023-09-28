@@ -10,7 +10,7 @@ use super::{canteen::Canteen, meal::Meal};
 
 #[derive(SimpleObject, Debug)]
 #[graphql(complex)]
-pub struct Line {
+pub(in super::super) struct Line {
     /// The id of the line.
     id: Uuid,
     /// The name of the line.

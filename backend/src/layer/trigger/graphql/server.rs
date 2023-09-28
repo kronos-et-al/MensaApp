@@ -38,7 +38,9 @@ use super::{
 
 type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 
+/// Information neccesary to create a [`GraphQLServer`].
 pub struct GraphQLServerInfo {
+    /// Port under which the server should run.
     pub port: u16,
 }
 

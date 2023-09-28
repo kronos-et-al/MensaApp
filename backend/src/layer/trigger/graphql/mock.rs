@@ -1,4 +1,5 @@
 //! This crate contains mocks of [`RequestDataAccess`] and [`Command`] for testing.
+#![allow(missing_docs)]
 
 use async_trait::async_trait;
 use uuid::Uuid;

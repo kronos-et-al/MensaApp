@@ -1,29 +1,55 @@
+//! See [`CommandType`].
+
 use std::fmt::Display;
 
 use heck::AsShoutySnakeCase;
 
 use crate::util::{ReportReason, Uuid};
 
-#[derive(Clone)]
 /// Enum describing the different types of commands available with each having different parameters that influence hash calculation.
+#[derive(Clone, Debug)]
 pub enum CommandType {
     /// The command to authenticate is the one for reporting an image with given UUID and reason.
     ReportImage {
+        /// Id of image to report.
         image_id: Uuid,
+        /// Reason for report.
         reason: ReportReason,
     },
     /// The command to authenticate is the one to add an upvote to the image with given UUID.
-    AddUpvote { image_id: Uuid },
+    AddUpvote {
+        /** Id of image to upvote. */
+        image_id: Uuid,
+    },
     /// The command to authenticate is the one to add a downvote to the image with given UUID.
-    AddDownvote { image_id: Uuid },
+    AddDownvote {
+        /** Id of image to downvote. */
+        image_id: Uuid,
+    },
     /// The command to authenticate is the one to remove an upvote to the image with given UUID.
-    RemoveUpvote { image_id: Uuid },
+    RemoveUpvote {
+        /** Id of image to remove upvote. */
+        image_id: Uuid,
+    },
     /// The command to authenticate is the one to remove a downvote to the image with given UUID.
-    RemoveDownvote { image_id: Uuid },
+    RemoveDownvote {
+        /** Id of image to remove downvote */
+        image_id: Uuid,
+    },
     /// The command to authenticate is the one add the given rating to a meal with the given UUID.
-    SetRating { meal_id: Uuid, rating: u32 },
+    SetRating {
+        /// Id of meal to set rating for.
+        meal_id: Uuid,
+        /// Rating to set for meal, between `1` and `5`.
+        rating: u32,
+    },
     /// The command to authenticate is the one to add an image with the given url to the meal with the given UUID.
-    AddImage { meal_id: Uuid, url: String }, // todo adapt
+    AddImage {
+        /// Meal to add image to
+        meal_id: Uuid,
+        /// ---
+        url: String,
+    }, // todo adapt
 }
 
 impl Display for CommandType {

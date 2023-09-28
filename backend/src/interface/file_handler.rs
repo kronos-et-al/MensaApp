@@ -5,6 +5,7 @@ use thiserror::Error;
 
 use crate::util::{ImageResource, Uuid};
 
+/// Result returned from file operations, potentially containing a [`FileError`].
 pub type Result<T> = std::result::Result<T, FileError>;
 
 /// This interface allows to store images as file.

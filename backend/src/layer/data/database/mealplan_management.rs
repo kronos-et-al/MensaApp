@@ -1,3 +1,4 @@
+//! Module responsible for handling database requests for meal plan management operations.
 use async_trait::async_trait;
 use sqlx::{Pool, Postgres};
 
@@ -6,6 +7,8 @@ use crate::{
     util::{Additive, Allergen, Date, MealType, Price, Uuid},
 };
 
+/// Class for performing database operations necessary for meal plan management.
+#[derive(Debug)]
 pub struct PersistentMealplanManagementData {
     pub(super) pool: Pool<Postgres>,
 }

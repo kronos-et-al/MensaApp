@@ -9,15 +9,23 @@ use crate::util::Date;
 use async_trait::async_trait;
 use std::collections::HashMap;
 
+/// Struct containing all information necessary to create a [`SwKaParseManager`].
 #[derive(Debug, Clone)]
 pub struct SwKaInfo {
+    /// Base url under which the canteens' meal plans are available.
     pub base_url: String,
+    /// Canteen slugs to be appended to the base url.
     pub valid_canteens: Vec<String>,
+    /// Timeout when making web requests.
     pub client_timeout: std::time::Duration,
+    /// User agent string when making web request.
     pub client_user_agent: String,
+    /// Number of weeks in the future to request data for on full parsing.
     pub number_of_weeks_to_poll: u32,
 }
 
+/// Class for managing the request and parsing of meal plans.
+#[derive(Debug)]
 pub struct SwKaParseManager {
     link_creator: SwKaLinkCreator,
     request: SwKaHtmlRequest,

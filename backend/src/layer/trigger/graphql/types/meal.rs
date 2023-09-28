@@ -12,7 +12,7 @@ use super::{image::Image, price::Price, side::Side};
 
 #[derive(SimpleObject, Debug)]
 #[graphql(complex)]
-pub struct Meal {
+pub(in super::super) struct Meal {
     /// The identifier of the main course.
     id: Uuid,
     /// The name of the main course.

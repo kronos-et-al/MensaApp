@@ -1,3 +1,4 @@
+//! See [`QueryRoot`].
 use async_graphql::{Context, Object, Result};
 use tracing::{instrument, trace};
 

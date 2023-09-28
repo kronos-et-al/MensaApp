@@ -1,3 +1,6 @@
+//! Module responsible for sending email notifications to administrators.
+use std::fmt::Debug;
+
 use async_trait::async_trait;
 use thiserror::Error;
 
@@ -14,6 +17,7 @@ use crate::{
 use string_template::Template;
 use tracing::{error, info};
 
+/// Result returned when sending emails, potentially containing a [`MailError`].
 pub type MailResult<T> = std::result::Result<T, MailError>;
 
 const REPORT_TEMPLATE: &str = include_str!("./template.txt");
@@ -24,16 +28,18 @@ const MAIL_SUBJECT: &str = "An image was reported and requires your review";
 /// Enum describing the possible ways, the mail notification can fail.
 #[derive(Debug, Error)]
 pub enum MailError {
+    /// Error occurring when an email address could not be parsed.
     #[error("an error occurred while parsing the addresses: {0}")]
     AddressError(#[from] AddressError),
-    #[error("an error occurred while reading the template: {0}")]
-    TemplateError(#[from] std::io::Error),
+    /// Error occurring when an email could not be constructed.
     #[error("an error occurred while parsing the mail: {0}")]
     MailParseError(#[from] lettre::error::Error),
+    /// Error occurring when mail sender instance could bot be build.
     #[error("an error occurred while sending the mail: {0}")]
     MailSendError(#[from] lettre::transport::smtp::Error),
 }
 
+/// Class for sending emails.
 pub struct MailSender {
     config: MailInfo,
     mailer: SmtpTransport,

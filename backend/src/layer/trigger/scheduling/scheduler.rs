@@ -1,3 +1,4 @@
+//! Module containing the scheduler to schedule regular actions.
 use std::{sync::Arc, time::Instant};
 
 use crate::interface::mealplan_management::MensaParseScheduling;

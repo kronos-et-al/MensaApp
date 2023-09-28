@@ -6,6 +6,8 @@ use reqwest::Client;
 use std::time::Duration;
 use tracing::trace;
 
+/// Class for requesting the meal plan's webpage.
+#[derive(Debug)]
 pub struct SwKaHtmlRequest {
     client: Client,
 }

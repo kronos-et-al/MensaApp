@@ -1,3 +1,4 @@
+//! Module containing a factory pattern to construct instances to access the database for all components needing it.
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use tracing::info;
 
@@ -9,6 +10,7 @@ use super::{
 };
 
 /// Structure containing all information necessary to connect to a database.
+#[derive(Debug)]
 pub struct DatabaseInfo {
     /// Connection string to database of format `postgres://<username>:<password>@<host>:<port>/<database>`.
     pub connection: String,
@@ -17,8 +19,10 @@ pub struct DatabaseInfo {
 }
 
 /// This class is responsible for instantiating the database access implementations classes.
+#[derive(Debug)]
 pub struct DataAccessFactory {
     pool: Pool<Postgres>,
+    /// Number of weeks meal plan data will be available in the database.
     pub max_weeks_data: u32,
 }
 
