@@ -349,15 +349,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bs58"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f5353f36341f7451062466f0b755b96ac3a9547e4d7f6b70d603fc721a7d7896"
-dependencies = [
- "tinyvec",
-]
-
-[[package]]
 name = "bumpalo"
 version = "3.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1583,7 +1574,6 @@ dependencies = [
  "async-trait",
  "axum",
  "base64 0.21.4",
- "bs58",
  "chrono",
  "colored",
  "dotenvy",
@@ -1597,7 +1587,6 @@ dependencies = [
  "reqwest",
  "rusty-fork",
  "scraper",
- "serde",
  "serde_json",
  "serial_test",
  "sha2",
