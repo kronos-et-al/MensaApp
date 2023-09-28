@@ -10,8 +10,6 @@ use tracing::{info, info_span, Instrument};
 ///
 /// **Important:** Unlike regular cron expressions, seconds also have to be specified, see [here](https://lib.rs/crates/tokio-cron-scheduler).
 pub struct ScheduleInfo {
-    /// Cron-like schedule for running the image review process to check for no longer existing images, see [`ImageReviewScheduling`].
-    pub image_review_schedule: String,
     /// Cron-like schedule for running the meal plan update process for the current day's meal plan, see [`MensaParseScheduling`].
     pub update_parse_schedule: String,
     /// Cron-like schedule for running the meal plan update process for all available meal plan data, see [`MensaParseScheduling`].
@@ -161,7 +159,6 @@ mod tests {
         let info = ScheduleInfo {
             full_parse_schedule: "*/1 * * * * *".into(),
             update_parse_schedule: "*/2 * * * * *".into(),
-            image_review_schedule: "*/5 * * * * *".into(),
         };
         let mensa_parser = MensaParseMock::default();
 
@@ -190,7 +187,6 @@ mod tests {
         let info = ScheduleInfo {
             full_parse_schedule: "*/1 * * * * *".into(),
             update_parse_schedule: "*/2 * * * * *".into(),
-            image_review_schedule: "*/5 * * * * *".into(),
         };
         let mensa_parser = MensaParseMock::default();
 
@@ -206,7 +202,6 @@ mod tests {
         let info = ScheduleInfo {
             full_parse_schedule: "*/1 * * * * *".into(),
             update_parse_schedule: "*/2 * * * * *".into(),
-            image_review_schedule: "*/5 * * * * *".into(),
         };
         let mensa_parser = MensaParseMock::default();
 

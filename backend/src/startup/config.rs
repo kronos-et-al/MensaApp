@@ -101,12 +101,10 @@ impl ConfigReader {
                 .unwrap_or_else(|_| DEFAULT_NIGHTLY_SCHEDULE.into()),
             update_parse_schedule: env::var("UPDATE_PARSE_SCHEDULE")
                 .unwrap_or_else(|_| DEFAULT_UPDATE_PARSE_SCHEDULE.into()),
-            image_review_schedule: env::var("IMAGE_REVIEW_SCHEDULE")
-                .unwrap_or_else(|_| DEFAULT_NIGHTLY_SCHEDULE.into()),
         };
         info!(
-            "Running full parsing on `{}`, update parsing on `{}` and image reviews on `{}`",
-            info.full_parse_schedule, info.update_parse_schedule, info.image_review_schedule
+            "Running full parsing on `{}` and update parsing on `{}`",
+            info.full_parse_schedule, info.update_parse_schedule
         );
         Ok(info)
     }

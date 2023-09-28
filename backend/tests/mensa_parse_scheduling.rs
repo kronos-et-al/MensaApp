@@ -18,7 +18,6 @@ async fn test_full_mensa_parse_scheduling() {
     let info = ScheduleInfo {
         full_parse_schedule: "0 */5 * * * *".to_string(),
         update_parse_schedule: NEVER.to_string(),
-        image_review_schedule: NEVER.to_string(),
     };
     let mut scheduler = setup(info).await;
     scheduler.start().await;
@@ -32,7 +31,6 @@ async fn test_update_mensa_parse_scheduling() {
     let info = ScheduleInfo {
         full_parse_schedule: NEVER.to_string(),
         update_parse_schedule: "0 */5 * * * *".to_string(),
-        image_review_schedule: NEVER.to_string(),
     };
     let mut scheduler = setup(info).await;
     scheduler.start().await;

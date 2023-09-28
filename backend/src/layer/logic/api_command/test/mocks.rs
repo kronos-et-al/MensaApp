@@ -1,4 +1,4 @@
-//! This crate contains mocks of [`CommandDataAccess`] and [`ImageHoster`] and [`AdminNotification`] for testing.
+//! This crate contains mocks of [`CommandDataAccess`], [`FileHandler`], [`ImageValidation`] and [`AdminNotification`] for testing.
 
 use async_trait::async_trait;
 

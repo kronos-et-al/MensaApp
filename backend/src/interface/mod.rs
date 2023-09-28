@@ -1,4 +1,4 @@
-/// Module bundle for interface models
+//! Module bundle for interface models
 pub mod admin_notification;
 pub mod api_command;
 pub mod file_handler;
