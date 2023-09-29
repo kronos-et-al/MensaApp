@@ -1592,6 +1592,7 @@ dependencies = [
  "sha2",
  "sqlx",
  "string_template",
+ "tempfile",
  "thiserror",
  "tokio",
  "tokio-cron-scheduler",
