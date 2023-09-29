@@ -1,5 +1,6 @@
 use crate::util::{ReportReason, Uuid};
-use async_graphql::{Context, Object, Result};
+use async_graphql::{Context, Object, Result, Upload};
+use tokio::fs::File;
 use tracing::{instrument, trace};
 
 use super::util::ApiUtil;
@@ -20,18 +21,20 @@ impl MutationRoot {
     /// or another error occurred while adding the image an error message will be returned.
     ///
     /// If the image was added is successful, `true` is returned.
-    #[instrument(skip(self, ctx))]
+    #[instrument(skip(self, ctx, image), fields(file_name = image.value(ctx)?.filename, file_type = image.value(ctx)?.content_type))]
     async fn add_image(
         &self,
         ctx: &Context<'_>,
         #[graphql(desc = "Id of the meal to link an image to.")] meal_id: Uuid,
-        #[graphql(desc = "Flickr url to the image.")] image_url: String,
+        #[graphql(desc = "The image itself as multipart attachment")] image: Upload,
     ) -> Result<bool> {
         trace!("Mutated `addImage`");
         let command = ctx.get_command();
         let auth_info = ctx.get_auth_info();
-
-        command.add_image(meal_id, image_url, auth_info).await?;
+        let upload = image.value(ctx)?;
+        command
+            .add_image(meal_id, upload.content_type, File::from_std(upload.content), auth_info)
+            .await?;
         Ok(true)
     }
 
