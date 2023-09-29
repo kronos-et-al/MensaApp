@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use crate::util::IMAGE_EXTENSION;
 
 use async_trait::async_trait;
+use tracing::trace;
 
 use crate::{
     interface::image_storage::{ImageStorage, Result},
@@ -40,8 +41,11 @@ impl ImageStorage for FileHandler {
 
         tokio::task::spawn_blocking(move || image.save(file_path))
             .await
-            .expect("image saving should not panic nor get aborted")
-            .map_err(Into::into)
+            .expect("image saving should not panic nor get aborted")?;
+
+        trace!("Saved image {id}");
+
+        Ok(())
     }
 }
 
