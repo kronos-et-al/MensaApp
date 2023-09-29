@@ -18,7 +18,7 @@ use crate::{
             },
             mealplan_management::meal_plan_manager::MealPlanManager,
         },
-        trigger::{graphql::server::GraphQLServer, scheduling::scheduler::Scheduler},
+        trigger::{api::server::ApiServer, scheduling::scheduler::Scheduler},
     },
     startup::{cli, config::ConfigReader, logging::Logger},
 };
@@ -92,7 +92,7 @@ impl Server {
         let mealplan_management = MealPlanManager::new(mealplan_management_data, parser);
 
         // trigger layer
-        let mut graphql = GraphQLServer::new(config.read_graphql_info()?, request_data, command);
+        let mut graphql = ApiServer::new(config.read_graphql_info()?, request_data, command);
         let mut scheduler = Scheduler::new(config.read_schedule_info()?, mealplan_management).await;
 
         // run server

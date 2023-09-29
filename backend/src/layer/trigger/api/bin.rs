@@ -6,7 +6,7 @@ use mensa_app_backend::layer::{
             CommandImageValidationMock,
         },
     },
-    trigger::graphql::{server::GraphQLServerInfo, *},
+    trigger::api::{server::GraphQLServerInfo, *},
 };
 use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;

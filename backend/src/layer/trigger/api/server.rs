@@ -1,10 +1,11 @@
-//! This package contains the server that is responsible for providing the graphql API.
+//! This package contains the server that is responsible for providing the graphql and image API.
 
 use std::{
     fmt::Display,
     future::Future,
     mem,
     net::{Ipv6Addr, SocketAddrV6},
+    path::PathBuf,
     pin::Pin,
     sync::Arc,
 };
@@ -23,6 +24,7 @@ use axum::{
 };
 use reqwest::header::AUTHORIZATION;
 use tokio::sync::Notify;
+use tower_http::services::ServeDir;
 use tracing::{debug, info, info_span, Instrument};
 
 use crate::interface::{
@@ -38,8 +40,9 @@ use super::{
 
 type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 
-pub struct GraphQLServerInfo {
+pub struct ApiServerInfo {
     pub port: u16,
+    pub image_path: PathBuf,
 }
 
 enum State {
@@ -59,17 +62,17 @@ impl Display for State {
     }
 }
 
-/// Class witch controls the webserver for GraphQL requests.
-pub struct GraphQLServer {
-    server_info: GraphQLServerInfo,
+/// Class witch controls the webserver for API requests.
+pub struct ApiServer {
+    server_info: ApiServerInfo,
     schema: GraphQLSchema,
     state: State,
 }
 
-impl GraphQLServer {
+impl ApiServer {
     /// Creates a new Object with given access to datastore and logic for commands.
     pub fn new(
-        server_info: GraphQLServerInfo,
+        server_info: ApiServerInfo,
         data_access: impl RequestDataAccess + Sync + Send + 'static,
         command: impl Command + Sync + Send + 'static,
     ) -> Self {
@@ -94,7 +97,8 @@ impl GraphQLServer {
 
         let app = Router::new()
             .route("/", get(graphql_playground).post(graphql_handler))
-            .layer(Extension(self.schema.clone()));
+            .layer(Extension(self.schema.clone()))
+            .nest_service("/image", ServeDir::new(self.server_info.image_path));
 
         let socket = std::net::SocketAddr::V6(SocketAddrV6::new(
             Ipv6Addr::UNSPECIFIED,
@@ -202,22 +206,27 @@ async fn graphql_handler(
 mod tests {
     #![allow(clippy::unwrap_used)]
 
+    use std::env::temp_dir;
+
     use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
     use reqwest::header::AUTHORIZATION;
     use serial_test::serial;
 
-    use crate::layer::trigger::graphql::{
+    use crate::layer::trigger::api::{
         mock::{CommandMock, RequestDatabaseMock},
-        server::GraphQLServer,
+        server::ApiServer,
     };
 
-    use super::GraphQLServerInfo;
+    use super::ApiServerInfo;
 
     const TEST_PORT: u16 = 12345;
 
-    fn get_test_server() -> GraphQLServer {
-        let info = GraphQLServerInfo { port: TEST_PORT };
-        GraphQLServer::new(info, RequestDatabaseMock, CommandMock)
+    fn get_test_server() -> ApiServer {
+        let info = ApiServerInfo {
+            port: TEST_PORT,
+            image_path: temp_dir(),
+        };
+        ApiServer::new(info, RequestDatabaseMock, CommandMock)
     }
 
     #[tokio::test]

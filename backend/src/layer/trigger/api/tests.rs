@@ -4,10 +4,10 @@
 use async_graphql::{EmptySubscription, Request, Schema};
 
 use crate::interface::api_command::{AuthInfo, InnerAuthInfo};
-use crate::layer::trigger::graphql::mutation::MutationRoot;
-use crate::layer::trigger::graphql::query::QueryRoot;
-use crate::layer::trigger::graphql::server::construct_schema;
-use crate::layer::trigger::graphql::util::{CommandBox, DataBox};
+use crate::layer::trigger::api::mutation::MutationRoot;
+use crate::layer::trigger::api::query::QueryRoot;
+use crate::layer::trigger::api::server::construct_schema;
+use crate::layer::trigger::api::util::{CommandBox, DataBox};
 use crate::util::Uuid;
 
 use super::mock::{CommandMock, RequestDatabaseMock};
