@@ -179,12 +179,12 @@ where
 
     async fn add_image(
         &self,
-        meal_id: Uuid,
-        Storage_type: Option<String>,
-        Storage: File,
+        _meal_id: Uuid,
+        _image_type: Option<String>,
+        _image_file: File,
         auth_info: AuthInfo,
     ) -> Result<()> {
-        let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
+        let _auth_info = auth_info.ok_or(CommandError::NoAuth)?;
         // let command_type = CommandType::AddImage {
         //     meal_id,
         //     url: image_url,

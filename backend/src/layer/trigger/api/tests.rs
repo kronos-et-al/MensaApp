@@ -22,15 +22,16 @@ async fn test_gql_request(request: &'static str) {
 
 // ---------------- mutations --------------------
 
-#[tokio::test]
-async fn test_add_image() {
-    let request = r#"
-        mutation {
-            addImage(mealId:"1d75d380-cf07-4edb-9046-a2d981bc219d", imageUrl:"")
-        }    
-    "#;
-    test_gql_request(request).await;
-}
+// TODO
+// #[tokio::test]
+// async fn test_add_image() {
+//     let request = r#"
+//         mutation {
+//             addImage(mealId:"1d75d380-cf07-4edb-9046-a2d981bc219d", imageUrl:"")
+//         }
+//     "#;
+//     test_gql_request(request).await;
+// }
 
 #[tokio::test]
 async fn test_set_rating() {

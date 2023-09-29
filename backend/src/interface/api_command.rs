@@ -1,9 +1,9 @@
 //! This interface allows to execute API commands.
 
 use async_trait::async_trait;
-use tokio::fs::File;
 use std::fmt::Display;
 use thiserror::Error;
+use tokio::fs::File;
 
 use crate::util::{ReportReason, Uuid};
 

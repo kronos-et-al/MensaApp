@@ -33,7 +33,12 @@ impl MutationRoot {
         let auth_info = ctx.get_auth_info();
         let upload = image.value(ctx)?;
         command
-            .add_image(meal_id, upload.content_type, File::from_std(upload.content), auth_info)
+            .add_image(
+                meal_id,
+                upload.content_type,
+                File::from_std(upload.content),
+                auth_info,
+            )
             .await?;
         Ok(true)
     }
