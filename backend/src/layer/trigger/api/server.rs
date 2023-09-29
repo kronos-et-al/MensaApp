@@ -42,7 +42,7 @@ type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 
 pub struct ApiServerInfo {
     pub port: u16,
-    pub image_path: PathBuf,
+    pub image_dir: PathBuf,
 }
 
 enum State {
@@ -98,7 +98,7 @@ impl ApiServer {
         let app = Router::new()
             .route("/", get(graphql_playground).post(graphql_handler))
             .layer(Extension(self.schema.clone()))
-            .nest_service("/image", ServeDir::new(self.server_info.image_path));
+            .nest_service("/image", ServeDir::new(&self.server_info.image_dir));
 
         let socket = std::net::SocketAddr::V6(SocketAddrV6::new(
             Ipv6Addr::UNSPECIFIED,
@@ -224,7 +224,7 @@ mod tests {
     fn get_test_server() -> ApiServer {
         let info = ApiServerInfo {
             port: TEST_PORT,
-            image_path: temp_dir(),
+            image_dir: temp_dir(),
         };
         ApiServer::new(info, RequestDatabaseMock, CommandMock)
     }

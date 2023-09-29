@@ -92,7 +92,7 @@ impl Server {
         let mealplan_management = MealPlanManager::new(mealplan_management_data, parser);
 
         // trigger layer
-        let mut graphql = ApiServer::new(config.read_graphql_info()?, request_data, command);
+        let mut graphql = ApiServer::new(config.read_api_info()?, request_data, command);
         let mut scheduler = Scheduler::new(config.read_schedule_info()?, mealplan_management).await;
 
         // run server

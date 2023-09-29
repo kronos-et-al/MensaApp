@@ -1,4 +1,4 @@
-use std::{env, time::Duration};
+use std::{env, path::PathBuf, time::Duration};
 
 use dotenvy::dotenv;
 use tracing::info;
@@ -145,12 +145,13 @@ impl ConfigReader {
     /// Reads the config for the graphql web server from environment variables.
     /// # Errors
     /// when the environment variables are not set and no default is provided internally.
-    pub fn read_graphql_info(&self) -> Result<ApiServerInfo> {
+    pub fn read_api_info(&self) -> Result<ApiServerInfo> {
         let info = ApiServerInfo {
             port: env::var("HTTP_PORT")
                 .ok()
                 .and_then(|p| p.parse().ok())
                 .unwrap_or(DEFAULT_HTTP_PORT),
+            image_dir: read_var("IMAGE_DIR").map(PathBuf::from)?,
         };
         Ok(info)
     }
@@ -176,7 +177,7 @@ mod tests {
     fn test_conf_reader() {
         let reader = ConfigReader::default();
         reader.read_database_info().ok();
-        reader.read_graphql_info().ok();
+        reader.read_api_info().ok();
         reader.read_log_info().ok();
         reader.read_mail_info().ok();
         reader.read_schedule_info().ok();
