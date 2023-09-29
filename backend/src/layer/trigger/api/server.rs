@@ -40,6 +40,9 @@ use super::{
 
 type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 
+/// Base path under which images can be accessed.
+pub const IMAGE_BASE_PATH: &str = "/image";
+
 pub struct ApiServerInfo {
     pub port: u16,
     pub image_dir: PathBuf,
@@ -98,7 +101,7 @@ impl ApiServer {
         let app = Router::new()
             .route("/", get(graphql_playground).post(graphql_handler))
             .layer(Extension(self.schema.clone()))
-            .nest_service("/image", ServeDir::new(&self.server_info.image_dir));
+            .nest_service(IMAGE_BASE_PATH, ServeDir::new(&self.server_info.image_dir));
 
         let socket = std::net::SocketAddr::V6(SocketAddrV6::new(
             Ipv6Addr::UNSPECIFIED,
@@ -206,18 +209,22 @@ async fn graphql_handler(
 mod tests {
     #![allow(clippy::unwrap_used)]
 
-    use std::env::temp_dir;
+    use std::{env::temp_dir, io::Cursor, path::PathBuf};
 
     use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
-    use reqwest::header::AUTHORIZATION;
+    use image::{io::Reader, DynamicImage, ImageBuffer, ImageFormat};
+    use reqwest::header::{AUTHORIZATION, CONTENT_TYPE};
     use serial_test::serial;
 
-    use crate::layer::trigger::api::{
-        mock::{CommandMock, RequestDatabaseMock},
-        server::ApiServer,
+    use crate::{
+        layer::trigger::api::{
+            mock::{CommandMock, RequestDatabaseMock},
+            server::ApiServer,
+        },
+        util::ImageResource,
     };
 
-    use super::ApiServerInfo;
+    use super::{ApiServerInfo, IMAGE_BASE_PATH};
 
     const TEST_PORT: u16 = 12345;
 
@@ -225,6 +232,14 @@ mod tests {
         let info = ApiServerInfo {
             port: TEST_PORT,
             image_dir: temp_dir(),
+        };
+        ApiServer::new(info, RequestDatabaseMock, CommandMock)
+    }
+
+    fn get_test_server_with_images(image_dir: PathBuf) -> ApiServer {
+        let info = ApiServerInfo {
+            port: TEST_PORT,
+            image_dir,
         };
         ApiServer::new(info, RequestDatabaseMock, CommandMock)
     }
@@ -305,5 +320,70 @@ mod tests {
         let mut server = get_test_server();
         server.start();
         server.start();
+    }
+
+    #[tokio::test]
+    #[serial]
+    async fn test_images() {
+        let image_folder =
+            tempfile::TempDir::new().expect("should be able to create temporary folder");
+
+        let image =
+            ImageResource::ImageRgb8(ImageBuffer::from_fn(10, 10, |_, _| image::Rgb([10u8; 3])));
+
+        let image_name = "test.jpg";
+        let mut image_path = image_folder.path().to_path_buf();
+        image_path.push(image_name);
+
+        let image_name_2 = "foo.png";
+        let mut image_path_2 = image_folder.path().to_path_buf();
+        image_path_2.push(image_name_2);
+
+        image
+            .save(image_path)
+            .expect("should be able to save image");
+
+        println!(
+            "Files in image dir: {:?}",
+            image_folder
+                .path()
+                .read_dir()
+                .unwrap()
+                .map(Result::unwrap)
+                .collect::<Vec<_>>()
+        );
+
+        let mut server = get_test_server_with_images(image_folder.path().to_owned());
+        server.start();
+
+        // save image after server is started to check "dynamic" file requests
+        image
+            .save(image_path_2)
+            .expect("should be able to save image");
+
+        // performing request
+
+        let resp_image_1 = request_image(image_name).await;
+        let resp_image_2 = request_image(image_name_2).await;
+        assert_eq!(image, resp_image_1); // only works if image is simple (e.g. monotone) due to compression
+        assert_eq!(image, resp_image_2);
+
+        // ----
+        server.shutdown().await;
+    }
+
+    async fn request_image(image_name: &str) -> DynamicImage {
+        let resp = reqwest::get(format!(
+            "http://localhost:{TEST_PORT}{IMAGE_BASE_PATH}/{image_name}"
+        ))
+        .await
+        .unwrap();
+
+        let file_type = resp.headers()[CONTENT_TYPE].to_str().unwrap().to_owned();
+        let resp_bytes = resp.bytes().await.unwrap();
+        let mut reader = Reader::new(Cursor::new(&resp_bytes));
+        reader.set_format(ImageFormat::from_mime_type(file_type).unwrap());
+
+        reader.decode().expect("Should decode response to image")
     }
 }
