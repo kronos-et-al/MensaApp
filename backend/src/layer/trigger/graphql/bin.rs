@@ -2,7 +2,7 @@ use mensa_app_backend::layer::{
     logic::api_command::{
         command_handler::CommandHandler,
         test::mocks::{
-            CommandAdminNotificationMock, CommandDatabaseMock, CommandFileHandlerMock,
+            CommandAdminNotificationMock, CommandDatabaseMock, CommandImageStorageMock,
             CommandImageValidationMock,
         },
     },
@@ -29,7 +29,7 @@ async fn main() {
         CommandHandler::new(
             CommandDatabaseMock,
             CommandAdminNotificationMock,
-            CommandFileHandlerMock,
+            CommandImageStorageMock,
             CommandImageValidationMock,
         )
         .await

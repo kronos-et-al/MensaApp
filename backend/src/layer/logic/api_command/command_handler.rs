@@ -6,7 +6,7 @@ use crate::{
     interface::{
         admin_notification::{AdminNotification, ImageReportInfo},
         api_command::{AuthInfo, Command, CommandError, Result},
-        file_handler::FileHandler,
+        image_storage::ImageStorage,
         image_validation::ImageValidation,
         persistent_data::{model::Image, CommandDataAccess},
     },
@@ -20,12 +20,12 @@ pub struct CommandHandler<DataAccess, Notify, File, Validation>
 where
     DataAccess: CommandDataAccess,
     Notify: AdminNotification,
-    File: FileHandler,
+    File: ImageStorage,
     Validation: ImageValidation,
 {
     command_data: DataAccess,
     admin_notification: Notify,
-    file_handler: File,
+    image_storage: File,
     image_validation: Validation,
     auth: Authenticator,
 }
@@ -34,7 +34,7 @@ impl<DataAccess, Notify, File, Validation> CommandHandler<DataAccess, Notify, Fi
 where
     DataAccess: CommandDataAccess,
     Notify: AdminNotification,
-    File: FileHandler,
+    File: ImageStorage,
     Validation: ImageValidation,
 {
     /// A function that creates a new [`CommandHandler`]
@@ -44,7 +44,7 @@ where
     pub async fn new(
         command_data: DataAccess,
         admin_notification: Notify,
-        file_handler: File,
+        image_storage: File,
         image_validation: Validation,
     ) -> Result<Self> {
         let keys: Vec<String> = command_data
@@ -56,7 +56,7 @@ where
         Ok(Self {
             command_data,
             admin_notification,
-            file_handler,
+            image_storage,
             image_validation,
             auth: Authenticator::new(keys),
         })
@@ -89,7 +89,7 @@ impl<DataAccess, Notify, File, Image> Command for CommandHandler<DataAccess, Not
 where
     DataAccess: CommandDataAccess,
     Notify: AdminNotification,
-    File: FileHandler,
+    File: ImageStorage,
     Image: ImageValidation,
 {
     async fn report_image(
@@ -182,7 +182,7 @@ where
         };
         self.auth.authn_command(&auth_info, &command_type)?;
 
-        _ = &self.file_handler;
+        _ = &self.image_storage;
         _ = &self.image_validation;
         todo!() // todo
     }
@@ -206,7 +206,7 @@ mod test {
     use crate::interface::api_command::{Command, InnerAuthInfo, Result};
     use crate::interface::persistent_data::model::Image;
     use crate::layer::logic::api_command::test::mocks::{
-        CommandFileHandlerMock, CommandImageValidationMock, IMAGE_ID_TO_FAIL, INVALID_URL,
+        CommandImageStorageMock, CommandImageValidationMock, IMAGE_ID_TO_FAIL, INVALID_URL,
         MEAL_ID_TO_FAIL,
     };
     use crate::layer::logic::api_command::{
@@ -418,18 +418,18 @@ mod test {
         CommandHandler<
             CommandDatabaseMock,
             CommandAdminNotificationMock,
-            CommandFileHandlerMock,
+            CommandImageStorageMock,
             CommandImageValidationMock,
         >,
     > {
         let command_data = CommandDatabaseMock;
         let admin_notification = CommandAdminNotificationMock;
-        let file_handler = CommandFileHandlerMock;
+        let image_storage = CommandImageStorageMock;
         let image_validation = CommandImageValidationMock;
         CommandHandler::new(
             command_data,
             admin_notification,
-            file_handler,
+            image_storage,
             image_validation,
         )
         .await
@@ -445,7 +445,7 @@ mod test {
         assert!(CommandHandler::<
             CommandDatabaseMock,
             CommandAdminNotificationMock,
-            CommandFileHandlerMock,
+            CommandImageStorageMock,
             CommandImageValidationMock,
         >::will_be_hidden(&image));
     }

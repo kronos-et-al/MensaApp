@@ -1,11 +1,11 @@
-//! This crate contains mocks of [`CommandDataAccess`], [`FileHandler`], [`ImageValidation`] and [`AdminNotification`] for testing.
+//! This crate contains mocks of [`CommandDataAccess`], [`ImageStorage`], [`ImageValidation`] and [`AdminNotification`] for testing.
 
 use async_trait::async_trait;
 
 use crate::{
     interface::{
         admin_notification::{AdminNotification, ImageReportInfo},
-        file_handler::FileHandler,
+        image_storage::ImageStorage,
         image_validation::ImageValidation,
         persistent_data::{
             model::{ApiKey, Image},
@@ -161,15 +161,15 @@ impl ImageValidation for CommandImageValidationMock {
 }
 
 #[derive(Default)]
-pub struct CommandFileHandlerMock;
+pub struct CommandImageStorageMock;
 
 #[async_trait]
-impl FileHandler for CommandFileHandlerMock {
+impl ImageStorage for CommandImageStorageMock {
     async fn save_image(
         &self,
         _id: Uuid,
         _image: ImageResource,
-    ) -> crate::interface::file_handler::Result<()> {
+    ) -> crate::interface::image_storage::Result<()> {
         Ok(())
     }
 }

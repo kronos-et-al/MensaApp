@@ -14,7 +14,7 @@ use crate::{
         logic::{
             api_command::{
                 command_handler::CommandHandler,
-                test::mocks::{CommandFileHandlerMock, CommandImageValidationMock},
+                test::mocks::{CommandImageStorageMock, CommandImageValidationMock},
             },
             mealplan_management::meal_plan_manager::MealPlanManager,
         },
@@ -84,7 +84,7 @@ impl Server {
 
         let mail = MailSender::new(config.read_mail_info()?)?;
         let parser = SwKaParseManager::new(config.read_swka_info()?)?;
-        let file_handler = CommandFileHandlerMock; // todo
+        let file_handler = CommandImageStorageMock; // todo
         let google_vision = CommandImageValidationMock; // todo
 
         // logic layer

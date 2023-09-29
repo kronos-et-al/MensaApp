@@ -5,7 +5,7 @@ use mensa_app_backend::{
         data::{database::factory::DataAccessFactory, mail::mail_sender::MailSender},
         logic::api_command::{
             command_handler::CommandHandler,
-            test::mocks::{CommandFileHandlerMock, CommandImageValidationMock},
+            test::mocks::{CommandImageStorageMock, CommandImageValidationMock},
         },
     },
     startup::config::ConfigReader,
@@ -118,7 +118,7 @@ async fn setup_cmd() -> impl Command {
     let reader = ConfigReader::default();
 
     let mail = MailSender::new(reader.read_mail_info().unwrap()).unwrap();
-    let file_handler = CommandFileHandlerMock; // todo
+    let file_handler = CommandImageStorageMock; // todo
     let image_validation = CommandImageValidationMock; // todo
 
     let factory = DataAccessFactory::new(reader.read_database_info().unwrap(), true)
