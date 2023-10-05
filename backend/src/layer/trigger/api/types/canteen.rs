@@ -1,6 +1,4 @@
-use crate::{
-    interface::persistent_data::model, layer::trigger::graphql::util::ApiUtil, util::Uuid,
-};
+use crate::{interface::persistent_data::model, layer::trigger::api::util::ApiUtil, util::Uuid};
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 use tracing::instrument;
 

@@ -3,6 +3,7 @@
 use async_trait::async_trait;
 use std::fmt::Display;
 use thiserror::Error;
+use tokio::fs::File;
 
 use crate::util::{ReportReason, Uuid};
 
@@ -34,7 +35,13 @@ pub trait Command {
     async fn remove_image_downvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()>;
 
     /// Command to link an image to a meal.
-    async fn add_image(&self, meal_id: Uuid, image_url: String, auth_info: AuthInfo) -> Result<()>;
+    async fn add_image(
+        &self,
+        meal_id: Uuid,
+        image_type: Option<String>,
+        image_file: File,
+        auth_info: AuthInfo,
+    ) -> Result<()>;
 
     /// command to add a rating to a meal.
     async fn set_meal_rating(&self, meal_id: Uuid, rating: u32, auth_info: AuthInfo) -> Result<()>;
