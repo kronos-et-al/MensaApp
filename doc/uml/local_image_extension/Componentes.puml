@@ -22,5 +22,4 @@ package Data {
 }
 
 [ApiServer] --> Command
-[ApiServer] --> [FileHandler]
 @enduml

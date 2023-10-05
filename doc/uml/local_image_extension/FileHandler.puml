@@ -14,8 +14,6 @@ struct FileHandlerInfo {
 
 FileHandler .> FileHandlerInfo
 
-
-FileHandler .u.|> ImageAccess
 FileHandler .u.|> ImageStorage
 
 @enduml
