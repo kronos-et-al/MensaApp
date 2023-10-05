@@ -4,7 +4,7 @@ use crate::{interface::api_command, util::Uuid};
 
 #[derive(SimpleObject)]
 /// Information about the provided authentication information.
-pub struct AuthInfo {
+pub(in super::super) struct AuthInfo {
     /// My own user identifier.
     client_id: Uuid,
     /// The provided api key identifier (first 10 symbols only!).

@@ -1,3 +1,4 @@
+//! See [`ConfigReader`].
 use std::{env, path::PathBuf, time::Duration};
 
 use dotenvy::dotenv;
@@ -45,6 +46,7 @@ impl ConfigReader {
         env::args().any(|arg| arg == MIGRATE)
     }
 
+    /// Queries the program arguments to check whether the help page should be shown.
     #[must_use]
     pub fn should_print_help(&self) -> bool {
         env::args().any(|arg| HELP.contains(&arg.as_str()))

@@ -1,3 +1,4 @@
+//! Module responsible for handling database requests for commands.
 use async_trait::async_trait;
 use sqlx::{Pool, Postgres};
 
@@ -11,6 +12,7 @@ use crate::{
 };
 
 /// Class implementing all database requests arising from graphql manipulations.
+#[derive(Debug)]
 pub struct PersistentCommandData {
     pub(super) pool: Pool<Postgres>,
 }

@@ -4,7 +4,7 @@ use tracing::instrument;
 
 #[derive(SimpleObject, Debug)]
 #[graphql(complex)]
-pub struct Image {
+pub(in super::super) struct Image {
     /// The id of the image.
     id: Uuid,
     /// The url of the image.

@@ -3,7 +3,7 @@ use std::env::temp_dir;
 use mensa_app_backend::layer::{
     logic::api_command::{
         command_handler::CommandHandler,
-        test::mocks::{
+        mocks::{
             CommandAdminNotificationMock, CommandDatabaseMock, CommandImageStorageMock,
             CommandImageValidationMock,
         },

@@ -1,4 +1,5 @@
 //! This crate contains mocks of [`CommandDataAccess`], [`ImageStorage`], [`ImageValidation`] and [`AdminNotification`] for testing.
+#![allow(missing_docs)]
 
 use async_trait::async_trait;
 
@@ -19,7 +20,7 @@ pub const IMAGE_ID_TO_FAIL: Uuid = Uuid::from_u128(7u128);
 pub const MEAL_ID_TO_FAIL: Uuid = Uuid::from_u128(27u128);
 pub const INVALID_URL: &str = "hello";
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct CommandDatabaseMock;
 
 #[async_trait]
@@ -138,7 +139,7 @@ impl CommandDataAccess for CommandDatabaseMock {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct CommandAdminNotificationMock;
 
 #[async_trait]
@@ -147,7 +148,7 @@ impl AdminNotification for CommandAdminNotificationMock {
     async fn notify_admin_image_report(&self, _info: ImageReportInfo) {}
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct CommandImageValidationMock;
 
 #[async_trait]
@@ -160,7 +161,7 @@ impl ImageValidation for CommandImageValidationMock {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct CommandImageStorageMock;
 
 #[async_trait]

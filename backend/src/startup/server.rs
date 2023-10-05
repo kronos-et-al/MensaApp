@@ -1,3 +1,4 @@
+//! This module contains the server, the heart of the application.
 use std::{env::VarError, num::ParseIntError};
 use thiserror::Error;
 use tokio::signal::ctrl_c;
@@ -14,7 +15,7 @@ use crate::{
         logic::{
             api_command::{
                 command_handler::CommandHandler,
-                test::mocks::{CommandImageStorageMock, CommandImageValidationMock},
+                mocks::{CommandImageStorageMock, CommandImageValidationMock},
             },
             mealplan_management::meal_plan_manager::MealPlanManager,
         },
@@ -23,8 +24,10 @@ use crate::{
     startup::{cli, config::ConfigReader, logging::Logger},
 };
 
+/// Result returned from the server, potentially containing a [`ServerError`].
 pub type Result<T> = std::result::Result<T, ServerError>;
 
+/// Error indicating that there was an error while starting/stopping the server.
 #[derive(Debug, Error)]
 pub enum ServerError {
     /// A necessary environment variable was not set.
@@ -42,7 +45,7 @@ pub enum ServerError {
     /// Io error
     #[error("io error: {0}")]
     IoError(#[from] std::io::Error),
-    // Error parsing integers.
+    /// Error parsing integers.
     #[error("could not parsing integer: {0}")]
     ParseIntError(#[from] ParseIntError),
     /// Error from the database.
@@ -50,7 +53,7 @@ pub enum ServerError {
     DataError(#[from] DataError),
 }
 
-// Class providing the combined server functions to the outside.
+/// Class providing the combined server functions to the outside.
 pub struct Server;
 
 impl Server {

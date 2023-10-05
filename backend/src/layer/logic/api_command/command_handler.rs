@@ -1,3 +1,4 @@
+//! See [`CommandHandler`].
 use async_trait::async_trait;
 use chrono::Local;
 use tokio::fs::File;
@@ -17,6 +18,8 @@ use crate::{
 
 const REPORT_FACTOR: f64 = 1.0 / 35.0;
 
+/// Class responsible for executing api commands.
+#[derive(Debug)]
 pub struct CommandHandler<DataAccess, Notify, Storage, Validation>
 where
     DataAccess: CommandDataAccess,
@@ -214,12 +217,12 @@ mod test {
 
     use crate::interface::api_command::{Command, InnerAuthInfo, Result};
     use crate::interface::persistent_data::model::Image;
-    use crate::layer::logic::api_command::test::mocks::{
+    use crate::layer::logic::api_command::mocks::{
         CommandImageStorageMock, CommandImageValidationMock, IMAGE_ID_TO_FAIL, MEAL_ID_TO_FAIL,
     };
     use crate::layer::logic::api_command::{
         command_handler::CommandHandler,
-        test::mocks::{CommandAdminNotificationMock, CommandDatabaseMock},
+        mocks::{CommandAdminNotificationMock, CommandDatabaseMock},
     };
     use crate::util::{ReportReason, Uuid};
 

@@ -9,6 +9,7 @@ use crate::util::{ReportReason, Uuid};
 
 use super::persistent_data::DataError;
 
+/// Result returned from commands, potentially containing a [`CommandError`].
 pub type Result<T> = std::result::Result<T, CommandError>;
 
 /// Interface for accessing commands which can be triggered by an API.

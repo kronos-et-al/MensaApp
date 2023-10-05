@@ -1,6 +1,9 @@
+//! Module containing code for command line-only actions.
 use colored::Colorize;
 
+/// Command arguments to show the help page.
 pub const HELP: &[&str] = &["--help", "-h", "-?"];
+/// Command argument to run database migrations.
 pub const MIGRATE: &str = "--migrate";
 
 /// Prints information about the binary and shows available commands.

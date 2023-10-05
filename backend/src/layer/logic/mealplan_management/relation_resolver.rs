@@ -1,9 +1,11 @@
+//! See [`RelationResolver`].
 use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
 use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
 use crate::util::{Date, Uuid};
 use std::slice::Iter;
 use tracing::warn;
 
+/// Class responsible for resolving relations of existing and new meals by avoiding duplications of those inside the data store.
 pub struct RelationResolver<DataAccess>
 where
     DataAccess: MealplanManagementDataAccess,
@@ -15,6 +17,7 @@ impl<DataAccess> RelationResolver<DataAccess>
 where
     DataAccess: MealplanManagementDataAccess,
 {
+    /// Create a new instance with the given data store.
     pub const fn new(db: DataAccess) -> Self {
         Self { db }
     }

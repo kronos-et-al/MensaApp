@@ -1,3 +1,4 @@
+//! Module responsible for authenticating api commands by verifying hashes over the api key and data.
 use base64::{engine::general_purpose::STANDARD, Engine};
 
 use sha2::{Digest, Sha512};
@@ -7,6 +8,7 @@ use crate::interface::api_command::{CommandError, InnerAuthInfo, Result};
 use super::command_type::CommandType;
 
 /// Class for authenticating commands.
+#[derive(Debug)]
 pub struct Authenticator {
     api_keys: Vec<String>,
 }

@@ -6,7 +6,7 @@ use super::line::Line;
 
 #[derive(SimpleObject, Debug)]
 #[graphql(complex)]
-pub struct Canteen {
+pub(in super::super) struct Canteen {
     /// The id of the canteen.
     id: Uuid,
     /// The name of the canteen.

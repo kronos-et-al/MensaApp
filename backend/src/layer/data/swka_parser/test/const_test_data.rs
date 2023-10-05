@@ -6,7 +6,7 @@ use crate::layer::data::swka_parser::swka_parse_manager::SwKaInfo;
 use std::time::Duration;
 
 #[must_use]
-pub fn get_mensa_names() -> Vec<String> {
+pub(in super::super) fn get_mensa_names() -> Vec<String> {
     vec![
         String::from("mensa_adenauerring"),
         String::from("mensa_gottesaue"),
@@ -19,22 +19,22 @@ pub fn get_mensa_names() -> Vec<String> {
 }
 
 #[must_use]
-pub fn get_base_url() -> String {
+pub(in super::super) fn get_base_url() -> String {
     String::from("https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/")
 }
 
 #[must_use]
-pub const fn get_client_timeout() -> Duration {
+pub(in super::super) const fn get_client_timeout() -> Duration {
     Duration::from_millis(6000)
 }
 
 #[must_use]
-pub fn get_client_user_agent() -> String {
+pub(in super::super) fn get_client_user_agent() -> String {
     String::from("User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
 }
 
 #[must_use]
-pub fn get_parse_info() -> SwKaInfo {
+pub(in super::super) fn get_parse_info() -> SwKaInfo {
     SwKaInfo {
         base_url: get_base_url(),
         valid_canteens: get_mensa_names(),
@@ -45,11 +45,11 @@ pub fn get_parse_info() -> SwKaInfo {
 }
 
 #[must_use]
-pub fn get_creator() -> SwKaLinkCreator {
+pub(in super::super) fn get_creator() -> SwKaLinkCreator {
     SwKaLinkCreator::new(get_base_url(), get_mensa_names(), 5)
 }
 
 #[must_use]
-pub fn get_request() -> SwKaHtmlRequest {
+pub(in super::super) fn get_request() -> SwKaHtmlRequest {
     SwKaHtmlRequest::new(get_client_timeout(), get_client_user_agent()).unwrap()
 }

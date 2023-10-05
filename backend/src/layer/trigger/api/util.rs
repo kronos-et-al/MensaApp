@@ -1,3 +1,4 @@
+//! Module containing some helper functions like for working inside the graphql context and processing authentication headers.
 use async_graphql::Context;
 
 use crate::{
@@ -9,12 +10,18 @@ use crate::{
 };
 use base64::{engine::general_purpose, Engine};
 
+/// Type for storing the data access class inside the graphql context.
 pub type DataBox = Box<dyn RequestDataAccess + Sync + Send + 'static>;
+/// Type for storing the command implementations inside the graphql context.
 pub type CommandBox = Box<dyn Command + Sync + Send + 'static>;
 
+/// Utility trait with convenience methods for accessing data stored inside the graphql context.
 pub trait ApiUtil {
+    /// Returns access to the command implementation.
     fn get_command(&self) -> &(dyn Command + Sync + Send);
+    /// Returns access to the datastore.
     fn get_data_access(&self) -> &(dyn RequestDataAccess + Sync + Send);
+    /// Returns authentication information supplied within the current request.
     fn get_auth_info(&self) -> AuthInfo;
 }
 

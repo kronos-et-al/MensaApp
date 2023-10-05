@@ -1,3 +1,4 @@
+//! See [`MealPlanManager`].
 use crate::interface::mealplan_management::MensaParseScheduling;
 use crate::interface::mensa_parser::model::ParseCanteen;
 use crate::interface::mensa_parser::MealplanParser;
@@ -8,6 +9,7 @@ use async_trait::async_trait;
 use chrono::Local;
 use tracing::{error, trace, warn};
 
+/// Class responsible for managing the meal plan update process.
 pub struct MealPlanManager<Parser, DataAccess>
 where
     Parser: MealplanParser,
@@ -22,6 +24,7 @@ where
     DataAccess: MealplanManagementDataAccess,
     Parser: MealplanParser,
 {
+    /// Creates a new instance using the given data store and parser to get meal the raw meal plans.
     pub const fn new(database: DataAccess, meal_plan_parser: Parser) -> Self {
         Self {
             resolver: RelationResolver::new(database),

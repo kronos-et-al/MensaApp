@@ -1,3 +1,4 @@
+//! See [`MutationRoot`].
 use crate::util::{ReportReason, Uuid};
 use async_graphql::{Context, Object, Result, Upload};
 use tokio::fs::File;

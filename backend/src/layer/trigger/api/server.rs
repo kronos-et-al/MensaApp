@@ -43,8 +43,11 @@ type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 /// Base path under which images can be accessed.
 pub const IMAGE_BASE_PATH: &str = "/image";
 
+/// Information necessary to create a [`ApiServerInfo`].
 pub struct ApiServerInfo {
+    /// Port under which the server should run.
     pub port: u16,
+    /// Directory where images are stored.
     pub image_dir: PathBuf,
 }
 

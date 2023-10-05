@@ -1,5 +1,8 @@
 #![forbid(unsafe_code)]
 #![warn(
+    missing_docs,
+    unreachable_pub,
+    unused_crate_dependencies,
     clippy::pedantic,
     clippy::nursery,
     clippy::unwrap_used,
