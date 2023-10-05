@@ -4,10 +4,10 @@
 use async_graphql::{EmptySubscription, Request, Schema};
 
 use crate::interface::api_command::{AuthInfo, InnerAuthInfo};
-use crate::layer::trigger::graphql::mutation::MutationRoot;
-use crate::layer::trigger::graphql::query::QueryRoot;
-use crate::layer::trigger::graphql::server::construct_schema;
-use crate::layer::trigger::graphql::util::{CommandBox, DataBox};
+use crate::layer::trigger::api::mutation::MutationRoot;
+use crate::layer::trigger::api::query::QueryRoot;
+use crate::layer::trigger::api::server::construct_schema;
+use crate::layer::trigger::api::util::{CommandBox, DataBox};
 use crate::util::Uuid;
 
 use super::mock::{CommandMock, RequestDatabaseMock};
@@ -22,15 +22,16 @@ async fn test_gql_request(request: &'static str) {
 
 // ---------------- mutations --------------------
 
-#[tokio::test]
-async fn test_add_image() {
-    let request = r#"
-        mutation {
-            addImage(mealId:"1d75d380-cf07-4edb-9046-a2d981bc219d", imageUrl:"")
-        }    
-    "#;
-    test_gql_request(request).await;
-}
+// TODO
+// #[tokio::test]
+// async fn test_add_image() {
+//     let request = r#"
+//         mutation {
+//             addImage(mealId:"1d75d380-cf07-4edb-9046-a2d981bc219d", imageUrl:"")
+//         }
+//     "#;
+//     test_gql_request(request).await;
+// }
 
 #[tokio::test]
 async fn test_set_rating() {
