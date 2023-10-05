@@ -4,8 +4,8 @@ use tracing::info;
 use crate::interface::persistent_data::Result;
 
 use super::{
-    command::PersistentCommandData, image_review::PersistentImageReviewData,
-    mealplan_management::PersistentMealplanManagementData, request::PersistentRequestData,
+    command::PersistentCommandData, mealplan_management::PersistentMealplanManagementData,
+    request::PersistentRequestData,
 };
 
 /// Structure containing all information necessary to connect to a database.
@@ -56,14 +56,6 @@ impl DataAccessFactory {
         }
     }
 
-    /// Returns a object for accessing database requests for the image reviewing process.
-    #[must_use]
-    pub fn get_image_review_data_access(&self) -> PersistentImageReviewData {
-        PersistentImageReviewData {
-            pool: self.pool.clone(),
-        }
-    }
-
     /// Returns a object for accessing database requests for the meal plan management.
     #[must_use]
     pub fn get_mealplan_management_data_access(&self) -> PersistentMealplanManagementData {
@@ -108,7 +100,6 @@ mod tests {
             .await
             .expect("failed to access test database");
         let _ = factory.get_command_data_access();
-        let _ = factory.get_image_review_data_access();
         let _ = factory.get_mealplan_management_data_access();
         let _ = factory.get_request_data_access();
 

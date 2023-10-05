@@ -1,19 +1,18 @@
-//! This crate contains mocks of [`CommandDataAccess`] and [`ImageHoster`] and [`AdminNotification`] for testing.
+//! This crate contains mocks of [`CommandDataAccess`], [`ImageStorage`], [`ImageValidation`] and [`AdminNotification`] for testing.
 
 use async_trait::async_trait;
 
 use crate::{
     interface::{
         admin_notification::{AdminNotification, ImageReportInfo},
-        image_hoster::{
-            model::ImageMetaData, ImageHoster, ImageHosterError, Result as ImageResult,
-        },
+        image_storage::ImageStorage,
+        image_validation::ImageValidation,
         persistent_data::{
             model::{ApiKey, Image},
             CommandDataAccess, DataError, Result as DataResult,
         },
     },
-    util::{Date, ReportReason, Uuid},
+    util::{Date, ImageResource, ReportReason, Uuid},
 };
 
 pub const IMAGE_ID_TO_FAIL: Uuid = Uuid::from_u128(7u128);
@@ -140,36 +139,37 @@ impl CommandDataAccess for CommandDatabaseMock {
 }
 
 #[derive(Default)]
-pub struct CommandImageHosterMock;
-
-#[async_trait]
-impl ImageHoster for CommandImageHosterMock {
-    /// Checks if the given link is valid and provides additional information (ImageMetaData) from the hoster.
-    async fn validate_url(&self, url: &str) -> ImageResult<ImageMetaData> {
-        if url == INVALID_URL {
-            Err(ImageHosterError::PhotoNotFound)
-        } else {
-            Ok(ImageMetaData {
-                id: String::new(),
-                image_url: url.to_string(),
-            })
-        }
-    }
-    /// Checks if an image still exists at the hoster website.
-    async fn check_existence(&self, _image_id: &str) -> ImageResult<bool> {
-        Ok(true)
-    }
-    /// Checks whether the licence is acceptable for our purposes.
-    async fn check_licence(&self, _image_id: &str) -> ImageResult<()> {
-        Ok(())
-    }
-}
-
-#[derive(Default)]
 pub struct CommandAdminNotificationMock;
 
 #[async_trait]
 impl AdminNotification for CommandAdminNotificationMock {
     /// Notifies an administrator about a newly reported image and the response automatically taken.
     async fn notify_admin_image_report(&self, _info: ImageReportInfo) {}
+}
+
+#[derive(Default)]
+pub struct CommandImageValidationMock;
+
+#[async_trait]
+impl ImageValidation for CommandImageValidationMock {
+    async fn validate_image(
+        &self,
+        _image: &ImageResource,
+    ) -> crate::interface::image_validation::Result<()> {
+        Ok(())
+    }
+}
+
+#[derive(Default)]
+pub struct CommandImageStorageMock;
+
+#[async_trait]
+impl ImageStorage for CommandImageStorageMock {
+    async fn save_image(
+        &self,
+        _id: Uuid,
+        _image: ImageResource,
+    ) -> crate::interface::image_storage::Result<()> {
+        Ok(())
+    }
 }

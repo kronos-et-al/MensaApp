@@ -23,7 +23,7 @@ pub enum CommandType {
     /// The command to authenticate is the one add the given rating to a meal with the given UUID.
     SetRating { meal_id: Uuid, rating: u32 },
     /// The command to authenticate is the one to add an image with the given url to the meal with the given UUID.
-    AddImage { meal_id: Uuid, url: String },
+    AddImage { meal_id: Uuid, url: String }, // todo adapt
 }
 
 impl Display for CommandType {
