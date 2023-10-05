@@ -1,6 +1,6 @@
 use crate::{
     interface::persistent_data::model,
-    layer::trigger::graphql::util::ApiUtil,
+    layer::trigger::api::util::ApiUtil,
     util::{Date, Uuid},
 };
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};

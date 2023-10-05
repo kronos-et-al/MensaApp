@@ -2,6 +2,7 @@
 #![allow(missing_docs)]
 
 use async_trait::async_trait;
+use tokio::fs::File;
 use uuid::Uuid;
 
 use crate::interface::{
@@ -316,7 +317,8 @@ impl Command for CommandMock {
     async fn add_image(
         &self,
         _meal_id: Uuid,
-        _image_url: String,
+        _file_type: Option<String>,
+        _file: File,
         _auth_info: AuthInfo,
     ) -> CommandResult<()> {
         Ok(())

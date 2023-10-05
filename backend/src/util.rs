@@ -16,6 +16,9 @@ pub type Uuid = uuid::Uuid;
 /// An in memory representation of an image containing pixels.
 pub type ImageResource = DynamicImage;
 
+/// File extension used for images
+pub const IMAGE_EXTENSION: &str = "jpg";
+
 /// This enum lists every possible allergen a meal can have.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type)]
 #[sqlx(type_name = "allergen", rename_all = "SCREAMING_SNAKE_CASE")]

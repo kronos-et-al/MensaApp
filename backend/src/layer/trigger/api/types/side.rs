@@ -1,7 +1,7 @@
 use crate::util::MealType;
 use crate::{
     interface::persistent_data::model,
-    layer::trigger::graphql::util::ApiUtil,
+    layer::trigger::api::util::ApiUtil,
     util::{Additive, Allergen, Uuid},
 };
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};

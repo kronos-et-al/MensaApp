@@ -1,12 +1,14 @@
+use std::env::temp_dir;
+
 use mensa_app_backend::layer::{
     logic::api_command::{
         command_handler::CommandHandler,
         mocks::{
-            CommandAdminNotificationMock, CommandDatabaseMock, CommandFileHandlerMock,
+            CommandAdminNotificationMock, CommandDatabaseMock, CommandImageStorageMock,
             CommandImageValidationMock,
         },
     },
-    trigger::graphql::{server::GraphQLServerInfo, *},
+    trigger::api::{server::ApiServerInfo, *},
 };
 use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
@@ -21,15 +23,18 @@ async fn main() {
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
 
     // run server
-    let info = GraphQLServerInfo { port: 8090 };
+    let info = ApiServerInfo {
+        port: 8090,
+        image_dir: temp_dir(),
+    };
 
-    let mut server = server::GraphQLServer::new(
+    let mut server = server::ApiServer::new(
         info,
         mock::RequestDatabaseMock,
         CommandHandler::new(
             CommandDatabaseMock,
             CommandAdminNotificationMock,
-            CommandFileHandlerMock,
+            CommandImageStorageMock,
             CommandImageValidationMock,
         )
         .await

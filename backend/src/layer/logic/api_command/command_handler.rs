@@ -1,13 +1,14 @@
 //! See [`CommandHandler`].
 use async_trait::async_trait;
 use chrono::Local;
+use tokio::fs::File;
 use tracing::info;
 
 use crate::{
     interface::{
         admin_notification::{AdminNotification, ImageReportInfo},
         api_command::{AuthInfo, Command, CommandError, Result},
-        file_handler::FileHandler,
+        image_storage::ImageStorage,
         image_validation::ImageValidation,
         persistent_data::{model::Image, CommandDataAccess},
     },
@@ -19,25 +20,26 @@ const REPORT_FACTOR: f64 = 1.0 / 35.0;
 
 /// Class responsible for executing api commands.
 #[derive(Debug)]
-pub struct CommandHandler<DataAccess, Notify, File, Validation>
+pub struct CommandHandler<DataAccess, Notify, Storage, Validation>
 where
     DataAccess: CommandDataAccess,
     Notify: AdminNotification,
-    File: FileHandler,
+    Storage: ImageStorage,
     Validation: ImageValidation,
 {
     command_data: DataAccess,
     admin_notification: Notify,
-    file_handler: File,
+    image_storage: Storage,
     image_validation: Validation,
     auth: Authenticator,
 }
 
-impl<DataAccess, Notify, File, Validation> CommandHandler<DataAccess, Notify, File, Validation>
+impl<DataAccess, Notify, Storage, Validation>
+    CommandHandler<DataAccess, Notify, Storage, Validation>
 where
     DataAccess: CommandDataAccess,
     Notify: AdminNotification,
-    File: FileHandler,
+    Storage: ImageStorage,
     Validation: ImageValidation,
 {
     /// A function that creates a new [`CommandHandler`]
@@ -47,7 +49,7 @@ where
     pub async fn new(
         command_data: DataAccess,
         admin_notification: Notify,
-        file_handler: File,
+        image_storage: Storage,
         image_validation: Validation,
     ) -> Result<Self> {
         let keys: Vec<String> = command_data
@@ -59,7 +61,7 @@ where
         Ok(Self {
             command_data,
             admin_notification,
-            file_handler,
+            image_storage,
             image_validation,
             auth: Authenticator::new(keys),
         })
@@ -88,11 +90,12 @@ where
 }
 
 #[async_trait]
-impl<DataAccess, Notify, File, Image> Command for CommandHandler<DataAccess, Notify, File, Image>
+impl<DataAccess, Notify, Storage, Image> Command
+    for CommandHandler<DataAccess, Notify, Storage, Image>
 where
     DataAccess: CommandDataAccess,
     Notify: AdminNotification,
-    File: FileHandler,
+    Storage: ImageStorage,
     Image: ImageValidation,
 {
     async fn report_image(
@@ -177,15 +180,21 @@ where
         Ok(())
     }
 
-    async fn add_image(&self, meal_id: Uuid, image_url: String, auth_info: AuthInfo) -> Result<()> {
-        let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
-        let command_type = CommandType::AddImage {
-            meal_id,
-            url: image_url,
-        };
-        self.auth.authn_command(&auth_info, &command_type)?;
+    async fn add_image(
+        &self,
+        _meal_id: Uuid,
+        _image_type: Option<String>,
+        _image_file: File,
+        auth_info: AuthInfo,
+    ) -> Result<()> {
+        let _auth_info = auth_info.ok_or(CommandError::NoAuth)?;
+        // let command_type = CommandType::AddImage {
+        //     meal_id,
+        //     url: image_url,
+        // };
+        // self.auth.authn_command(&auth_info, &command_type)?;
 
-        _ = &self.file_handler;
+        _ = &self.image_storage;
         _ = &self.image_validation;
         todo!() // todo
     }
@@ -209,8 +218,7 @@ mod test {
     use crate::interface::api_command::{Command, InnerAuthInfo, Result};
     use crate::interface::persistent_data::model::Image;
     use crate::layer::logic::api_command::mocks::{
-        CommandFileHandlerMock, CommandImageValidationMock, IMAGE_ID_TO_FAIL, INVALID_URL,
-        MEAL_ID_TO_FAIL,
+        CommandImageStorageMock, CommandImageValidationMock, IMAGE_ID_TO_FAIL, MEAL_ID_TO_FAIL,
     };
     use crate::layer::logic::api_command::{
         command_handler::CommandHandler,
@@ -351,46 +359,48 @@ mod test {
             .is_err());
     }
 
-    #[tokio::test]
-    async fn test_add_image() {
-        let handler = get_handler().await.unwrap();
-        let auth_info = InnerAuthInfo {
-            api_ident: "YWpzZGg4Mn".into(),
-            hash: "ozNFvc9F0FWdrkFuncTpWA8z+ugwwox4El21hNiHoJW1conWnAOL0q7g4iNWEdDViFyTBjmDhK17FKpmReAgrA==".into(),
-            client_id: Uuid::default(),
-        };
-        let meal_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
-        let image_url = "http://test.de";
+    // TODO
+    // #[tokio::test]
+    // #[ignore = "todo new implementation"]
+    // async fn test_add_image() {
+    //     let handler = get_handler().await.unwrap();
+    //     let auth_info = InnerAuthInfo {
+    //         api_ident: "YWpzZGg4Mn".into(),
+    //         hash: "ozNFvc9F0FWdrkFuncTpWA8z+ugwwox4El21hNiHoJW1conWnAOL0q7g4iNWEdDViFyTBjmDhK17FKpmReAgrA==".into(),
+    //         client_id: Uuid::default(),
+    //     };
+    //     let meal_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
+    //     let image_url = "http://test.de";
 
-        assert!(handler
-            .add_image(meal_id, image_url.to_string(), None)
-            .await
-            .is_err());
-        assert!(handler
-            .add_image(meal_id, image_url.to_string(), Some(auth_info.clone()))
-            .await
-            .is_ok());
-        let auth_info = InnerAuthInfo {
-            hash: "JWN194mSo+ZAMH4ohZ4WO1//k3NH9ztxIFuWjdrKy6ct3+Y4P7zqQs1JiE7p63TkCDRVqlobEqi7bIGuAjGFZg==".into(),
-            ..auth_info
-        };
-        assert!(handler
-            .add_image(meal_id, INVALID_URL.to_string(), Some(auth_info.clone()))
-            .await
-            .is_err());
-        let auth_info = InnerAuthInfo {
-            hash: "TLvbxrv6azE4FpA2sROa8CD8ACdRGjj1M6OtLl1h4Q/NYypCKagZz0C2c4SEsoGjRpIbMAaKprFMcavssf2z2w==".into(),
-            ..auth_info
-        };
-        handler
-            .add_image(
-                MEAL_ID_TO_FAIL,
-                image_url.to_string(),
-                Some(auth_info.clone()),
-            )
-            .await
-            .unwrap_err();
-    }
+    //     assert!(handler
+    //         .add_image(meal_id, image_url.to_string(), None)
+    //         .await
+    //         .is_err());
+    //     assert!(handler
+    //         .add_image(meal_id, image_url.to_string(), Some(auth_info.clone()))
+    //         .await
+    //         .is_ok());
+    //     let auth_info = InnerAuthInfo {
+    //         hash: "JWN194mSo+ZAMH4ohZ4WO1//k3NH9ztxIFuWjdrKy6ct3+Y4P7zqQs1JiE7p63TkCDRVqlobEqi7bIGuAjGFZg==".into(),
+    //         ..auth_info
+    //     };
+    //     assert!(handler
+    //         .add_image(meal_id, INVALID_URL.to_string(), Some(auth_info.clone()))
+    //         .await
+    //         .is_err());
+    //     let auth_info = InnerAuthInfo {
+    //         hash: "TLvbxrv6azE4FpA2sROa8CD8ACdRGjj1M6OtLl1h4Q/NYypCKagZz0C2c4SEsoGjRpIbMAaKprFMcavssf2z2w==".into(),
+    //         ..auth_info
+    //     };
+    //     handler
+    //         .add_image(
+    //             MEAL_ID_TO_FAIL,
+    //             image_url.to_string(),
+    //             Some(auth_info.clone()),
+    //         )
+    //         .await
+    //         .unwrap_err();
+    // }
 
     #[tokio::test]
     async fn test_set_meal_rating() {
@@ -421,18 +431,18 @@ mod test {
         CommandHandler<
             CommandDatabaseMock,
             CommandAdminNotificationMock,
-            CommandFileHandlerMock,
+            CommandImageStorageMock,
             CommandImageValidationMock,
         >,
     > {
         let command_data = CommandDatabaseMock;
         let admin_notification = CommandAdminNotificationMock;
-        let file_handler = CommandFileHandlerMock;
+        let image_storage = CommandImageStorageMock;
         let image_validation = CommandImageValidationMock;
         CommandHandler::new(
             command_data,
             admin_notification,
-            file_handler,
+            image_storage,
             image_validation,
         )
         .await
@@ -448,7 +458,7 @@ mod test {
         assert!(CommandHandler::<
             CommandDatabaseMock,
             CommandAdminNotificationMock,
-            CommandFileHandlerMock,
+            CommandImageStorageMock,
             CommandImageValidationMock,
         >::will_be_hidden(&image));
     }

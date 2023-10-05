@@ -1,4 +1,4 @@
-use crate::layer::trigger::graphql::util::ApiUtil;
+use crate::layer::trigger::api::util::ApiUtil;
 use crate::util::MealType;
 use crate::{
     interface::persistent_data::model,
