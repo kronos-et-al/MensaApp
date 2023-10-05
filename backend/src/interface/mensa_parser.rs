@@ -17,6 +17,7 @@ pub enum ParseError {
     /// No connection to the meal plan webpage could be established
     #[error("no connection could be established: {0}")]
     NoConnectionEstablished(String),
+    //todo! Improve error message & check occurence. 
     /// Html document could not be decoded.
     #[error("some html code couldn't be decoded: {0}")]
     DecodeFailed(String),
