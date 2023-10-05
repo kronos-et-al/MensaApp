@@ -215,7 +215,7 @@ mod test {
     use crate::interface::api_command::{Command, InnerAuthInfo, Result};
     use crate::interface::persistent_data::model::Image;
     use crate::layer::logic::api_command::test::mocks::{
-        CommandImageStorageMock, CommandImageValidationMock, IMAGE_ID_TO_FAIL, INVALID_URL,
+        CommandImageStorageMock, CommandImageValidationMock, IMAGE_ID_TO_FAIL,
         MEAL_ID_TO_FAIL,
     };
     use crate::layer::logic::api_command::{
