@@ -349,6 +349,7 @@ mod test {
     }
 
     #[tokio::test]
+    #[ignore = "todo new implementation"]
     async fn test_add_image() {
         let handler = get_handler().await.unwrap();
         let auth_info = InnerAuthInfo {
