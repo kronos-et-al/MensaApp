@@ -7,7 +7,7 @@ use crate::{
     interface::{
         admin_notification::{AdminNotification, ImageReportInfo},
         image_storage::ImageStorage,
-        image_validation::ImageValidation,
+        image_api::ImageValidation,
         persistent_data::{
             model::{ApiKey, Image},
             CommandDataAccess, DataError, Result as DataResult,
@@ -156,7 +156,7 @@ impl ImageValidation for CommandImageValidationMock {
     async fn validate_image(
         &self,
         _image: &ImageResource,
-    ) -> crate::interface::image_validation::Result<()> {
+    ) -> crate::interface::image_api::Result<()> {
         Ok(())
     }
 }

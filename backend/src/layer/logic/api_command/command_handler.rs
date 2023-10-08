@@ -9,7 +9,7 @@ use crate::{
         admin_notification::{AdminNotification, ImageReportInfo},
         api_command::{AuthInfo, Command, CommandError, Result},
         image_storage::ImageStorage,
-        image_validation::ImageValidation,
+        image_api::ImageApi,
         persistent_data::{model::Image, CommandDataAccess},
     },
     layer::logic::api_command::auth::{authenticator::Authenticator, command_type::CommandType},
@@ -25,7 +25,7 @@ where
     DataAccess: CommandDataAccess,
     Notify: AdminNotification,
     Storage: ImageStorage,
-    Validation: ImageValidation,
+    Validation: ImageApi,
 {
     command_data: DataAccess,
     admin_notification: Notify,
@@ -40,7 +40,7 @@ where
     DataAccess: CommandDataAccess,
     Notify: AdminNotification,
     Storage: ImageStorage,
-    Validation: ImageValidation,
+    Validation: ImageApi,
 {
     /// A function that creates a new [`CommandHandler`]
     ///
@@ -96,7 +96,7 @@ where
     DataAccess: CommandDataAccess,
     Notify: AdminNotification,
     Storage: ImageStorage,
-    Image: ImageValidation,
+    Image: ImageApi,
 {
     async fn report_image(
         &self,
