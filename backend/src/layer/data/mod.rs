@@ -3,3 +3,4 @@
 pub mod database;
 pub mod mail;
 pub mod swka_parser;
+pub mod image_api;
