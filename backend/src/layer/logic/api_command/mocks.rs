@@ -7,7 +7,7 @@ use crate::{
     interface::{
         admin_notification::{AdminNotification, ImageReportInfo},
         image_storage::ImageStorage,
-        image_api::ImageValidation,
+        image_api::ImageApi,
         persistent_data::{
             model::{ApiKey, Image},
             CommandDataAccess, DataError, Result as DataResult,
@@ -152,7 +152,7 @@ impl AdminNotification for CommandAdminNotificationMock {
 pub struct CommandImageValidationMock;
 
 #[async_trait]
-impl ImageValidation for CommandImageValidationMock {
+impl ImageApi for CommandImageValidationMock {
     async fn validate_image(
         &self,
         _image: &ImageResource,
