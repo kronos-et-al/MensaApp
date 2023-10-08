@@ -49,6 +49,7 @@ lazy_static = "1.4.0"
 colored = "2.0.4"
 image = "0.24.0"
 tower-http = { version = "0.4.4", features = ["fs"] }
+serde = "1.0.188"
 
 [dev-dependencies]
 serial_test = "2.0.0"

@@ -6,8 +6,8 @@ use async_trait::async_trait;
 use crate::{
     interface::{
         admin_notification::{AdminNotification, ImageReportInfo},
-        image_storage::ImageStorage,
         image_api::ImageApi,
+        image_storage::ImageStorage,
         persistent_data::{
             model::{ApiKey, Image},
             CommandDataAccess, DataError, Result as DataResult,
