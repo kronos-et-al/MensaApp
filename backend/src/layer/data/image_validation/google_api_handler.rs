@@ -12,6 +12,7 @@ pub struct GoogleApiHandler {
 }
 
 impl GoogleApiHandler {
+    #[must_use]
     pub fn new(info: ImageValidationInfo) -> Self {
         Self {
             evaluation: ImageEvaluation::new(info.acceptance),
