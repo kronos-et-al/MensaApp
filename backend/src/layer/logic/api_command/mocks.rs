@@ -109,7 +109,7 @@ impl CommandDataAccess for CommandDatabaseMock {
         }
     }
 
-    async fn revert_link_image(&self, image_id: Uuid) -> DataResult<()> {
+    async fn revert_link_image(&self, _image_id: Uuid) -> DataResult<()> {
         Ok(())
     }
 

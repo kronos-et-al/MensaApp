@@ -5,12 +5,16 @@ use std::io::BufReader;
 use thiserror::Error;
 use tokio::fs::File;
 
+/// Result returned on image preprocessing operations.
 pub type Result<T> = std::result::Result<T, ImagePreprocessingError>;
 
+/// Enum describing possible ways the image preprocessing can fail.
 #[derive(Error, Debug)]
 pub enum ImagePreprocessingError {
+    /// Error occurring when the image format could not be guessed out of the data and no mime type was provided.
     #[error("Error guessing image format: {0}")]
     FormatGuessError(std::io::Error),
+    /// Error occurring wile operating on the image.
     #[error("Error during image operation:{0}")]
     ImageError(#[from] ImageError),
 }
@@ -23,13 +27,21 @@ pub struct ImagePreprocessor {
 }
 
 impl ImagePreprocessor {
-    pub fn new(max_width: u32, max_height: u32) -> Self {
+    /// Creates a new instance.
+    #[must_use]
+    pub const fn new(max_width: u32, max_height: u32) -> Self {
         Self {
             max_width,
             max_height,
         }
     }
 
+    /// Pre-process the given file to an image by reading and then down scaling it if to large.
+    /// # Panics
+    /// Should never panic.
+    /// # Errors
+    /// - Image type was not provided and could not be guessed
+    /// - Image could not be decoded from file
     pub async fn preprocess_image(
         &self,
         file: File,
@@ -42,7 +54,7 @@ impl ImagePreprocessor {
         tokio::task::spawn_blocking(move || {
             let mut reader = Reader::new(BufReader::new(file));
             if let Some(format) = image_type.and_then(ImageFormat::from_mime_type) {
-                reader.set_format(format)
+                reader.set_format(format);
             } else {
                 reader = reader
                     .with_guessed_format()
