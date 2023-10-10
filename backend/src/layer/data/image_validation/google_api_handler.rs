@@ -1,18 +1,21 @@
-use crate::interface::image_validation::ImageValidation;
+use crate::interface::image_validation::{ImageValidation, ImageValidationInfo};
 use crate::interface::image_validation::Result;
 use crate::util::ImageResource;
 use async_trait::async_trait;
+use crate::layer::data::image_validation::api_request::ApiRequest;
+use crate::layer::data::image_validation::image_evaluation::ImageEvaluation;
 
+//todo
 pub struct GoogleApiHandler {
-    acceptance: [u8; 5],
-    google_api_key: String,
+    evaluation: ImageEvaluation,
+    request: ApiRequest,
 }
 
 impl GoogleApiHandler {
-    const fn new(acceptance: [u8; 5], google_api_key: String) -> Self {
+    pub fn new(info: ImageValidationInfo) -> Self {
         Self {
-            acceptance,
-            google_api_key
+            evaluation: ImageEvaluation::new(info.acceptance),
+            request: ApiRequest::new(info.google_api_key),
         }
     }
 }
