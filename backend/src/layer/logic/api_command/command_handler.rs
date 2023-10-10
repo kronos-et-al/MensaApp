@@ -130,7 +130,7 @@ where
                 reason,
                 image_id,
                 image_got_hidden: will_be_hidden,
-                image_link: info.url,
+                image_link: todo!(),
                 report_count: info.report_count,
                 positive_rating_count: info.upvotes,
                 negative_rating_count: info.downvotes,

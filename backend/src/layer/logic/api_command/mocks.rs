@@ -31,12 +31,10 @@ impl CommandDataAccess for CommandDatabaseMock {
             approved: false,
             upload_date: Date::default(),
             report_count: 100,
-            url: String::new(),
             upvotes: 200,
             downvotes: 2000,
             rank: 0.1,
             id: Uuid::default(),
-            image_hoster_id: String::new(),
         };
         Ok(info)
     }

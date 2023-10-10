@@ -208,8 +208,6 @@ impl RequestDataAccess for RequestDatabaseMock {
     ) -> DataResult<Vec<Image>> {
         let d1 = Image {
             id: Uuid::parse_str("be7a7c58-1fd3-4432-9669-e87603629aeb").expect(INVALID_UUID),
-            image_hoster_id: "dummy_image1_id".to_string(),
-            url: String::new(),
             rank: 0.1,
             upvotes: 220,
             downvotes: 20,
@@ -219,8 +217,6 @@ impl RequestDataAccess for RequestDatabaseMock {
         };
         let d2 = Image {
             id: Uuid::parse_str("e4e1c2f5-881c-4e1f-8618-ca8f6f3bf1d2").expect(INVALID_UUID),
-            image_hoster_id: "dummy_image2_id".to_string(),
-            url: String::new(),
             rank: 0.4,
             upvotes: 11,
             downvotes: 4,
@@ -230,8 +226,6 @@ impl RequestDataAccess for RequestDatabaseMock {
         };
         let d3 = Image {
             id: Uuid::parse_str("9f0a4fb0-c233-4a16-8f3a-2bbbf735ef07").expect(INVALID_UUID),
-            image_hoster_id: "dummy_image3_id".to_string(),
-            url: String::new(),
             rank: 0.6,
             upvotes: 20,
             downvotes: 45,

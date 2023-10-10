@@ -48,8 +48,8 @@ impl From<model::Image> for Image {
             id: value.id,
             downvotes: value.downvotes,
             upvotes: value.upvotes,
-            url: value.url,
             rank: value.rank,
+            url: todo!(),
         }
     }
 }

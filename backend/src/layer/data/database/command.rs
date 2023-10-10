@@ -23,8 +23,8 @@ impl CommandDataAccess for PersistentCommandData {
     async fn get_image_info(&self, image_id: Uuid) -> Result<Image> {
         let record = sqlx::query!(
             r#"
-            SELECT approved, link_date as upload_date, report_count, url,
-            upvotes, downvotes, id as image_hoster_id, image_id, rank
+            SELECT approved, link_date as upload_date, report_count,
+            upvotes, downvotes, image_id, rank
             FROM image_detail
             WHERE image_id = $1
             ORDER BY image_id
@@ -36,14 +36,12 @@ impl CommandDataAccess for PersistentCommandData {
 
         Ok(Image {
             approved: null_error!(record.approved),
-            url: null_error!(record.url),
             rank: null_error!(record.rank),
             report_count: u32::try_from(null_error!(record.report_count))?,
             upload_date: null_error!(record.upload_date),
             downvotes: u32::try_from(null_error!(record.downvotes))?,
             upvotes: u32::try_from(null_error!(record.upvotes))?,
             id: null_error!(record.image_id),
-            image_hoster_id: null_error!(record.image_hoster_id),
         })
     }
 
@@ -128,22 +126,22 @@ impl CommandDataAccess for PersistentCommandData {
         Ok(())
     }
 
-    async fn link_image(
-        &self,
-        meal_id: Uuid,
-        user_id: Uuid,
-        image_hoster_id: String,
-        url: String,
-    ) -> Result<()> {
-        sqlx::query!(
-            "INSERT INTO image (user_id, food_id, id, url) VALUES ($1, $2, $3, $4)",
+    async fn link_image(&self, meal_id: Uuid, user_id: Uuid) -> Result<Uuid> {
+        sqlx::query_scalar!(
+            "INSERT INTO image (user_id, food_id) VALUES ($1, $2)
+            RETURNING (image_id)",
             user_id,
             meal_id,
-            image_hoster_id,
-            url
         )
-        .execute(&self.pool)
-        .await?;
+        .fetch_one(&self.pool)
+        .await
+        .map_err(Into::into)
+    }
+
+    async fn revert_link_image(&self, image_id: Uuid) -> Result<()> {
+        sqlx::query!("DELETE FROM image WHERE image_id = $1", image_id)
+            .execute(&self.pool)
+            .await?;
         Ok(())
     }
 
@@ -200,8 +198,6 @@ mod test {
     fn provide_dummy_image() -> Image {
         Image {
             id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
-            image_hoster_id: "test".to_string(),
-            url: "www.test.com".to_string(),
             rank: 0.5,
             downvotes: 0,
             upvotes: 0,
@@ -368,19 +364,9 @@ mod test {
         let command = PersistentCommandData { pool: pool.clone() };
         let user_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
         let meal_id = Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap();
-        let image_hoster_id = "Test";
-        let url = "www.test.com";
 
         let images = number_of_images(&pool).await;
-        assert!(command
-            .link_image(
-                meal_id,
-                user_id,
-                image_hoster_id.to_string(),
-                url.to_string()
-            )
-            .await
-            .is_ok());
+        assert!(command.link_image(meal_id, user_id,).await.is_ok());
         assert_eq!(number_of_images(&pool).await, images + 1);
         // TBD is it allowed to link an image multiple times?
         // assert!(command
@@ -392,15 +378,7 @@ mod test {
         //     )
         //     .await
         //     .is_ok());
-        assert!(command
-            .link_image(
-                WRONG_UUID,
-                user_id,
-                image_hoster_id.to_string(),
-                url.to_string()
-            )
-            .await
-            .is_err());
+        assert!(command.link_image(WRONG_UUID, user_id).await.is_err());
         assert_eq!(number_of_images(&pool).await, images + 1);
     }
 
