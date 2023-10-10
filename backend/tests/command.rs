@@ -126,9 +126,15 @@ async fn setup_cmd() -> impl Command {
         .await
         .unwrap();
     let data = factory.get_command_data_access();
-    CommandHandler::new(data, mail, file_handler, image_validation)
-        .await
-        .unwrap()
+    CommandHandler::new(
+        reader.read_image_preprocessing_info(),
+        data,
+        mail,
+        file_handler,
+        image_validation,
+    )
+    .await
+    .unwrap()
 }
 
 fn get_auth_info(hash: &str) -> AuthInfo {

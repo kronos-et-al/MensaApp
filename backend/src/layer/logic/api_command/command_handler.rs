@@ -20,8 +20,15 @@ use crate::{
 use super::image_preprocessing::ImagePreprocessor;
 
 const REPORT_FACTOR: f64 = 1.0 / 35.0;
-const MAX_IMAGE_WIDTH: u32 = 1920;
-const MAX_IMAGE_HEIGHT: u32 = 1080;
+
+/// Structure containing all information necessary for image preprocessing.
+#[derive(Debug, Clone, Copy)]
+pub struct ImagePreprocessingInfo {
+    /// Maximal width of images stored. Images get resized otherwise.
+    pub max_image_width: u32,
+    /// Maximal height of images stored. Images get resized otherwise.
+    pub max_image_height: u32,
+}
 
 /// Class responsible for executing api commands.
 #[derive(Debug)]
@@ -53,6 +60,7 @@ where
     /// # Errors
     /// Returns an error, if the api keys could not be gotten from `command_data`
     pub async fn new(
+        image_preprocessing_info: ImagePreprocessingInfo,
         command_data: DataAccess,
         admin_notification: Notify,
         image_storage: Storage,
@@ -70,7 +78,7 @@ where
             image_storage,
             image_validation,
             auth: Authenticator::new(keys),
-            image_preprocessor: ImagePreprocessor::new(MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT),
+            image_preprocessor: ImagePreprocessor::new(image_preprocessing_info),
         })
     }
 
@@ -251,6 +259,8 @@ mod test {
         mocks::{CommandAdminNotificationMock, CommandDatabaseMock},
     };
     use crate::util::{ReportReason, Uuid};
+
+    use super::ImagePreprocessingInfo;
 
     #[tokio::test]
     async fn test_new() {
@@ -465,7 +475,13 @@ mod test {
         let admin_notification = CommandAdminNotificationMock;
         let image_storage = CommandImageStorageMock;
         let image_validation = CommandImageValidationMock;
+        let info = ImagePreprocessingInfo {
+            max_image_height: 1000,
+            max_image_width: 1000,
+        };
+
         CommandHandler::new(
+            info,
             command_data,
             admin_notification,
             image_storage,

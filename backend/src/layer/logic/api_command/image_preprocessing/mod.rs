@@ -5,6 +5,8 @@ use std::io::BufReader;
 use thiserror::Error;
 use tokio::fs::File;
 
+use super::command_handler::ImagePreprocessingInfo;
+
 /// Result returned on image preprocessing operations.
 pub type Result<T> = std::result::Result<T, ImagePreprocessingError>;
 
@@ -29,10 +31,10 @@ pub struct ImagePreprocessor {
 impl ImagePreprocessor {
     /// Creates a new instance.
     #[must_use]
-    pub const fn new(max_width: u32, max_height: u32) -> Self {
+    pub const fn new(info: ImagePreprocessingInfo) -> Self {
         Self {
-            max_width,
-            max_height,
+            max_width: info.max_image_width,
+            max_height: info.max_image_height,
         }
     }
 

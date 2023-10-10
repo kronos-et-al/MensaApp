@@ -9,6 +9,7 @@ use crate::layer::{
         database::factory::DatabaseInfo, mail::mail_info::MailInfo,
         swka_parser::swka_parse_manager::SwKaInfo,
     },
+    logic::api_command::command_handler::ImagePreprocessingInfo,
     trigger::{api::server::ApiServerInfo, scheduling::scheduler::ScheduleInfo},
 };
 
@@ -28,6 +29,8 @@ const DEFAULT_CLIENT_TIMEOUT: u64 = 6000;
 const DEFAULT_HTTP_PORT: u16 = 80;
 const DEFAULT_SMTP_PORT: u16 = 465;
 const DEFAULT_PARSE_WEEKS: u32 = 4;
+const DEFAULT_MAX_IMAGE_WIDTH: u32 = 1920;
+const DEFAULT_MAX_IMAGE_HEIGHT: u32 = 1080;
 
 /// Class for reading configuration from environment variables.
 pub struct ConfigReader {}
@@ -156,6 +159,22 @@ impl ConfigReader {
             image_dir: read_var("IMAGE_DIR").map(PathBuf::from)?,
         };
         Ok(info)
+    }
+
+    /// Reads the config for the image preprocessing.
+    #[must_use]
+    pub fn read_image_preprocessing_info(&self) -> ImagePreprocessingInfo {
+        let info: ImagePreprocessingInfo = ImagePreprocessingInfo {
+            max_image_width: env::var("MAX_IMAGE_WIDTH")
+                .ok()
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(DEFAULT_MAX_IMAGE_WIDTH),
+            max_image_height: env::var("MAX_IMAGE_HEIGHT")
+                .ok()
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(DEFAULT_MAX_IMAGE_HEIGHT),
+        };
+        info
     }
 }
 

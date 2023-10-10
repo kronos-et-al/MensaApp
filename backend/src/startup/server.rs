@@ -91,7 +91,14 @@ impl Server {
         let google_vision = CommandImageValidationMock; // todo
 
         // logic layer
-        let command = CommandHandler::new(command_data, mail, file_handler, google_vision).await?;
+        let command = CommandHandler::new(
+            config.read_image_preprocessing_info(),
+            command_data,
+            mail,
+            file_handler,
+            google_vision,
+        )
+        .await?;
         let mealplan_management = MealPlanManager::new(mealplan_management_data, parser);
 
         // trigger layer

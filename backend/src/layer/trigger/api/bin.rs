@@ -2,7 +2,7 @@ use std::env::temp_dir;
 
 use mensa_app_backend::layer::{
     logic::api_command::{
-        command_handler::CommandHandler,
+        command_handler::{CommandHandler, ImagePreprocessingInfo},
         mocks::{
             CommandAdminNotificationMock, CommandDatabaseMock, CommandImageStorageMock,
             CommandImageValidationMock,
@@ -28,10 +28,16 @@ async fn main() {
         image_dir: temp_dir(),
     };
 
+    let image_pre_info = ImagePreprocessingInfo {
+        max_image_height: 1080,
+        max_image_width: 1920,
+    };
+
     let mut server = server::ApiServer::new(
         info,
         mock::RequestDatabaseMock,
         CommandHandler::new(
+            image_pre_info,
             CommandDatabaseMock,
             CommandAdminNotificationMock,
             CommandImageStorageMock,
