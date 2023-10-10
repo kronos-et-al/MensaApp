@@ -101,18 +101,16 @@ impl CommandDataAccess for CommandDatabaseMock {
     }
 
     /// Adds an image link to the database. The image will be related to the given meal.
-    async fn link_image(
-        &self,
-        meal_id: Uuid,
-        _user_id: Uuid,
-        _image_hoster_id: String,
-        _url: String,
-    ) -> DataResult<()> {
+    async fn link_image(&self, meal_id: Uuid, _user_id: Uuid) -> DataResult<Uuid> {
         if MEAL_ID_TO_FAIL == meal_id {
             Err(DataError::NoSuchItem)
         } else {
-            Ok(())
+            Ok(Uuid::default())
         }
+    }
+
+    async fn revert_link_image(&self, image_id: Uuid) -> DataResult<()> {
+        Ok(())
     }
 
     /// Adds a rating to the database. The rating will be related to the given meal and the given user.

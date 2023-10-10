@@ -1,4 +1,5 @@
 //! See [`CommandHandler`].
+
 use async_trait::async_trait;
 use chrono::Local;
 use tokio::fs::File;
@@ -16,7 +17,11 @@ use crate::{
     util::{Date, ReportReason, Uuid},
 };
 
+use super::image_preprocessing::ImagePreprocessor;
+
 const REPORT_FACTOR: f64 = 1.0 / 35.0;
+const MAX_IMAGE_WIDTH: u32 = 1920;
+const MAX_IMAGE_HEIGHT: u32 = 1080;
 
 /// Class responsible for executing api commands.
 #[derive(Debug)]
@@ -32,6 +37,7 @@ where
     image_storage: Storage,
     image_validation: Validation,
     auth: Authenticator,
+    image_preprocessor: ImagePreprocessor,
 }
 
 impl<DataAccess, Notify, Storage, Validation>
@@ -64,6 +70,7 @@ where
             image_storage,
             image_validation,
             auth: Authenticator::new(keys),
+            image_preprocessor: ImagePreprocessor::new(MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT),
         })
     }
 
@@ -182,21 +189,40 @@ where
 
     async fn add_image(
         &self,
-        _meal_id: Uuid,
-        _image_type: Option<String>,
-        _image_file: File,
+        meal_id: Uuid,
+        image_type: Option<String>,
+        image_file: File,
         auth_info: AuthInfo,
     ) -> Result<()> {
-        let _auth_info = auth_info.ok_or(CommandError::NoAuth)?;
+        let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
+        // todo auth
         // let command_type = CommandType::AddImage {
         //     meal_id,
         //     url: image_url,
         // };
         // self.auth.authn_command(&auth_info, &command_type)?;
 
-        _ = &self.image_storage;
-        _ = &self.image_validation;
-        todo!() // todo
+        let image = self
+            .image_preprocessor
+            .preprocess_image(image_file, image_type)
+            .await?;
+
+        // verify with api
+        self.image_validation.validate_image(&image).await?;
+
+        // link in database
+        let image_id = self
+            .command_data
+            .link_image(meal_id, auth_info.client_id)
+            .await?;
+
+        // store to disk
+        if let Err(e) = self.image_storage.save_image(image_id, image).await {
+            self.command_data.revert_link_image(image_id).await?;
+            return Err(e.into());
+        }
+
+        Ok(())
     }
 
     async fn set_meal_rating(&self, meal_id: Uuid, rating: u32, auth_info: AuthInfo) -> Result<()> {

@@ -5,9 +5,12 @@ use std::fmt::Display;
 use thiserror::Error;
 use tokio::fs::File;
 
-use crate::util::{ReportReason, Uuid};
+use crate::{
+    layer::logic::api_command::image_preprocessing::ImagePreprocessingError,
+    util::{ReportReason, Uuid},
+};
 
-use super::persistent_data::DataError;
+use super::{image_storage, image_validation, persistent_data::DataError};
 
 /// Result returned from commands, potentially containing a [`CommandError`].
 pub type Result<T> = std::result::Result<T, CommandError>;
@@ -85,4 +88,13 @@ pub enum CommandError {
     /// Error marking something went wrong with the data.
     #[error("Data error occurred: {0}")]
     DataError(#[from] DataError),
+    /// Error happened during image preprocessing
+    #[error("Error during image preprocessing occured: {0}")]
+    ImagePreprocessingError(#[from] ImagePreprocessingError),
+    /// Error ocurred while saving image.
+    #[error("Error while saving image: {0}")]
+    ImageStorageError(#[from] image_storage::ImageError),
+    /// Error while image verification.
+    #[error("Image could not be verified: {0}")]
+    ImageValidationError(#[from] image_validation::ImageError),
 }

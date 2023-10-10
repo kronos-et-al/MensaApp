@@ -2,3 +2,4 @@
 pub mod auth;
 pub mod command_handler;
 pub mod mocks;
+pub mod  image_preprocessing;
