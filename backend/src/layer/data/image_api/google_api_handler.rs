@@ -1,6 +1,7 @@
 use crate::interface::image_api::ImageApi;
 use crate::interface::image_api::Result;
 use crate::util::ImageResource;
+use async_trait::async_trait;
 
 pub struct GoogleApiHandler {
     acceptance: [u8; 5],
@@ -16,6 +17,7 @@ impl GoogleApiHandler {
     }
 }
 
+#[async_trait]
 impl ImageApi for GoogleApiHandler {
     async fn validate_image(&self, image: &ImageResource) -> Result<()> {
         todo!()
