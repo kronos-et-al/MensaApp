@@ -1,11 +1,11 @@
-use crate::interface::image_api::Result;
-use crate::layer::data::image_api::json_structs::SafeSearchResponseJson;
+use crate::interface::image_validation::Result;
+use crate::layer::data::image_validation::json_structs::SafeSearchResponseJson;
 
-pub struct ApiRequest {
+pub struct ImageVerification {
     google_api_key: String,
 }
 
-impl ApiRequest {
+impl ImageVerification {
     pub fn new(google_api_key: String) -> Self {
         Self { google_api_key }
     }

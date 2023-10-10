@@ -8,7 +8,7 @@ use crate::{
     interface::{
         admin_notification::{AdminNotification, ImageReportInfo},
         api_command::{AuthInfo, Command, CommandError, Result},
-        image_api::ImageApi,
+        image_validation::ImageValidation,
         image_storage::ImageStorage,
         persistent_data::{model::Image, CommandDataAccess},
     },
@@ -25,7 +25,7 @@ where
     DataAccess: CommandDataAccess,
     Notify: AdminNotification,
     Storage: ImageStorage,
-    Validation: ImageApi,
+    Validation: ImageValidation,
 {
     command_data: DataAccess,
     admin_notification: Notify,
@@ -40,7 +40,7 @@ where
     DataAccess: CommandDataAccess,
     Notify: AdminNotification,
     Storage: ImageStorage,
-    Validation: ImageApi,
+    Validation: ImageValidation,
 {
     /// A function that creates a new [`CommandHandler`]
     ///
@@ -96,7 +96,7 @@ where
     DataAccess: CommandDataAccess,
     Notify: AdminNotification,
     Storage: ImageStorage,
-    Image: ImageApi,
+    Image: ImageValidation,
 {
     async fn report_image(
         &self,

@@ -1,5 +1,5 @@
-use crate::interface::image_api::ImageApi;
-use crate::interface::image_api::Result;
+use crate::interface::image_validation::ImageValidation;
+use crate::interface::image_validation::Result;
 use crate::util::ImageResource;
 use async_trait::async_trait;
 
@@ -9,7 +9,7 @@ pub struct GoogleApiHandler {
 }
 
 impl GoogleApiHandler {
-    fn new(acceptance: [u8; 5], google_api_key: String) -> Self {
+    const fn new(acceptance: [u8; 5], google_api_key: String) -> Self {
         Self {
             acceptance,
             google_api_key
@@ -18,7 +18,7 @@ impl GoogleApiHandler {
 }
 
 #[async_trait]
-impl ImageApi for GoogleApiHandler {
+impl ImageValidation for GoogleApiHandler {
     async fn validate_image(&self, image: &ImageResource) -> Result<()> {
         todo!()
     }
