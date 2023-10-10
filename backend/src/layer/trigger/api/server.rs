@@ -27,9 +27,12 @@ use tokio::sync::Notify;
 use tower_http::services::ServeDir;
 use tracing::{debug, info, info_span, Instrument};
 
-use crate::interface::{
-    api_command::{AuthInfo, Command},
-    persistent_data::RequestDataAccess,
+use crate::{
+    interface::{
+        api_command::{AuthInfo, Command},
+        persistent_data::RequestDataAccess,
+    },
+    util::{local_to_global_url, IMAGE_BASE_PATH},
 };
 
 use super::{
@@ -39,9 +42,6 @@ use super::{
 };
 
 type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
-
-/// Base path under which images can be accessed.
-pub const IMAGE_BASE_PATH: &str = "/image";
 
 /// Information necessary to create a [`ApiServerInfo`].
 pub struct ApiServerInfo {
@@ -133,6 +133,7 @@ impl ApiServer {
 
         self.state = State::Running(Box::pin(shutdown));
         info!("Started graphql server listening on http://{}.", socket);
+        info!("Accessible under https://{}.", local_to_global_url(""));
     }
 
     /// Stops the GraphQL server.

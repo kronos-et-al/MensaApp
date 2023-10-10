@@ -1,4 +1,8 @@
-use crate::{interface::persistent_data::model, layer::trigger::api::util::ApiUtil, util::Uuid};
+use crate::{
+    interface::persistent_data::model,
+    layer::trigger::api::util::ApiUtil,
+    util::{image_id_to_url, Uuid},
+};
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 use tracing::instrument;
 
@@ -49,7 +53,7 @@ impl From<model::Image> for Image {
             downvotes: value.downvotes,
             upvotes: value.upvotes,
             rank: value.rank,
-            url: todo!(),
+            url: image_id_to_url(value.id),
         }
     }
 }

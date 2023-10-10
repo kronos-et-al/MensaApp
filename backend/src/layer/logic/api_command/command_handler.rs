@@ -14,7 +14,7 @@ use crate::{
         persistent_data::{model::Image, CommandDataAccess},
     },
     layer::logic::api_command::auth::{authenticator::Authenticator, command_type::CommandType},
-    util::{Date, ReportReason, Uuid},
+    util::{image_id_to_url, Date, ReportReason, Uuid},
 };
 
 use super::image_preprocessing::ImagePreprocessor;
@@ -130,7 +130,7 @@ where
                 reason,
                 image_id,
                 image_got_hidden: will_be_hidden,
-                image_link: todo!(),
+                image_link: image_id_to_url(image_id),
                 report_count: info.report_count,
                 positive_rating_count: info.upvotes,
                 negative_rating_count: info.downvotes,
