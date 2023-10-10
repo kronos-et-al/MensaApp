@@ -37,6 +37,8 @@ pub enum ImageValidationError {
 pub struct ImageValidationInfo {
     /// Five numbers between 0 to 6 to set each level of a category.
     pub acceptance: [u8; 5],
-    /// This key is needed to access all provided google api functions.
-    pub google_api_key: String,
+    /// This key is needed to access all provided image api functions.
+    pub api_key: String,
+    /// This project identifier is needed to call image api functions.
+    pub project_key: String,
 }

@@ -16,7 +16,7 @@ impl GoogleApiHandler {
     pub fn new(info: ImageValidationInfo) -> Self {
         Self {
             evaluation: ImageEvaluation::new(info.acceptance),
-            request: ApiRequest::new(info.google_api_key),
+            request: ApiRequest::new(info.api_key, info.project_key),
         }
     }
 }
