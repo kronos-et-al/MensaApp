@@ -32,3 +32,11 @@ pub enum ImageValidationError {
     #[error("The api responded with error '{0}'.")]
     ApiResponseError(String),
 }
+
+/// Structure that contains all information necessary for the image validation component.
+pub struct ImageValidationInfo {
+    /// Five numbers between 0 to 6 to set each level of a category.
+    pub acceptance: [u8; 5],
+    /// This key is needed to access all provided google api functions.
+    pub google_api_key: String,
+}
