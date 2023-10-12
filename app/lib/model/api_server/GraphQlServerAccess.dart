@@ -30,7 +30,6 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import "package:http/http.dart";
 
-
 import '../../view_model/repository/interface/IServerAccess.dart';
 import 'requests/mutations.graphql.dart';
 
@@ -67,7 +66,7 @@ class GraphQlServerAccess implements IServerAccess {
   Future<bool> deleteDownvote(ImageData image) async {
     const requestName = "removeDownvote";
     final hash =
-    _generateHashOfParameters(requestName, _serializeUuid(image.id));
+        _generateHashOfParameters(requestName, _serializeUuid(image.id));
     _authenticate(hash);
 
     final result = await _client.mutate$RemoveDownvote(
@@ -81,7 +80,7 @@ class GraphQlServerAccess implements IServerAccess {
   Future<bool> deleteUpvote(ImageData image) async {
     const requestName = "removeUpvote";
     final hash =
-    _generateHashOfParameters(requestName, _serializeUuid(image.id));
+        _generateHashOfParameters(requestName, _serializeUuid(image.id));
     _authenticate(hash);
 
     final result = await _client.mutate$RemoveUpvote(
@@ -95,7 +94,7 @@ class GraphQlServerAccess implements IServerAccess {
   Future<bool> downvoteImage(ImageData image) async {
     const requestName = "addDownvote";
     final hash =
-    _generateHashOfParameters(requestName, _serializeUuid(image.id));
+        _generateHashOfParameters(requestName, _serializeUuid(image.id));
     _authenticate(hash);
 
     final result = await _client.mutate$AddDownvote(
@@ -109,7 +108,7 @@ class GraphQlServerAccess implements IServerAccess {
   Future<bool> upvoteImage(ImageData image) async {
     const requestName = "addUpvote";
     final hash =
-    _generateHashOfParameters(requestName, _serializeUuid(image.id));
+        _generateHashOfParameters(requestName, _serializeUuid(image.id));
     _authenticate(hash);
 
     final result = await _client.mutate$AddUpvote(Options$Mutation$AddUpvote(
@@ -119,23 +118,20 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   @override
-  Future<Result<bool, ImageUploadException>> linkImage(MultipartFile image,
-      Meal meal) async {
+  Future<Result<bool, ImageUploadException>> linkImage(
+      MultipartFile image, Meal meal) async {
+    assert(image.filename != null);
     // TODO auth
     // const requestName = "addImage";
     // final hash = _generateHashOfParameters(
     //     requestName, [..._serializeUuid(meal.id), ..._serializeString(url)]);
     // _authenticate(hash);
 
-
     final result = await _client.mutate$LinkImage(Options$Mutation$LinkImage(
         variables:
-        Variables$Mutation$LinkImage(image: image, mealId: meal.id)));
+            Variables$Mutation$LinkImage(image: image, mealId: meal.id)));
 
-    print("exceptions:");
-    print(result.exception);
-    print("end");
-
+    print(result.exception?.graphqlErrors);
     if (result.hasException) {
       if (result.exception!.linkException != null) {
         return Failure(ImageUploadException("Verbindungsfehler"));
@@ -207,7 +203,7 @@ class GraphQlServerAccess implements IServerAccess {
       }
 
       final mealPlan =
-      _convertMealPlan(result.parsedData?.getCanteens ?? [], date);
+          _convertMealPlan(result.parsedData?.getCanteens ?? [], date);
 
       switch (mealPlan) {
         case Success(value: final mealPlan):
@@ -222,8 +218,8 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   @override
-  Future<Result<Meal, Exception>> getMeal(Meal meal, Line line,
-      DateTime date) async {
+  Future<Result<Meal, Exception>> getMeal(
+      Meal meal, Line line, DateTime date) async {
     final result = await _client.query$GetMeal(Options$Query$GetMeal(
         fetchPolicy: FetchPolicy.networkOnly,
         variables: Variables$Query$GetMeal(
@@ -313,8 +309,8 @@ class GraphQlServerAccess implements IServerAccess {
     _currentAuth = "$authenticationScheme $base64";
   }
 
-  String _generateHashOfParameters(String mutationName,
-      List<int> parameterData) {
+  String _generateHashOfParameters(
+      String mutationName, List<int> parameterData) {
     var hash = sha512.convert([
       ..._serializeString(mutationName),
       ..._serializeUuid(_clientId),
@@ -330,18 +326,14 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   List<int> _serializeInt(int value) {
-    return (ByteData(4)
-      ..setUint32(0, value, Endian.little))
+    return (ByteData(4)..setUint32(0, value, Endian.little))
         .buffer
         .asUint8List()
         .toList();
   }
 
   List<int> _serializeReportReason(Enum$ReportReason reason) {
-    return _serializeString(reason
-        .toString()
-        .split('.')
-        .last);
+    return _serializeString(reason.toString().split('.').last);
   }
 
   List<int> _serializeUuid(String uuid) {
@@ -361,27 +353,25 @@ Result<List<MealPlan>, MealPlanException> _convertMealPlan(
 
   return Success(mealPlans
       .expand(
-        (mealPlan) =>
-        mealPlan.lines
+        (mealPlan) => mealPlan.lines
             .asMap()
-            .map((idx, line) =>
-            MapEntry(
-              idx,
-              MealPlan(
-                date: date,
-                line: Line(
-                    id: line.id,
-                    name: line.name,
-                    canteen: _convertCanteen(line.canteen),
-                    position: idx),
-                // mensa closed when data available but no meals in list
-                isClosed: line.meals!.isEmpty,
-                meals: line.meals!.map((e) => _convertMeal(e)).toList(),
-              ),
-            ))
+            .map((idx, line) => MapEntry(
+                  idx,
+                  MealPlan(
+                    date: date,
+                    line: Line(
+                        id: line.id,
+                        name: line.name,
+                        canteen: _convertCanteen(line.canteen),
+                        position: idx),
+                    // mensa closed when data available but no meals in list
+                    isClosed: line.meals!.isEmpty,
+                    meals: line.meals!.map((e) => _convertMeal(e)).toList(),
+                  ),
+                ))
             .values
             .toList(),
-  )
+      )
       .toList());
 }
 
@@ -391,14 +381,8 @@ Meal _convertMeal(Fragment$mealInfo meal) {
     name: meal.name,
     foodType: _convertMealType(meal.mealType),
     price: _convertPrice(meal.price),
-    additives: meal.additives
-        .map((e) => _convertAdditive(e))
-        .nonNulls
-        .toList(),
-    allergens: meal.allergens
-        .map((e) => _convertAllergen(e))
-        .nonNulls
-        .toList(),
+    additives: meal.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
+    allergens: meal.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
     averageRating: meal.ratings.averageRating,
     individualRating: meal.ratings.personalRating,
     numberOfRatings: meal.ratings.ratingsCount,
@@ -438,14 +422,8 @@ Side _convertSide(Fragment$mealInfo$sides e) {
       name: e.name,
       foodType: _convertMealType(e.mealType),
       price: _convertPrice(e.price),
-      allergens: e.allergens
-          .map((e) => _convertAllergen(e))
-          .nonNulls
-          .toList(),
-      additives: e.additives
-          .map((e) => _convertAdditive(e))
-          .nonNulls
-          .toList());
+      allergens: e.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
+      additives: e.additives.map((e) => _convertAdditive(e)).nonNulls.toList());
 }
 
 ImageData _convertImage(Fragment$mealInfo$images e) {
@@ -458,8 +436,8 @@ ImageData _convertImage(Fragment$mealInfo$images e) {
       individualRating: e.personalUpvote
           ? 1
           : e.personalDownvote
-          ? -1
-          : 0);
+              ? -1
+              : 0);
 }
 
 Allergen? _convertAllergen(Enum$Allergen e) {
@@ -506,7 +484,7 @@ Additive? _convertAdditive(Enum$Additive e) {
     Enum$Additive.SURFACE_WAXED => Additive.surfaceWaxed,
     Enum$Additive.SULPHUR => Additive.sulphur,
     Enum$Additive.ARTIFICIALLY_BLACKENED_OLIVES =>
-    Additive.artificiallyBlackenedOlives,
+      Additive.artificiallyBlackenedOlives,
     Enum$Additive.SWEETENER => Additive.sweetener,
     Enum$Additive.LAXATIVE_IF_OVERUSED => Additive.laxativeIfOverused,
     Enum$Additive.PHENYLALANINE => Additive.phenylalanine,
