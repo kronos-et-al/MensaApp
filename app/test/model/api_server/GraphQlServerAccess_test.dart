@@ -20,7 +20,7 @@ void main() async {
   final GraphQlServerAccess serverAccess = GraphQlServerAccess(
       testServer, testApiKey, "1f16dcca-963e-4ceb-a8ca-843a7c9277a5");
 
-  final file = File("test/model/api_server/test.jpg").readAsBytesSync();
+  final file = File("test/test.jpg").readAsBytesSync();
   final image = MultipartFile.fromBytes("", file,
       filename: "test.jpg", contentType: MediaType("image", "jpeg"));
 

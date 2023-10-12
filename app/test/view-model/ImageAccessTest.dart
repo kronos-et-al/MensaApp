@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app/view_model/logic/image/ImageAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
@@ -7,6 +9,8 @@ import 'package:app/view_model/repository/data_classes/settings/ReportCategory.d
 import 'package:app/view_model/repository/error_handling/ImageUploadException.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../model/mocks/ApiMock.dart';
@@ -15,6 +19,10 @@ import '../model/mocks/DatabaseMock.dart';
 void main() {
   final api = ApiMock();
   final database = DatabaseMock();
+
+  final file = File("test/test.jpg").readAsBytesSync();
+  final image_file = MultipartFile.fromBytes("", file,
+      filename: "test.jpg", contentType: MediaType("image", "jpeg"));
 
   ImageData image = ImageData(
       id: "42",
@@ -92,8 +100,8 @@ void main() {
 
   group("link image", () {
     test("failed request", () async {
-      when(() => api.linkImage("url", meal)).thenAnswer((_) async => Failure(ImageUploadException("error")));
-      final result = switch (await images.linkImage("url", meal)) {
+      when(() => api.linkImage(image_file, meal)).thenAnswer((_) async => Failure(ImageUploadException("error")));
+      final result = switch (await images.linkImage(image_file, meal)) {
         Success(value: final value) => value,
         Failure(exception: final exception) => exception
       };
@@ -101,8 +109,8 @@ void main() {
     });
 
     test("successful request", () async {
-      when(() => api.linkImage("url", meal)).thenAnswer((_) async => const Success(true));
-      final result = switch (await images.linkImage("url", meal)) {
+      when(() => api.linkImage(image_file, meal)).thenAnswer((_) async => const Success(true));
+      final result = switch (await images.linkImage(image_file, meal)) {
         Success(value: final value) => value,
         Failure(exception: final exception) => exception
       };
