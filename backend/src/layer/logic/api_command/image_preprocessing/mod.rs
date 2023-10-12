@@ -68,11 +68,47 @@ impl ImagePreprocessor {
 
             // downscale
             if image.width() > max_width || image.height() > max_height {
-                image.resize(max_width, max_height, FilterType::Triangle);
+                let resized = image.resize(max_width, max_height, FilterType::Triangle);
+                Ok(resized)
+            } else {
+                Ok(image)
             }
-            Ok(image)
         })
         .await
         .expect("image preprocessing should not panic nor get aborted")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn test_preprocess() {
+        let dir = tempfile::tempdir().expect("tempdir should be accessible");
+        let mut png_path = dir.path().to_path_buf();
+        png_path.push("test.png");
+        tokio::fs::write(&png_path, include_bytes!("../tests/test.png"))
+            .await
+            .expect("image should be saved");
+
+        let image_file = tokio::fs::File::open(&png_path)
+            .await
+            .expect("saved file should be opened");
+
+        let info = ImagePreprocessingInfo {
+            max_image_height: 100,
+            max_image_width: 100,
+        };
+        let preprocessor = ImagePreprocessor::new(info);
+
+        let processed_image = preprocessor
+            .preprocess_image(image_file, Some("image/png".into()))
+            .await
+            .expect("image should be processed");
+
+        assert!(processed_image.width() <= 100);
+        assert!(processed_image.height() <= 100);
     }
 }

@@ -425,13 +425,28 @@ mod test {
                 .add_image(
                     meal_id,
                     Some("image/jpeg".into()),
-                    image_file.try_clone().await.unwrap(),
+                    image_file,
                     auth_info.clone(),
                 )
                 .await
                 .is_ok(),
             "jpg"
         );
+
+        // wrong format
+        let image_file = tokio::fs::File::open(&jpg_path)
+            .await
+            .expect("saved file should be opened");
+
+        assert!(handler
+            .add_image(
+                meal_id,
+                Some("image/png".into()),
+                image_file,
+                auth_info.clone(),
+            )
+            .await
+            .is_err());
 
         // When no format is given, the command may or may not work.
         // assert!(handler
@@ -455,7 +470,7 @@ mod test {
                 .add_image(
                     meal_id,
                     Some("image/jpeg".into()),
-                    image_file.try_clone().await.unwrap(),
+                    image_file,
                     auth_info.clone(),
                 )
                 .await
@@ -479,7 +494,7 @@ mod test {
                 .add_image(
                     meal_id,
                     Some("image/png".into()),
-                    image_file.try_clone().await.unwrap(),
+                    image_file,
                     auth_info.clone(),
                 )
                 .await
@@ -503,7 +518,7 @@ mod test {
                 .add_image(
                     meal_id,
                     Some("image/tiff".into()),
-                    image_file.try_clone().await.unwrap(),
+                    image_file,
                     auth_info.clone(),
                 )
                 .await
