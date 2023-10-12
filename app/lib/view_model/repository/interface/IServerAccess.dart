@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/error_handling/ImageUploadException.dart';
@@ -8,6 +10,7 @@ import '../data_classes/meal/Meal.dart';
 import '../data_classes/mealplan/MealPlan.dart';
 import '../data_classes/settings/ReportCategory.dart';
 import '../error_handling/Result.dart';
+import "package:http/http.dart" show MultipartFile;
 
 /// This class is the interface for the access to the server.
 abstract class IServerAccess {
@@ -29,7 +32,7 @@ abstract class IServerAccess {
 
   /// This method link the committed url to the committed image.
   /// Returns 'true' if the linking was uploaded successfully, otherwise 'false'.
-  Future<Result<bool, ImageUploadException>> linkImage(String url, Meal meal);
+  Future<Result<bool, ImageUploadException>> linkImage(MultipartFile image, Meal meal);
 
   /// This method adds an upvote to an image.
   /// Returns 'true' if the rating was updated successfully, otherwise 'false'.

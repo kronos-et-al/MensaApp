@@ -41,8 +41,8 @@ enum Additive {
   # This meals can contain alcohol.
   ALCOHOL
 
-  # This meals contains pressed meet.
-  PRESSED_MEET
+  # This meals contains pressed meat.
+  PRESSED_MEAT
 
   # This meals is glazed with cacao.
   GLAZING_WITH_CACAO
@@ -239,7 +239,7 @@ type MealStatistics {
   # The date of the next time the meal will be served.
   nextServed: NaiveDate
 
-  # Count how often meal was served in last three months.
+  # Count how often meal was served in the last three months.
   frequency: Int!
 
   # Whether this meal is new and was never served before.
@@ -288,8 +288,8 @@ type MutationRoot {
     # Id of the meal to link an image to.
     mealId: UUID!
 
-    # Flickr url to the image.
-    imageUrl: String!
+    # The image itself as multipart attachment
+    image: Upload!
   ): Boolean!
 
   # This mutation either adds a rating to the specified main dish (if no such rating existed), or modifies an existing one.
@@ -469,3 +469,5 @@ type Side {
 # * [Wikipedia: Universally Unique Identifier](http://en.wikipedia.org/wiki/Universally_unique_identifier)
 # * [RFC4122: A Universally Unique IDentifier (UUID) URN Namespace](http://tools.ietf.org/html/rfc4122)
 scalar UUID
+
+scalar Upload

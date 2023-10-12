@@ -7,6 +7,7 @@ import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:app/view_model/repository/interface/IServerAccess.dart';
 import 'package:app/view_model/repository/interface/IDatabaseAccess.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 /// This class is the interface for the access to the image data. The access can be done via server.
 class ImageAccess extends ChangeNotifier implements IImageAccess {
@@ -62,8 +63,8 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
 
   @override
   Future<Result<bool, ImageUploadException>> linkImage(
-      String url, Meal meal) async {
-    final result = await _api.linkImage(url, meal);
+      MultipartFile image, Meal meal) async {
+    final result = await _api.linkImage(image, meal);
 
     switch (result) {
       case Success<bool, ImageUploadException> value:

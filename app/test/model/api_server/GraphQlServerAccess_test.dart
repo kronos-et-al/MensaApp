@@ -8,6 +8,7 @@ import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
 import 'config.dart';
@@ -58,7 +59,7 @@ void main() async {
 
   test('link image', () async {
     var deleted = await serverAccess.linkImage(
-        "https://image_url.de",
+        MultipartFile.fromString("", "image"),
         Meal(
             id: "bd3c88f9-5dc8-4773-85dc-53305930e7b6",
             name: "Best meal",

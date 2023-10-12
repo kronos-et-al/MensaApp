@@ -58,6 +58,8 @@ dependencies:
   package_info_plus: ^4.0.2
   url_launcher: ^6.1.12
   sqlite3_flutter_libs: ^0.5.15
+  http: ^0.13.0
+  http_parser: ^4.0.2
 
   flutter_dotenv: ^5.1.0
 

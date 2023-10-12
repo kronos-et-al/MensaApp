@@ -1,10 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
-
+import 'package:http/http.dart';
 import 'schema.graphql.dart';
 
 class Variables$Mutation$RemoveDownvote {
@@ -26,6 +25,7 @@ class Variables$Mutation$RemoveDownvote {
   Map<String, dynamic> _$data;
 
   String get imageId => (_$data['imageId'] as String);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$imageId = imageId;
@@ -38,6 +38,7 @@ class Variables$Mutation$RemoveDownvote {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -87,7 +88,6 @@ class _CopyWithImpl$Variables$Mutation$RemoveDownvote<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  @override
   TRes call({Object? imageId = _undefined}) =>
       _then(Variables$Mutation$RemoveDownvote._({
         ..._instance._$data,
@@ -102,7 +102,6 @@ class _CopyWithStubImpl$Variables$Mutation$RemoveDownvote<TRes>
 
   TRes _res;
 
-  @override
   call({String? imageId}) => _res;
 }
 
@@ -500,6 +499,7 @@ class Variables$Mutation$RemoveUpvote {
   Map<String, dynamic> _$data;
 
   String get imageId => (_$data['imageId'] as String);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$imageId = imageId;
@@ -512,6 +512,7 @@ class Variables$Mutation$RemoveUpvote {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -966,6 +967,7 @@ class Variables$Mutation$AddDownvote {
   Map<String, dynamic> _$data;
 
   String get imageId => (_$data['imageId'] as String);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$imageId = imageId;
@@ -978,6 +980,7 @@ class Variables$Mutation$AddDownvote {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -1432,6 +1435,7 @@ class Variables$Mutation$AddUpvote {
   Map<String, dynamic> _$data;
 
   String get imageId => (_$data['imageId'] as String);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$imageId = imageId;
@@ -1444,6 +1448,7 @@ class Variables$Mutation$AddUpvote {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -1882,11 +1887,11 @@ class Mutation$AddUpvote$Widget
 class Variables$Mutation$LinkImage {
   factory Variables$Mutation$LinkImage({
     required String mealId,
-    required String imageUrl,
+    required MultipartFile image,
   }) =>
       Variables$Mutation$LinkImage._({
         r'mealId': mealId,
-        r'imageUrl': imageUrl,
+        r'image': image,
       });
 
   Variables$Mutation$LinkImage._(this._$data);
@@ -1895,21 +1900,23 @@ class Variables$Mutation$LinkImage {
     final result$data = <String, dynamic>{};
     final l$mealId = data['mealId'];
     result$data['mealId'] = (l$mealId as String);
-    final l$imageUrl = data['imageUrl'];
-    result$data['imageUrl'] = (l$imageUrl as String);
+    final l$image = data['image'];
+    result$data['image'] = (l$image as MultipartFile);
     return Variables$Mutation$LinkImage._(result$data);
   }
 
   Map<String, dynamic> _$data;
 
   String get mealId => (_$data['mealId'] as String);
-  String get imageUrl => (_$data['imageUrl'] as String);
+
+  MultipartFile get image => (_$data['image'] as MultipartFile);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$mealId = mealId;
     result$data['mealId'] = l$mealId;
-    final l$imageUrl = imageUrl;
-    result$data['imageUrl'] = l$imageUrl;
+    final l$image = image;
+    result$data['image'] = l$image;
     return result$data;
   }
 
@@ -1918,6 +1925,7 @@ class Variables$Mutation$LinkImage {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -1932,9 +1940,9 @@ class Variables$Mutation$LinkImage {
     if (l$mealId != lOther$mealId) {
       return false;
     }
-    final l$imageUrl = imageUrl;
-    final lOther$imageUrl = other.imageUrl;
-    if (l$imageUrl != lOther$imageUrl) {
+    final l$image = image;
+    final lOther$image = other.image;
+    if (l$image != lOther$image) {
       return false;
     }
     return true;
@@ -1943,10 +1951,10 @@ class Variables$Mutation$LinkImage {
   @override
   int get hashCode {
     final l$mealId = mealId;
-    final l$imageUrl = imageUrl;
+    final l$image = image;
     return Object.hashAll([
       l$mealId,
-      l$imageUrl,
+      l$image,
     ]);
   }
 }
@@ -1962,7 +1970,7 @@ abstract class CopyWith$Variables$Mutation$LinkImage<TRes> {
 
   TRes call({
     String? mealId,
-    String? imageUrl,
+    MultipartFile? image,
   });
 }
 
@@ -1981,14 +1989,14 @@ class _CopyWithImpl$Variables$Mutation$LinkImage<TRes>
 
   TRes call({
     Object? mealId = _undefined,
-    Object? imageUrl = _undefined,
+    Object? image = _undefined,
   }) =>
       _then(Variables$Mutation$LinkImage._({
         ..._instance._$data,
         if (mealId != _undefined && mealId != null)
           'mealId': (mealId as String),
-        if (imageUrl != _undefined && imageUrl != null)
-          'imageUrl': (imageUrl as String),
+        if (image != _undefined && image != null)
+          'image': (image as MultipartFile),
       }));
 }
 
@@ -2000,7 +2008,7 @@ class _CopyWithStubImpl$Variables$Mutation$LinkImage<TRes>
 
   call({
     String? mealId,
-    String? imageUrl,
+    MultipartFile? image,
   }) =>
       _res;
 }
@@ -2143,9 +2151,9 @@ const documentNodeMutationLinkImage = DocumentNode(definitions: [
         directives: [],
       ),
       VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'imageUrl')),
+        variable: VariableNode(name: NameNode(value: 'image')),
         type: NamedTypeNode(
-          name: NameNode(value: 'String'),
+          name: NameNode(value: 'Upload'),
           isNonNull: true,
         ),
         defaultValue: DefaultValueNode(value: null),
@@ -2163,8 +2171,8 @@ const documentNodeMutationLinkImage = DocumentNode(definitions: [
             value: VariableNode(name: NameNode(value: 'mealId')),
           ),
           ArgumentNode(
-            name: NameNode(value: 'imageUrl'),
-            value: VariableNode(name: NameNode(value: 'imageUrl')),
+            name: NameNode(value: 'image'),
+            value: VariableNode(name: NameNode(value: 'image')),
           ),
         ],
         directives: [],
@@ -2411,7 +2419,9 @@ class Variables$Mutation$ReportImage {
   Map<String, dynamic> _$data;
 
   String get imageId => (_$data['imageId'] as String);
+
   Enum$ReportReason get reason => (_$data['reason'] as Enum$ReportReason);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$imageId = imageId;
@@ -2426,6 +2436,7 @@ class Variables$Mutation$ReportImage {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -2920,7 +2931,9 @@ class Variables$Mutation$UpdateRating {
   Map<String, dynamic> _$data;
 
   String get mealId => (_$data['mealId'] as String);
+
   int get rating => (_$data['rating'] as int);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$mealId = mealId;
@@ -2935,6 +2948,7 @@ class Variables$Mutation$UpdateRating {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {

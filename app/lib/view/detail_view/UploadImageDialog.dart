@@ -8,6 +8,7 @@ import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:http/http.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 
@@ -96,9 +97,12 @@ class UploadImageDialog extends StatelessWidget {
                   semanticLabel: FlutterI18n.translate(
                       context, "semantics.imageSubmitUpload"),
                   onPressed: () async {
+                    // todo
+                    final file = MultipartFile.fromString("field", "empty");
+
                     final result = await context
                         .read<IImageAccess>()
-                        .linkImage(_textFieldController.text, _meal);
+                        .linkImage(file, _meal);
                     if (!context.mounted) return;
 
                     Navigator.pop(context);
