@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT approved, link_date as upload_date, report_count, url,\n            upvotes, downvotes, id as image_hoster_id, image_id, rank\n            FROM image_detail\n            WHERE image_id = $1\n            ORDER BY image_id\n            ",
+  "query": "\n            SELECT approved, link_date as upload_date, report_count,\n            upvotes, downvotes, image_id, rank\n            FROM image_detail\n            WHERE image_id = $1\n            ORDER BY image_id\n            ",
   "describe": {
     "columns": [
       {
@@ -20,31 +20,21 @@
       },
       {
         "ordinal": 3,
-        "name": "url",
-        "type_info": "Text"
-      },
-      {
-        "ordinal": 4,
         "name": "upvotes",
         "type_info": "Int4"
       },
       {
-        "ordinal": 5,
+        "ordinal": 4,
         "name": "downvotes",
         "type_info": "Int4"
       },
       {
-        "ordinal": 6,
-        "name": "image_hoster_id",
-        "type_info": "Text"
-      },
-      {
-        "ordinal": 7,
+        "ordinal": 5,
         "name": "image_id",
         "type_info": "Uuid"
       },
       {
-        "ordinal": 8,
+        "ordinal": 6,
         "name": "rank",
         "type_info": "Float4"
       }
@@ -61,10 +51,8 @@
       true,
       true,
       true,
-      true,
-      true,
       true
     ]
   },
-  "hash": "79c15947c5c3d2c254336f120ca7467d43340ada4ced769ca769633e70bfdd49"
+  "hash": "12b971e2d40ed13906dfc4ba3266cf97744c1d7000d9b7020c4a08b1e16f882a"
 }
