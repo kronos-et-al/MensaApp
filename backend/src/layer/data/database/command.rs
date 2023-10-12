@@ -366,7 +366,7 @@ mod test {
         let meal_id = Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap();
 
         let images = number_of_images(&pool).await;
-        assert!(command.link_image(meal_id, user_id,).await.is_ok());
+        assert!(command.link_image(meal_id, user_id).await.is_ok());
         assert_eq!(number_of_images(&pool).await, images + 1);
         // TBD is it allowed to link an image multiple times?
         // assert!(command
@@ -388,6 +388,17 @@ mod test {
             .await
             .unwrap()
             .len()
+    }
+
+    #[sqlx::test(fixtures("meal", "image"))]
+    async fn test_revert_link_image(pool: PgPool) {
+        let old_num = number_of_images(&pool).await;
+        let command = PersistentCommandData { pool: pool.clone() };
+        let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
+        command.revert_link_image(image_id).await.unwrap();
+
+        let new_num = number_of_images(&pool).await;
+        assert_eq!(new_num, old_num - 1);
     }
 
     #[sqlx::test(fixtures("meal", "meal_rating"))]
