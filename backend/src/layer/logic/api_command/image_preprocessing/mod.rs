@@ -17,7 +17,7 @@ pub enum ImagePreprocessingError {
     #[error("Error guessing image format: {0}")]
     FormatGuessError(std::io::Error),
     /// Error occurring wile operating on the image.
-    #[error("Error during image operation:{0}")]
+    #[error("Error during image operation: {0}")]
     ImageError(#[from] ImageError),
 }
 
