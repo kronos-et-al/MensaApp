@@ -395,48 +395,124 @@ mod test {
             .is_err());
     }
 
-    // TODO
-    // #[tokio::test]
-    // #[ignore = "todo new implementation"]
-    // async fn test_add_image() {
-    //     let handler = get_handler().await.unwrap();
-    //     let auth_info = InnerAuthInfo {
-    //         api_ident: "YWpzZGg4Mn".into(),
-    //         hash: "ozNFvc9F0FWdrkFuncTpWA8z+ugwwox4El21hNiHoJW1conWnAOL0q7g4iNWEdDViFyTBjmDhK17FKpmReAgrA==".into(),
-    //         client_id: Uuid::default(),
-    //     };
-    //     let meal_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
-    //     let image_url = "http://test.de";
+    #[tokio::test]
+    async fn test_add_image() {
+        let handler = get_handler().await.unwrap();
+        // todo auth
+        let auth_info = Some(InnerAuthInfo {
+            api_ident: String::new(),
+            hash: String::new(),
+            client_id: Uuid::default(),
+        });
 
-    //     assert!(handler
-    //         .add_image(meal_id, image_url.to_string(), None)
-    //         .await
-    //         .is_err());
-    //     assert!(handler
-    //         .add_image(meal_id, image_url.to_string(), Some(auth_info.clone()))
-    //         .await
-    //         .is_ok());
-    //     let auth_info = InnerAuthInfo {
-    //         hash: "JWN194mSo+ZAMH4ohZ4WO1//k3NH9ztxIFuWjdrKy6ct3+Y4P7zqQs1JiE7p63TkCDRVqlobEqi7bIGuAjGFZg==".into(),
-    //         ..auth_info
-    //     };
-    //     assert!(handler
-    //         .add_image(meal_id, INVALID_URL.to_string(), Some(auth_info.clone()))
-    //         .await
-    //         .is_err());
-    //     let auth_info = InnerAuthInfo {
-    //         hash: "TLvbxrv6azE4FpA2sROa8CD8ACdRGjj1M6OtLl1h4Q/NYypCKagZz0C2c4SEsoGjRpIbMAaKprFMcavssf2z2w==".into(),
-    //         ..auth_info
-    //     };
-    //     handler
-    //         .add_image(
-    //             MEAL_ID_TO_FAIL,
-    //             image_url.to_string(),
-    //             Some(auth_info.clone()),
-    //         )
-    //         .await
-    //         .unwrap_err();
-    // }
+        let meal_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
+
+        let dir = tempfile::tempdir().expect("tempdir should be accessible");
+
+        // jpg
+        let mut jpg_path = dir.path().to_path_buf();
+        jpg_path.push("test.jpg");
+        tokio::fs::write(&jpg_path, include_bytes!("tests/test.jpg"))
+            .await
+            .expect("image should be saved");
+
+        let image_file = tokio::fs::File::open(&jpg_path)
+            .await
+            .expect("saved file should be opened");
+
+        assert!(
+            handler
+                .add_image(
+                    meal_id,
+                    Some("image/jpeg".into()),
+                    image_file.try_clone().await.unwrap(),
+                    auth_info.clone(),
+                )
+                .await
+                .is_ok(),
+            "jpg"
+        );
+
+        // When no format is given, the command may or may not work.
+        // assert!(handler
+        //     .add_image(meal_id, None, image_file, auth_info)
+        //     .await
+        //     .is_ok());
+
+        // jpg large
+        let mut jpg_path = dir.path().to_path_buf();
+        jpg_path.push("test_large.jpg");
+        tokio::fs::write(&jpg_path, include_bytes!("tests/test_large.jpg"))
+            .await
+            .expect("image should be saved");
+
+        let image_file = tokio::fs::File::open(&jpg_path)
+            .await
+            .expect("saved file should be opened");
+
+        assert!(
+            handler
+                .add_image(
+                    meal_id,
+                    Some("image/jpeg".into()),
+                    image_file.try_clone().await.unwrap(),
+                    auth_info.clone(),
+                )
+                .await
+                .is_ok(),
+            "jpg large"
+        );
+
+        // png
+        let mut png_path = dir.path().to_path_buf();
+        png_path.push("test.png");
+        tokio::fs::write(&png_path, include_bytes!("tests/test.png"))
+            .await
+            .expect("image should be saved");
+
+        let image_file = tokio::fs::File::open(&png_path)
+            .await
+            .expect("saved file should be opened");
+
+        assert!(
+            handler
+                .add_image(
+                    meal_id,
+                    Some("image/png".into()),
+                    image_file.try_clone().await.unwrap(),
+                    auth_info.clone(),
+                )
+                .await
+                .is_ok(),
+            "png"
+        );
+
+        // tiff
+        let mut tiff_path = dir.path().to_path_buf();
+        tiff_path.push("test.tif");
+        tokio::fs::write(&tiff_path, include_bytes!("tests/test.tif"))
+            .await
+            .expect("image should be saved");
+
+        let image_file = tokio::fs::File::open(&tiff_path)
+            .await
+            .expect("saved file should be opened");
+
+        assert!(
+            handler
+                .add_image(
+                    meal_id,
+                    Some("image/tiff".into()),
+                    image_file.try_clone().await.unwrap(),
+                    auth_info.clone(),
+                )
+                .await
+                .is_ok(),
+            "tiff"
+        );
+
+        // todo more cases when saving fails etc?
+    }
 
     #[tokio::test]
     async fn test_set_meal_rating() {
