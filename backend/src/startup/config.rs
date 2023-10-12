@@ -6,7 +6,7 @@ use tracing::info;
 
 use crate::layer::{
     data::{
-        database::factory::DatabaseInfo, mail::mail_info::MailInfo,
+        database::factory::DatabaseInfo, file_handler::FileHandlerInfo, mail::mail_info::MailInfo,
         swka_parser::swka_parse_manager::SwKaInfo,
     },
     logic::api_command::command_handler::ImagePreprocessingInfo,
@@ -176,6 +176,29 @@ impl ConfigReader {
         };
         info
     }
+
+    /// Reads the config for the file handler.
+    /// # Errors
+    /// - when the environment variable is not set
+    /// - when the image directory does not exist
+    pub async fn read_file_handler_info(&self) -> Result<FileHandlerInfo> {
+        let info: FileHandlerInfo = FileHandlerInfo {
+            image_dir: read_var("IMAGE_DIR")?.into(),
+        };
+
+        if !tokio::fs::try_exists(&info.image_dir)
+            .await
+            .unwrap_or_default()
+        {
+            return Err(ServerError::NonexistingDirectory(
+                info.image_dir.to_string_lossy().to_string(),
+            ));
+        }
+
+        info!("Using and storing images at: {}", info.image_dir.display());
+
+        Ok(info)
+    }
 }
 
 fn read_var(var: &str) -> Result<String> {
@@ -192,10 +215,13 @@ fn get_max_weeks_data() -> u32 {
 
 #[cfg(test)]
 mod tests {
+    use tracing_test::traced_test;
+
     use super::ConfigReader;
 
-    #[test]
-    fn test_conf_reader() {
+    #[tokio::test]
+    #[traced_test]
+    async fn test_conf_reader() {
         let reader = ConfigReader::default();
         reader.read_database_info().ok();
         reader.read_api_info().ok();
@@ -203,6 +229,7 @@ mod tests {
         reader.read_mail_info().ok();
         reader.read_schedule_info().ok();
         reader.read_swka_info().ok();
+        reader.read_file_handler_info().await.ok();
         let _ = reader.read_image_preprocessing_info();
         let _ = reader.should_migrate();
         let _ = reader.should_print_help();

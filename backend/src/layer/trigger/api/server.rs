@@ -133,7 +133,7 @@ impl ApiServer {
 
         self.state = State::Running(Box::pin(shutdown));
         info!("Started graphql server listening on http://{}.", socket);
-        info!("Accessible under https://{}.", local_to_global_url(""));
+        info!("Api publicly accessible under: {}", local_to_global_url(""));
     }
 
     /// Stops the GraphQL server.

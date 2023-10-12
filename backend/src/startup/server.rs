@@ -9,14 +9,12 @@ use crate::{
     layer::{
         data::{
             database::factory::DataAccessFactory,
+            file_handler::FileHandler,
             mail::mail_sender::{MailError, MailSender},
             swka_parser::swka_parse_manager::SwKaParseManager,
         },
         logic::{
-            api_command::{
-                command_handler::CommandHandler,
-                mocks::{CommandImageStorageMock, CommandImageValidationMock},
-            },
+            api_command::{command_handler::CommandHandler, mocks::CommandImageValidationMock},
             mealplan_management::meal_plan_manager::MealPlanManager,
         },
         trigger::{api::server::ApiServer, scheduling::scheduler::Scheduler},
@@ -51,6 +49,9 @@ pub enum ServerError {
     /// Error from the database.
     #[error("error from the database: {0}")]
     DataError(#[from] DataError),
+    /// Error when an directory, eg. the image directory does not exists.
+    #[error("The following directory does not exist, but is required: {0}")]
+    NonexistingDirectory(String),
 }
 
 /// Class providing the combined server functions to the outside.
@@ -87,7 +88,7 @@ impl Server {
 
         let mail = MailSender::new(config.read_mail_info()?)?;
         let parser = SwKaParseManager::new(config.read_swka_info()?)?;
-        let file_handler = CommandImageStorageMock; // todo
+        let file_handler = FileHandler::new(config.read_file_handler_info().await?);
         let google_vision = CommandImageValidationMock; // todo
 
         // logic layer
