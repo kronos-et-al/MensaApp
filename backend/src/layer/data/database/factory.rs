@@ -5,8 +5,8 @@ use tracing::info;
 use crate::interface::persistent_data::Result;
 
 use super::{
-    command::PersistentCommandData, mealplan_management::PersistentMealplanManagementData,
-    request::PersistentRequestData,
+    auth::PersistentAuthData, command::PersistentCommandData,
+    mealplan_management::PersistentMealplanManagementData, request::PersistentRequestData,
 };
 
 /// Structure containing all information necessary to connect to a database.
@@ -74,6 +74,14 @@ impl DataAccessFactory {
         PersistentRequestData {
             pool: self.pool.clone(),
             max_weeks_data: self.max_weeks_data,
+        }
+    }
+
+    /// Returns a object for accessing database requests for authentication.
+    #[must_use]
+    pub fn get_auth_data_access(&self) -> PersistentAuthData {
+        PersistentAuthData {
+            pool: self.pool.clone(),
         }
     }
 }

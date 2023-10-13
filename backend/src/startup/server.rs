@@ -98,8 +98,7 @@ impl Server {
             mail,
             file_handler,
             google_vision,
-        )
-        .await?;
+        )?;
         let mealplan_management = MealPlanManager::new(mealplan_management_data, parser);
 
         // trigger layer

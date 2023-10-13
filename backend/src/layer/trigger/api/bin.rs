@@ -43,7 +43,6 @@ async fn main() {
             CommandImageStorageMock,
             CommandImageValidationMock,
         )
-        .await
         .expect("could not create command mock"),
     );
     server.start();

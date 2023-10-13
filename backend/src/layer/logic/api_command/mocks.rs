@@ -120,19 +120,6 @@ impl CommandDataAccess for CommandDatabaseMock {
         }
     }
 
-    /// Loads all api_keys from the database.
-    async fn get_api_keys(&self) -> DataResult<Vec<ApiKey>> {
-        Ok(vec![
-            ApiKey {
-                key: "abc".into(),
-                description: String::new(),
-            },
-            ApiKey {
-                key: "YWpzZGg4MnozNzhkMnppZGFzYXNkMiBzYWZzYSBzPGE5MDk4".into(),
-                description: String::new(),
-            },
-        ])
-    }
 }
 
 #[derive(Default, Debug)]

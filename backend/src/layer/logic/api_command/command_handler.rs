@@ -43,7 +43,6 @@ where
     admin_notification: Notify,
     image_storage: Storage,
     image_validation: Validation,
-    auth: Authenticator,
     image_preprocessor: ImagePreprocessor,
 }
 
@@ -59,25 +58,18 @@ where
     ///
     /// # Errors
     /// Returns an error, if the api keys could not be gotten from `command_data`
-    pub async fn new(
+    pub fn new(
         image_preprocessing_info: ImagePreprocessingInfo,
         command_data: DataAccess,
         admin_notification: Notify,
         image_storage: Storage,
         image_validation: Validation,
     ) -> Result<Self> {
-        let keys: Vec<String> = command_data
-            .get_api_keys()
-            .await?
-            .into_iter()
-            .map(|x| x.key)
-            .collect();
         Ok(Self {
             command_data,
             admin_notification,
             image_storage,
             image_validation,
-            auth: Authenticator::new(keys),
             image_preprocessor: ImagePreprocessor::new(image_preprocessing_info),
         })
     }
@@ -122,7 +114,8 @@ where
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
 
         let command_type = CommandType::ReportImage { image_id, reason };
-        self.auth.authn_command(&auth_info, &command_type)?;
+        // self.auth.authn_command(&auth_info, &command_type)?; 
+        // todo re-add new auth everywhere
         let mut info = self.command_data.get_image_info(image_id).await?;
         if !info.approved {
             info.report_count += 1;
@@ -158,7 +151,7 @@ where
     async fn add_image_upvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
         let command_type = CommandType::AddUpvote { image_id };
-        self.auth.authn_command(&auth_info, &command_type)?;
+        // self.auth.authn_command(&auth_info, &command_type)?;
         self.command_data
             .add_upvote(image_id, auth_info.client_id)
             .await?;
@@ -168,7 +161,7 @@ where
     async fn add_image_downvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
         let command_type = CommandType::AddDownvote { image_id };
-        self.auth.authn_command(&auth_info, &command_type)?;
+        // self.auth.authn_command(&auth_info, &command_type)?;
         self.command_data
             .add_downvote(image_id, auth_info.client_id)
             .await?;
@@ -178,7 +171,7 @@ where
     async fn remove_image_upvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
         let command_type = CommandType::RemoveUpvote { image_id };
-        self.auth.authn_command(&auth_info, &command_type)?;
+        // self.auth.authn_command(&auth_info, &command_type)?;
         self.command_data
             .remove_upvote(image_id, auth_info.client_id)
             .await?;
@@ -188,7 +181,7 @@ where
     async fn remove_image_downvote(&self, image_id: Uuid, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
         let command_type = CommandType::RemoveDownvote { image_id };
-        self.auth.authn_command(&auth_info, &command_type)?;
+        // self.auth.authn_command(&auth_info, &command_type)?;
         self.command_data
             .remove_downvote(image_id, auth_info.client_id)
             .await?;
@@ -236,7 +229,7 @@ where
     async fn set_meal_rating(&self, meal_id: Uuid, rating: u32, auth_info: AuthInfo) -> Result<()> {
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
         let command_type = CommandType::SetRating { meal_id, rating };
-        self.auth.authn_command(&auth_info, &command_type)?;
+        // self.auth.authn_command(&auth_info, &command_type)?;
         self.command_data
             .add_rating(meal_id, auth_info.client_id, rating)
             .await?;
@@ -578,7 +571,6 @@ mod test {
             image_storage,
             image_validation,
         )
-        .await
     }
 
     #[test]

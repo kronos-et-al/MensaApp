@@ -133,7 +133,6 @@ async fn setup_cmd() -> impl Command {
         file_handler,
         image_validation,
     )
-    .await
     .unwrap()
 }
 

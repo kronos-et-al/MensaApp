@@ -149,7 +149,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 }
 
 #[async_trait]
-/// An interface for graphql mutation data manipulation. The Command component uses this interface for database access.
+/// An interface for api actions. The Command component uses this interface for database access.
 pub trait CommandDataAccess: Sync + Send {
     /// Returns the ImageInfo struct of image.
     async fn get_image_info(&self, image_id: Uuid) -> Result<Image>;
@@ -175,6 +175,11 @@ pub trait CommandDataAccess: Sync + Send {
 
     /// Adds or updates a rating to the database. The rating will be related to the given meal and the given user.
     async fn add_rating(&self, meal_id: Uuid, user_id: Uuid, rating: u32) -> Result<()>;
+}
+
+/// An interface for database access necessary for the authentication process.
+#[async_trait]
+pub trait AuthDataAccess: Sync + Send {
     /// Loads all api_keys from the database.
     async fn get_api_keys(&self) -> Result<Vec<ApiKey>>;
 }
