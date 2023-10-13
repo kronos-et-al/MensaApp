@@ -17,22 +17,34 @@ use async_graphql::{
 };
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
-    http::HeaderMap,
+    extract::FromRequest,
+    handler::Handler,
+    headers::{authorization::Credentials, Authorization, ContentDisposition, ContentType},
+    http::{
+        request::{self, Parts},
+        HeaderMap, Request,
+    },
+    middleware::{self, Next},
     response::{self, IntoResponse},
     routing::get,
-    Extension, Router, Server,
+    Extension, Router, Server, TypedHeader,
 };
+use base64::{engine::general_purpose::STANDARD, Engine};
+use hmac::{Hmac, Mac};
+use hyper::body::Bytes;
+use mime::Mime;
 use reqwest::header::AUTHORIZATION;
+use sha2::Sha512;
 use tokio::sync::Notify;
 use tower_http::services::ServeDir;
-use tracing::{debug, info, info_span, Instrument};
+use tracing::{debug, info, info_span, warn, Instrument};
 
 use crate::{
     interface::{
-        api_command::{AuthInfo, Command},
+        api_command::{AuthInfo, Command, InnerAuthInfo},
         persistent_data::RequestDataAccess,
     },
-    util::{local_to_global_url, IMAGE_BASE_PATH},
+    util::{local_to_global_url, Uuid, IMAGE_BASE_PATH},
 };
 
 use super::{
@@ -101,8 +113,13 @@ impl ApiServer {
             self.state
         );
 
+        let auth = middleware::from_fn(auth_middleware);
+
         let app = Router::new()
-            .route("/", get(graphql_playground).post(graphql_handler))
+            .route(
+                "/",
+                get(graphql_playground).post(graphql_handler.layer(auth)),
+            )
             .layer(Extension(self.schema.clone()))
             .nest_service(IMAGE_BASE_PATH, ServeDir::new(&self.server_info.image_dir));
 
@@ -174,9 +191,11 @@ async fn graphql_playground() -> impl IntoResponse {
     response::Html(playground_source(GraphQLPlaygroundConfig::new("/")))
 }
 
+#[axum::debug_handler]
 async fn graphql_handler(
     headers: HeaderMap,
-    schema: Extension<GraphQLSchema>,
+    Extension(auth2): Extension<AuthInfo2>,
+    Extension(schema): Extension<GraphQLSchema>,
     request: GraphQLRequest,
 ) -> GraphQLResponse {
     let auth_header = headers
@@ -207,6 +226,95 @@ async fn graphql_handler(
     }
     .instrument(span)
     .await
+}
+
+impl Credentials for InnerAuthInfo {
+    const SCHEME: &'static str = "Mensa";
+
+    fn decode(value: &axum::http::HeaderValue) -> Option<Self> {
+        value.to_str().ok().and_then(read_auth_from_header)
+    }
+
+    fn encode(&self) -> axum::http::HeaderValue {
+        todo!() // todo if necessary
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct AuthInfo2 {
+    // todo rename
+    client_id: Option<Uuid>,
+    authenticated: bool,
+}
+
+async fn auth_middleware(
+    TypedHeader(content_type): TypedHeader<ContentType>,
+    auth: Option<TypedHeader<Authorization<InnerAuthInfo>>>,
+    req: Request<axum::body::Body>,
+    next: Next<axum::body::Body>,
+) -> impl IntoResponse {
+    let auth: AuthInfo = auth.map(|a| a.0 .0);
+    let (parts, body) = req.into_parts();
+    let bytes = hyper::body::to_bytes(body).await.unwrap();
+
+    let mime = Mime::from(content_type);
+
+    // todo error handling
+
+    let hash_bytes = if mime.essence_str() == mime::MULTIPART_FORM_DATA.essence_str() {
+        // copy parts
+        let mut parts_builder = request::Builder::new()
+            .method(parts.method.clone())
+            .uri(parts.uri.clone())
+            .version(parts.version.clone());
+        parts_builder
+            .headers_mut()
+            .unwrap()
+            .extend(parts.headers.clone());
+        let parts = parts_builder.body(()).unwrap().into_parts().0;
+
+        // inspect copy of multipart request
+        let req = Request::from_parts(parts, hyper::Body::from(bytes.clone()));
+        let mut multipart = axum::extract::Multipart::from_request(req, &())
+            .await
+            .unwrap();
+
+        let mut bytes = Bytes::default();
+        while let Ok(Some(field)) = multipart.next_field().await {
+            if field.name() == Some("operations") {
+                bytes = field.bytes().await.unwrap();
+            }
+        }
+
+        bytes
+    } else {
+        bytes.clone()
+    };
+
+    // check hash
+    let mut auth2 = AuthInfo2 {
+        client_id: auth.as_ref().map(|a| a.client_id),
+        authenticated: false,
+    };
+
+    if let Some(auth) = auth {
+        if !auth.api_ident.is_empty() && !auth.hash.is_empty() {
+            let api_key = ""; // todo get api key from db
+            let mut hmac = Hmac::<Sha512>::new_from_slice(api_key.as_bytes()).unwrap();
+            hmac.update(&bytes);
+            let hash = hmac.finalize().into_bytes().to_vec();
+
+            let given_hash = STANDARD.decode(auth.hash).unwrap();
+
+            if hash == given_hash {
+                auth2.authenticated = true;
+            }
+        }
+    }
+
+    let mut req = Request::from_parts(parts, hyper::Body::from(bytes));
+    req.extensions_mut().insert(auth2);
+    next.run(req).await
 }
 
 #[cfg(test)]

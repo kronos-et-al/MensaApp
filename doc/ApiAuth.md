@@ -32,4 +32,4 @@ This string consists of three parts separated by `:`.
 The hash is calculated as an _Sha512_ [HMAC](https://en.wikipedia.org/wiki/HMAC) over the HTTP request body (for normal - non-multipart - requests). As key an UTF8 encoding of the api key is used.
 
 ### Multipart Requests
-For Multipart Requests arising from file Uploads (for `addImage`) the HMAC is only calculated of body the request JSON part (`operations` part). For more details on the GraphQL multipart standart see the [spec](https://github.com/jaydenseric/graphql-multipart-request-spec).
+For Multipart Requests arising from file Uploads (for `addImage`) the HMAC is only calculated of body the request JSON part (with name `operations`). For more details on the GraphQL multipart standart see the [spec](https://github.com/jaydenseric/graphql-multipart-request-spec).
