@@ -328,7 +328,7 @@ impl AuthDataAccess for AuthDataMock {
     async fn get_api_keys(&self) -> DataResult<Vec<ApiKey>> {
         Ok(vec![
             ApiKey {
-                key: "abc".into(),
+                key: "1234567890".into(),
                 description: String::new(),
             },
             ApiKey {

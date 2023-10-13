@@ -1,6 +1,5 @@
 //! Module containing some helper functions like for working inside the graphql context and processing authentication headers.
 use async_graphql::Context;
-use tracing::debug;
 
 use crate::{
     interface::{api_command::Command, persistent_data::RequestDataAccess},
@@ -25,6 +24,8 @@ pub trait ApiUtil {
     fn get_auth_info(&self) -> &AuthInfo;
 
     /// Returns whether this request is authenticated correctly.
+    /// # Errors
+    /// if no valid authentication present
     fn check_authentication(&self) -> auth::Result<()>;
 
     /// Gets the provided client id, if any.
@@ -47,14 +48,11 @@ impl<'a> ApiUtil for Context<'a> {
     }
 
     fn check_authentication(&self) -> auth::Result<()> {
-        if self.data_unchecked::<AuthInfo>().authenticated {
+        if self.data_unchecked::<AuthInfo>().authenticated.is_ok() {
             Ok(())
         } else {
-            debug!(
-                auth = ?self.get_auth_info(),
-                "Unauthenticated Graphql request!",
-            );
-            Err(auth::AuthError::MissingOrInvalidAuth)
+            let auth_info = self.get_auth_info();
+            Err(auth::AuthError::MissingOrInvalidAuth(auth_info.clone()))
         }
     }
 

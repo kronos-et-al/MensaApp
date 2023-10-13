@@ -4,6 +4,7 @@
 use async_graphql::{EmptySubscription, Request, Schema};
 
 use super::auth::AuthInfo;
+use crate::layer::trigger::api::auth::AuthFailReason;
 use crate::layer::trigger::api::mutation::MutationRoot;
 use crate::layer::trigger::api::query::QueryRoot;
 use crate::layer::trigger::api::server::construct_schema;
@@ -16,7 +17,7 @@ async fn test_gql_request(request: &'static str) {
     let request = Request::from(request).data(AuthInfo {
         client_id: Some(Uuid::default()),
         api_ident: String::new(),
-        authenticated: false,
+        authenticated: Err(AuthFailReason::MissingApiIdentOrHash),
         hash: String::new(),
     });
 
@@ -286,7 +287,7 @@ async fn test_get_auth_info_empty() {
     let request = Request::from(request).data(AuthInfo {
         client_id: None,
         api_ident: String::new(),
-        authenticated: false,
+        authenticated: Err(AuthFailReason::MissingApiIdentOrHash),
         hash: String::new(),
     });
 
@@ -350,7 +351,7 @@ async fn test_get_auth_info() {
         client_id: Some(Uuid::try_from("1d75d380-cf07-4edb-9046-a2d981bc219d").unwrap()),
         api_ident: "abc".into(),
         hash: "123".into(),
-        authenticated: true,
+        authenticated: Ok(()),
     };
 
     let schema = Schema::build(QueryRoot, MutationRoot, EmptySubscription)
