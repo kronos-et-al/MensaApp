@@ -3,7 +3,7 @@
 
 use async_graphql::{EmptySubscription, Request, Schema};
 
-use crate::interface::api_command::{AuthInfo, InnerAuthInfo};
+use super::auth::AuthInfo;
 use crate::layer::trigger::api::mutation::MutationRoot;
 use crate::layer::trigger::api::query::QueryRoot;
 use crate::layer::trigger::api::server::construct_schema;
@@ -332,16 +332,17 @@ async fn test_get_auth_info() {
       }
     "#;
 
-    let auth_info = Some(InnerAuthInfo {
-        client_id: Uuid::try_from("1d75d380-cf07-4edb-9046-a2d981bc219d").unwrap(),
+    let auth_info: AuthInfo = AuthInfo {
+        client_id: Some(Uuid::try_from("1d75d380-cf07-4edb-9046-a2d981bc219d").unwrap()),
         api_ident: "abc".into(),
         hash: "123".into(),
-    });
+        authenticated: true,
+    };
 
     let schema = Schema::build(QueryRoot, MutationRoot, EmptySubscription)
         .data(Box::new(RequestDatabaseMock) as DataBox)
         .data(Box::new(CommandMock) as CommandBox)
-        .data(auth_info as AuthInfo)
+        .data(auth_info)
         .finish();
     let response = schema.execute(request).await;
     assert!(response.is_ok(), "request returned {:?}", response.errors);

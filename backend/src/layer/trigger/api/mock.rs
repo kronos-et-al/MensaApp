@@ -6,7 +6,7 @@ use tokio::fs::File;
 use uuid::Uuid;
 
 use crate::interface::{
-    api_command::{AuthInfo, Command, Result as CommandResult},
+    api_command::{Command, Result as CommandResult},
     persistent_data::{
         model::{ApiKey, Canteen, Image, Line, Meal, Side},
         AuthDataAccess, RequestDataAccess, Result as DataResult,
@@ -274,36 +274,28 @@ impl Command for CommandMock {
         &self,
         _image_id: Uuid,
         _reason: ReportReason,
-        _auth_info: AuthInfo,
+        _client_id: Uuid,
     ) -> CommandResult<()> {
         Ok(())
     }
 
     /// Command to vote up an image. All down-votes of the same user get removed.
-    async fn add_image_upvote(&self, _image_id: Uuid, _auth_info: AuthInfo) -> CommandResult<()> {
+    async fn add_image_upvote(&self, _image_id: Uuid, _client_id: Uuid) -> CommandResult<()> {
         Ok(())
     }
 
     /// Command to vote down an image. All up-votes of the same user get removed.
-    async fn add_image_downvote(&self, _image_id: Uuid, _auth_info: AuthInfo) -> CommandResult<()> {
+    async fn add_image_downvote(&self, _image_id: Uuid, _client_id: Uuid) -> CommandResult<()> {
         Ok(())
     }
 
     /// Command to remove an up-vote for an image.
-    async fn remove_image_upvote(
-        &self,
-        _image_id: Uuid,
-        _auth_info: AuthInfo,
-    ) -> CommandResult<()> {
+    async fn remove_image_upvote(&self, _image_id: Uuid, _client_id: Uuid) -> CommandResult<()> {
         Ok(())
     }
 
     /// Command to remove an down-vote for an image.
-    async fn remove_image_downvote(
-        &self,
-        _image_id: Uuid,
-        _auth_info: AuthInfo,
-    ) -> CommandResult<()> {
+    async fn remove_image_downvote(&self, _image_id: Uuid, _client_id: Uuid) -> CommandResult<()> {
         Ok(())
     }
 
@@ -313,7 +305,7 @@ impl Command for CommandMock {
         _meal_id: Uuid,
         _file_type: Option<String>,
         _file: File,
-        _auth_info: AuthInfo,
+        _client_id: Uuid,
     ) -> CommandResult<()> {
         Ok(())
     }
@@ -323,7 +315,7 @@ impl Command for CommandMock {
         &self,
         _meal_id: Uuid,
         _rating: u32,
-        _auth_info: AuthInfo,
+        _client_id: Uuid,
     ) -> CommandResult<()> {
         Ok(())
     }

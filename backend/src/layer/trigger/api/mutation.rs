@@ -23,16 +23,18 @@ impl MutationRoot {
     ///
     /// If the image was added is successful, `true` is returned.
     #[instrument(skip(self, ctx, image), fields(file_name = image.value(ctx)?.filename, file_type = image.value(ctx)?.content_type))]
+    // todo add auth info to tracing
     async fn add_image(
         &self,
         ctx: &Context<'_>,
         #[graphql(desc = "Id of the meal to link an image to.")] meal_id: Uuid,
         #[graphql(desc = "The image itself as multipart attachment.")] image: Upload,
-        #[graphql(desc = "Sha512 hash of the uploaded image file. Encoded as Base64.")] hash: String,
+        #[graphql(desc = "Sha512 hash of the uploaded image file. Encoded as Base64.")]
+        hash: String,
     ) -> Result<bool> {
         trace!("Mutated `addImage`");
         let command = ctx.get_command();
-        let auth_info = ctx.get_auth_info();
+        let client_id = ctx.get_client_id()?;
         let upload = image.value(ctx)?;
         // todo check hash
         // todo read to image directly
@@ -41,7 +43,7 @@ impl MutationRoot {
                 meal_id,
                 upload.content_type,
                 File::from_std(upload.content),
-                auth_info,
+                client_id,
             )
             .await?;
         Ok(true)
@@ -60,9 +62,9 @@ impl MutationRoot {
     ) -> Result<bool> {
         trace!("Mutated `setRating`");
         let command = ctx.get_command();
-        let auth_info = ctx.get_auth_info();
+        let client_id = ctx.get_client_id()?;
 
-        command.set_meal_rating(meal_id, rating, auth_info).await?;
+        command.set_meal_rating(meal_id, rating, client_id).await?;
         Ok(true)
     }
 
@@ -78,9 +80,9 @@ impl MutationRoot {
     ) -> Result<bool> {
         trace!("Mutated `addUpvote`");
         let command = ctx.get_command();
-        let auth_info = ctx.get_auth_info();
+        let client_id = ctx.get_client_id()?;
 
-        command.add_image_upvote(image_id, auth_info).await?;
+        command.add_image_upvote(image_id, client_id).await?;
         Ok(true)
     }
 
@@ -96,9 +98,9 @@ impl MutationRoot {
     ) -> Result<bool> {
         trace!("Mutated `removeUpvote`");
         let command = ctx.get_command();
-        let auth_info = ctx.get_auth_info();
+        let client_id = ctx.get_client_id()?;
 
-        command.remove_image_upvote(image_id, auth_info).await?;
+        command.remove_image_upvote(image_id, client_id).await?;
         Ok(true)
     }
 
@@ -114,9 +116,9 @@ impl MutationRoot {
     ) -> Result<bool> {
         trace!("Mutated `addDownvote`");
         let command = ctx.get_command();
-        let auth_info = ctx.get_auth_info();
+        let client_id = ctx.get_client_id()?;
 
-        command.add_image_downvote(image_id, auth_info).await?;
+        command.add_image_downvote(image_id, client_id).await?;
         Ok(true)
     }
 
@@ -132,9 +134,9 @@ impl MutationRoot {
     ) -> Result<bool> {
         trace!("Mutated `removeDownvote`");
         let command = ctx.get_command();
-        let auth_info = ctx.get_auth_info();
+        let client_id = ctx.get_client_id()?;
 
-        command.remove_image_downvote(image_id, auth_info).await?;
+        command.remove_image_downvote(image_id, client_id).await?;
         Ok(true)
     }
 
@@ -151,9 +153,9 @@ impl MutationRoot {
     ) -> Result<bool> {
         trace!("Mutated `reportImage`");
         let command = ctx.get_command();
-        let auth_info = ctx.get_auth_info();
+        let client_id = ctx.get_client_id()?;
 
-        command.report_image(image_id, reason, auth_info).await?;
+        command.report_image(image_id, reason, client_id).await?;
         Ok(true)
     }
 }

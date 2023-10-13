@@ -38,7 +38,7 @@ use crate::{
 };
 
 use super::{
-    auth::AuthInfo2,
+    auth::AuthInfo,
     mutation::MutationRoot,
     query::QueryRoot,
     util::{CommandBox, DataBox},
@@ -192,11 +192,11 @@ async fn graphql_playground() -> impl IntoResponse {
 
 #[axum::debug_handler]
 async fn graphql_handler(
-    Extension(auth_info): Extension<AuthInfo2>,
+    Extension(auth_info): Extension<AuthInfo>,
     Extension(schema): Extension<GraphQLSchema>,
     request: GraphQLRequest,
 ) -> GraphQLResponse {
-    let request = request.into_inner().data(auth_info.clone() as AuthInfo2);
+    let request = request.into_inner().data(auth_info.clone() as AuthInfo);
 
     let span = info_span!(
         "incoming graphql request",
