@@ -27,12 +27,15 @@ impl MutationRoot {
         &self,
         ctx: &Context<'_>,
         #[graphql(desc = "Id of the meal to link an image to.")] meal_id: Uuid,
-        #[graphql(desc = "The image itself as multipart attachment")] image: Upload,
+        #[graphql(desc = "The image itself as multipart attachment.")] image: Upload,
+        #[graphql(desc = "Sha512 hash of the uploaded image file. Encoded as Base64.")] hash: String,
     ) -> Result<bool> {
         trace!("Mutated `addImage`");
         let command = ctx.get_command();
         let auth_info = ctx.get_auth_info();
         let upload = image.value(ctx)?;
+        // todo check hash
+        // todo read to image directly
         command
             .add_image(
                 meal_id,
