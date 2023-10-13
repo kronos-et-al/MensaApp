@@ -8,10 +8,7 @@ use crate::{
         admin_notification::{AdminNotification, ImageReportInfo},
         image_storage::ImageStorage,
         image_validation::ImageValidation,
-        persistent_data::{
-            model::{ApiKey, Image},
-            CommandDataAccess, DataError, Result as DataResult,
-        },
+        persistent_data::{model::Image, CommandDataAccess, DataError, Result as DataResult},
     },
     util::{Date, ImageResource, ReportReason, Uuid},
 };
@@ -119,7 +116,6 @@ impl CommandDataAccess for CommandDatabaseMock {
             Ok(())
         }
     }
-
 }
 
 #[derive(Default, Debug)]

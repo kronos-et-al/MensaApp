@@ -17,40 +17,31 @@ use async_graphql::{
 };
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
-    extract::FromRequest,
     handler::Handler,
-    headers::{authorization::Credentials, Authorization, ContentDisposition, ContentType},
-    http::{
-        request::{self, Parts},
-        HeaderMap, Request,
-    },
-    middleware::{self, Next},
+    middleware,
     response::{self, IntoResponse},
     routing::get,
-    Extension, Router, Server, TypedHeader,
+    Extension, Router, Server,
 };
-use base64::{engine::general_purpose::STANDARD, Engine};
-use hmac::{Hmac, Mac};
-use hyper::body::Bytes;
-use mime::Mime;
-use reqwest::header::AUTHORIZATION;
-use sha2::Sha512;
+
 use tokio::sync::Notify;
 use tower_http::services::ServeDir;
-use tracing::{debug, info, info_span, warn, Instrument};
+use tracing::{debug, info, info_span, Instrument};
 
 use crate::{
     interface::{
-        api_command::{AuthInfo, Command, InnerAuthInfo},
-        persistent_data::{AuthDataAccess, RequestDataAccess},
+        api_command::Command,
+        persistent_data::{model::ApiKey, AuthDataAccess, RequestDataAccess},
     },
-    util::{local_to_global_url, Uuid, IMAGE_BASE_PATH},
+    layer::trigger::api::auth::auth_middleware,
+    util::{local_to_global_url, IMAGE_BASE_PATH},
 };
 
 use super::{
+    auth::AuthInfo2,
     mutation::MutationRoot,
     query::QueryRoot,
-    util::{read_auth_from_header, CommandBox, DataBox},
+    util::{CommandBox, DataBox},
 };
 
 type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
@@ -81,27 +72,32 @@ impl Display for State {
 }
 
 /// Class witch controls the webserver for API requests.
-pub struct ApiServer<Auth: AuthDataAccess + 'static> {
+pub struct ApiServer {
     server_info: ApiServerInfo,
     schema: GraphQLSchema,
     state: State,
-    auth_data: Arc<Auth>,
+    api_keys: Vec<ApiKey>,
 }
 
-impl<Auth: AuthDataAccess + 'static> ApiServer<Auth> {
+impl ApiServer {
     /// Creates a new Object with given access to datastore and logic for commands.
-    pub fn new(
+    /// # Panics
+    /// if api keys could not be read from database
+    pub async fn new(
         server_info: ApiServerInfo,
-        data_access: impl RequestDataAccess + Sync + Send + 'static,
-        command: impl Command + Sync + Send + 'static,
-        auth: Auth,
+        data_access: impl RequestDataAccess + 'static,
+        command: impl Command + 'static,
+        auth: impl AuthDataAccess,
     ) -> Self {
         let schema: GraphQLSchema = construct_schema(data_access, command);
         Self {
             server_info,
             schema,
             state: State::Created,
-            auth_data: Arc::new(auth),
+            api_keys: auth
+                .get_api_keys()
+                .await
+                .expect("could not get api keys from database"),
         }
     }
 
@@ -116,7 +112,7 @@ impl<Auth: AuthDataAccess + 'static> ApiServer<Auth> {
             self.state
         );
 
-        let auth = middleware::from_fn(auth_middleware);
+        let auth = middleware::from_fn_with_state(self.api_keys.clone(), auth_middleware);
 
         let app = Router::new()
             .route(
@@ -124,7 +120,6 @@ impl<Auth: AuthDataAccess + 'static> ApiServer<Auth> {
                 get(graphql_playground).post(graphql_handler.layer(auth)),
             )
             .layer(Extension(self.schema.clone()))
-            .with_state(self.auth_data.clone())
             .nest_service(IMAGE_BASE_PATH, ServeDir::new(&self.server_info.image_dir));
 
         let socket = std::net::SocketAddr::V6(SocketAddrV6::new(
@@ -197,28 +192,16 @@ async fn graphql_playground() -> impl IntoResponse {
 
 #[axum::debug_handler]
 async fn graphql_handler(
-    headers: HeaderMap,
-    Extension(auth2): Extension<AuthInfo2>,
+    Extension(auth_info): Extension<AuthInfo2>,
     Extension(schema): Extension<GraphQLSchema>,
     request: GraphQLRequest,
 ) -> GraphQLResponse {
-    let auth_header = headers
-        .get(AUTHORIZATION)
-        .and_then(|h| h.to_str().ok())
-        .unwrap_or_default()
-        .to_string();
-
-    let auth_info = read_auth_from_header(&auth_header);
-    let auth_info_string = auth_info
-        .as_ref()
-        .map_or("no auth info provided".into(), ToString::to_string);
-
-    let request = request.into_inner().data(auth_info as AuthInfo);
+    let request = request.into_inner().data(auth_info.clone() as AuthInfo2);
 
     let span = info_span!(
         "incoming graphql request",
         variables = %request.variables,
-        auth_info = auth_info_string
+        auth_info = ?auth_info
     );
 
     async {
@@ -230,95 +213,6 @@ async fn graphql_handler(
     }
     .instrument(span)
     .await
-}
-
-impl Credentials for InnerAuthInfo {
-    const SCHEME: &'static str = "Mensa";
-
-    fn decode(value: &axum::http::HeaderValue) -> Option<Self> {
-        value.to_str().ok().and_then(read_auth_from_header)
-    }
-
-    fn encode(&self) -> axum::http::HeaderValue {
-        todo!() // todo if necessary
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct AuthInfo2 {
-    // todo rename
-    client_id: Option<Uuid>,
-    authenticated: bool,
-}
-
-async fn auth_middleware(
-    TypedHeader(content_type): TypedHeader<ContentType>,
-    auth: Option<TypedHeader<Authorization<InnerAuthInfo>>>,
-    req: Request<axum::body::Body>,
-    next: Next<axum::body::Body>,
-) -> impl IntoResponse {
-    let auth: AuthInfo = auth.map(|a| a.0 .0);
-    let (parts, body) = req.into_parts();
-    let bytes = hyper::body::to_bytes(body).await.unwrap();
-
-    let mime = Mime::from(content_type);
-
-    // todo error handling
-
-    let hash_bytes = if mime.essence_str() == mime::MULTIPART_FORM_DATA.essence_str() {
-        // copy parts
-        let mut parts_builder = request::Builder::new()
-            .method(parts.method.clone())
-            .uri(parts.uri.clone())
-            .version(parts.version.clone());
-        parts_builder
-            .headers_mut()
-            .unwrap()
-            .extend(parts.headers.clone());
-        let parts = parts_builder.body(()).unwrap().into_parts().0;
-
-        // inspect copy of multipart request
-        let req = Request::from_parts(parts, hyper::Body::from(bytes.clone()));
-        let mut multipart = axum::extract::Multipart::from_request(req, &())
-            .await
-            .unwrap();
-
-        let mut bytes = Bytes::default();
-        while let Ok(Some(field)) = multipart.next_field().await {
-            if field.name() == Some("operations") {
-                bytes = field.bytes().await.unwrap();
-            }
-        }
-
-        bytes
-    } else {
-        bytes.clone()
-    };
-
-    // check hash
-    let mut auth2 = AuthInfo2 {
-        client_id: auth.as_ref().map(|a| a.client_id),
-        authenticated: false,
-    };
-
-    if let Some(auth) = auth {
-        if !auth.api_ident.is_empty() && !auth.hash.is_empty() {
-            let api_key = ""; // todo get api key from db
-            let mut hmac = Hmac::<Sha512>::new_from_slice(api_key.as_bytes()).unwrap();
-            hmac.update(&bytes);
-            let hash = hmac.finalize().into_bytes().to_vec();
-
-            let given_hash = STANDARD.decode(auth.hash).unwrap();
-
-            if hash == given_hash {
-                auth2.authenticated = true;
-            }
-        }
-    }
-
-    let mut req = Request::from_parts(parts, hyper::Body::from(bytes));
-    req.extensions_mut().insert(auth2);
-    next.run(req).await
 }
 
 #[cfg(test)]
@@ -344,27 +238,27 @@ mod tests {
 
     const TEST_PORT: u16 = 12345;
 
-    fn get_test_server() -> ApiServer<AuthDataMock> {
+    async fn get_test_server() -> ApiServer {
         let info = ApiServerInfo {
             port: TEST_PORT,
             image_dir: temp_dir(),
         };
-        ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock)
+        ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await
     }
 
-    fn get_test_server_with_images(image_dir: PathBuf) -> ApiServer<AuthDataMock> {
+    async fn get_test_server_with_images(image_dir: PathBuf) -> ApiServer {
         let info = ApiServerInfo {
             port: TEST_PORT,
             image_dir,
         };
-        ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock)
+        ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await
     }
 
     #[tokio::test]
     #[serial]
     /// Test whether api version is available as health check.
     async fn test_graphql() {
-        let mut server = get_test_server();
+        let mut server = get_test_server().await;
         server.start();
 
         let test_request = r#"
@@ -404,7 +298,7 @@ mod tests {
     #[serial]
     /// Test whether the graphql playground is served.
     async fn test_playground() {
-        let mut server = get_test_server();
+        let mut server = get_test_server().await;
         server.start();
 
         let result = reqwest::get(format!("http://localhost:{TEST_PORT}"))
@@ -423,7 +317,7 @@ mod tests {
     #[should_panic]
     /// test what happens when server is shutdown but not running.
     async fn test_not_running() {
-        let mut server = get_test_server();
+        let mut server = get_test_server().await;
 
         server.shutdown().await;
     }
@@ -433,7 +327,7 @@ mod tests {
     #[should_panic = "tried to start graphql server while in state running"]
     #[serial]
     async fn test_double_start() {
-        let mut server = get_test_server();
+        let mut server = get_test_server().await;
         server.start();
         server.start();
     }
@@ -469,7 +363,7 @@ mod tests {
                 .collect::<Vec<_>>()
         );
 
-        let mut server = get_test_server_with_images(image_folder.path().to_owned());
+        let mut server = get_test_server_with_images(image_folder.path().to_owned()).await;
         server.start();
 
         // save image after server is started to check "dynamic" file requests

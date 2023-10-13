@@ -17,7 +17,7 @@ pub type Result<T> = std::result::Result<T, CommandError>;
 
 /// Interface for accessing commands which can be triggered by an API.
 #[async_trait]
-pub trait Command {
+pub trait Command: Send + Sync {
     /// Command to report an image. It also checks whether the image shall be hid.
     async fn report_image(
         &self,

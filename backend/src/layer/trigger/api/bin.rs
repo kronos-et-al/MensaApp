@@ -45,7 +45,8 @@ async fn main() {
         )
         .expect("could not create command mock"),
         AuthDataMock,
-    );
+    )
+    .await;
     server.start();
     tokio::signal::ctrl_c()
         .await

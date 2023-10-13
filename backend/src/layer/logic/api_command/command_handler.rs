@@ -13,7 +13,7 @@ use crate::{
         image_validation::ImageValidation,
         persistent_data::{model::Image, CommandDataAccess},
     },
-    layer::logic::api_command::auth::{authenticator::Authenticator, command_type::CommandType},
+    layer::logic::api_command::auth::command_type::CommandType,
     util::{image_id_to_url, Date, ReportReason, Uuid},
 };
 
@@ -114,7 +114,7 @@ where
         let auth_info = auth_info.ok_or(CommandError::NoAuth)?;
 
         let command_type = CommandType::ReportImage { image_id, reason };
-        // self.auth.authn_command(&auth_info, &command_type)?; 
+        // self.auth.authn_command(&auth_info, &command_type)?;
         // todo re-add new auth everywhere
         let mut info = self.command_data.get_image_info(image_id).await?;
         if !info.approved {

@@ -103,12 +103,13 @@ impl Server {
         let mealplan_management = MealPlanManager::new(mealplan_management_data, parser);
 
         // trigger layer
-        let mut graphql = ApiServer::new(config.read_api_info()?, request_data, command, auth_data);
+        let mut api_server =
+            ApiServer::new(config.read_api_info()?, request_data, command, auth_data).await;
         let mut scheduler = Scheduler::new(config.read_schedule_info()?, mealplan_management).await;
 
         // run server
         scheduler.start().await;
-        graphql.start();
+        api_server.start();
 
         info!("Server is running");
 
@@ -117,7 +118,7 @@ impl Server {
         info!("Shutting down server...");
 
         scheduler.shutdown().await;
-        graphql.shutdown().await;
+        api_server.shutdown().await;
 
         info!("Server stopped.");
 

@@ -27,6 +27,7 @@ impl AuthDataAccess for PersistentAuthData {
 
 #[cfg(test)]
 mod tests {
+    #![allow(clippy::unwrap_used)]
     use sqlx::PgPool;
 
     use super::PersistentAuthData;

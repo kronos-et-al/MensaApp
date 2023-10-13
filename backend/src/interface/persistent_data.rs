@@ -186,7 +186,7 @@ pub trait AuthDataAccess: Sync + Send {
 
 #[async_trait]
 /// An interface for graphql query data. The GraphQL component uses this interface for database access.
-pub trait RequestDataAccess {
+pub trait RequestDataAccess: Send + Sync {
     /// Returns the canteen from the database.
     async fn get_canteen(&self, id: Uuid) -> Result<Option<Canteen>>;
     /// Returns all canteens from the database.
