@@ -92,27 +92,34 @@ pub(super) async fn auth_middleware(
     };
 
     // check hash
-    let mut auth2 = AuthInfo2 {
+    let auth2 = AuthInfo2 {
         client_id: auth.as_ref().map(|a| a.client_id),
-        authenticated: false,
+        authenticated: authenticate(auth, &api_keys, &bytes).is_some(),
     };
-
-    if let Some(auth) = auth {
-        if !auth.api_ident.is_empty() && !auth.hash.is_empty() {
-            let api_key = ""; // todo get api key from db
-            let mut hmac = Hmac::<Sha512>::new_from_slice(api_key.as_bytes()).unwrap();
-            hmac.update(&bytes);
-            let hash = hmac.finalize().into_bytes().to_vec();
-
-            let given_hash = STANDARD.decode(auth.hash).unwrap();
-
-            if hash == given_hash {
-                auth2.authenticated = true;
-            }
-        }
-    }
 
     let mut req = Request::from_parts(parts, hyper::Body::from(bytes));
     req.extensions_mut().insert(auth2);
     next.run(req).await
+}
+
+fn authenticate(info: Option<InnerAuthInfo>, api_keys: &[ApiKey], body_bytes: &[u8]) -> Option<()> {
+    // todo error messages
+    let auth = info?;
+
+    if auth.api_ident.is_empty() || !auth.hash.is_empty() {
+        return None;
+    }
+
+    let api_key = &api_keys
+        .iter()
+        .find(|k| k.key.starts_with(&auth.api_ident))?
+        .key;
+
+    let mut hmac = Hmac::<Sha512>::new_from_slice(api_key.as_bytes()).ok()?;
+    hmac.update(body_bytes);
+    let hash = hmac.finalize().into_bytes().to_vec();
+
+    let given_hash = STANDARD.decode(auth.hash).ok()?;
+
+    (hash == given_hash).then_some(())
 }
