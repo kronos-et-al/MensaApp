@@ -11,7 +11,6 @@ import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 
 import '../model/api_server/config.dart';
@@ -72,14 +71,14 @@ void main() {
     expect(result.images?.contains(image), isFalse);
   });
 
-  final file = File("test/test.jpg").readAsBytesSync();
-  final imageFile
-  = MultipartFile.fromBytes("", file,
-      filename: "test.jpg", contentType: MediaType("image", "jpeg"));
+  final imageFile = File("test/test.jpg").readAsBytesSync();
+  final mediaType
+  = MediaType("image", "jpeg");
 
   test("link image", () async {
     final message = await access.linkImage(
         imageFile,
+        mediaType,
         Meal(
             id: "bd3c88f9-5dc8-4773-85dc-53305930e7b6",
             name: "Best meal",

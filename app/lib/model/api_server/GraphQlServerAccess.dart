@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:app/model/api_server/requests/querys.graphql.dart';
@@ -26,17 +27,51 @@ import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:crypto/crypto.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
-import "package:http/http.dart";
+import "package:http/http.dart" as http;
 
 import '../../view_model/repository/interface/IServerAccess.dart';
 import 'requests/mutations.graphql.dart';
 
+class _MensaClient extends http.BaseClient {
+  final http.Client _client;
+  final String _apiKey;
+  final String _clientId;
+
+  static const int _apiKeyIdentifierPrefixLength = 10;
+  static const String _authenticationScheme = "Mensa";
+
+  _MensaClient(this._clientId, this._apiKey, [http.Client? client])
+      : _client = client ?? http.Client();
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    List<int> bytes = [];
+    if (request is http.Request) {
+      bytes = request.bodyBytes;
+    }
+
+    if (request is http.MultipartRequest) {
+      bytes = utf8.encode(request.fields["operations"] ?? "");
+    }
+
+    final hmac = Hmac(sha512, utf8.encode(_apiKey));
+    final hash = hmac.convert(bytes);
+    final apiIndent = _apiKey.substring(0, min(_apiKeyIdentifierPrefixLength, _apiKey.length));
+
+    final authInfo = "$_clientId:$apiIndent:${base64Encode(hash.bytes)}";
+    request.headers["Authorization"] =
+    "$_authenticationScheme ${base64Encode(utf8.encode(authInfo))}";
+
+
+    return _client.send(request);
+  }
+}
+
 /// This class is responsible for communicating with the server through the graphql api.
 class GraphQlServerAccess implements IServerAccess {
   final String _apiKey;
-  late String _currentAuth;
   late final GraphQLClient _client;
   final String _clientId;
   final _dateFormat = DateFormat(dateFormatPattern);
@@ -47,9 +82,8 @@ class GraphQlServerAccess implements IServerAccess {
           query: Policies(fetch: FetchPolicy.networkOnly),
           mutate: Policies(fetch: FetchPolicy.networkOnly),
         ),
-        link: AuthLink(getToken: () => _currentAuth).concat(HttpLink(server)),
+        link: HttpLink(server, httpClient: _MensaClient(_clientId, _apiKey)),
         cache: GraphQLCache());
-    _authenticate(""); // provide default authentication with client id
   }
 
   /// This constructor returns an instance of the server access class.
@@ -64,11 +98,6 @@ class GraphQlServerAccess implements IServerAccess {
 
   @override
   Future<bool> deleteDownvote(ImageData image) async {
-    const requestName = "removeDownvote";
-    final hash =
-        _generateHashOfParameters(requestName, _serializeUuid(image.id));
-    _authenticate(hash);
-
     final result = await _client.mutate$RemoveDownvote(
         Options$Mutation$RemoveDownvote(
             variables: Variables$Mutation$RemoveDownvote(imageId: image.id)));
@@ -78,11 +107,6 @@ class GraphQlServerAccess implements IServerAccess {
 
   @override
   Future<bool> deleteUpvote(ImageData image) async {
-    const requestName = "removeUpvote";
-    final hash =
-        _generateHashOfParameters(requestName, _serializeUuid(image.id));
-    _authenticate(hash);
-
     final result = await _client.mutate$RemoveUpvote(
         Options$Mutation$RemoveUpvote(
             variables: Variables$Mutation$RemoveUpvote(imageId: image.id)));
@@ -92,11 +116,6 @@ class GraphQlServerAccess implements IServerAccess {
 
   @override
   Future<bool> downvoteImage(ImageData image) async {
-    const requestName = "addDownvote";
-    final hash =
-        _generateHashOfParameters(requestName, _serializeUuid(image.id));
-    _authenticate(hash);
-
     final result = await _client.mutate$AddDownvote(
         Options$Mutation$AddDownvote(
             variables: Variables$Mutation$AddDownvote(imageId: image.id)));
@@ -106,11 +125,6 @@ class GraphQlServerAccess implements IServerAccess {
 
   @override
   Future<bool> upvoteImage(ImageData image) async {
-    const requestName = "addUpvote";
-    final hash =
-        _generateHashOfParameters(requestName, _serializeUuid(image.id));
-    _authenticate(hash);
-
     final result = await _client.mutate$AddUpvote(Options$Mutation$AddUpvote(
         variables: Variables$Mutation$AddUpvote(imageId: image.id)));
 
@@ -118,20 +132,20 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   @override
-  Future<Result<bool, ImageUploadException>> linkImage(
-      MultipartFile image, Meal meal) async {
+  Future<Result<bool, ImageUploadException>> linkImage(Uint8List imageFile,
+      MediaType mimeType, Meal meal) async {
+    final image = http.MultipartFile.fromBytes(
+        "", imageFile, filename: "image", contentType: mimeType);
+    final hash = base64Encode(sha512
+        .convert(imageFile)
+        .bytes);
     assert(image.filename != null);
-    // TODO auth
-    // const requestName = "addImage";
-    // final hash = _generateHashOfParameters(
-    //     requestName, [..._serializeUuid(meal.id), ..._serializeString(url)]);
-    // _authenticate(hash);
 
     final result = await _client.mutate$LinkImage(Options$Mutation$LinkImage(
         variables:
-            Variables$Mutation$LinkImage(image: image, mealId: meal.id)));
+        Variables$Mutation$LinkImage(
+            image: image, mealId: meal.id, hash: hash)));
 
-    print(result.exception?.graphqlErrors);
     if (result.hasException) {
       if (result.exception!.linkException != null) {
         return Failure(ImageUploadException("Verbindungsfehler"));
@@ -141,19 +155,13 @@ class GraphQlServerAccess implements IServerAccess {
       }
       return Failure(ImageUploadException("Unbekannter Fehler"));
     }
+
     return Success(result.parsedData?.addImage ?? false);
   }
 
   @override
   Future<bool> reportImage(ImageData image, ReportCategory reportReason) async {
     final convertedReason = _convertToReportReason(reportReason);
-
-    const requestName = "reportImage";
-    final hash = _generateHashOfParameters(requestName, [
-      ..._serializeUuid(image.id),
-      ..._serializeReportReason(convertedReason)
-    ]);
-    _authenticate(hash);
 
     final result = await _client.mutate$ReportImage(
         Options$Mutation$ReportImage(
@@ -165,11 +173,6 @@ class GraphQlServerAccess implements IServerAccess {
 
   @override
   Future<bool> updateMealRating(int rating, Meal meal) async {
-    const requestName = "setRating";
-    final hash = _generateHashOfParameters(
-        requestName, [..._serializeUuid(meal.id), ..._serializeInt(rating)]);
-    _authenticate(hash);
-
     final result = await _client.mutate$UpdateRating(
         Options$Mutation$UpdateRating(
             variables: Variables$Mutation$UpdateRating(
@@ -203,7 +206,7 @@ class GraphQlServerAccess implements IServerAccess {
       }
 
       final mealPlan =
-          _convertMealPlan(result.parsedData?.getCanteens ?? [], date);
+      _convertMealPlan(result.parsedData?.getCanteens ?? [], date);
 
       switch (mealPlan) {
         case Success(value: final mealPlan):
@@ -218,8 +221,8 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   @override
-  Future<Result<Meal, Exception>> getMeal(
-      Meal meal, Line line, DateTime date) async {
+  Future<Result<Meal, Exception>> getMeal(Meal meal, Line line,
+      DateTime date) async {
     final result = await _client.query$GetMeal(Options$Query$GetMeal(
         fetchPolicy: FetchPolicy.networkOnly,
         variables: Variables$Query$GetMeal(
@@ -295,104 +298,67 @@ class GraphQlServerAccess implements IServerAccess {
         .toList();
   }
 
-  // --------------- auth ---------------
-  static const int apiKeyIdentifierPrefixLength = 10;
-  static const String authenticationScheme = "Mensa";
-
-  void _authenticate(String hash) {
-    final apiKeyPrefix = _apiKey.length > apiKeyIdentifierPrefixLength
-        ? _apiKey.substring(0, apiKeyIdentifierPrefixLength)
-        : _apiKey;
-    final authString = "$_clientId:$apiKeyPrefix:$hash";
-    final bytes = utf8.encode(authString);
-    final base64 = base64Encode(bytes);
-    _currentAuth = "$authenticationScheme $base64";
-  }
-
-  String _generateHashOfParameters(
-      String mutationName, List<int> parameterData) {
-    var hash = sha512.convert([
-      ..._serializeString(mutationName),
-      ..._serializeUuid(_clientId),
-      ..._serializeString(_apiKey),
-      ...parameterData
-    ]);
-
-    return base64.encode(hash.bytes);
-  }
-
-  List<int> _serializeString(String string) {
-    return utf8.encode(string);
-  }
-
-  List<int> _serializeInt(int value) {
-    return (ByteData(4)..setUint32(0, value, Endian.little))
-        .buffer
-        .asUint8List()
-        .toList();
-  }
-
-  List<int> _serializeReportReason(Enum$ReportReason reason) {
-    return _serializeString(reason.toString().split('.').last);
-  }
-
-  List<int> _serializeUuid(String uuid) {
-    return Uuid.parse(uuid);
-  }
-}
-
 // --------------- utility helper methods ---------------
 
-Result<List<MealPlan>, MealPlanException> _convertMealPlan(
-    List<Fragment$mealPlan> mealPlans, DateTime date) {
-  if (mealPlans
-      .expand((mealPlan) => mealPlan.lines)
-      .any((line) => line.meals == null)) {
-    return Failure(NoDataException("No data for a line."));
+  Result<List<MealPlan>, MealPlanException> _convertMealPlan(
+      List<Fragment$mealPlan> mealPlans, DateTime date) {
+    if (mealPlans
+        .expand((mealPlan) => mealPlan.lines)
+        .any((line) => line.meals == null)) {
+      return Failure(NoDataException("No data for a line."));
+    }
+
+    return Success(mealPlans
+        .expand(
+          (mealPlan) =>
+          mealPlan.lines
+              .asMap()
+              .map((idx, line) =>
+              MapEntry(
+                idx,
+                MealPlan(
+                  date: date,
+                  line: Line(
+                      id: line.id,
+                      name: line.name,
+                      canteen: _convertCanteen(line.canteen),
+                      position: idx),
+                  // mensa closed when data available but no meals in list
+                  isClosed: line.meals!.isEmpty,
+                  meals: line.meals!.map((e) => _convertMeal(e)).toList(),
+                ),
+              ))
+              .values
+              .toList(),
+    )
+        .toList());
   }
 
-  return Success(mealPlans
-      .expand(
-        (mealPlan) => mealPlan.lines
-            .asMap()
-            .map((idx, line) => MapEntry(
-                  idx,
-                  MealPlan(
-                    date: date,
-                    line: Line(
-                        id: line.id,
-                        name: line.name,
-                        canteen: _convertCanteen(line.canteen),
-                        position: idx),
-                    // mensa closed when data available but no meals in list
-                    isClosed: line.meals!.isEmpty,
-                    meals: line.meals!.map((e) => _convertMeal(e)).toList(),
-                  ),
-                ))
-            .values
-            .toList(),
-      )
-      .toList());
-}
-
-Meal _convertMeal(Fragment$mealInfo meal) {
-  return Meal(
-    id: meal.id,
-    name: meal.name,
-    foodType: _convertMealType(meal.mealType),
-    price: _convertPrice(meal.price),
-    additives: meal.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
-    allergens: meal.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
-    averageRating: meal.ratings.averageRating,
-    individualRating: meal.ratings.personalRating,
-    numberOfRatings: meal.ratings.ratingsCount,
-    lastServed: _convertDate(meal.statistics.lastServed),
-    nextServed: _convertDate(meal.statistics.nextServed),
-    numberOfOccurance: meal.statistics.frequency,
-    relativeFrequency: _specifyFrequency(meal.statistics),
-    images: meal.images.map((e) => _convertImage(e)).toList(),
-    sides: meal.sides.map((e) => _convertSide(e)).toList(),
-  );
+  Meal _convertMeal(Fragment$mealInfo meal) {
+    return Meal(
+      id: meal.id,
+      name: meal.name,
+      foodType: _convertMealType(meal.mealType),
+      price: _convertPrice(meal.price),
+      additives: meal.additives
+          .map((e) => _convertAdditive(e))
+          .nonNulls
+          .toList(),
+      allergens: meal.allergens
+          .map((e) => _convertAllergen(e))
+          .nonNulls
+          .toList(),
+      averageRating: meal.ratings.averageRating,
+      individualRating: meal.ratings.personalRating,
+      numberOfRatings: meal.ratings.ratingsCount,
+      lastServed: _convertDate(meal.statistics.lastServed),
+      nextServed: _convertDate(meal.statistics.nextServed),
+      numberOfOccurance: meal.statistics.frequency,
+      relativeFrequency: _specifyFrequency(meal.statistics),
+      images: meal.images.map((e) => _convertImage(e)).toList(),
+      sides: meal.sides.map((e) => _convertSide(e)).toList(),
+    );
+  }
 }
 
 const int _rareMealLimit = 2;

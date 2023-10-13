@@ -1888,10 +1888,12 @@ class Variables$Mutation$LinkImage {
   factory Variables$Mutation$LinkImage({
     required String mealId,
     required MultipartFile image,
+    required String hash,
   }) =>
       Variables$Mutation$LinkImage._({
         r'mealId': mealId,
         r'image': image,
+        r'hash': hash,
       });
 
   Variables$Mutation$LinkImage._(this._$data);
@@ -1902,6 +1904,8 @@ class Variables$Mutation$LinkImage {
     result$data['mealId'] = (l$mealId as String);
     final l$image = data['image'];
     result$data['image'] = (l$image as MultipartFile);
+    final l$hash = data['hash'];
+    result$data['hash'] = (l$hash as String);
     return Variables$Mutation$LinkImage._(result$data);
   }
 
@@ -1911,12 +1915,16 @@ class Variables$Mutation$LinkImage {
 
   MultipartFile get image => (_$data['image'] as MultipartFile);
 
+  String get hash => (_$data['hash'] as String);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$mealId = mealId;
     result$data['mealId'] = l$mealId;
     final l$image = image;
     result$data['image'] = l$image;
+    final l$hash = hash;
+    result$data['hash'] = l$hash;
     return result$data;
   }
 
@@ -1945,6 +1953,11 @@ class Variables$Mutation$LinkImage {
     if (l$image != lOther$image) {
       return false;
     }
+    final l$hash = hash;
+    final lOther$hash = other.hash;
+    if (l$hash != lOther$hash) {
+      return false;
+    }
     return true;
   }
 
@@ -1952,9 +1965,11 @@ class Variables$Mutation$LinkImage {
   int get hashCode {
     final l$mealId = mealId;
     final l$image = image;
+    final l$hash = hash;
     return Object.hashAll([
       l$mealId,
       l$image,
+      l$hash,
     ]);
   }
 }
@@ -1971,6 +1986,7 @@ abstract class CopyWith$Variables$Mutation$LinkImage<TRes> {
   TRes call({
     String? mealId,
     MultipartFile? image,
+    String? hash,
   });
 }
 
@@ -1990,6 +2006,7 @@ class _CopyWithImpl$Variables$Mutation$LinkImage<TRes>
   TRes call({
     Object? mealId = _undefined,
     Object? image = _undefined,
+    Object? hash = _undefined,
   }) =>
       _then(Variables$Mutation$LinkImage._({
         ..._instance._$data,
@@ -1997,6 +2014,7 @@ class _CopyWithImpl$Variables$Mutation$LinkImage<TRes>
           'mealId': (mealId as String),
         if (image != _undefined && image != null)
           'image': (image as MultipartFile),
+        if (hash != _undefined && hash != null) 'hash': (hash as String),
       }));
 }
 
@@ -2009,6 +2027,7 @@ class _CopyWithStubImpl$Variables$Mutation$LinkImage<TRes>
   call({
     String? mealId,
     MultipartFile? image,
+    String? hash,
   }) =>
       _res;
 }
@@ -2159,6 +2178,15 @@ const documentNodeMutationLinkImage = DocumentNode(definitions: [
         defaultValue: DefaultValueNode(value: null),
         directives: [],
       ),
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'hash')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'String'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      ),
     ],
     directives: [],
     selectionSet: SelectionSetNode(selections: [
@@ -2173,6 +2201,10 @@ const documentNodeMutationLinkImage = DocumentNode(definitions: [
           ArgumentNode(
             name: NameNode(value: 'image'),
             value: VariableNode(name: NameNode(value: 'image')),
+          ),
+          ArgumentNode(
+            name: NameNode(value: 'hash'),
+            value: VariableNode(name: NameNode(value: 'hash')),
           ),
         ],
         directives: [],

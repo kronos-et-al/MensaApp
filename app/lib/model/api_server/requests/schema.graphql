@@ -288,8 +288,11 @@ type MutationRoot {
     # Id of the meal to link an image to.
     mealId: UUID!
 
-    # The image itself as multipart attachment
+    # The image itself as multipart attachment.
     image: Upload!
+
+    # Sha512 hash of the uploaded image file.
+    hash: String!
   ): Boolean!
 
   # This mutation either adds a rating to the specified main dish (if no such rating existed), or modifies an existing one.

@@ -360,7 +360,7 @@ packages:
     source: hosted
     version: "0.2.3+1"
   gql_exec:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: gql_exec
       sha256: "0d1fdb2e4154efbfc1dcf3f35ec36d19c8428ff0d560eb4c45b354f8f871dc50"

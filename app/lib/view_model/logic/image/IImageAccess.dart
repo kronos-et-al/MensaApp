@@ -1,9 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
 import 'package:app/view_model/repository/error_handling/ImageUploadException.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:http_parser/http_parser.dart';
 
 import '../../repository/data_classes/meal/Meal.dart';
 
@@ -11,7 +13,8 @@ import '../../repository/data_classes/meal/Meal.dart';
 abstract class IImageAccess with ChangeNotifier {
   /// This method links the committed url to the committed meal on the server.
   /// Returns a string that should be displayed in a temporal message.
-  Future<Result<bool, ImageUploadException>> linkImage(MultipartFile image, Meal meal);
+  Future<Result<bool, ImageUploadException>> linkImage(
+      Uint8List imageFile, MediaType mimeType, Meal meal);
 
   /// This method adds an upvote to the committed image on the server.
   /// It returns a non empty string that should be displayed in a temporal message,
@@ -39,5 +42,6 @@ abstract class IImageAccess with ChangeNotifier {
   /// @param reportReason The reason why the image is reported
   /// @param context The context of the app used for displaying temporal messages.
   /// @return The string that should be displayed in a temporal message
-  Future<bool> reportImage(Meal meal, ImageData image, ReportCategory reportReason);
+  Future<bool> reportImage(
+      Meal meal, ImageData image, ReportCategory reportReason);
 }

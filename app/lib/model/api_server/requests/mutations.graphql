@@ -14,8 +14,8 @@ mutation AddUpvote($imageId: UUID!) {
     addUpvote(imageId: $imageId)
 }
 
-mutation LinkImage($mealId: UUID!, $image: Upload!) {
-    addImage(mealId: $mealId, image: $image)
+mutation LinkImage($mealId: UUID!, $image: Upload!, $hash: String!) {
+    addImage(mealId: $mealId, image: $image, hash: $hash)
 }
 
 mutation ReportImage($imageId: UUID!, $reason: ReportReason!) {
