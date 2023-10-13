@@ -85,6 +85,7 @@ impl Server {
         let command_data = factory.get_command_data_access();
         let mealplan_management_data = factory.get_mealplan_management_data_access();
         let request_data = factory.get_request_data_access();
+        let auth_data = factory.get_auth_data_access();
 
         let mail = MailSender::new(config.read_mail_info()?)?;
         let parser = SwKaParseManager::new(config.read_swka_info()?)?;
@@ -102,7 +103,7 @@ impl Server {
         let mealplan_management = MealPlanManager::new(mealplan_management_data, parser);
 
         // trigger layer
-        let mut graphql = ApiServer::new(config.read_api_info()?, request_data, command);
+        let mut graphql = ApiServer::new(config.read_api_info()?, request_data, command, auth_data);
         let mut scheduler = Scheduler::new(config.read_schedule_info()?, mealplan_management).await;
 
         // run server

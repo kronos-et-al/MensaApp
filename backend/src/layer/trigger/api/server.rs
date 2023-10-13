@@ -42,7 +42,7 @@ use tracing::{debug, info, info_span, warn, Instrument};
 use crate::{
     interface::{
         api_command::{AuthInfo, Command, InnerAuthInfo},
-        persistent_data::RequestDataAccess,
+        persistent_data::{AuthDataAccess, RequestDataAccess},
     },
     util::{local_to_global_url, Uuid, IMAGE_BASE_PATH},
 };
@@ -81,24 +81,27 @@ impl Display for State {
 }
 
 /// Class witch controls the webserver for API requests.
-pub struct ApiServer {
+pub struct ApiServer<Auth: AuthDataAccess + 'static> {
     server_info: ApiServerInfo,
     schema: GraphQLSchema,
     state: State,
+    auth_data: Arc<Auth>,
 }
 
-impl ApiServer {
+impl<Auth: AuthDataAccess + 'static> ApiServer<Auth> {
     /// Creates a new Object with given access to datastore and logic for commands.
     pub fn new(
         server_info: ApiServerInfo,
         data_access: impl RequestDataAccess + Sync + Send + 'static,
         command: impl Command + Sync + Send + 'static,
+        auth: Auth,
     ) -> Self {
         let schema: GraphQLSchema = construct_schema(data_access, command);
         Self {
             server_info,
             schema,
             state: State::Created,
+            auth_data: Arc::new(auth),
         }
     }
 
@@ -121,6 +124,7 @@ impl ApiServer {
                 get(graphql_playground).post(graphql_handler.layer(auth)),
             )
             .layer(Extension(self.schema.clone()))
+            .with_state(self.auth_data.clone())
             .nest_service(IMAGE_BASE_PATH, ServeDir::new(&self.server_info.image_dir));
 
         let socket = std::net::SocketAddr::V6(SocketAddrV6::new(
@@ -330,7 +334,7 @@ mod tests {
 
     use crate::{
         layer::trigger::api::{
-            mock::{CommandMock, RequestDatabaseMock},
+            mock::{AuthDataMock, CommandMock, RequestDatabaseMock},
             server::ApiServer,
         },
         util::ImageResource,
@@ -340,20 +344,20 @@ mod tests {
 
     const TEST_PORT: u16 = 12345;
 
-    fn get_test_server() -> ApiServer {
+    fn get_test_server() -> ApiServer<AuthDataMock> {
         let info = ApiServerInfo {
             port: TEST_PORT,
             image_dir: temp_dir(),
         };
-        ApiServer::new(info, RequestDatabaseMock, CommandMock)
+        ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock)
     }
 
-    fn get_test_server_with_images(image_dir: PathBuf) -> ApiServer {
+    fn get_test_server_with_images(image_dir: PathBuf) -> ApiServer<AuthDataMock> {
         let info = ApiServerInfo {
             port: TEST_PORT,
             image_dir,
         };
-        ApiServer::new(info, RequestDatabaseMock, CommandMock)
+        ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock)
     }
 
     #[tokio::test]

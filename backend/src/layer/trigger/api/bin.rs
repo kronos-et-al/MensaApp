@@ -8,7 +8,7 @@ use mensa_app_backend::layer::{
             CommandImageValidationMock,
         },
     },
-    trigger::api::{server::ApiServerInfo, *},
+    trigger::api::{mock::AuthDataMock, server::ApiServerInfo, *},
 };
 use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
@@ -44,6 +44,7 @@ async fn main() {
             CommandImageValidationMock,
         )
         .expect("could not create command mock"),
+        AuthDataMock,
     );
     server.start();
     tokio::signal::ctrl_c()

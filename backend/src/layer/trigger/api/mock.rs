@@ -8,8 +8,8 @@ use uuid::Uuid;
 use crate::interface::{
     api_command::{AuthInfo, Command, Result as CommandResult},
     persistent_data::{
-        model::{Canteen, Image, Line, Meal, Side},
-        RequestDataAccess, Result as DataResult,
+        model::{ApiKey, Canteen, Image, Line, Meal, Side},
+        AuthDataAccess, RequestDataAccess, Result as DataResult,
     },
 };
 use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason};
@@ -326,5 +326,23 @@ impl Command for CommandMock {
         _auth_info: AuthInfo,
     ) -> CommandResult<()> {
         Ok(())
+    }
+}
+
+pub struct AuthDataMock;
+
+#[async_trait]
+impl AuthDataAccess for AuthDataMock {
+    async fn get_api_keys(&self) -> DataResult<Vec<ApiKey>> {
+        Ok(vec![
+            ApiKey {
+                key: "abc".into(),
+                description: String::new(),
+            },
+            ApiKey {
+                key: "YWpzZGg4MnozNzhkMnppZGFzYXNkMiBzYWZzYSBzPGE5MDk4".into(),
+                description: String::new(),
+            },
+        ])
     }
 }
