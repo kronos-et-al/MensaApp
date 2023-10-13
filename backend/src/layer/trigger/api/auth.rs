@@ -72,7 +72,7 @@ impl Credentials for MensaAuthHeader {
 }
 
 pub(super) async fn auth_middleware(
-    TypedHeader(content_type): TypedHeader<ContentType>,
+    content_type: Option<TypedHeader<ContentType>>,
     auth: Option<TypedHeader<Authorization<MensaAuthHeader>>>,
     extract::State(api_keys): extract::State<Vec<ApiKey>>,
     req: Request<axum::body::Body>,
@@ -82,12 +82,13 @@ pub(super) async fn auth_middleware(
     let (parts, body) = req.into_parts();
     let body_bytes = hyper::body::to_bytes(body).await.unwrap();
 
-    let mime = Mime::from(content_type);
-
     // todo error handling
     warn!("middleware");
 
-    let bytes_to_hash = if mime.essence_str() == mime::MULTIPART_FORM_DATA.essence_str() {
+    let bytes_to_hash = if content_type
+        .map(|c| Mime::from(c.0))
+        .is_some_and(|mime| mime.essence_str() == mime::MULTIPART_FORM_DATA.essence_str())
+    {
         // copy parts
         let mut parts_builder = request::Builder::new()
             .method(parts.method.clone())

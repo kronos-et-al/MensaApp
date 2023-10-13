@@ -6,7 +6,8 @@
     clippy::pedantic,
     clippy::nursery,
     clippy::unwrap_used,
-    clippy::dbg_macro
+    clippy::dbg_macro,
+    clippy::todo
 )]
 #![allow(clippy::module_name_repetitions)]
 //! # MensaApp-Backend

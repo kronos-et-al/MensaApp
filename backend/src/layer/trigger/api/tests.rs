@@ -13,7 +13,12 @@ use crate::util::Uuid;
 use super::mock::{CommandMock, RequestDatabaseMock};
 
 async fn test_gql_request(request: &'static str) {
-    let request: Request = request.into();
+    let request = Request::from(request).data(AuthInfo {
+        client_id: Some(Uuid::default()),
+        api_ident: String::new(),
+        authenticated: false,
+        hash: String::new(),
+    });
 
     let schema = construct_schema(RequestDatabaseMock, CommandMock);
     let response = schema.execute(request).await;
@@ -265,7 +270,7 @@ async fn test_get_specific_meal() {
 }
 
 #[tokio::test]
-async fn test_get_auth_info_null() {
+async fn test_get_auth_info_empty() {
     let request = r#"
     {
         getMyAuth {
@@ -278,7 +283,16 @@ async fn test_get_auth_info_null() {
       
       
     "#;
-    test_gql_request(request).await;
+    let request = Request::from(request).data(AuthInfo {
+        client_id: None,
+        api_ident: String::new(),
+        authenticated: false,
+        hash: String::new(),
+    });
+
+    let schema = construct_schema(RequestDatabaseMock, CommandMock);
+    let response = schema.execute(request).await;
+    assert!(response.is_ok(), "request returned {:?}", response.errors);
 }
 
 #[tokio::test]
