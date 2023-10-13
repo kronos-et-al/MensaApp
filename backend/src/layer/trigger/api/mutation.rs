@@ -32,6 +32,8 @@ impl MutationRoot {
         #[graphql(desc = "Sha512 hash of the uploaded image file. Encoded as Base64.")]
         hash: String,
     ) -> Result<bool> {
+        ctx.check_authentication()?;
+
         trace!("Mutated `addImage`");
         let command = ctx.get_command();
         let client_id = ctx.get_client_id()?;
@@ -60,6 +62,8 @@ impl MutationRoot {
         #[graphql(desc = "Id of the meal to rate to.")] meal_id: Uuid,
         #[graphql(desc = "The new rating of the main dish.")] rating: u32,
     ) -> Result<bool> {
+        ctx.check_authentication()?;
+
         trace!("Mutated `setRating`");
         let command = ctx.get_command();
         let client_id = ctx.get_client_id()?;
@@ -78,6 +82,8 @@ impl MutationRoot {
         ctx: &Context<'_>,
         #[graphql(desc = "Id of the image to add the upvote to.")] image_id: Uuid,
     ) -> Result<bool> {
+        ctx.check_authentication()?;
+
         trace!("Mutated `addUpvote`");
         let command = ctx.get_command();
         let client_id = ctx.get_client_id()?;
@@ -96,6 +102,8 @@ impl MutationRoot {
         ctx: &Context<'_>,
         #[graphql(desc = "Id of the image to remove the upvote from.")] image_id: Uuid,
     ) -> Result<bool> {
+        ctx.check_authentication()?;
+
         trace!("Mutated `removeUpvote`");
         let command = ctx.get_command();
         let client_id = ctx.get_client_id()?;
@@ -114,6 +122,8 @@ impl MutationRoot {
         ctx: &Context<'_>,
         #[graphql(desc = "Id of the image to add the downvote to.")] image_id: Uuid,
     ) -> Result<bool> {
+        ctx.check_authentication()?;
+
         trace!("Mutated `addDownvote`");
         let command = ctx.get_command();
         let client_id = ctx.get_client_id()?;
@@ -132,6 +142,8 @@ impl MutationRoot {
         ctx: &Context<'_>,
         #[graphql(desc = "Id of the image to remove the downvote from.")] image_id: Uuid,
     ) -> Result<bool> {
+        ctx.check_authentication()?;
+
         trace!("Mutated `removeDownvote`");
         let command = ctx.get_command();
         let client_id = ctx.get_client_id()?;
@@ -151,6 +163,8 @@ impl MutationRoot {
         #[graphql(desc = "Id of the image to report.")] image_id: Uuid,
         #[graphql(desc = "The reason for reporting the image.")] reason: ReportReason,
     ) -> Result<bool> {
+        ctx.check_authentication()?;
+
         trace!("Mutated `reportImage`");
         let command = ctx.get_command();
         let client_id = ctx.get_client_id()?;

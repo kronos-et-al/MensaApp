@@ -93,7 +93,7 @@ pub(super) async fn auth_middleware(
         let mut parts_builder = request::Builder::new()
             .method(parts.method.clone())
             .uri(parts.uri.clone())
-            .version(parts.version.clone());
+            .version(parts.version);
         parts_builder
             .headers_mut()
             .unwrap()
@@ -124,11 +124,11 @@ pub(super) async fn auth_middleware(
         authenticated: authenticate(auth_header.as_ref(), &api_keys, &bytes_to_hash).is_some(),
         api_ident: auth_header
             .as_ref()
-            .map(|a| a.api_ident.to_owned())
+            .map(|a| a.api_ident.clone())
             .unwrap_or_default(),
         hash: auth_header
             .as_ref()
-            .map(|a| a.hash.to_owned())
+            .map(|a| a.hash.clone())
             .unwrap_or_default(),
     };
 
