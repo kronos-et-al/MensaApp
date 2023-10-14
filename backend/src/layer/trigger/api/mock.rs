@@ -306,6 +306,7 @@ impl Command for CommandMock {
         _file: Vec<u8>,
         _client_id: Uuid,
     ) -> CommandResult<()> {
+        println!("image type: {_file_type:?}, len: {}", _file.len());
         Ok(())
     }
 

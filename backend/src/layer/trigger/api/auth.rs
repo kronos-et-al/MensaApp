@@ -19,7 +19,6 @@ use hyper::StatusCode;
 use mime::Mime;
 use sha2::Sha512;
 use thiserror::Error;
-use tracing::warn;
 
 use crate::{interface::persistent_data::model::ApiKey, util::Uuid};
 
@@ -110,9 +109,6 @@ pub(super) async fn auth_middleware(
             format!("Could not read body: {e}"),
         )
     })?;
-
-    // todo error handling
-    warn!("middleware");
 
     let bytes_to_hash = if content_type
         .map(|c| Mime::from(c.0))
