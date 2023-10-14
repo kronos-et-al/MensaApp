@@ -1,5 +1,6 @@
 use std::env::temp_dir;
 
+use dotenvy::dotenv;
 use mensa_app_backend::layer::{
     logic::api_command::{
         command_handler::{CommandHandler, ImagePreprocessingInfo},
@@ -10,14 +11,19 @@ use mensa_app_backend::layer::{
     },
     trigger::api::{mock::AuthDataMock, server::ApiServerInfo, *},
 };
-use tracing::{info, Level};
-use tracing_subscriber::FmtSubscriber;
+use tracing::info;
+use tracing_subscriber::{EnvFilter, FmtSubscriber};
 
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
     // setup logging
     let subscriber = FmtSubscriber::builder()
-        .with_max_level(Level::TRACE)
+        .with_env_filter(
+            EnvFilter::builder()
+                .with_env_var("LOG_CONFIG")
+                .from_env_lossy(),
+        )
         .pretty()
         .finish();
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
