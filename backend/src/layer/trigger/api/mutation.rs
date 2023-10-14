@@ -15,11 +15,7 @@ impl MutationRoot {
     /// This mutation adds an image to the specified main dish.
     /// The user has to be authenticated.
     ///
-    /// `image_url` is a link to a Flickr image used to get information about it.
-    ///
-    /// If the meal does not exist, or the URL does not lead to Flickr
-    /// or the image is not licenced under a [CC0](https://creativecommons.org/publicdomain/zero/1.0/) licence
-    /// or another error occurred while adding the image an error message will be returned.
+    /// The image my not contain inappropriate content, otherwise the request fails.
     ///
     /// If the image was added is successful, `true` is returned.
     #[instrument(skip(self, ctx, image), fields(file_name = image.value(ctx)?.filename, file_type = image.value(ctx)?.content_type))]
