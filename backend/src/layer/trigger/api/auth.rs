@@ -1,10 +1,13 @@
+//! Module responsible for authenticating graphql requests.
+//! For more details, see <https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md>.
+
 use std::fmt::Display;
 
 use axum::{
-    extract::{self, FromRequest},
+    extract::{self, multipart::MultipartError, FromRequest},
     headers::{authorization::Credentials, Authorization, ContentType},
     http::{
-        request::{self},
+        request::{self, Parts},
         Request,
     },
     middleware::Next,
@@ -16,43 +19,58 @@ use base64::{
     Engine,
 };
 use hmac::{Hmac, Mac};
-use hyper::StatusCode;
+use hyper::{body::Bytes, StatusCode};
 use mime::Mime;
 use sha2::Sha512;
 use thiserror::Error;
 
 use crate::{interface::persistent_data::model::ApiKey, util::Uuid};
 
-pub(super) type Result<T> = std::result::Result<T, AuthError>;
+pub(super) type AuthResult<T> = Result<T, AuthError>;
 
-const AUTH_MANUAL_URL: &str = "https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md";
+const AUTH_DOC_URL: &str = "https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md";
 
+/// Error indicating something went wrong with authentication.
 #[derive(Debug, Error, Clone)]
 pub enum AuthError {
+    /// No client identifier was provided but the request requires one.
     #[error(
         "No client id provided in authorization header. See {} for more details.",
-        AUTH_MANUAL_URL
+        AUTH_DOC_URL
     )]
     MissingClientId,
-    #[error("One of the queries/mutations you requested requires authentication. Your auth info: {0:?} \nSee {} for more details.", AUTH_MANUAL_URL)]
+    /// No or invalid authentication provided but the request needs to be authenticated.
+    #[error("One of the queries/mutations you requested requires authentication. Your auth info: {0:?} \nSee {} for more details.", AUTH_DOC_URL)]
     MissingOrInvalidAuth(AuthInfo),
 }
 
+/// Reasons why authentication failed.
 #[derive(Debug, Clone)]
 pub enum AuthFailReason {
+    /// No `Authorization` header was provided or header has wrong format.
+    /// For more details see <https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md>.
     NoAuthHeader,
+    /// Api identifier or hash was left empty.
     MissingApiIdentOrHash,
+    /// Hash is no valid base 64 codeword.
     HashNotInBase64,
+    /// Api key is not valid.
     InvalidApiKey,
+    /// Provided HMAC hash does not match with request.
     HashNotMatching(Vec<u8>),
 }
 
 /// Structure containing all information necessary for authenticating a client.
 #[derive(Debug, Clone)]
 pub struct AuthInfo {
+    /// Identifier of client making request, if provided.
     pub client_id: Option<Uuid>,
-    pub authenticated: std::result::Result<(), AuthFailReason>,
+    /// Reason why authentication failed (if so).
+    pub authenticated: Result<(), AuthFailReason>,
+    /// Identifier of api key used for authentication.
+    /// For more details see <https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md>.
     pub api_ident: String,
+    /// User provided HMAC hash for request.
     pub hash: String,
 }
 
@@ -74,6 +92,7 @@ impl Display for AuthInfo {
 }
 
 /// Structure containing all information necessary for authenticating a client.
+/// These information can be read directly from the `Authorization` header.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct MensaAuthHeader {
     /// Id of client, chosen at random.
@@ -97,81 +116,45 @@ impl Credentials for MensaAuthHeader {
     }
 }
 
+#[derive(Error, Debug)]
+pub(super) enum AuthMiddlewareError {
+    #[error("Could not read body: {0}")]
+    UnableToReadBody(#[from] hyper::Error),
+    #[error("error while inspecting multipart request: {0}")]
+    MultipartError(#[from] MultipartError),
+    #[error("error while inspecting multipart request (generic): {0}")]
+    GenericMultipartError(String),
+    #[error("multipart request needs `operations` part")]
+    MissingOperationsPart,
+}
+
+impl IntoResponse for AuthMiddlewareError {
+    fn into_response(self) -> axum::response::Response {
+        (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()).into_response()
+    }
+}
+
 pub(super) async fn auth_middleware(
     content_type: Option<TypedHeader<ContentType>>,
     auth: Option<TypedHeader<Authorization<MensaAuthHeader>>>,
     extract::State(api_keys): extract::State<Vec<ApiKey>>,
     req: Request<axum::body::Body>,
     next: Next<axum::body::Body>,
-) -> std::result::Result<impl IntoResponse, (StatusCode, String)> {
+) -> Result<impl IntoResponse, AuthMiddlewareError> {
     let auth_header = auth.map(|a| a.0 .0);
     let (parts, body) = req.into_parts();
-    let body_bytes = hyper::body::to_bytes(body).await.map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Could not read body: {e}"),
-        )
-    })?;
+    let body_bytes = hyper::body::to_bytes(body).await?;
 
-    let bytes_to_hash = if content_type
-        .map(|c| Mime::from(c.0))
-        .is_some_and(|mime| mime.essence_str() == mime::MULTIPART_FORM_DATA.essence_str())
-    {
-        // copy parts
-        const MULTIPART_ERROR: fn() -> String =
-            || String::from("error while inspecting multipart request");
-
-        let mut parts_builder = request::Builder::new()
-            .method(parts.method.clone())
-            .uri(parts.uri.clone())
-            .version(parts.version);
-        parts_builder
-            .headers_mut()
-            .ok_or((StatusCode::INTERNAL_SERVER_ERROR, MULTIPART_ERROR()))?
-            .extend(parts.headers.clone());
-        let parts = parts_builder
-            .body(())
-            .map_err(|e| {
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    format!("{}: {}", MULTIPART_ERROR(), e),
-                )
-            })?
-            .into_parts()
-            .0;
-
-        // inspect copy of multipart request
-        let req = Request::from_parts(parts, hyper::Body::from(body_bytes.clone()));
-        let mut multipart = axum::extract::Multipart::from_request(req, &())
-            .await
-            .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, MULTIPART_ERROR()))?;
-
-        let mut operations_bytes = None;
-
-        while let Ok(Some(field)) = multipart.next_field().await {
-            if field.name() == Some("operations") {
-                operations_bytes = Some(
-                    field
-                        .bytes()
-                        .await
-                        .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?,
-                );
-                break;
-            }
-        }
-
-        operations_bytes.ok_or((
-            StatusCode::BAD_REQUEST,
-            String::from("Multipart request needs `operations` part"),
-        ))?
+    let bytes_to_hash = if content_type.is_some_and(|c| is_multipart(c.0)) {
+        extract_operation_bytes_from_multipart(&parts, &body_bytes).await?
     } else {
         body_bytes.clone()
     };
 
-    // check hash
     let auth = AuthInfo {
-        client_id: auth_header.as_ref().map(|a| a.client_id),
         authenticated: authenticate(auth_header.as_ref(), &api_keys, &bytes_to_hash),
+
+        client_id: auth_header.as_ref().map(|a| a.client_id),
         api_ident: auth_header
             .as_ref()
             .map(|a| a.api_ident.clone())
@@ -182,16 +165,59 @@ pub(super) async fn auth_middleware(
             .unwrap_or_default(),
     };
 
+    // run main request
     let mut req = Request::from_parts(parts, hyper::Body::from(body_bytes));
     req.extensions_mut().insert(auth);
+
     Ok(next.run(req).await)
+}
+
+fn is_multipart(content_type: ContentType) -> bool {
+    Mime::from(content_type).essence_str() == mime::MULTIPART_FORM_DATA.essence_str()
+}
+
+async fn extract_operation_bytes_from_multipart(
+    parts: &Parts,
+    body_bytes: &Bytes,
+) -> Result<Bytes, AuthMiddlewareError> {
+    // copy parts
+    let mut parts_builder = request::Builder::new()
+        .method(parts.method.clone())
+        .uri(parts.uri.clone())
+        .version(parts.version);
+    parts_builder
+        .headers_mut()
+        .ok_or(AuthMiddlewareError::GenericMultipartError(String::new()))?
+        .extend(parts.headers.clone());
+    let parts = parts_builder
+        .body(())
+        .map_err(|e| AuthMiddlewareError::GenericMultipartError(e.to_string()))?
+        .into_parts()
+        .0;
+
+    // inspect copy of multipart request
+    let req = Request::from_parts(parts, hyper::Body::from(body_bytes.clone()));
+    let mut multipart = axum::extract::Multipart::from_request(req, &())
+        .await
+        .map_err(|e| AuthMiddlewareError::GenericMultipartError(e.to_string()))?;
+
+    let mut operations_bytes = None;
+
+    while let Some(field) = multipart.next_field().await? {
+        if field.name() == Some("operations") {
+            operations_bytes = Some(field.bytes().await?);
+            break;
+        }
+    }
+
+    operations_bytes.ok_or(AuthMiddlewareError::MissingOperationsPart)
 }
 
 fn authenticate(
     info: Option<&MensaAuthHeader>,
     api_keys: &[ApiKey],
     bytes_to_hash: &[u8],
-) -> std::result::Result<(), AuthFailReason> {
+) -> Result<(), AuthFailReason> {
     let auth = info.ok_or(AuthFailReason::NoAuthHeader)?;
 
     if auth.api_ident.is_empty() || auth.hash.is_empty() {
@@ -205,7 +231,7 @@ fn authenticate(
         .key;
 
     let mut hmac =
-        Hmac::<Sha512>::new_from_slice(api_key.as_bytes()).expect("hmac can take keys of any size");
+        Hmac::<Sha512>::new_from_slice(api_key.as_bytes()).expect("HMAC can take keys of any size");
     hmac.update(bytes_to_hash);
     let hash = hmac.finalize().into_bytes().to_vec();
 
@@ -222,7 +248,6 @@ fn authenticate(
 
 const AUTH_TYPE: &str = "Mensa";
 const AUTH_SEPARATOR: char = ':';
-
 /// Parses and decodes the auth header into an [`AuthInfo`]
 #[must_use]
 fn read_auth_from_header(header: &str) -> Option<MensaAuthHeader> {
@@ -253,6 +278,10 @@ fn read_auth_from_header(header: &str) -> Option<MensaAuthHeader> {
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used)]
+
+    use std::str::FromStr;
+
+    use hyper::Version;
 
     use super::*;
 
@@ -301,5 +330,82 @@ mod tests {
             hash: "123".into(),
         });
         assert_eq!(expected_auth_info, auth_info);
+    }
+
+    #[test]
+    fn test_is_multipart() {
+        assert!(!is_multipart(ContentType::jpeg()));
+        assert!(!is_multipart(ContentType::form_url_encoded()));
+
+        let content_type = ContentType::from_str("multipart/form-data").unwrap();
+        assert!(is_multipart(content_type));
+
+        let content_type = ContentType::from_str("multipart/form-data; extra=abc").unwrap();
+        assert!(is_multipart(content_type));
+    }
+
+    #[tokio::test]
+    async fn test_extract_operation_bytes() {
+        let body = b"--boundary\r\nContent-Disposition: form-data; name=\"operations\"\r\n\r\n{\"operationName\":null,\"variables\":{\"mealId\":\"bd3c88f9-5dc8-4773-85dc-53305930e7b6\",\"image\":null},\"query\":\"mutation LinkImage($mealId: UUID!, $image: Upload!) {\\n  __typename\\n  addImage(mealId: $mealId, image: $image)\\n}\"}\r\n--boundary\r\nContent-Disposition: form-data; name=\"map\"\r\n\r\n{\"0\":[\"variables.image\"]}\r\n--boundary\r\ncontent-type: text/plain; charset=utf-8\r\ncontent-disposition: form-data; name=\"0\"; filename=\"a\"\r\n\r\nimage\r\n--boundary--";
+
+        let operations = Bytes::from(
+            r#"{"operationName":null,"variables":{"mealId":"bd3c88f9-5dc8-4773-85dc-53305930e7b6","image":null},"query":"mutation LinkImage($mealId: UUID!, $image: Upload!) {\n  __typename\n  addImage(mealId: $mealId, image: $image)\n}"}"#,
+        );
+
+        let request = Request::builder()
+            .method("POST")
+            .uri("/")
+            .version(Version::HTTP_11)
+            .header("Content-Type", "multipart/form-data; boundary=boundary")
+            .header(
+                "Authorization",
+                "Mensa ZTk5N2MyZTMtNjhlMS00YjZkLWIzMjgtNGFkY2Q1NzNjODM0Ojo=",
+            )
+            .header("Content-Length", 504)
+            .body(Bytes::from(body.as_slice()))
+            .unwrap();
+
+        let (parts, body_bytes) = request.into_parts();
+
+        let extracted = extract_operation_bytes_from_multipart(&parts, &body_bytes)
+            .await
+            .unwrap();
+
+        assert_eq!(operations, extracted);
+    }
+
+    #[test]
+    fn test_authenticate() {
+        assert!(authenticate(None, &[], &[]).is_err());
+
+        let bytes = &[8u8, 123u8, 11u8, 61u8, 222u8];
+        let api_key = "1234567890";
+
+        let hash = Hmac::<Sha512>::new_from_slice(api_key.as_bytes())
+            .unwrap()
+            .chain_update(bytes)
+            .finalize()
+            .into_bytes()
+            .to_vec();
+        let hash64 = base64::prelude::BASE64_STANDARD.encode(hash);
+
+        let header = MensaAuthHeader {
+            client_id: Uuid::from_str("e997c2e3-68e1-4b6d-b328-4adcd573c834").unwrap(),
+            api_ident: "123".into(),
+            hash: hash64,
+        };
+
+        let key_list = &[
+            ApiKey {
+                description: String::new(),
+                key: String::from("abc"),
+            },
+            ApiKey {
+                description: String::new(),
+                key: api_key.into(),
+            },
+        ];
+
+        assert!(authenticate(Some(&header), key_list, bytes).is_ok());
     }
 }

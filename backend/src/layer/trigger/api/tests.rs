@@ -1,9 +1,6 @@
 #![cfg(test)]
 #![allow(clippy::unwrap_used)]
 
-use std::fs::File;
-use std::io::Write;
-
 use super::auth::AuthInfo;
 use crate::layer::trigger::api::auth::AuthFailReason;
 use crate::layer::trigger::api::mutation::MutationRoot;
@@ -15,6 +12,7 @@ use async_graphql::{EmptySubscription, Request, Schema, UploadValue, Variables};
 use serde_json::json;
 use sha2::{Digest, Sha512};
 use tempfile::tempdir;
+use tokio::io::AsyncWriteExt;
 
 use super::mock::{CommandMock, RequestDatabaseMock};
 use base64::engine::Engine;
@@ -40,11 +38,11 @@ async fn test_add_image() {
     let mut path = dir.path().to_owned();
     let filename = "test.jpg";
     path.push(filename);
-    let mut file = File::create(&path).unwrap();
+    let mut file = tokio::fs::File::create(&path).await.unwrap();
 
     let image = include_bytes!("../../logic/api_command/tests/test.jpg");
-    file.write_all(image).unwrap();
-    let file = File::open(&path).unwrap();
+    file.write_all(image).await.unwrap();
+    let file = std::fs::File::open(&path).unwrap();
 
     let hash = Sha512::new().chain_update(image).finalize().to_vec();
     let hash_base64 = base64::prelude::BASE64_STANDARD.encode(hash);

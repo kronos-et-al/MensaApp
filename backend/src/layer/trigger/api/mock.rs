@@ -302,11 +302,11 @@ impl Command for CommandMock {
     async fn add_image(
         &self,
         _meal_id: Uuid,
-        _file_type: Option<String>,
-        _file: Vec<u8>,
+        file_type: Option<String>,
+        file: Vec<u8>,
         _client_id: Uuid,
     ) -> CommandResult<()> {
-        println!("image type: {_file_type:?}, len: {}", _file.len());
+        println!("image type: {file_type:?}, len: {}", file.len());
         Ok(())
     }
 

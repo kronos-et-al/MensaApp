@@ -4,8 +4,6 @@ use image::{imageops::FilterType, io::Reader, DynamicImage, ImageError, ImageFor
 use std::io::Cursor;
 use thiserror::Error;
 
-use super::command_handler::ImagePreprocessingInfo;
-
 /// Result returned on image preprocessing operations.
 pub type Result<T> = std::result::Result<T, ImagePreprocessingError>;
 
@@ -18,6 +16,15 @@ pub enum ImagePreprocessingError {
     /// Error occurring wile operating on the image.
     #[error("Error during image operation: {0}")]
     ImageError(#[from] ImageError),
+}
+
+/// Structure containing all information necessary for image preprocessing.
+#[derive(Debug, Clone, Copy)]
+pub struct ImagePreprocessingInfo {
+    /// Maximal width of images stored. Images get resized otherwise.
+    pub max_image_width: u32,
+    /// Maximal height of images stored. Images get resized otherwise.
+    pub max_image_height: u32,
 }
 
 /// Class for preprocessing uploaded images.

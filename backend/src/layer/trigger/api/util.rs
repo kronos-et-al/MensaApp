@@ -30,12 +30,12 @@ pub trait ApiUtil {
     /// Returns whether this request is authenticated correctly.
     /// # Errors
     /// if no valid authentication present
-    fn check_authentication(&self) -> auth::Result<()>;
+    fn check_authentication(&self) -> auth::AuthResult<()>;
 
     /// Gets the provided client id, if any.
     /// # Errors
     /// if no client id was provided in the authorization header
-    fn get_client_id(&self) -> auth::Result<Uuid>;
+    fn get_client_id(&self) -> auth::AuthResult<Uuid>;
 }
 
 impl<'a> ApiUtil for Context<'a> {
@@ -51,7 +51,7 @@ impl<'a> ApiUtil for Context<'a> {
         self.data_unchecked::<AuthInfo>()
     }
 
-    fn check_authentication(&self) -> auth::Result<()> {
+    fn check_authentication(&self) -> auth::AuthResult<()> {
         if self.data_unchecked::<AuthInfo>().authenticated.is_ok() {
             Ok(())
         } else {
@@ -60,7 +60,7 @@ impl<'a> ApiUtil for Context<'a> {
         }
     }
 
-    fn get_client_id(&self) -> auth::Result<Uuid> {
+    fn get_client_id(&self) -> auth::AuthResult<Uuid> {
         self.data_unchecked::<AuthInfo>()
             .client_id
             .ok_or(auth::AuthError::MissingClientId)
@@ -110,4 +110,43 @@ pub enum UploadError {
     /// First parameter is the _expected_ hash, second the _given_.
     #[error("The given hash does not match with the uploaded file.\nExpected: {0}\nGot: {1}")]
     InvalidHash(String, String),
+}
+
+#[cfg(test)]
+mod tests {
+    #![allow(clippy::unwrap_used)]
+    use super::*;
+    use async_graphql::UploadValue;
+    use base64::Engine;
+    use sha2::{Digest, Sha512};
+    use tempfile::tempdir;
+    use tokio::io::AsyncWriteExt;
+
+    #[tokio::test]
+    async fn test_file_validation() {
+        let dir = tempdir().unwrap();
+        let mut path = dir.path().to_owned();
+        let filename = "test.jpg";
+        path.push(filename);
+        let mut file = tokio::fs::File::create(&path).await.unwrap();
+
+        let image = include_bytes!("../../logic/api_command/tests/test.jpg");
+        file.write_all(image).await.unwrap();
+        let file = std::fs::File::open(&path).unwrap();
+
+        let hash = Sha512::new().chain_update(image).finalize().to_vec();
+        let hash64 = base64::prelude::BASE64_STANDARD.encode(hash);
+
+        let upload = UploadValue {
+            filename: filename.into(),
+            content_type: Some("image/jpeg".into()),
+            content: file,
+        };
+
+        let bytes = read_and_validate_upload(upload, hash64)
+            .await
+            .expect("success");
+
+        assert_eq!(image.as_slice(), &bytes);
+    }
 }

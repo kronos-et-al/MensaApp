@@ -9,7 +9,7 @@ use crate::layer::{
         database::factory::DatabaseInfo, file_handler::FileHandlerInfo, mail::mail_info::MailInfo,
         swka_parser::swka_parse_manager::SwKaInfo,
     },
-    logic::api_command::command_handler::ImagePreprocessingInfo,
+    logic::api_command::image_preprocessing::ImagePreprocessingInfo,
     trigger::{api::server::ApiServerInfo, scheduling::scheduler::ScheduleInfo},
 };
 

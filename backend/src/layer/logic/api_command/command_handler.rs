@@ -15,18 +15,9 @@ use crate::{
     util::{image_id_to_url, Date, ReportReason, Uuid},
 };
 
-use super::image_preprocessing::ImagePreprocessor;
+use super::image_preprocessing::{ImagePreprocessingInfo, ImagePreprocessor};
 
 const REPORT_FACTOR: f64 = 1.0 / 35.0;
-
-/// Structure containing all information necessary for image preprocessing.
-#[derive(Debug, Clone, Copy)]
-pub struct ImagePreprocessingInfo {
-    /// Maximal width of images stored. Images get resized otherwise.
-    pub max_image_width: u32,
-    /// Maximal height of images stored. Images get resized otherwise.
-    pub max_image_height: u32,
-}
 
 /// Class responsible for executing api commands.
 #[derive(Debug)]

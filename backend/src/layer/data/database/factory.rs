@@ -114,6 +114,7 @@ mod tests {
         let _ = factory.get_command_data_access();
         let _ = factory.get_mealplan_management_data_access();
         let _ = factory.get_request_data_access();
+        let _ = factory.get_auth_data_access();
 
         std::mem::drop(factory); // drop database connection
 

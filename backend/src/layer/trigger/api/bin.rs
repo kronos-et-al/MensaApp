@@ -3,7 +3,8 @@ use std::env::temp_dir;
 use dotenvy::dotenv;
 use mensa_app_backend::layer::{
     logic::api_command::{
-        command_handler::{CommandHandler, ImagePreprocessingInfo},
+        command_handler::CommandHandler,
+        image_preprocessing::ImagePreprocessingInfo,
         mocks::{
             CommandAdminNotificationMock, CommandDatabaseMock, CommandImageStorageMock,
             CommandImageValidationMock,
