@@ -1,4 +1,5 @@
-use async_graphql::{ComplexObject, SimpleObject};
+use std::fmt::Display;
+
 use axum::{
     extract::{self, FromRequest},
     headers::{authorization::Credentials, Authorization, ContentType},
@@ -47,26 +48,28 @@ pub enum AuthFailReason {
 }
 
 /// Structure containing all information necessary for authenticating a client.
-#[derive(Debug, Clone, SimpleObject)]
-#[graphql(complex)]
+#[derive(Debug, Clone)]
 pub struct AuthInfo {
-    // todo doc comments for graphql
     pub client_id: Option<Uuid>,
-    #[graphql(skip)] // todo add later in some way?
     pub authenticated: std::result::Result<(), AuthFailReason>,
     pub api_ident: String,
     pub hash: String,
 }
 
-// todo move out of here
-#[ComplexObject]
-impl AuthInfo {
-    async fn authenticated(&self) -> bool {
-        self.authenticated.is_ok()
-    }
-
-    async fn auth_error(&self) -> Option<String> {
-        self.authenticated.as_ref().err().map(|e| format!("{e:?}"))
+impl Display for AuthInfo {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let auth_status = match &self.authenticated {
+            Ok(()) => "authenticated".into(),
+            Err(e) => format!("unauthenticated ({e:?})"),
+        };
+        write!(
+            f,
+            "AuthInfo for client `{}`: {}, api_indent: `{}`, hash: `{}`",
+            self.client_id.as_ref().map_or("-".into(), Uuid::to_string),
+            auth_status,
+            self.api_ident,
+            self.hash
+        )
     }
 }
 
@@ -90,7 +93,7 @@ impl Credentials for MensaAuthHeader {
     }
 
     fn encode(&self) -> axum::http::HeaderValue {
-        unimplemented!() // todo if necessary
+        unimplemented!()
     }
 }
 

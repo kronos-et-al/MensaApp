@@ -4,7 +4,9 @@ use tracing::{instrument, trace};
 
 use crate::util::{Date, Uuid};
 
-use super::{auth::AuthInfo, types::canteen::Canteen, types::meal::Meal, util::ApiUtil};
+use super::{
+    types::auth_info::AuthInfo, types::canteen::Canteen, types::meal::Meal, util::ApiUtil,
+};
 
 /// Class implementing `GraphQL`s root queries.
 #[derive(Debug)]
@@ -73,6 +75,6 @@ impl QueryRoot {
     #[instrument(skip(ctx))]
     async fn get_my_auth(&self, ctx: &Context<'_>) -> AuthInfo {
         trace!("Queried `getMyAuth`");
-        ctx.get_auth_info().clone()
+        ctx.get_auth_info().clone().into()
     }
 }

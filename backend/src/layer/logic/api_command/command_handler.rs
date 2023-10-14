@@ -369,8 +369,6 @@ mod test {
                 .is_ok(),
             "tiff"
         );
-
-        // todo more cases when saving fails etc? => not necessarry when saving moved
     }
 
     #[tokio::test]

@@ -1,3 +1,4 @@
+pub(super) mod auth_info;
 pub(super) mod canteen;
 pub(super) mod image;
 pub(super) mod line;

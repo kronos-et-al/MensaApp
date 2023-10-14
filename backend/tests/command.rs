@@ -18,18 +18,16 @@ lazy_static! {
     static ref CLIENT_ID: Uuid = Uuid::try_from("6f04a6c7-9723-4a01-ae8c-67baa62fba75").unwrap();
 }
 
-// TODO
-// #[tokio::test]
-// #[ignore = "manual test"]
-// async fn test_add_image() {
-//     let cmd = setup_cmd().await;
+#[tokio::test]
+#[ignore = "manual test"]
+async fn test_add_image() {
+    let cmd = setup_cmd().await;
+    let image = include_bytes!("test.jpg").to_vec();
 
-//
-
-//     cmd.add_image(*MEAL_ID, "https://flic.kr/p/2oSg8aV".into(), *CLIENT_ID)
-//         .await
-//         .unwrap();
-// }
+    cmd.add_image(*MEAL_ID, Some("image/jpeg".into()), image, *CLIENT_ID)
+        .await
+        .unwrap();
+}
 
 #[tokio::test]
 #[ignore = "manual test"]

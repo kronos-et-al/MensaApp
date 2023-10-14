@@ -201,7 +201,7 @@ async fn graphql_handler(
     let span = info_span!(
         "incoming graphql request",
         variables = %request.variables,
-        auth_info = ?auth_info
+        auth_info = %auth_info
     );
 
     async {

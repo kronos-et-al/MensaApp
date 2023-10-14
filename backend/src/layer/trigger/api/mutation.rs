@@ -19,7 +19,6 @@ impl MutationRoot {
     ///
     /// If the image was added is successful, `true` is returned.
     #[instrument(skip(self, ctx, image), fields(file_name = image.value(ctx)?.filename, file_type = image.value(ctx)?.content_type))]
-    // todo add auth info to tracing
     async fn add_image(
         &self,
         ctx: &Context<'_>,
