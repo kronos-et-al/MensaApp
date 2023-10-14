@@ -17,7 +17,7 @@ async fn test_gql_request(request: &'static str) {
     let request = Request::from(request).data(AuthInfo {
         client_id: Some(Uuid::default()),
         api_ident: String::new(),
-        authenticated: Err(AuthFailReason::MissingApiIdentOrHash),
+        authenticated: Ok(()),
         hash: String::new(),
     });
 
