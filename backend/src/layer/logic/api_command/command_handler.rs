@@ -2,7 +2,6 @@
 
 use async_trait::async_trait;
 use chrono::Local;
-use tokio::fs::File;
 use tracing::info;
 
 use crate::{
@@ -168,13 +167,12 @@ where
         &self,
         meal_id: Uuid,
         image_type: Option<String>,
-        image_file: File,
+        image_file: Vec<u8>,
         client_id: Uuid,
     ) -> Result<()> {
         let image = self
             .image_preprocessor
-            .preprocess_image(image_file, image_type)
-            .await?;
+            .preprocess_image(image_file, image_type)?;
 
         // verify with api
         self.image_validation.validate_image(&image).await?;
@@ -311,18 +309,9 @@ mod test {
 
         let meal_id = Uuid::try_from("1d170ff5-e18b-4c45-b452-8feed7328cd3").unwrap();
 
-        let dir = tempfile::tempdir().expect("tempdir should be accessible");
-
         // jpg
-        let mut jpg_path = dir.path().to_path_buf();
-        jpg_path.push("test.jpg");
-        tokio::fs::write(&jpg_path, include_bytes!("tests/test.jpg"))
-            .await
-            .expect("image should be saved");
 
-        let image_file = tokio::fs::File::open(&jpg_path)
-            .await
-            .expect("saved file should be opened");
+        let image_file = include_bytes!("tests/test.jpg").to_vec();
 
         assert!(
             handler
@@ -333,9 +322,7 @@ mod test {
         );
 
         // wrong format
-        let image_file = tokio::fs::File::open(&jpg_path)
-            .await
-            .expect("saved file should be opened");
+        let image_file = include_bytes!("tests/test.jpg").to_vec();
 
         assert!(handler
             .add_image(meal_id, Some("image/png".into()), image_file, client_id,)
@@ -343,21 +330,15 @@ mod test {
             .is_err());
 
         // When no format is given, the command may or may not work.
+        // let image_file = include_bytes!("tests/test.jpg").to_vec();
         // assert!(handler
         //     .add_image(meal_id, None, image_file, auth_info)
         //     .await
         //     .is_ok());
 
         // jpg large
-        let mut jpg_path = dir.path().to_path_buf();
-        jpg_path.push("test_large.jpg");
-        tokio::fs::write(&jpg_path, include_bytes!("tests/test_large.jpg"))
-            .await
-            .expect("image should be saved");
 
-        let image_file = tokio::fs::File::open(&jpg_path)
-            .await
-            .expect("saved file should be opened");
+        let image_file = include_bytes!("tests/test_large.jpg").to_vec();
 
         assert!(
             handler
@@ -368,15 +349,7 @@ mod test {
         );
 
         // png
-        let mut png_path = dir.path().to_path_buf();
-        png_path.push("test.png");
-        tokio::fs::write(&png_path, include_bytes!("tests/test.png"))
-            .await
-            .expect("image should be saved");
-
-        let image_file = tokio::fs::File::open(&png_path)
-            .await
-            .expect("saved file should be opened");
+        let image_file = include_bytes!("tests/test.png").to_vec();
 
         assert!(
             handler
@@ -387,15 +360,7 @@ mod test {
         );
 
         // tiff
-        let mut tiff_path = dir.path().to_path_buf();
-        tiff_path.push("test.tif");
-        tokio::fs::write(&tiff_path, include_bytes!("tests/test.tif"))
-            .await
-            .expect("image should be saved");
-
-        let image_file = tokio::fs::File::open(&tiff_path)
-            .await
-            .expect("saved file should be opened");
+        let image_file = include_bytes!("tests/test.tif").to_vec();
 
         assert!(
             handler

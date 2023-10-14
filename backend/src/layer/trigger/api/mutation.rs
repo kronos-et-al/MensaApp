@@ -1,10 +1,10 @@
 //! See [`MutationRoot`].
+
+use super::util::{read_and_validate_upload, ApiUtil};
 use crate::util::{ReportReason, Uuid};
 use async_graphql::{Context, Object, Result, Upload};
-use tokio::fs::File;
-use tracing::{instrument, trace};
 
-use super::util::ApiUtil;
+use tracing::{instrument, trace};
 
 /// Class implementing `GraphQLs` root mutations.
 #[derive(Debug)]
@@ -38,15 +38,12 @@ impl MutationRoot {
         let command = ctx.get_command();
         let client_id = ctx.get_client_id()?;
         let upload = image.value(ctx)?;
-        // todo check hash
-        // todo read to image directly
+
+        let image_type = upload.content_type.clone();
+        let image_data = read_and_validate_upload(upload, hash).await?;
+
         command
-            .add_image(
-                meal_id,
-                upload.content_type,
-                File::from_std(upload.content),
-                client_id,
-            )
+            .add_image(meal_id, image_type, image_data, client_id)
             .await?;
         Ok(true)
     }

@@ -2,7 +2,6 @@
 
 use async_trait::async_trait;
 use thiserror::Error;
-use tokio::fs::File;
 
 use crate::{
     layer::logic::api_command::image_preprocessing::ImagePreprocessingError,
@@ -42,7 +41,7 @@ pub trait Command: Send + Sync {
         &self,
         meal_id: Uuid,
         image_type: Option<String>,
-        image_file: File,
+        image_file: Vec<u8>,
         client_id: Uuid,
     ) -> Result<()>;
 

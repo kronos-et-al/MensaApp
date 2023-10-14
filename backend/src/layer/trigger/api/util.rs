@@ -1,5 +1,9 @@
 //! Module containing some helper functions like for working inside the graphql context and processing authentication headers.
-use async_graphql::Context;
+use async_graphql::{Context, UploadValue};
+use base64::{engine::general_purpose, Engine};
+use futures::AsyncReadExt;
+use sha2::{Digest, Sha512};
+use thiserror::Error;
 
 use crate::{
     interface::{api_command::Command, persistent_data::RequestDataAccess},
@@ -61,4 +65,49 @@ impl<'a> ApiUtil for Context<'a> {
             .client_id
             .ok_or(auth::AuthError::MissingClientId)
     }
+}
+
+/// Reads data from an upload and validates it against a hash.
+/// # Errors
+/// - Upload could not be read
+/// - hash ist not valid base 64
+/// - hash does not match with upload
+pub async fn read_and_validate_upload(upload: UploadValue, hash: String) -> UploadResult<Vec<u8>> {
+    let mut upload_data = Vec::new();
+    let _ = upload
+        .into_async_read()
+        .read_to_end(&mut upload_data)
+        .await
+        .map_err(UploadError::IoError)?;
+
+    let calculated_hash = Sha512::new().chain_update(&upload_data).finalize().to_vec();
+
+    let given_hash = general_purpose::STANDARD
+        .decode(&hash)
+        .map_err(|_| UploadError::HashNotBase64)?;
+
+    if calculated_hash != given_hash {
+        let calculated_base64 = general_purpose::STANDARD.encode(calculated_hash);
+        Err(UploadError::InvalidHash(calculated_base64, hash))?;
+    }
+
+    Ok(upload_data)
+}
+
+/// Result returned from upload preprocessing and validation operations.
+pub type UploadResult<T> = Result<T, UploadError>;
+
+/// Error marking something went wrong with preprocessing and validating an upload.
+#[derive(Error, Debug)]
+pub enum UploadError {
+    /// Error indicating an upload could not be read.
+    #[error("Could not read uploaded file: {0}")]
+    IoError(std::io::Error),
+    /// Error indicating a hash was not in a valid base 64 encoding.
+    #[error("The provided hash is not a valid base 64 encoding.")]
+    HashNotBase64,
+    /// Error indicating that a wring file hash was given.
+    /// First parameter is the _expected_ hash, second the _given_.
+    #[error("The given hash does not match with the uploaded file.\nExpected: {0}\nGot: {1}")]
+    InvalidHash(String, String),
 }

@@ -2,7 +2,6 @@
 #![allow(missing_docs)]
 
 use async_trait::async_trait;
-use tokio::fs::File;
 use uuid::Uuid;
 
 use crate::interface::{
@@ -304,7 +303,7 @@ impl Command for CommandMock {
         &self,
         _meal_id: Uuid,
         _file_type: Option<String>,
-        _file: File,
+        _file: Vec<u8>,
         _client_id: Uuid,
     ) -> CommandResult<()> {
         Ok(())

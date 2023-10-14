@@ -1,9 +1,8 @@
 //! Module for preprocessing uploaded images
 
 use image::{imageops::FilterType, io::Reader, DynamicImage, ImageError, ImageFormat};
-use std::io::BufReader;
+use std::io::Cursor;
 use thiserror::Error;
-use tokio::fs::File;
 
 use super::command_handler::ImagePreprocessingInfo;
 
@@ -44,38 +43,33 @@ impl ImagePreprocessor {
     /// # Errors
     /// - Image type was not provided and could not be guessed
     /// - Image could not be decoded from file
-    pub async fn preprocess_image(
+    pub fn preprocess_image(
         &self,
-        file: File,
+        image_data: Vec<u8>,
         image_type: Option<String>,
     ) -> Result<DynamicImage> {
         let max_width = self.max_width;
         let max_height = self.max_height;
-        let file = file.into_std().await;
 
-        tokio::task::spawn_blocking(move || {
-            let mut reader = Reader::new(BufReader::new(file));
-            if let Some(format) = image_type.and_then(ImageFormat::from_mime_type) {
-                reader.set_format(format);
-            } else {
-                reader = reader
-                    .with_guessed_format()
-                    .map_err(ImagePreprocessingError::FormatGuessError)?;
-            }
+        let mut reader = Reader::new(Cursor::new(image_data));
+        if let Some(format) = image_type.and_then(ImageFormat::from_mime_type) {
+            reader.set_format(format);
+        } else {
+            reader = reader
+                .with_guessed_format()
+                .map_err(ImagePreprocessingError::FormatGuessError)?;
+        }
 
-            // read image
-            let image = reader.decode()?;
+        // read image
+        let image = reader.decode()?;
 
-            // downscale
-            if image.width() > max_width || image.height() > max_height {
-                let resized = image.resize(max_width, max_height, FilterType::Triangle);
-                Ok(resized)
-            } else {
-                Ok(image)
-            }
-        })
-        .await
-        .expect("image preprocessing should not panic nor get aborted")
+        // downscale
+        if image.width() > max_width || image.height() > max_height {
+            let resized = image.resize(max_width, max_height, FilterType::Triangle);
+            Ok(resized)
+        } else {
+            Ok(image)
+        }
     }
 }
 
@@ -84,18 +78,9 @@ mod tests {
 
     use super::*;
 
-    #[tokio::test]
-    async fn test_preprocess() {
-        let dir = tempfile::tempdir().expect("tempdir should be accessible");
-        let mut png_path = dir.path().to_path_buf();
-        png_path.push("test.png");
-        tokio::fs::write(&png_path, include_bytes!("../tests/test.png"))
-            .await
-            .expect("image should be saved");
-
-        let image_file = tokio::fs::File::open(&png_path)
-            .await
-            .expect("saved file should be opened");
+    #[test]
+    fn test_preprocess() {
+        let image_file = include_bytes!("../tests/test.png").to_vec();
 
         let info = ImagePreprocessingInfo {
             max_image_height: 100,
@@ -105,7 +90,6 @@ mod tests {
 
         let processed_image = preprocessor
             .preprocess_image(image_file, Some("image/png".into()))
-            .await
             .expect("image should be processed");
 
         assert!(processed_image.width() <= 100);

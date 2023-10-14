@@ -21,7 +21,12 @@ chrono = "0.4.26"
 thiserror = "1.0.40"
 uuid = "1.4.0"
 axum = { version = "0.6.18", features = ["http2", "macros", "multipart"] }
-async-graphql = { version = "6.0.0", features = ["chrono", "uuid", "tracing"] }
+async-graphql = { version = "6.0.0", features = [
+    "chrono",
+    "uuid",
+    "tracing",
+    "unblock",
+] }
 async-graphql-axum = "6.0.0"
 tokio = { version = "1.29.0", features = ["full"] }
 tracing = "0.1"
