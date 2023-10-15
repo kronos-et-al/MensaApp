@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:app/view/core/buttons/MensaButton.dart';
 import 'package:app/view/core/dialogs/MensaDialog.dart';
 import 'package:app/view/core/input_components/MensaTextField.dart';
@@ -8,6 +10,7 @@ import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 
@@ -96,9 +99,13 @@ class UploadImageDialog extends StatelessWidget {
                   semanticLabel: FlutterI18n.translate(
                       context, "semantics.imageSubmitUpload"),
                   onPressed: () async {
+                    // todo
+                    final file = Uint8List(0);
+                    final mediaType = MediaType("none", "none");
+
                     final result = await context
                         .read<IImageAccess>()
-                        .linkImage(_textFieldController.text, _meal);
+                        .linkImage(file, mediaType, _meal);
                     if (!context.mounted) return;
 
                     Navigator.pop(context);
