@@ -8,8 +8,8 @@ use crate::{
     interface::{
         admin_notification::{AdminNotification, ImageReportInfo},
         api_command::{AuthInfo, Command, CommandError, Result},
-        image_validation::ImageValidation,
         image_storage::ImageStorage,
+        image_validation::ImageValidation,
         persistent_data::{model::Image, CommandDataAccess},
     },
     layer::logic::api_command::auth::{authenticator::Authenticator, command_type::CommandType},

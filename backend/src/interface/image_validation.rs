@@ -26,9 +26,15 @@ pub enum ImageValidationError {
     /// Error returned when the response json could not be returned.
     #[error("The api response json could not be decoded. Image validation failed.")]
     JsonDecodeFailed,
+    /// The response evaluation is empty.
+    #[error("The api responded with no values.")]
+    InvalidResponse,
     /// Error returned when the api request fails.
     #[error("The provided rest request, could not be send. Image validation failed.")]
     RestRequestFailed,
+    /// Image could not be decoded
+    #[error("The provided image could not be decoded to base64: {0}")]
+    ImageEncodeFailed(String),
     /// An api related error. Returns the error provided by the api.
     #[error("The api responded with error '{0}'.")]
     ApiResponseError(String),

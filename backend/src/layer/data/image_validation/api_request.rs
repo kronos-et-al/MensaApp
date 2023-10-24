@@ -1,5 +1,9 @@
+use crate::interface::image_validation::ImageValidationError::InvalidResponse;
 use crate::interface::image_validation::Result;
-use crate::layer::data::image_validation::json_structs::{SafeSearchJson, SafeSearchResponseJson};
+use crate::layer::data::image_validation::json_structs::{
+    ResponseJson, SafeSearchJson, SafeSearchResponseJson,
+};
+use async_graphql::http::receive_batch_json;
 use google_jwt_auth::AuthConfig;
 use std::fs;
 
@@ -29,13 +33,13 @@ impl ApiRequest {
     }
 
     //TODO DOC
-    pub async fn encoded_image_validation(
-        &self,
-        b64_image: String,
-    ) -> Result<SafeSearchJson> {
+    pub async fn encoded_image_validation(&self, b64_image: String) -> Result<SafeSearchJson> {
         let token = self.auth_config.generate_auth_token(TOKEN_LIFETIME).await?;
-        let json_resp = self.request_api(b64_image, token).await?;
-        Ok(json_resp.responses[0].safeSearchAnnotation)
+        let json_resp = self.request_api(b64_image, token).await?.responses.pop();
+        match json_resp {
+            None => Err(InvalidResponse),
+            Some(json) => Ok(json.safeSearchAnnotation),
+        }
     }
 
     async fn request_api(
@@ -68,7 +72,6 @@ fn build_request_body(b64_image: &str) -> String {
     )
 }
 
-
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used)]
@@ -82,7 +85,9 @@ mod tests {
     #[ignore]
     async fn test_generate_auth_token() {
         let api_req = ApiRequest::new(String::from(JSON_PATH), String::from("mensaka")).unwrap();
-        let resp = api_req.encoded_image_validation(String::from(B64_IMAGE)).await;
+        let resp = api_req
+            .encoded_image_validation(String::from(B64_IMAGE))
+            .await;
         assert!(resp.is_ok())
     }
 }

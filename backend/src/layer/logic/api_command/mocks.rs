@@ -6,8 +6,8 @@ use async_trait::async_trait;
 use crate::{
     interface::{
         admin_notification::{AdminNotification, ImageReportInfo},
-        image_validation::ImageValidation,
         image_storage::ImageStorage,
+        image_validation::ImageValidation,
         persistent_data::{
             model::{ApiKey, Image},
             CommandDataAccess, DataError, Result as DataResult,

@@ -17,21 +17,21 @@ use serde::Deserialize;
 ///   ]
 /// }
 /// ```
-#[derive(Debug, Deserialize, Copy)]
+#[derive(Debug, Deserialize)]
 pub struct SafeSearchResponseJson {
     /// See [`SafeSearchResponseJson`]
     pub responses: Vec<ResponseJson>,
 }
 
 /// See [`SafeSearchResponseJson`]
-#[derive(Debug, Deserialize, Copy)]
+#[derive(Debug, Deserialize)]
 pub struct ResponseJson {
     /// See [`SafeSearchResponseJson`]
     pub safeSearchAnnotation: SafeSearchJson,
 }
 
 /// See [`SafeSearchResponseJson`]
-#[derive(Debug, Deserialize, Copy)]
+#[derive(Debug, Deserialize)]
 pub struct SafeSearchJson {
     /// See [`SafeSearchResponseJson`]
     pub adult: String,
