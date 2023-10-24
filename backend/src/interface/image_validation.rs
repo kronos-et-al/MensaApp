@@ -1,6 +1,7 @@
 //! This interface allows to validate the content of an image.
 
 use crate::util::ImageResource;
+use std::io;
 
 use async_trait::async_trait;
 use thiserror::Error;
@@ -31,14 +32,23 @@ pub enum ImageValidationError {
     /// An api related error. Returns the error provided by the api.
     #[error("The api responded with error '{0}'.")]
     ApiResponseError(String),
+    /// Something during the token generation went wrong.
+    #[error("{0}")]
+    TokenGenerationError(#[from] google_jwt_auth::error::TokenGenerationError),
+    /// Some reqwest error occurred.
+    #[error("{0}")]
+    ReqwestError(#[from] reqwest::Error),
+    /// The json file could not be read.
+    #[error("The json file could not be read: {0}")]
+    FileReaderError(#[from] io::Error),
 }
 
 /// Structure that contains all information necessary for the image validation component.
 pub struct ImageValidationInfo {
     /// Five numbers between 0 to 6 to set each level of a category.
     pub acceptance: [u8; 5],
-    /// This key is needed to access all provided image api functions.
-    pub api_key: String,
+    /// This json is needed to request authentication tokens.
+    pub json_path: String,
     /// This project identifier is needed to call image api functions.
-    pub project_key: String,
+    pub project_id: String,
 }
