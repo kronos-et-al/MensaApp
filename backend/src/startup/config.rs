@@ -55,6 +55,8 @@ impl ConfigReader {
         env::args().any(|arg| HELP.contains(&arg.as_str()))
     }
 
+    /// Queries the program arguments to check whether image migration should be run.
+    #[must_use]
     pub fn should_migrate_images(&self) -> bool {
         env::args().any(|arg| arg == MIGRATE_IMAGES)
     }
@@ -178,6 +180,10 @@ impl ConfigReader {
                 .and_then(|s| s.parse().ok())
                 .unwrap_or(DEFAULT_MAX_IMAGE_HEIGHT),
         };
+        info!(
+            "Scaling down images to {}x{}",
+            info.max_image_width, info.max_image_height
+        );
         info
     }
 

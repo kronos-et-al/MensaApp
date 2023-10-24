@@ -1,24 +1,17 @@
 //! Module containing code for command line-only actions.
-use std::io::Cursor;
 
-use axum::headers::Server;
 use colored::Colorize;
-use futures::{FutureExt, StreamExt, TryStreamExt};
+use futures::StreamExt;
 use hyper::{header::CONTENT_TYPE, Method};
-use image::{io::Reader, ImageFormat};
 use thiserror::Error;
 use tracing::{info, warn};
 
 use crate::{
     interface::image_storage::{self, ImageStorage},
     layer::{
-        data::file_handler::{self, FileHandler},
-        logic::api_command::{
-            command_handler::CommandHandler,
-            image_preprocessing::{self, ImagePreprocessingError, ImagePreprocessor},
-        },
+        data::file_handler::FileHandler,
+        logic::api_command::image_preprocessing::{ImagePreprocessingError, ImagePreprocessor},
     },
-    null_error,
 };
 
 use super::{config::ConfigReader, server::ServerError};
@@ -32,20 +25,15 @@ pub enum SubcommandError {
     /// Error while reading config.
     #[error("error while reading config: {0}")]
     ServerError(#[from] Box<ServerError>),
-
+    /// Error while requesting image from the web.
     #[error("error while requesting image file: {0}")]
     ReqwestError(#[from] reqwest::Error),
-
-    #[error("io error: {0}")]
-    IoError(#[from] std::io::Error),
-
+    /// Error while preprocessing image.
     #[error("error while preprocessing an image: {0}")]
     ImagePreprocessError(#[from] ImagePreprocessingError),
-
+    /// Error while storing image locally.
     #[error("could not save image")]
     ImageStorageError(#[from] image_storage::ImageError),
-    // #[error("error while decoding image: {0}")]
-    // ImageError(#[from] image::ImageError),
 }
 
 /// Command arguments to show the help page.
@@ -126,7 +114,7 @@ pub async fn migrate_images() -> Result<(), SubcommandError> {
 
     let client = reqwest::Client::new();
 
-    let s = sqlx::query!("SELECT image_id, url FROM image WHERE url IS NOT NULL")
+    sqlx::query!("SELECT image_id, url FROM image WHERE url IS NOT NULL")
         .fetch(&pool)
         .map(|res| async {
             tracing::trace!("migrating {res:?}");
@@ -179,10 +167,15 @@ pub async fn migrate_images() -> Result<(), SubcommandError> {
 
 #[cfg(test)]
 mod tests {
-    use super::print_help;
+    use super::{migrate_images, print_help};
 
     #[test]
     fn test_print_cli() {
         print_help();
+    }
+
+    #[tokio::test]
+    async fn test_migrate_images() {
+        migrate_images().await.expect("ok");
     }
 }
