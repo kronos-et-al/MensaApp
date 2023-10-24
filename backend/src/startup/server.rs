@@ -22,6 +22,8 @@ use crate::{
     startup::{cli, config::ConfigReader, logging::Logger},
 };
 
+use super::cli::SubcommandError;
+
 /// Result returned from the server, potentially containing a [`ServerError`].
 pub type Result<T> = std::result::Result<T, ServerError>;
 
@@ -50,8 +52,11 @@ pub enum ServerError {
     #[error("error from the database: {0}")]
     DataError(#[from] DataError),
     /// Error when an directory, eg. the image directory does not exists.
-    #[error("The following directory does not exist, but is required: {0}")]
+    #[error("the following directory does not exist, but is required: {0}")]
     NonexistingDirectory(String),
+    /// Error when running a subcommand.
+    #[error("error when executing subcommand: {0}")]
+    SubcommandError(#[from] SubcommandError),
 }
 
 /// Class providing the combined server functions to the outside.
@@ -76,6 +81,11 @@ impl Server {
         // help text
         if config.should_print_help() {
             cli::print_help();
+            return Ok(());
+        }
+
+        if config.should_migrate_images() {
+            cli::migrate_images().await?;
             return Ok(());
         }
 

@@ -14,7 +14,7 @@ use crate::layer::{
 };
 
 use super::{
-    cli::{HELP, MIGRATE},
+    cli::{HELP, MIGRATE, MIGRATE_IMAGES},
     logging::LogInfo,
     server::{Result, ServerError},
 };
@@ -53,6 +53,10 @@ impl ConfigReader {
     #[must_use]
     pub fn should_print_help(&self) -> bool {
         env::args().any(|arg| HELP.contains(&arg.as_str()))
+    }
+
+    pub fn should_migrate_images(&self) -> bool {
+        env::args().any(|arg| arg == MIGRATE_IMAGES)
     }
 
     /// Reads the logging configuration from environment variables.

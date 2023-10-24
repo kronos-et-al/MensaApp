@@ -1,13 +1,64 @@
 //! Module containing code for command line-only actions.
+use std::io::Cursor;
+
+use axum::headers::Server;
 use colored::Colorize;
+use futures::{FutureExt, StreamExt, TryStreamExt};
+use hyper::{header::CONTENT_TYPE, Method};
+use image::{io::Reader, ImageFormat};
+use thiserror::Error;
+use tracing::{info, warn};
+
+use crate::{
+    interface::image_storage::{self, ImageStorage},
+    layer::{
+        data::file_handler::{self, FileHandler},
+        logic::api_command::{
+            command_handler::CommandHandler,
+            image_preprocessing::{self, ImagePreprocessingError, ImagePreprocessor},
+        },
+    },
+    null_error,
+};
+
+use super::{config::ConfigReader, server::ServerError};
+
+/// Error while running a subcommand.
+#[derive(Debug, Error)]
+pub enum SubcommandError {
+    /// Error accessing database while running a subcommand.
+    #[error("error accessing database: {0}")]
+    DatabaseError(#[from] sqlx::Error),
+    /// Error while reading config.
+    #[error("error while reading config: {0}")]
+    ServerError(#[from] Box<ServerError>),
+
+    #[error("error while requesting image file: {0}")]
+    ReqwestError(#[from] reqwest::Error),
+
+    #[error("io error: {0}")]
+    IoError(#[from] std::io::Error),
+
+    #[error("error while preprocessing an image: {0}")]
+    ImagePreprocessError(#[from] ImagePreprocessingError),
+
+    #[error("could not save image")]
+    ImageStorageError(#[from] image_storage::ImageError),
+    // #[error("error while decoding image: {0}")]
+    // ImageError(#[from] image::ImageError),
+}
 
 /// Command arguments to show the help page.
 pub const HELP: &[&str] = &["--help", "-h", "-?"];
 /// Command argument to run database migrations.
 pub const MIGRATE: &str = "--migrate";
 
+/// Command arguments to igrate images from image hoster (flickr) to local storage.
+pub const MIGRATE_IMAGES: &str = "--migrate-images";
+
 /// Prints information about the binary and shows available commands.
 pub fn print_help() {
+    const COMMAND_WIDTH: usize = 20;
     println!(
         "{}",
         "==================================================".bright_black()
@@ -33,16 +84,97 @@ pub fn print_help() {
     println!();
     println!("{}", "Available commands:".blue());
     println!(
-        "{}      {}",
+        "{:<COMMAND_WIDTH$} {}",
         "help".bold(),
         HELP.join(" ").as_str().bright_black()
     );
     println!("          shows this page");
     println!();
-    println!("{}   {}", "migrate".bold(), MIGRATE.bright_black());
+    println!(
+        "{:<COMMAND_WIDTH$} {}",
+        "migrate".bold(),
+        MIGRATE.bright_black()
+    );
     println!("          runs the database migrations");
     println!("          before continuing like normal");
     println!();
+    println!(
+        "{:<COMMAND_WIDTH$} {}",
+        "migrate images".bold(),
+        MIGRATE_IMAGES.bright_black()
+    );
+    println!("          migrates images from hoster");
+    println!("          to local storage");
+    println!();
+}
+
+/// migrates images from image hoster to local storage.
+/// # Errors
+/// on problems
+/// # Panics
+/// never
+pub async fn migrate_images() -> Result<(), SubcommandError> {
+    info!("Starting image migration...");
+    let config = ConfigReader::default();
+
+    let image_preprocessing = ImagePreprocessor::new(config.read_image_preprocessing_info());
+    let file_handler = FileHandler::new(config.read_file_handler_info().await.map_err(Box::new)?);
+
+    let database_config = config.read_database_info().map_err(Box::new)?;
+
+    let pool = sqlx::postgres::PgPool::connect(&database_config.connection).await?;
+
+    let client = reqwest::Client::new();
+
+    let s = sqlx::query!("SELECT image_id, url FROM image WHERE url IS NOT NULL")
+        .fetch(&pool)
+        .map(|res| async {
+            tracing::trace!("migrating {res:?}");
+            let record = res?;
+            let image_id = record.image_id;
+
+            let response = client
+                .request(Method::GET, record.url.expect("not null by query"))
+                .send()
+                .await?;
+
+            let image_type = response
+                .headers()
+                .get(CONTENT_TYPE)
+                .and_then(|c| c.to_str().ok())
+                .map(String::from);
+
+            let image_data = response.bytes().await?.into_iter().collect::<Vec<_>>();
+
+            let image = image_preprocessing.preprocess_image(image_data, image_type)?;
+
+            file_handler.save_image(image_id, image).await?;
+
+            sqlx::query!(
+                "UPDATE image SET url = NULL, id = NULL WHERE image_id = $1",
+                image_id
+            )
+            .execute(&pool)
+            .await?;
+
+            Ok::<_, SubcommandError>(image_id)
+        })
+        .for_each(|res| async {
+            match res.await {
+                Ok(id) => info!("Sucessfully downloaded image {id}."),
+                Err(err) => warn!("Error while loading an image: {err}"),
+            }
+        })
+        .await;
+
+    let remaining = sqlx::query_scalar!("SELECT COUNT(*) FROM image WHERE url IS NOT NULL")
+        .fetch_one(&pool)
+        .await?
+        .expect("not null by query");
+
+    info!("Migration done! {remaining} un-migrated images left.");
+
+    Ok(())
 }
 
 #[cfg(test)]
