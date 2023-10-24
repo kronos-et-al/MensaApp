@@ -1,45 +1,6 @@
 #![allow(non_snake_case)]
 use serde::Deserialize;
 
-/// Example for a valid `safeSearch` request structure:
-/// ```json
-///{
-///   "requests": [
-///     {
-///       "image": {
-///         "content": "BASE64_ENCODED_IMAGE"
-///      },
-///       "features": [
-///         {
-///           "type": "SAFE_SEARCH_DETECTION"
-///         },
-///       ]
-///     }
-///   ]
-/// }
-/// ```
-
-#[derive(Debug, Deserialize)]
-pub struct EncodedRequestJson {
-    requests: Vec<RequestJson>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct RequestJson {
-    image: ImageJson,
-    features: Vec<FeatureJson>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct FeatureJson {
-    _type: String, // todo How to set this to just "type"?
-}
-
-#[derive(Debug, Deserialize)]
-pub struct ImageJson {
-    content: String,
-}
-
 /// Example for a valid `safeSearch` response structure:
 /// ```json
 ///{
@@ -56,22 +17,30 @@ pub struct ImageJson {
 ///   ]
 /// }
 /// ```
-
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Copy)]
 pub struct SafeSearchResponseJson {
-    responses: Vec<ResponseJson>,
+    /// See [`SafeSearchResponseJson`]
+    pub responses: Vec<ResponseJson>,
 }
 
-#[derive(Debug, Deserialize)]
+/// See [`SafeSearchResponseJson`]
+#[derive(Debug, Deserialize, Copy)]
 pub struct ResponseJson {
-    safeSearchAnnotation: SafeSearchJson,
+    /// See [`SafeSearchResponseJson`]
+    pub safeSearchAnnotation: SafeSearchJson,
 }
 
-#[derive(Debug, Deserialize)]
+/// See [`SafeSearchResponseJson`]
+#[derive(Debug, Deserialize, Copy)]
 pub struct SafeSearchJson {
-    adult: String,
-    spoof: String,
-    medical: String,
-    violence: String,
-    racy: String,
+    /// See [`SafeSearchResponseJson`]
+    pub adult: String,
+    /// See [`SafeSearchResponseJson`]
+    pub spoof: String,
+    /// See [`SafeSearchResponseJson`]
+    pub medical: String,
+    /// See [`SafeSearchResponseJson`]
+    pub violence: String,
+    /// See [`SafeSearchResponseJson`]
+    pub racy: String,
 }
