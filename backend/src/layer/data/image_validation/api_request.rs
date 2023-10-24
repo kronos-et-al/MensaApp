@@ -1,25 +1,88 @@
 use crate::interface::image_validation::Result;
-use crate::layer::data::image_validation::json_structs::SafeSearchResponseJson;
+use crate::layer::data::image_validation::json_structs::{SafeSearchJson, SafeSearchResponseJson};
+use google_jwt_auth::AuthConfig;
+use std::fs;
 
-//todo
+static API_REST_URL: &str = "https://vision.googleapis.com/v1/images:annotate";
+static API_USAGE: &str = "https://www.googleapis.com/auth/cloud-vision";
+static PROJECT_ID_HEADER: &str = "x-goog-user-project";
+static REQUEST_TYPE: &str = "SAFE_SEARCH_DETECTION";
+static CONTENT_TYPE: &str = "application/json";
+static TOKEN_LIFETIME: i64 = 3600;
+static CHARSET: &str = "utf-8";
+
+//TODO DOC
 pub struct ApiRequest {
-    google_api_key: String,
-    google_project_key: String,
+    google_project_id: String,
+    auth_config: AuthConfig,
 }
 
 impl ApiRequest {
+    //TODO DOC
+    pub fn new(service_account_json_path: String, google_project_id: String) -> Result<Self> {
+        let json_str = fs::read_to_string(service_account_json_path)?;
 
-    //todo
-    #[must_use]
-    pub const fn new(google_api_key: String, google_project_key: String) -> Self {
-        Self {
-            google_api_key,
-            google_project_key,
-        }
+        Ok(Self {
+            google_project_id,
+            auth_config: AuthConfig::build(json_str, String::from(API_USAGE))?,
+        })
     }
 
-    //todo
-    pub fn encoded_image_validation() -> Result<SafeSearchResponseJson> {
-        todo!()
+    //TODO DOC
+    pub async fn encoded_image_validation(
+        &self,
+        b64_image: String,
+    ) -> Result<SafeSearchJson> {
+        let token = self.auth_config.generate_auth_token(TOKEN_LIFETIME).await?;
+        let json_resp = self.request_api(b64_image, token).await?;
+        Ok(json_resp.responses[0].safeSearchAnnotation)
+    }
+
+    async fn request_api(
+        &self,
+        b64_image: String,
+        auth_token: String,
+    ) -> Result<SafeSearchResponseJson> {
+        let resp = reqwest::Client::new()
+            .post(API_REST_URL)
+            .header(
+                reqwest::header::AUTHORIZATION,
+                format!("Bearer {auth_token}"),
+            )
+            .header(PROJECT_ID_HEADER, &self.google_project_id)
+            .header(reqwest::header::CONTENT_TYPE, CONTENT_TYPE)
+            .header(reqwest::header::ACCEPT_CHARSET, CHARSET)
+            .body(build_request_body(&b64_image))
+            .send()
+            .await?;
+        // TODO retry with error json if response could not be decoded.
+        // TODO For now, this decode error (containing the response error json)..
+        // TODO ..will be displayed as decode error and not as api error.
+        Ok(resp.json::<SafeSearchResponseJson>().await?)
+    }
+}
+
+fn build_request_body(b64_image: &str) -> String {
+    format!(
+        r#"{{"requests":[{{"image":{{"content":"{b64_image}"}},"features":[{{"type":"{REQUEST_TYPE}"}},]}}]}}"#
+    )
+}
+
+
+#[cfg(test)]
+mod tests {
+    #![allow(clippy::unwrap_used)]
+    use crate::layer::data::image_validation::api_request::ApiRequest;
+
+    // Very Small b64 image
+    static B64_IMAGE: &str = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";
+    static JSON_PATH: &str = "src/layer/data/image_validation/test/test-client.json";
+
+    #[tokio::test]
+    #[ignore]
+    async fn test_generate_auth_token() {
+        let api_req = ApiRequest::new(String::from(JSON_PATH), String::from("mensaka")).unwrap();
+        let resp = api_req.encoded_image_validation(String::from(B64_IMAGE)).await;
+        assert!(resp.is_ok())
     }
 }
