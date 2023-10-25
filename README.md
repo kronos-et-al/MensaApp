@@ -6,7 +6,7 @@
 <a href='https://play.google.com/store/apps/details?id=de.mensa_ka.app&pli=1&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width=100em/></a>
 
 | 🚧   | This project is still work in progress! |
-| --- | :---------------------------------------- |
+| --- | :-------------------------------------- |
 
 
 **Application for communication and collective exchange of
@@ -26,9 +26,10 @@ The goal of this application is to provide easy access to the meal plans of the 
 - mark meals as favorites to highlight them locally
 
 ## Install
-This app will soon be available on Google Play. We also plan to release an iOS-App soon. Until then, you can always install a version from [releases](https://github.com/kronos-et-al/MensaApp/releases) but it may not be up to date.
+This app is available on Google Play for Android ant the App Store for iOS.
 
-<a href='https://play.google.com/store/apps/details?id=de.mensa_ka.app&pli=1&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width=200em/></a>
+<a href='https://play.google.com/store/apps/details?id=de.mensa_ka.app&pli=1&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' height=80em/></a>
+<a href='todo'><img style='padding: 13px' alt='Download on the App Store' src='doc\img\Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg' height=53em/></a>
 
 ## Integrate
 Feel free to integrate our api in your own application. You can access it at [`https://api.mensa-ka.de`](https://api.mensa-ka.de).
