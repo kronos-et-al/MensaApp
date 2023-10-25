@@ -167,7 +167,6 @@ pub async fn migrate_images() -> Result<(), SubcommandError> {
 
 #[cfg(test)]
 mod tests {
-    use tempfile::tempdir;
 
     use super::{migrate_images, print_help};
 
