@@ -20,6 +20,7 @@ env:
   SMTP_USERNAME: ${{ vars.SMTP_USERNAME }}
   SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
   ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
+  GOOGLE_CLIENT_JSON: ${{ secrets.GOOGLE_CLIENT_JSON }}
 
 
 jobs:
@@ -103,6 +104,10 @@ jobs:
       run: |
         cargo install sqlx-cli --no-default-features --features native-tls,postgres
         cargo sqlx database setup
+    - name: Prepare secret file
+      run: |
+        echo $GOOGLE_CLIENT_JSON >> secret.json
+        export SERVICE_ACCOUNT_JSON=$(realpath secret.json)
     - name: Run tests
       run: cargo test --verbose
 
@@ -135,6 +140,10 @@ jobs:
         run: |
           cargo install sqlx-cli --no-default-features --features native-tls,postgres
           cargo sqlx database setup
+      - name: Prepare secret file
+        run: |
+          echo $GOOGLE_CLIENT_JSON >> secret.json
+          export SERVICE_ACCOUNT_JSON=$(realpath secret.json)
       - name:                   Generate code coverage
         run: |
           cargo tarpaulin --all-targets --skip-clean --workspace --timeout 120 --out xml
