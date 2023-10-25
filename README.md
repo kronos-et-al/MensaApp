@@ -40,7 +40,7 @@ They communicate using a [GraphQL](https://graphql.org/) API and the backend sto
 For more details on these parts, see their readmes in the sub-folders.
 
 ## Background
-We developed this project as part of the "Praxis der Softwareentwicklung" course, part of the [KIT](https://www.kit.edu) bachelor's degree program in computer science.
+We developed this project as part of the "Praxis der Softwareentwicklung" course, part of the [KIT](https://www.kit.edu/english) bachelor's degree program in computer science.
 
 ## License & Legal
 This application is available under the MIT license (see [LICENSE](LICENSE)).
