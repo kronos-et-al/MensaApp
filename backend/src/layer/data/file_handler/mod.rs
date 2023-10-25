@@ -43,7 +43,7 @@ impl ImageStorage for FileHandler {
             .await
             .expect("image saving should not panic nor get aborted")?;
 
-        trace!("Saved image {id}");
+        trace!(path = file_path, "Saved image {id}");
 
         Ok(())
     }

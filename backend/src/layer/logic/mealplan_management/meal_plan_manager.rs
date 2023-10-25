@@ -36,8 +36,8 @@ where
         for parse_canteen in parse_canteens {
             let name = &parse_canteen.name.clone();
             match self.resolver.resolve(parse_canteen, date).await {
-                Ok(()) => trace!("resolved canteen '{name}' with no errors"),
-                Err(error) => warn!("resolved canteen '{name}' with errors: {error}"),
+                Ok(()) => trace!(%date, "resolved canteen '{name}' with no errors"),
+                Err(error) => warn!(%date, "resolved canteen '{name}' with errors: {error}"),
             }
         }
     }
@@ -60,7 +60,7 @@ where
                 self.start_resolving(parse_canteens, today).await;
             }
             Err(error) => {
-                error!("canteens parsed with error and can't be resolved: {error}");
+                error!(%today, "canteens parsed with error and can't be resolved: {error}");
             }
         }
     }
