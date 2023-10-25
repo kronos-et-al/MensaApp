@@ -1,9 +1,8 @@
 use crate::interface::image_validation::ImageValidationError::InvalidResponse;
 use crate::interface::image_validation::Result;
 use crate::layer::data::image_validation::json_structs::{
-    ResponseJson, SafeSearchJson, SafeSearchResponseJson,
+    SafeSearchJson, SafeSearchResponseJson,
 };
-use async_graphql::http::receive_batch_json;
 use google_jwt_auth::AuthConfig;
 use std::fs;
 
@@ -15,14 +14,27 @@ static CONTENT_TYPE: &str = "application/json";
 static TOKEN_LIFETIME: i64 = 3600;
 static CHARSET: &str = "utf-8";
 
-//TODO DOC
+/// The [`ApiRequest`] struct is used to send images and
+/// requests safe-search results from the api rest interface.
 pub struct ApiRequest {
     google_project_id: String,
     auth_config: AuthConfig,
 }
 
 impl ApiRequest {
-    //TODO DOC
+    /// This method is used to create a new instance of the [`ApiRequest`] struct.
+    /// # Params
+    /// `service_account_json_path`<br>
+    /// This param contains the json as string. The data inside the json is used to
+    /// establish a connection to the api interface and authenticate the client.<br>
+    /// `google_project_id`<br>
+    /// This id is needed to verify the client/caller of the request.
+    /// The `project_id` can be obtained in the google console.
+    /// # Errors
+    /// If json could not be read or the authentication struct could not be build, an error will be returned.
+    /// See [`crate::interface::image_validation::ImageValidationError`] for more info about the errors.
+    /// # Return
+    /// The mentioned [`ApiRequest`] struct.
     pub fn new(service_account_json_path: String, google_project_id: String) -> Result<Self> {
         let json_str = fs::read_to_string(service_account_json_path)?;
 
@@ -32,7 +44,16 @@ impl ApiRequest {
         })
     }
 
-    //TODO DOC
+    /// This method calls the google api with the provided image. After evaluation, the api sends the results back.
+    /// These results are provided in a json, which will be returned if nothing went wrong.
+    /// # Params
+    /// `b64_image`<br>
+    /// This param contains the image as string.
+    /// # Errors
+    /// If the api responded with an error or any connection fault happened, an error will be returned.
+    /// See [`crate::interface::image_validation::ImageValidationError`] for more info about the errors.
+    /// # Return
+    /// The mentioned json ([`SafeSearchJson`]), containing the evaluated values.
     pub async fn encoded_image_validation(&self, b64_image: String) -> Result<SafeSearchJson> {
         let token = self.auth_config.generate_auth_token(TOKEN_LIFETIME).await?;
         let json_resp = self.request_api(b64_image, token).await?.responses.pop();
