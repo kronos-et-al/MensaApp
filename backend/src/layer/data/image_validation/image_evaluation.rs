@@ -85,3 +85,64 @@ fn type_determination(level: usize) -> String {
         _ => String::from("unknown"),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    #![allow(clippy::unwrap_used)]
+    use crate::layer::data::image_validation::image_evaluation::{
+        result_to_arr, type_determination, ImageEvaluation,
+    };
+    use crate::layer::data::image_validation::json_structs::SafeSearchJson;
+
+    #[test]
+    fn test_verify() {
+        let invalid_level = ImageEvaluation::new([42_u8, 0_u8, 42_u8, 42_u8, 1_u8]);
+        let json1 = SafeSearchJson {
+            adult: String::new(),
+            spoof: "UNKNOWN".to_string(),
+            medical: "Unknown".to_string(),
+            violence: "?".to_string(),
+            racy: "VERY_UNLIKELY".to_string(),
+        };
+        let json2 = SafeSearchJson {
+            adult: "VERY_UNLIKELY".to_string(),
+            spoof: "UNLIKELY".to_string(),
+            medical: "UNKNOWN".to_string(),
+            violence: "LIKELY".to_string(),
+            racy: "VERY_LIKELY".to_string(),
+        };
+        assert!(invalid_level.verify(&json1).is_ok());
+        assert_eq!(invalid_level.verify(&json2).unwrap_err().to_string(),
+        "This image contains content that is not permitted: This image contains probably spoof content");
+        let valid_level = ImageEvaluation::new([1_u8, 2_u8, 3_u8, 4_u8, 5_u8]);
+        assert!(valid_level.verify(&json1).is_err());
+        assert!(valid_level.verify(&json2).is_ok());
+    }
+
+    #[test]
+    fn test_mapping() {
+        let json1 = SafeSearchJson {
+            adult: String::new(),
+            spoof: "UNKNOWN".to_string(),
+            medical: "Unknown".to_string(),
+            violence: "?".to_string(),
+            racy: "VERY_UNLIKELY".to_string(),
+        };
+        assert_eq!(result_to_arr(&json1), [42_u8, 0_u8, 42_u8, 42_u8, 1_u8]);
+        let json2 = SafeSearchJson {
+            adult: "VERY_UNLIKELY".to_string(),
+            spoof: "UNLIKELY".to_string(),
+            medical: "POSSIBLE".to_string(),
+            violence: "LIKELY".to_string(),
+            racy: "VERY_LIKELY".to_string(),
+        };
+        assert_eq!(result_to_arr(&json2), [1_u8, 2_u8, 3_u8, 4_u8, 5_u8]);
+    }
+    #[test]
+    fn test_type_determination() {
+        assert_eq!(type_determination(10), "unknown".to_string());
+        assert_eq!(type_determination(42), "unknown".to_string());
+        assert_eq!(type_determination(2), "medical".to_string());
+        assert_eq!(type_determination(4), "racy".to_string());
+    }
+}
