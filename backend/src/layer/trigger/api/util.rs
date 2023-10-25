@@ -1,14 +1,16 @@
 //! Module containing some helper functions like for working inside the graphql context and processing authentication headers.
-use async_graphql::Context;
+use async_graphql::{Context, UploadValue};
+use base64::{engine::general_purpose, Engine};
+use futures::AsyncReadExt;
+use sha2::{Digest, Sha512};
+use thiserror::Error;
 
 use crate::{
-    interface::{
-        api_command::{AuthInfo, Command, InnerAuthInfo},
-        persistent_data::RequestDataAccess,
-    },
+    interface::{api_command::Command, persistent_data::RequestDataAccess},
     util::Uuid,
 };
-use base64::{engine::general_purpose, Engine};
+
+use super::auth::{self, AuthInfo};
 
 /// Type for storing the data access class inside the graphql context.
 pub type DataBox = Box<dyn RequestDataAccess + Sync + Send + 'static>;
@@ -21,8 +23,19 @@ pub trait ApiUtil {
     fn get_command(&self) -> &(dyn Command + Sync + Send);
     /// Returns access to the datastore.
     fn get_data_access(&self) -> &(dyn RequestDataAccess + Sync + Send);
-    /// Returns authentication information supplied within the current request.
-    fn get_auth_info(&self) -> AuthInfo;
+
+    /// Returns all information about the authentication status of this request.
+    fn get_auth_info(&self) -> &AuthInfo;
+
+    /// Returns whether this request is authenticated correctly.
+    /// # Errors
+    /// if no valid authentication present
+    fn check_authentication(&self) -> auth::AuthResult<()>;
+
+    /// Gets the provided client id, if any.
+    /// # Errors
+    /// if no client id was provided in the authorization header
+    fn get_client_id(&self) -> auth::AuthResult<Uuid>;
 }
 
 impl<'a> ApiUtil for Context<'a> {
@@ -34,91 +47,106 @@ impl<'a> ApiUtil for Context<'a> {
         self.data_unchecked::<DataBox>().as_ref()
     }
 
-    fn get_auth_info(&self) -> AuthInfo {
-        self.data::<AuthInfo>().iter().find_map(|i| (*i).clone())
+    fn get_auth_info(&self) -> &AuthInfo {
+        self.data_unchecked::<AuthInfo>()
+    }
+
+    fn check_authentication(&self) -> auth::AuthResult<()> {
+        if self.data_unchecked::<AuthInfo>().authenticated.is_ok() {
+            Ok(())
+        } else {
+            let auth_info = self.get_auth_info();
+            Err(auth::AuthError::MissingOrInvalidAuth(auth_info.clone()))
+        }
+    }
+
+    fn get_client_id(&self) -> auth::AuthResult<Uuid> {
+        self.data_unchecked::<AuthInfo>()
+            .client_id
+            .ok_or(auth::AuthError::MissingClientId)
     }
 }
 
-const AUTH_TYPE: &str = "Mensa";
-const AUTH_SEPARATOR: char = ':';
+/// Reads data from an upload and validates it against a hash.
+/// # Errors
+/// - Upload could not be read
+/// - hash ist not valid base 64
+/// - hash does not match with upload
+pub async fn read_and_validate_upload(upload: UploadValue, hash: String) -> UploadResult<Vec<u8>> {
+    let mut upload_data = Vec::new();
+    let _ = upload
+        .into_async_read()
+        .read_to_end(&mut upload_data)
+        .await
+        .map_err(UploadError::IoError)?;
 
-/// Parses and decodes the auth header into an [`AuthInfo`]
-#[must_use]
-pub fn read_auth_from_header(header: &str) -> AuthInfo {
-    let (auth_type, codeword) = header.split_once(' ')?;
+    let calculated_hash = Sha512::new().chain_update(&upload_data).finalize().to_vec();
 
-    if auth_type != AUTH_TYPE {
-        return None;
+    let given_hash = general_purpose::STANDARD
+        .decode(&hash)
+        .map_err(|_| UploadError::HashNotBase64)?;
+
+    if calculated_hash != given_hash {
+        let calculated_base64 = general_purpose::STANDARD.encode(calculated_hash);
+        Err(UploadError::InvalidHash(calculated_base64, hash))?;
     }
 
-    let auth_message = general_purpose::STANDARD
-        .decode(codeword)
-        .ok()
-        .and_then(|bytes| String::from_utf8(bytes).ok())?;
+    Ok(upload_data)
+}
 
-    let parts: Vec<&str> = auth_message.split(AUTH_SEPARATOR).collect();
+/// Result returned from upload preprocessing and validation operations.
+pub type UploadResult<T> = Result<T, UploadError>;
 
-    let client_id = Uuid::try_from(*parts.first()?).ok()?;
-    let api_ident = *parts.get(1)?;
-    let hash = *parts.get(2)?;
-
-    Some(InnerAuthInfo {
-        client_id,
-        api_ident: api_ident.into(),
-        hash: hash.into(),
-    })
+/// Error marking something went wrong with preprocessing and validating an upload.
+#[derive(Error, Debug)]
+pub enum UploadError {
+    /// Error indicating an upload could not be read.
+    #[error("Could not read uploaded file: {0}")]
+    IoError(std::io::Error),
+    /// Error indicating a hash was not in a valid base 64 encoding.
+    #[error("The provided hash is not a valid base 64 encoding.")]
+    HashNotBase64,
+    /// Error indicating that a wring file hash was given.
+    /// First parameter is the _expected_ hash, second the _given_.
+    #[error("The given hash does not match with the uploaded file.\nExpected: {0}\nGot: {1}")]
+    InvalidHash(String, String),
 }
 
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used)]
-
     use super::*;
+    use async_graphql::UploadValue;
+    use base64::Engine;
+    use sha2::{Digest, Sha512};
+    use tempfile::tempdir;
+    use tokio::io::AsyncWriteExt;
 
-    #[test]
-    fn test_auth_info_parsing() {
-        let api_indent = "abc";
-        let hash = "1234";
-        let client_id = Uuid::new_v4();
-        let auth = format!(
-            "{AUTH_TYPE} {}",
-            general_purpose::STANDARD.encode(format!("{client_id}:{api_indent}:{hash}"))
-        );
+    #[tokio::test]
+    async fn test_file_validation() {
+        let dir = tempdir().unwrap();
+        let mut path = dir.path().to_owned();
+        let filename = "test.jpg";
+        path.push(filename);
+        let mut file = tokio::fs::File::create(&path).await.unwrap();
 
-        let auth_info = read_auth_from_header(&auth).expect("valid auth info");
-        assert_eq!(auth_info.client_id, client_id, "wrong client id");
-        assert_eq!(auth_info.api_ident, api_indent, "wrong api indent");
-        assert_eq!(auth_info.hash, hash, "wrong hash");
-    }
+        let image = include_bytes!("../../logic/api_command/tests/test.jpg");
+        file.write_all(image).await.unwrap();
+        let file = std::fs::File::open(&path).unwrap();
 
-    #[test]
-    fn test_auth_info_parsing_client_only() {
-        let api_indent = "";
-        let hash = "";
-        let client_id = Uuid::new_v4();
-        let auth = format!(
-            "{AUTH_TYPE} {}",
-            general_purpose::STANDARD.encode(format!("{client_id}:{api_indent}:{hash}"))
-        );
+        let hash = Sha512::new().chain_update(image).finalize().to_vec();
+        let hash64 = base64::prelude::BASE64_STANDARD.encode(hash);
 
-        let auth_info = read_auth_from_header(&auth).expect("valid auth info");
-        assert_eq!(auth_info.client_id, client_id, "wrong client id");
-        assert_eq!(auth_info.api_ident, api_indent, "wrong api indent");
-        assert_eq!(auth_info.hash, hash, "wrong hash");
-    }
+        let upload = UploadValue {
+            filename: filename.into(),
+            content_type: Some("image/jpeg".into()),
+            content: file,
+        };
 
-    #[test]
-    fn test_read_static_header() {
-        // this header is valid and can be used for testing
-        let header = "Mensa MWQ3NWQzODAtY2YwNy00ZWRiLTkwNDYtYTJkOTgxYmMyMTlkOmFiYzoxMjM=";
-        let auth_info = read_auth_from_header(header);
-        assert!(auth_info.is_some(), "could not read auth header");
+        let bytes = read_and_validate_upload(upload, hash64)
+            .await
+            .expect("success");
 
-        let expected_auth_info = Some(InnerAuthInfo {
-            client_id: Uuid::try_from("1d75d380-cf07-4edb-9046-a2d981bc219d").unwrap(),
-            api_ident: "abc".into(),
-            hash: "123".into(),
-        });
-        assert_eq!(expected_auth_info, auth_info);
+        assert_eq!(image.as_slice(), &bytes);
     }
 }

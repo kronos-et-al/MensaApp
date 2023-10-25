@@ -5,9 +5,7 @@ use tracing::{instrument, trace};
 use crate::util::{Date, Uuid};
 
 use super::{
-    types::canteen::Canteen,
-    types::{auth_info, meal::Meal},
-    util::ApiUtil,
+    types::auth_info::AuthInfo, types::canteen::Canteen, types::meal::Meal, util::ApiUtil,
 };
 
 /// Class implementing `GraphQL`s root queries.
@@ -73,9 +71,10 @@ impl QueryRoot {
 
     /// This query returns the in the `Authorization` request header provided authentication information.
     /// It is intended for debugging purposes to check whether these information got passed correctly.
+    /// Additionally, there is information whether authentication was successful.
     #[instrument(skip(ctx))]
-    async fn get_my_auth(&self, ctx: &Context<'_>) -> Option<auth_info::AuthInfo> {
+    async fn get_my_auth(&self, ctx: &Context<'_>) -> AuthInfo {
         trace!("Queried `getMyAuth`");
-        ctx.get_auth_info().map(Into::into)
+        ctx.get_auth_info().clone().into()
     }
 }
