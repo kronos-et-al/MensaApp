@@ -112,5 +112,4 @@ mod tests {
     }
 
     // Tests are only possible if we get the client.json hidden in the ci
-
 }

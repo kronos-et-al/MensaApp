@@ -60,8 +60,8 @@ fn image_to_base64(img: &ImageResource) -> Result<String> {
 mod tests {
     #![allow(clippy::unwrap_used)]
 
-    use std::fs;
     use crate::layer::data::image_validation::google_api_handler::image_to_base64;
+    use std::fs;
 
     static E_IMG: &str = "src/layer/data/image_validation/test/einstein.png";
     static E_B64: &str = "src/layer/data/image_validation/test/einstein_b64.txt";
@@ -83,5 +83,4 @@ mod tests {
     fn load_b64str(path: &str) -> String {
         fs::read_to_string(path).unwrap()
     }
-
 }

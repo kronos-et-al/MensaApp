@@ -21,8 +21,8 @@ pub trait ImageValidation: Send + Sync {
 #[derive(Debug, Error)]
 pub enum ImageValidationError {
     /// Error returned when an image contains invalid content.
-    #[error("This image contains content that is not permitted: {0}")]
-    InvalidContent(String),
+    #[error("This image contains {0} content. Detected level: {1}. Maximum level allowed: {2}.")]
+    InvalidContent(String, u8, u8),
     /// Error returned when the response json could not be returned.
     #[error("The api response json could not be decoded. Image validation failed.")]
     JsonDecodeFailed,
@@ -39,10 +39,10 @@ pub enum ImageValidationError {
     #[error("The api responded with error '{0}'.")]
     ApiResponseError(String),
     /// Something during the token generation went wrong.
-    #[error("{0}")]
+    #[error("An error occurred during the token generation: {0}")]
     TokenGenerationError(#[from] google_jwt_auth::error::TokenGenerationError),
     /// Some reqwest error occurred.
-    #[error("{0}")]
+    #[error("Some error during an request occurred: {0}")]
     ReqwestError(#[from] reqwest::Error),
     /// The json file could not be read.
     #[error("The json file could not be read: {0}")]

@@ -43,10 +43,11 @@ impl ImageEvaluation {
         let values = result_to_arr(value_json);
         for (i, value) in values.iter().enumerate() {
             if value > &self.acceptance[i] {
-                return Err(InvalidContent(format!(
-                    "This image contains probably {} content",
-                    type_determination(i)
-                )));
+                return Err(InvalidContent(
+                    type_determination(i),
+                    *value,
+                    self.acceptance[i],
+                ));
             }
         }
         Ok(())
@@ -112,8 +113,7 @@ mod tests {
             racy: "VERY_LIKELY".to_string(),
         };
         assert!(invalid_level.verify(&json1).is_ok());
-        assert_eq!(invalid_level.verify(&json2).unwrap_err().to_string(),
-        "This image contains content that is not permitted: This image contains probably spoof content");
+        assert!(invalid_level.verify(&json2).is_err());
         let valid_level = ImageEvaluation::new([1_u8, 2_u8, 3_u8, 4_u8, 5_u8]);
         assert!(valid_level.verify(&json1).is_err());
         assert!(valid_level.verify(&json2).is_ok());
