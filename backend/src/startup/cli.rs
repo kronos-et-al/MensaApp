@@ -167,6 +167,8 @@ pub async fn migrate_images() -> Result<(), SubcommandError> {
 
 #[cfg(test)]
 mod tests {
+    use tempfile::tempdir;
+
     use super::{migrate_images, print_help};
 
     #[test]
@@ -176,6 +178,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_migrate_images() {
+        let dir = tempfile::tempdir().expect("tempdir available");
+        std::env::set_var("IMAGE_DIR", dir.path().as_os_str());
         migrate_images().await.expect("ok");
     }
 }
