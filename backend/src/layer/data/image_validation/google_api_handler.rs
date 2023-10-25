@@ -55,3 +55,32 @@ fn image_to_base64(img: &ImageResource) -> Result<String> {
         .map_err(|e| ImageEncodeFailed(e.to_string()))?;
     Ok(base64::encode(image_data)) // TODO depreciated
 }
+
+#[cfg(test)]
+mod tests {
+    #![allow(clippy::unwrap_used)]
+
+    use std::fs;
+    use crate::layer::data::image_validation::google_api_handler::image_to_base64;
+
+    static E_IMG: &str = "src/layer/data/image_validation/test/einstein.png";
+    static E_B64: &str = "src/layer/data/image_validation/test/einstein_b64.txt";
+    static B_IMG: &str = "src/layer/data/image_validation/test/bohr.png";
+    static B_B64: &str = "src/layer/data/image_validation/test/bohr_b64.txt";
+    static O_IMG: &str = "src/layer/data/image_validation/test/oppenheimer.png";
+    static O_B64: &str = "src/layer/data/image_validation/test/oppenheimer_b64.txt";
+    #[test]
+    fn test_image_to_base64() {
+        //let b_img = image::open(B_IMG).unwrap();
+        let o_img = image::open(O_IMG).unwrap();
+        //let e_img = image::open(E_IMG).unwrap();
+        //assert_eq!(image_to_base64(&b_img).unwrap(), load_b64str(B_B64));
+        assert_eq!(image_to_base64(&o_img).unwrap(), load_b64str(O_B64));
+        //assert_eq!(image_to_base64(&e_img).unwrap(), load_b64str(E_B64));
+    }
+
+    fn load_b64str(path: &str) -> String {
+        fs::read_to_string(path).unwrap()
+    }
+
+}
