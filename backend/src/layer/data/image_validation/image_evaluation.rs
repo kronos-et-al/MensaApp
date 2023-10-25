@@ -2,8 +2,8 @@ use crate::interface::image_validation::ImageValidationError::InvalidContent;
 use crate::interface::image_validation::Result;
 use crate::layer::data::image_validation::json_structs::SafeSearchJson;
 
-/// The [`ImageEvaluation`] struct is used to verify and
-/// determine SafeSearch values from the [`ApiRequest`] class.
+/// The [`ImageEvaluation`] struct is used to verify and validate the
+/// evaluated results of the [`ApiRequest`] class.
 pub struct ImageEvaluation {
     acceptance: [u8; 5],
 }
@@ -11,17 +11,17 @@ pub struct ImageEvaluation {
 impl ImageEvaluation {
     /// This method creates a new instance of the [`ImageEvaluation`] struct
     /// # Params
-    /// #### acceptance: [u8; 5]
+    /// `acceptance`<br>
     /// The acceptance array contains all allowed value levels
     /// of the five **safe-search categories** in the following order:<br>
-    /// **adult**, **spoof**, **medical**, **violence** and **racy**.<br>
-    /// There are five different **levels** for each category:
-    /// **VERY_UNLIKELY**=1, **UNLIKELY**=2, **POSSIBLE**=3, **LIKELY**=4 and **VERY_LIKELY**=5.
+    /// `adult`, `spoof`, `medical`, `violence` and `racy`.<br>
+    /// There are five different `levels` for each category:
+    /// `VERY_UNLIKELY`=1, `UNLIKELY`=2, `POSSIBLE`=3, `LIKELY`=4 and `VERY_LIKELY`=5.
     /// #### Example
     /// If we want to block only adult content, the following acceptance array is the right joice:<br>
-    /// **[1,5,5,5,5]**<br>
-    /// Now the first category (adult) has a maximum level of 1 which means, every input that is
-    /// greater that 1 in this category will not be accepted. All other categories are at the maximum level,
+    /// `[1,5,5,5,5]`<br>
+    /// Now the first category (adult) has a maximum level of 1, which means every input that is
+    /// greater than 1 will not be accepted. All other categories are at the maximum level,
     /// which means every level is accepted.
     #[must_use]
     pub const fn new(acceptance: [u8; 5]) -> Self {
@@ -32,15 +32,15 @@ impl ImageEvaluation {
     /// that is set in the relation [`ImageEvaluation`] struct.
     /// For more information about levels and categories see [`ImageEvaluation::new`].
     /// # Params
-    /// #### results: SafeSearchJson
+    /// `value_json`<br>
     /// This param contains all the evaluated levels for each category.
-    /// # Error
+    /// # Errors
     /// This method returns an error if the proved results do not match with the configuration.
     /// The error message contains the failing category.
     /// # Return
     /// Nothing if the values match with the configuration.
-    pub fn verify(&self, results: SafeSearchJson) -> Result<()> {
-        let values = result_to_arr(&results);
+    pub fn verify(&self, value_json: &SafeSearchJson) -> Result<()> {
+        let values = result_to_arr(value_json);
         for (i, value) in values.iter().enumerate() {
             if value > &self.acceptance[i] {
                 return Err(InvalidContent(format!(

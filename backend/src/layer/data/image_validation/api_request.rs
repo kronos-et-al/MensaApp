@@ -1,8 +1,6 @@
 use crate::interface::image_validation::ImageValidationError::InvalidResponse;
 use crate::interface::image_validation::Result;
-use crate::layer::data::image_validation::json_structs::{
-    SafeSearchJson, SafeSearchResponseJson,
-};
+use crate::layer::data::image_validation::json_structs::{SafeSearchJson, SafeSearchResponseJson};
 use google_jwt_auth::AuthConfig;
 use std::fs;
 

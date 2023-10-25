@@ -51,8 +51,7 @@ impl ImageValidation for GoogleApiHandler {
 
 fn image_to_base64(img: &ImageResource) -> Result<String> {
     let mut image_data: Vec<u8> = Vec::new();
-    let _ = img
-        .write_to(&mut Cursor::new(&mut image_data), ImageOutputFormat::Png)
+    img.write_to(&mut Cursor::new(&mut image_data), ImageOutputFormat::Png)
         .map_err(|e| ImageEncodeFailed(e.to_string()))?;
     Ok(base64::encode(image_data)) // TODO depreciated
 }
