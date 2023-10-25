@@ -107,6 +107,10 @@ mod tests {
         let resp = api_req
             .encoded_image_validation(String::from(B64_IMAGE))
             .await;
-        assert!(resp.is_ok())
+        assert!(resp.is_ok());
+        println!("{resp:?}");
     }
+
+    // Tests are only possible if we get the client.json hidden in the ci
+
 }
