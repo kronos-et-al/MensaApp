@@ -69,5 +69,5 @@ pub enum CommandError {
     ImageStorageError(#[from] image_storage::ImageError),
     /// Error while image verification.
     #[error("Image could not be verified: {0}")]
-    ImageValidationError(#[from] image_validation::ImageError),
+    ImageValidationError(#[from] image_validation::ImageValidationError),
 }
