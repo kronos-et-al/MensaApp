@@ -1703,6 +1703,7 @@ dependencies = [
  "reqwest",
  "rusty-fork",
  "scraper",
+ "serde",
  "serde_json",
  "serial_test",
  "sha2",
