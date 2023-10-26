@@ -8,7 +8,7 @@ const API_USAGE: &str = "https://www.googleapis.com/auth/cloud-vision";
 const PROJECT_ID_HEADER: &str = "x-goog-user-project";
 const REQUEST_TYPE: &str = "SAFE_SEARCH_DETECTION";
 const CONTENT_TYPE: &str = "application/json";
-const TOKEN_LIFETIME: i64 = 3600;
+const TOKEN_LIFETIME: i64 = 30;
 const CHARSET: &str = "utf-8";
 
 /// The [`ApiRequest`] struct is used to send images and
