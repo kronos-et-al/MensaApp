@@ -15,7 +15,7 @@ use crate::{
 /// Struct containing all information necessary to construct a [`FileHandler`].
 pub struct FileHandlerInfo {
     /// Path where images should be stored
-    pub image_path: PathBuf,
+    pub image_dir: PathBuf,
 }
 
 /// Class for saving images to the file system.
@@ -24,10 +24,11 @@ pub struct FileHandler {
 }
 
 impl FileHandler {
+    /// Creates a new file handler with the given config.
     #[must_use]
     pub fn new(info: FileHandlerInfo) -> Self {
         Self {
-            image_path: info.image_path,
+            image_path: info.image_dir,
         }
     }
 }
@@ -73,7 +74,7 @@ mod tests {
         println!("saving to: {}", path.display());
 
         let info = FileHandlerInfo {
-            image_path: path.to_path_buf(),
+            image_dir: path.to_path_buf(),
         };
 
         let file_handler = FileHandler::new(info);
