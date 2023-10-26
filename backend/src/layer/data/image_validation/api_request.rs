@@ -93,7 +93,7 @@ mod tests {
     #![allow(clippy::unwrap_used)]
     use crate::layer::data::image_validation::api_request::ApiRequest;
     use dotenvy::dotenv;
-    use std::env;
+    use std::{env, fs};
 
     // Very Small b64 image
     const B64_IMAGE: &str = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";
@@ -103,7 +103,8 @@ mod tests {
         dotenv().ok();
         let path = env::var("SERVICE_ACCOUNT_JSON").unwrap();
         let id = env::var("GOOGLE_PROJECT_ID").unwrap();
-        let api_req = ApiRequest::new(path, id).unwrap();
+        let json = fs::read_to_string(path).unwrap();
+        let api_req = ApiRequest::new(json, id).unwrap();
         let resp = api_req
             .encoded_image_validation(String::from(B64_IMAGE))
             .await;
