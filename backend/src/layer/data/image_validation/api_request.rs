@@ -2,7 +2,6 @@ use crate::interface::image_validation::ImageValidationError::InvalidResponse;
 use crate::interface::image_validation::Result;
 use crate::layer::data::image_validation::json_structs::{SafeSearchJson, SafeSearchResponseJson};
 use google_jwt_auth::AuthConfig;
-use std::fs;
 
 const API_REST_URL: &str = "https://vision.googleapis.com/v1/images:annotate";
 const API_USAGE: &str = "https://www.googleapis.com/auth/cloud-vision";
@@ -33,12 +32,10 @@ impl ApiRequest {
     /// See [`crate::interface::image_validation::ImageValidationError`] for more info about the errors.
     /// # Return
     /// The mentioned [`ApiRequest`] struct.
-    pub fn new(service_account_json_path: String, google_project_id: String) -> Result<Self> {
-        let json_str = fs::read_to_string(service_account_json_path)?;
-
+    pub fn new(service_account_info: String, google_project_id: String) -> Result<Self> {
         Ok(Self {
             google_project_id,
-            auth_config: AuthConfig::build(json_str, String::from(API_USAGE))?,
+            auth_config: AuthConfig::build(service_account_info, String::from(API_USAGE))?,
         })
     }
 

@@ -53,8 +53,8 @@ pub enum ImageValidationError {
 pub struct ImageValidationInfo {
     /// Five numbers between 0 to 6 to set each level of a category.
     pub acceptance: [u8; 5],
-    /// This json is needed to request authentication tokens.
-    pub json_path: String,
+    /// This information is needed to request authentication tokens.
+    pub service_account_info: String,
     /// This project identifier is needed to call image api functions.
     pub project_id: String,
 }
