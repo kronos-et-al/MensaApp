@@ -98,13 +98,13 @@ mod tests {
 
     // Very Small b64 image
     const B64_IMAGE: &str = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";
-    const JSON_PATH: &str = "src/layer/data/image_validation/test/test-client.json";
 
     #[tokio::test]
-    async fn test_generate_auth_token() {
+    async fn test_encoded_image_validation() {
         dotenv().ok();
         let path = env::var("SERVICE_ACCOUNT_JSON").unwrap();
-        let api_req = ApiRequest::new(String::from(path), String::from("mensaka")).unwrap();
+        let id = env::var("GOOGLE_PROJECT_ID").unwrap();
+        let api_req = ApiRequest::new(path, id).unwrap();
         let resp = api_req
             .encoded_image_validation(String::from(B64_IMAGE))
             .await;
