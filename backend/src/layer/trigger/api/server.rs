@@ -17,31 +17,34 @@ use async_graphql::{
 };
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
-    http::HeaderMap,
+    handler::Handler,
+    middleware,
     response::{self, IntoResponse},
     routing::get,
     Extension, Router, Server,
 };
-use reqwest::header::AUTHORIZATION;
+
 use tokio::sync::Notify;
 use tower_http::services::ServeDir;
 use tracing::{debug, info, info_span, Instrument};
 
-use crate::interface::{
-    api_command::{AuthInfo, Command},
-    persistent_data::RequestDataAccess,
+use crate::{
+    interface::{
+        api_command::Command,
+        persistent_data::{model::ApiKey, AuthDataAccess, RequestDataAccess},
+    },
+    layer::trigger::api::auth::auth_middleware,
+    util::{local_to_global_url, IMAGE_BASE_PATH},
 };
 
 use super::{
+    auth::AuthInfo,
     mutation::MutationRoot,
     query::QueryRoot,
-    util::{read_auth_from_header, CommandBox, DataBox},
+    util::{CommandBox, DataBox},
 };
 
 type GraphQLSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
-
-/// Base path under which images can be accessed.
-pub const IMAGE_BASE_PATH: &str = "/image";
 
 /// Information necessary to create a [`ApiServerInfo`].
 pub struct ApiServerInfo {
@@ -73,20 +76,28 @@ pub struct ApiServer {
     server_info: ApiServerInfo,
     schema: GraphQLSchema,
     state: State,
+    api_keys: Vec<ApiKey>,
 }
 
 impl ApiServer {
     /// Creates a new Object with given access to datastore and logic for commands.
-    pub fn new(
+    /// # Panics
+    /// if api keys could not be read from database
+    pub async fn new(
         server_info: ApiServerInfo,
-        data_access: impl RequestDataAccess + Sync + Send + 'static,
-        command: impl Command + Sync + Send + 'static,
+        data_access: impl RequestDataAccess + 'static,
+        command: impl Command + 'static,
+        auth: impl AuthDataAccess,
     ) -> Self {
         let schema: GraphQLSchema = construct_schema(data_access, command);
         Self {
             server_info,
             schema,
             state: State::Created,
+            api_keys: auth
+                .get_api_keys()
+                .await
+                .expect("could not get api keys from database"),
         }
     }
 
@@ -101,8 +112,13 @@ impl ApiServer {
             self.state
         );
 
+        let auth = middleware::from_fn_with_state(self.api_keys.clone(), auth_middleware);
+
         let app = Router::new()
-            .route("/", get(graphql_playground).post(graphql_handler))
+            .route(
+                "/",
+                get(graphql_playground).post(graphql_handler.layer(auth)),
+            )
             .layer(Extension(self.schema.clone()))
             .nest_service(IMAGE_BASE_PATH, ServeDir::new(&self.server_info.image_dir));
 
@@ -133,6 +149,7 @@ impl ApiServer {
 
         self.state = State::Running(Box::pin(shutdown));
         info!("Started graphql server listening on http://{}.", socket);
+        info!("Api publicly accessible under: {}", local_to_global_url(""));
     }
 
     /// Stops the GraphQL server.
@@ -173,28 +190,18 @@ async fn graphql_playground() -> impl IntoResponse {
     response::Html(playground_source(GraphQLPlaygroundConfig::new("/")))
 }
 
+#[axum::debug_handler]
 async fn graphql_handler(
-    headers: HeaderMap,
-    schema: Extension<GraphQLSchema>,
+    Extension(auth_info): Extension<AuthInfo>,
+    Extension(schema): Extension<GraphQLSchema>,
     request: GraphQLRequest,
 ) -> GraphQLResponse {
-    let auth_header = headers
-        .get(AUTHORIZATION)
-        .and_then(|h| h.to_str().ok())
-        .unwrap_or_default()
-        .to_string();
-
-    let auth_info = read_auth_from_header(&auth_header);
-    let auth_info_string = auth_info
-        .as_ref()
-        .map_or("no auth info provided".into(), ToString::to_string);
-
-    let request = request.into_inner().data(auth_info as AuthInfo);
+    let request = request.into_inner().data(auth_info.clone() as AuthInfo);
 
     let span = info_span!(
         "incoming graphql request",
         variables = %request.variables,
-        auth_info = auth_info_string
+        auth_info = %auth_info
     );
 
     async {
@@ -221,7 +228,7 @@ mod tests {
 
     use crate::{
         layer::trigger::api::{
-            mock::{CommandMock, RequestDatabaseMock},
+            mock::{AuthDataMock, CommandMock, RequestDatabaseMock},
             server::ApiServer,
         },
         util::ImageResource,
@@ -231,27 +238,27 @@ mod tests {
 
     const TEST_PORT: u16 = 12345;
 
-    fn get_test_server() -> ApiServer {
+    async fn get_test_server() -> ApiServer {
         let info = ApiServerInfo {
             port: TEST_PORT,
             image_dir: temp_dir(),
         };
-        ApiServer::new(info, RequestDatabaseMock, CommandMock)
+        ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await
     }
 
-    fn get_test_server_with_images(image_dir: PathBuf) -> ApiServer {
+    async fn get_test_server_with_images(image_dir: PathBuf) -> ApiServer {
         let info = ApiServerInfo {
             port: TEST_PORT,
             image_dir,
         };
-        ApiServer::new(info, RequestDatabaseMock, CommandMock)
+        ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await
     }
 
     #[tokio::test]
     #[serial]
     /// Test whether api version is available as health check.
     async fn test_graphql() {
-        let mut server = get_test_server();
+        let mut server = get_test_server().await;
         server.start();
 
         let test_request = r#"
@@ -291,7 +298,7 @@ mod tests {
     #[serial]
     /// Test whether the graphql playground is served.
     async fn test_playground() {
-        let mut server = get_test_server();
+        let mut server = get_test_server().await;
         server.start();
 
         let result = reqwest::get(format!("http://localhost:{TEST_PORT}"))
@@ -310,7 +317,7 @@ mod tests {
     #[should_panic]
     /// test what happens when server is shutdown but not running.
     async fn test_not_running() {
-        let mut server = get_test_server();
+        let mut server = get_test_server().await;
 
         server.shutdown().await;
     }
@@ -320,7 +327,7 @@ mod tests {
     #[should_panic = "tried to start graphql server while in state running"]
     #[serial]
     async fn test_double_start() {
-        let mut server = get_test_server();
+        let mut server = get_test_server().await;
         server.start();
         server.start();
     }
@@ -356,7 +363,7 @@ mod tests {
                 .collect::<Vec<_>>()
         );
 
-        let mut server = get_test_server_with_images(image_folder.path().to_owned());
+        let mut server = get_test_server_with_images(image_folder.path().to_owned()).await;
         server.start();
 
         // save image after server is started to check "dynamic" file requests

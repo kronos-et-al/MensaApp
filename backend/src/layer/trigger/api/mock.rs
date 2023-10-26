@@ -2,14 +2,13 @@
 #![allow(missing_docs)]
 
 use async_trait::async_trait;
-use tokio::fs::File;
 use uuid::Uuid;
 
 use crate::interface::{
-    api_command::{AuthInfo, Command, Result as CommandResult},
+    api_command::{Command, Result as CommandResult},
     persistent_data::{
-        model::{Canteen, Image, Line, Meal, Side},
-        RequestDataAccess, Result as DataResult,
+        model::{ApiKey, Canteen, Image, Line, Meal, Side},
+        AuthDataAccess, RequestDataAccess, Result as DataResult,
     },
 };
 use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason};
@@ -208,8 +207,6 @@ impl RequestDataAccess for RequestDatabaseMock {
     ) -> DataResult<Vec<Image>> {
         let d1 = Image {
             id: Uuid::parse_str("be7a7c58-1fd3-4432-9669-e87603629aeb").expect(INVALID_UUID),
-            image_hoster_id: "dummy_image1_id".to_string(),
-            url: String::new(),
             rank: 0.1,
             upvotes: 220,
             downvotes: 20,
@@ -219,8 +216,6 @@ impl RequestDataAccess for RequestDatabaseMock {
         };
         let d2 = Image {
             id: Uuid::parse_str("e4e1c2f5-881c-4e1f-8618-ca8f6f3bf1d2").expect(INVALID_UUID),
-            image_hoster_id: "dummy_image2_id".to_string(),
-            url: String::new(),
             rank: 0.4,
             upvotes: 11,
             downvotes: 4,
@@ -230,8 +225,6 @@ impl RequestDataAccess for RequestDatabaseMock {
         };
         let d3 = Image {
             id: Uuid::parse_str("9f0a4fb0-c233-4a16-8f3a-2bbbf735ef07").expect(INVALID_UUID),
-            image_hoster_id: "dummy_image3_id".to_string(),
-            url: String::new(),
             rank: 0.6,
             upvotes: 20,
             downvotes: 45,
@@ -280,36 +273,28 @@ impl Command for CommandMock {
         &self,
         _image_id: Uuid,
         _reason: ReportReason,
-        _auth_info: AuthInfo,
+        _client_id: Uuid,
     ) -> CommandResult<()> {
         Ok(())
     }
 
     /// Command to vote up an image. All down-votes of the same user get removed.
-    async fn add_image_upvote(&self, _image_id: Uuid, _auth_info: AuthInfo) -> CommandResult<()> {
+    async fn add_image_upvote(&self, _image_id: Uuid, _client_id: Uuid) -> CommandResult<()> {
         Ok(())
     }
 
     /// Command to vote down an image. All up-votes of the same user get removed.
-    async fn add_image_downvote(&self, _image_id: Uuid, _auth_info: AuthInfo) -> CommandResult<()> {
+    async fn add_image_downvote(&self, _image_id: Uuid, _client_id: Uuid) -> CommandResult<()> {
         Ok(())
     }
 
     /// Command to remove an up-vote for an image.
-    async fn remove_image_upvote(
-        &self,
-        _image_id: Uuid,
-        _auth_info: AuthInfo,
-    ) -> CommandResult<()> {
+    async fn remove_image_upvote(&self, _image_id: Uuid, _client_id: Uuid) -> CommandResult<()> {
         Ok(())
     }
 
     /// Command to remove an down-vote for an image.
-    async fn remove_image_downvote(
-        &self,
-        _image_id: Uuid,
-        _auth_info: AuthInfo,
-    ) -> CommandResult<()> {
+    async fn remove_image_downvote(&self, _image_id: Uuid, _client_id: Uuid) -> CommandResult<()> {
         Ok(())
     }
 
@@ -317,10 +302,11 @@ impl Command for CommandMock {
     async fn add_image(
         &self,
         _meal_id: Uuid,
-        _file_type: Option<String>,
-        _file: File,
-        _auth_info: AuthInfo,
+        file_type: Option<String>,
+        file: Vec<u8>,
+        _client_id: Uuid,
     ) -> CommandResult<()> {
+        println!("image type: {file_type:?}, len: {}", file.len());
         Ok(())
     }
 
@@ -329,8 +315,26 @@ impl Command for CommandMock {
         &self,
         _meal_id: Uuid,
         _rating: u32,
-        _auth_info: AuthInfo,
+        _client_id: Uuid,
     ) -> CommandResult<()> {
         Ok(())
+    }
+}
+
+pub struct AuthDataMock;
+
+#[async_trait]
+impl AuthDataAccess for AuthDataMock {
+    async fn get_api_keys(&self) -> DataResult<Vec<ApiKey>> {
+        Ok(vec![
+            ApiKey {
+                key: "1234567890".into(),
+                description: String::new(),
+            },
+            ApiKey {
+                key: "YWpzZGg4MnozNzhkMnppZGFzYXNkMiBzYWZzYSBzPGE5MDk4".into(),
+                description: String::new(),
+            },
+        ])
     }
 }
