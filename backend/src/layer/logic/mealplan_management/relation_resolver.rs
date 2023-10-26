@@ -46,7 +46,7 @@ where
         for line in canteen.lines {
             let name = &line.name.clone();
             if let Err(e) = self.resolve_line(date, line, db_canteen).await {
-                warn!("Skipped line '{name}' as it could not be resolved: {e}");
+                warn!(canteen.name, canteen.id = %db_canteen, %date, "Skipped line '{name}' as it could not be resolved: {e}");
             }
         }
         Ok(())
@@ -77,7 +77,7 @@ where
         for dish in line.dishes {
             let name = &dish.name.clone();
             if let Err(e) = self.resolve_dish(line_id, date, dish, average).await {
-                warn!("Skipped dish '{name}' as it could not be resolved: {e}");
+                warn!(canteen.id = %canteen_id, line.id = %line_id, %date, "Skipped dish '{name}' as it could not be resolved: {e}");
             }
         }
         Ok(())
