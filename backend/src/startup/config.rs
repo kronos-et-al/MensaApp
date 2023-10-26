@@ -1,9 +1,10 @@
 //! See [`ConfigReader`].
-use std::{env, path::PathBuf, time::Duration};
-
-use dotenvy::dotenv;
-use tracing::info;
-
+use super::{
+    cli::{HELP, MIGRATE, MIGRATE_IMAGES},
+    logging::LogInfo,
+    server::{Result, ServerError},
+};
+use crate::interface::image_validation::ImageValidationInfo;
 use crate::layer::{
     data::{
         database::factory::DatabaseInfo, file_handler::FileHandlerInfo, mail::mail_info::MailInfo,
@@ -12,12 +13,9 @@ use crate::layer::{
     logic::api_command::image_preprocessing::ImagePreprocessingInfo,
     trigger::{api::server::ApiServerInfo, scheduling::scheduler::ScheduleInfo},
 };
-
-use super::{
-    cli::{HELP, MIGRATE, MIGRATE_IMAGES},
-    logging::LogInfo,
-    server::{Result, ServerError},
-};
+use dotenvy::dotenv;
+use std::{env, path::PathBuf, time::Duration};
+use tracing::info;
 
 const DEFAULT_CANTEENS: &str = "mensa_adenauerring,mensa_gottesaue,mensa_moltke,mensa_x1moltkestrasse,mensa_erzberger,mensa_tiefenbronner,mensa_holzgarten";
 const DEFAULT_BASE_URL: &str = "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/";
@@ -31,6 +29,7 @@ const DEFAULT_SMTP_PORT: u16 = 465;
 const DEFAULT_PARSE_WEEKS: u32 = 4;
 const DEFAULT_MAX_IMAGE_WIDTH: u32 = 1920;
 const DEFAULT_MAX_IMAGE_HEIGHT: u32 = 1080;
+const DEFAULT_IMAGE_ACCEPTANCE_VALUES: &str = "0,0,0,0,0";
 
 /// Class for reading configuration from environment variables.
 pub struct ConfigReader {}
@@ -209,10 +208,41 @@ impl ConfigReader {
 
         Ok(info)
     }
+
+    /// Reads the config for the image validation component.
+    /// # Errors
+    /// - when an environment variable is not set
+    /// - when the acceptance values could not be parsed
+    pub async fn get_image_validation_info(&self) -> Result<ImageValidationInfo> {
+        let project_id = read_var("GOOGLE_PROJECT_ID")?;
+        let acceptance_str = read_var("IMAGE_ACCEPTANCE_VALUES")
+            .unwrap_or_else(|_| DEFAULT_IMAGE_ACCEPTANCE_VALUES.into());
+        let acceptance = parse_to_array(&acceptance_str);
+        let service_account_info =
+            tokio::fs::read_to_string(read_var("SERVICE_ACCOUNT_JSON")?).await?;
+        info!("Evaluating images for project '{project_id}' with the category levels '{acceptance_str}'");
+        Ok(ImageValidationInfo {
+            acceptance,
+            service_account_info,
+            project_id,
+        })
+    }
 }
 
 fn read_var(var: &str) -> Result<String> {
     env::var(var).map_err(|e| ServerError::MissingEnvVar(var.to_string(), e))
+}
+
+fn parse_to_array(str_arr: &str) -> [u8; 5] {
+    String::into_bytes(str_arr.replace(',', ""))
+        .try_into()
+        .unwrap_or_else(|v: Vec<u8>| {
+            panic!(
+                "ImageValidation-Initialization: Expected a Vec of length {} but was {}.",
+                5,
+                v.len()
+            )
+        })
 }
 
 fn get_max_weeks_data() -> u32 {
@@ -240,6 +270,7 @@ mod tests {
         reader.read_schedule_info().ok();
         reader.read_swka_info().ok();
         reader.read_file_handler_info().await.ok();
+        reader.get_image_validation_info().await.ok();
         let _ = reader.read_image_preprocessing_info();
         let _ = reader.should_migrate();
         let _ = reader.should_print_help();
