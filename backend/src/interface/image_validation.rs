@@ -6,7 +6,7 @@ use std::io;
 use async_trait::async_trait;
 use thiserror::Error;
 
-/// Result returned from image validation operations, potentially containing a [`ImageError`].
+/// Result returned from image validation operations, potentially containing a [`ImageValidationError`].
 pub type Result<T> = std::result::Result<T, ImageValidationError>;
 
 /// This interface allows to interact with the underlying image api.
