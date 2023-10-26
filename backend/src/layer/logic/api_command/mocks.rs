@@ -8,10 +8,7 @@ use crate::{
         admin_notification::{AdminNotification, ImageReportInfo},
         image_storage::ImageStorage,
         image_validation::ImageValidation,
-        persistent_data::{
-            model::{ApiKey, Image},
-            CommandDataAccess, DataError, Result as DataResult,
-        },
+        persistent_data::{model::Image, CommandDataAccess, DataError, Result as DataResult},
     },
     util::{Date, ImageResource, ReportReason, Uuid},
 };
@@ -31,12 +28,10 @@ impl CommandDataAccess for CommandDatabaseMock {
             approved: false,
             upload_date: Date::default(),
             report_count: 100,
-            url: String::new(),
             upvotes: 200,
             downvotes: 2000,
             rank: 0.1,
             id: Uuid::default(),
-            image_hoster_id: String::new(),
         };
         Ok(info)
     }
@@ -101,18 +96,16 @@ impl CommandDataAccess for CommandDatabaseMock {
     }
 
     /// Adds an image link to the database. The image will be related to the given meal.
-    async fn link_image(
-        &self,
-        meal_id: Uuid,
-        _user_id: Uuid,
-        _image_hoster_id: String,
-        _url: String,
-    ) -> DataResult<()> {
+    async fn link_image(&self, meal_id: Uuid, _user_id: Uuid) -> DataResult<Uuid> {
         if MEAL_ID_TO_FAIL == meal_id {
             Err(DataError::NoSuchItem)
         } else {
-            Ok(())
+            Ok(Uuid::default())
         }
+    }
+
+    async fn revert_link_image(&self, _image_id: Uuid) -> DataResult<()> {
+        Ok(())
     }
 
     /// Adds a rating to the database. The rating will be related to the given meal and the given user.
@@ -122,20 +115,6 @@ impl CommandDataAccess for CommandDatabaseMock {
         } else {
             Ok(())
         }
-    }
-
-    /// Loads all api_keys from the database.
-    async fn get_api_keys(&self) -> DataResult<Vec<ApiKey>> {
-        Ok(vec![
-            ApiKey {
-                key: "abc".into(),
-                description: String::new(),
-            },
-            ApiKey {
-                key: "YWpzZGg4MnozNzhkMnppZGFzYXNkMiBzYWZzYSBzPGE5MDk4".into(),
-                description: String::new(),
-            },
-        ])
     }
 }
 

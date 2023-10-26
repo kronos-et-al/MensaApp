@@ -64,7 +64,7 @@ impl Meal {
     #[instrument(skip(ctx))]
     async fn images(&self, ctx: &Context<'_>) -> Result<Vec<Image>> {
         let data_access = ctx.get_data_access();
-        let client_id = ctx.get_auth_info().map(|i| i.client_id);
+        let client_id = ctx.get_client_id().ok();
         let images = data_access
             .get_visible_images(self.id, client_id)
             .await?
@@ -113,13 +113,11 @@ struct Ratings {
 #[ComplexObject]
 impl Ratings {
     /// Provides this user's rating for the meal.
+    /// Therefor a client id must be provided in the authorization header (see https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md).
     #[instrument(skip(ctx))]
     async fn personal_rating(&self, ctx: &Context<'_>) -> Result<Option<u32>> {
         let data_access = ctx.get_data_access();
-        let client_id = match ctx.get_auth_info() {
-            Some(info) => info.client_id,
-            None => return Ok(None),
-        };
+        let client_id = ctx.get_client_id()?;
         let rating = data_access
             .get_personal_rating(self.meal_id, client_id)
             .await?;

@@ -6,14 +6,15 @@ use tracing::info;
 
 use crate::layer::{
     data::{
-        database::factory::DatabaseInfo, mail::mail_info::MailInfo,
+        database::factory::DatabaseInfo, file_handler::FileHandlerInfo, mail::mail_info::MailInfo,
         swka_parser::swka_parse_manager::SwKaInfo,
     },
+    logic::api_command::image_preprocessing::ImagePreprocessingInfo,
     trigger::{api::server::ApiServerInfo, scheduling::scheduler::ScheduleInfo},
 };
 
 use super::{
-    cli::{HELP, MIGRATE},
+    cli::{HELP, MIGRATE, MIGRATE_IMAGES},
     logging::LogInfo,
     server::{Result, ServerError},
 };
@@ -28,6 +29,8 @@ const DEFAULT_CLIENT_TIMEOUT: u64 = 6000;
 const DEFAULT_HTTP_PORT: u16 = 80;
 const DEFAULT_SMTP_PORT: u16 = 465;
 const DEFAULT_PARSE_WEEKS: u32 = 4;
+const DEFAULT_MAX_IMAGE_WIDTH: u32 = 1920;
+const DEFAULT_MAX_IMAGE_HEIGHT: u32 = 1080;
 
 /// Class for reading configuration from environment variables.
 pub struct ConfigReader {}
@@ -50,6 +53,12 @@ impl ConfigReader {
     #[must_use]
     pub fn should_print_help(&self) -> bool {
         env::args().any(|arg| HELP.contains(&arg.as_str()))
+    }
+
+    /// Queries the program arguments to check whether image migration should be run.
+    #[must_use]
+    pub fn should_migrate_images(&self) -> bool {
+        env::args().any(|arg| arg == MIGRATE_IMAGES)
     }
 
     /// Reads the logging configuration from environment variables.
@@ -157,6 +166,49 @@ impl ConfigReader {
         };
         Ok(info)
     }
+
+    /// Reads the config for the image preprocessing.
+    #[must_use]
+    pub fn read_image_preprocessing_info(&self) -> ImagePreprocessingInfo {
+        let info: ImagePreprocessingInfo = ImagePreprocessingInfo {
+            max_image_width: env::var("MAX_IMAGE_WIDTH")
+                .ok()
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(DEFAULT_MAX_IMAGE_WIDTH),
+            max_image_height: env::var("MAX_IMAGE_HEIGHT")
+                .ok()
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(DEFAULT_MAX_IMAGE_HEIGHT),
+        };
+        info!(
+            "Scaling down images to {}x{}",
+            info.max_image_width, info.max_image_height
+        );
+        info
+    }
+
+    /// Reads the config for the file handler.
+    /// # Errors
+    /// - when the environment variable is not set
+    /// - when the image directory does not exist
+    pub async fn read_file_handler_info(&self) -> Result<FileHandlerInfo> {
+        let info: FileHandlerInfo = FileHandlerInfo {
+            image_dir: read_var("IMAGE_DIR")?.into(),
+        };
+
+        if !tokio::fs::try_exists(&info.image_dir)
+            .await
+            .unwrap_or_default()
+        {
+            return Err(ServerError::NonexistingDirectory(
+                info.image_dir.to_string_lossy().to_string(),
+            ));
+        }
+
+        info!("Using and storing images at: {}", info.image_dir.display());
+
+        Ok(info)
+    }
 }
 
 fn read_var(var: &str) -> Result<String> {
@@ -173,10 +225,13 @@ fn get_max_weeks_data() -> u32 {
 
 #[cfg(test)]
 mod tests {
+    use tracing_test::traced_test;
+
     use super::ConfigReader;
 
-    #[test]
-    fn test_conf_reader() {
+    #[tokio::test]
+    #[traced_test]
+    async fn test_conf_reader() {
         let reader = ConfigReader::default();
         reader.read_database_info().ok();
         reader.read_api_info().ok();
@@ -184,6 +239,8 @@ mod tests {
         reader.read_mail_info().ok();
         reader.read_schedule_info().ok();
         reader.read_swka_info().ok();
+        reader.read_file_handler_info().await.ok();
+        let _ = reader.read_image_preprocessing_info();
         let _ = reader.should_migrate();
         let _ = reader.should_print_help();
     }

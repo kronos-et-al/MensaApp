@@ -9,20 +9,20 @@ use crate::{
     layer::{
         data::{
             database::factory::DataAccessFactory,
+            file_handler::FileHandler,
             mail::mail_sender::{MailError, MailSender},
             swka_parser::swka_parse_manager::SwKaParseManager,
         },
         logic::{
-            api_command::{
-                command_handler::CommandHandler,
-                mocks::{CommandImageStorageMock, CommandImageValidationMock},
-            },
+            api_command::{command_handler::CommandHandler, mocks::CommandImageValidationMock},
             mealplan_management::meal_plan_manager::MealPlanManager,
         },
         trigger::{api::server::ApiServer, scheduling::scheduler::Scheduler},
     },
     startup::{cli, config::ConfigReader, logging::Logger},
 };
+
+use super::cli::SubcommandError;
 
 /// Result returned from the server, potentially containing a [`ServerError`].
 pub type Result<T> = std::result::Result<T, ServerError>;
@@ -51,6 +51,12 @@ pub enum ServerError {
     /// Error from the database.
     #[error("error from the database: {0}")]
     DataError(#[from] DataError),
+    /// Error when an directory, eg. the image directory does not exists.
+    #[error("the following directory does not exist, but is required: {0}")]
+    NonexistingDirectory(String),
+    /// Error when running a subcommand.
+    #[error("error when executing subcommand: {0}")]
+    SubcommandError(#[from] SubcommandError),
 }
 
 /// Class providing the combined server functions to the outside.
@@ -78,29 +84,42 @@ impl Server {
             return Ok(());
         }
 
+        if config.should_migrate_images() {
+            cli::migrate_images(&config).await?;
+            return Ok(());
+        }
+
         // data layer
         let factory =
             DataAccessFactory::new(config.read_database_info()?, config.should_migrate()).await?;
         let command_data = factory.get_command_data_access();
         let mealplan_management_data = factory.get_mealplan_management_data_access();
         let request_data = factory.get_request_data_access();
+        let auth_data = factory.get_auth_data_access();
 
         let mail = MailSender::new(config.read_mail_info()?)?;
         let parser = SwKaParseManager::new(config.read_swka_info()?)?;
-        let file_handler = CommandImageStorageMock; // todo
+        let file_handler = FileHandler::new(config.read_file_handler_info().await?);
         let google_vision = CommandImageValidationMock; // todo
 
         // logic layer
-        let command = CommandHandler::new(command_data, mail, file_handler, google_vision).await?;
+        let command = CommandHandler::new(
+            config.read_image_preprocessing_info(),
+            command_data,
+            mail,
+            file_handler,
+            google_vision,
+        )?;
         let mealplan_management = MealPlanManager::new(mealplan_management_data, parser);
 
         // trigger layer
-        let mut graphql = ApiServer::new(config.read_api_info()?, request_data, command);
+        let mut api_server =
+            ApiServer::new(config.read_api_info()?, request_data, command, auth_data).await;
         let mut scheduler = Scheduler::new(config.read_schedule_info()?, mealplan_management).await;
 
         // run server
         scheduler.start().await;
-        graphql.start();
+        api_server.start();
 
         info!("Server is running");
 
@@ -109,7 +128,7 @@ impl Server {
         info!("Shutting down server...");
 
         scheduler.shutdown().await;
-        graphql.shutdown().await;
+        api_server.shutdown().await;
 
         info!("Server stopped.");
 

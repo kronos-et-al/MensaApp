@@ -1,4 +1,8 @@
-use crate::{interface::persistent_data::model, layer::trigger::api::util::ApiUtil, util::Uuid};
+use crate::{
+    interface::persistent_data::model,
+    layer::trigger::api::util::ApiUtil,
+    util::{image_id_to_url, Uuid},
+};
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 use tracing::instrument;
 
@@ -19,24 +23,21 @@ pub(in super::super) struct Image {
 
 #[ComplexObject]
 impl Image {
+    /// This attribute specifies whether or not the user upvoted the image.
+    /// Therefor a client id must be provided in the authorization header (see https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md).
     #[instrument(skip(ctx))]
     async fn personal_upvote(&self, ctx: &Context<'_>) -> Result<bool> {
         let data = ctx.get_data_access();
-        let client_id = match ctx.get_auth_info() {
-            Some(info) => info.client_id,
-            None => return Ok(false),
-        };
+        let client_id = ctx.get_client_id()?;
         let upvote = data.get_personal_upvote(self.id, client_id).await?;
         Ok(upvote)
     }
     /// This attribute specifies whether or not the user downvoted the image.
+    /// Therefor a client id must be provided in the authorization header (see https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md).
     #[instrument(skip(ctx))]
     async fn personal_downvote(&self, ctx: &Context<'_>) -> Result<bool> {
         let data = ctx.get_data_access();
-        let client_id = match ctx.get_auth_info() {
-            Some(info) => info.client_id,
-            None => return Ok(false),
-        };
+        let client_id = ctx.get_client_id()?;
         let downvote = data.get_personal_downvote(self.id, client_id).await?;
         Ok(downvote)
     }
@@ -48,8 +49,8 @@ impl From<model::Image> for Image {
             id: value.id,
             downvotes: value.downvotes,
             upvotes: value.upvotes,
-            url: value.url,
             rank: value.rank,
+            url: image_id_to_url(value.id),
         }
     }
 }

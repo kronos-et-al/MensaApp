@@ -29,7 +29,7 @@ mutation {
 }
 
 
-# === addDownvote === TODO
+# === addDownvote ===
 # Header Autorization: Mensa NmYwNGE2YzctOTcyMy00YTAxLWFlOGMtNjdiYWE2MmZiYTc1OjEyMzQ1Njc4OTA6YUtseXpneHovMHBISytMV1FGSGhXb3loVWpPS2ErL2ZtcjZteTRWSDNSeG4rbFB2dlhiNGxrM3JFTng4VFN3Q2QyU2p3N3FzcFByczJTOTNab0cvZlE9PQ==
 mutation {
  addDownvote(imageId:"1b8f373b-7383-4a3a-9818-e0137fd164b7")
