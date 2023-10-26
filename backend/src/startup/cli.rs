@@ -98,12 +98,12 @@ pub fn print_help() {
 
 /// migrates images from image hoster to local storage.
 /// # Errors
-/// on problems
+/// - invalid file config
+/// - invalid database config
 /// # Panics
 /// never
-pub async fn migrate_images() -> Result<(), SubcommandError> {
+pub async fn migrate_images(config: &ConfigReader) -> Result<(), SubcommandError> {
     info!("Starting image migration...");
-    let config = ConfigReader::default();
 
     let image_preprocessing = ImagePreprocessor::new(config.read_image_preprocessing_info());
     let file_handler = FileHandler::new(config.read_file_handler_info().await.map_err(Box::new)?);
@@ -168,6 +168,8 @@ pub async fn migrate_images() -> Result<(), SubcommandError> {
 #[cfg(test)]
 mod tests {
 
+    use crate::startup::config::ConfigReader;
+
     use super::{migrate_images, print_help};
 
     #[test]
@@ -179,6 +181,7 @@ mod tests {
     async fn test_migrate_images() {
         let dir = tempfile::tempdir().expect("tempdir available");
         std::env::set_var("IMAGE_DIR", dir.path().as_os_str());
-        migrate_images().await.expect("ok");
+        let reader = ConfigReader::default();
+        migrate_images(&reader).await.expect("ok");
     }
 }

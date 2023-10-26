@@ -85,7 +85,7 @@ impl Server {
         }
 
         if config.should_migrate_images() {
-            cli::migrate_images().await?;
+            cli::migrate_images(&config).await?;
             return Ok(());
         }
 
