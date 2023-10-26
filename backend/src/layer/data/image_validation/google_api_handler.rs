@@ -7,6 +7,8 @@ use crate::util::ImageResource;
 use async_trait::async_trait;
 use image::ImageOutputFormat;
 use std::io::Cursor;
+use base64::Engine;
+use base64::engine::general_purpose;
 
 /// The [`GoogleApiHandler`] struct is used to manage tasks
 /// of the [`crate::layer::data::image_validation`] component.
@@ -53,7 +55,7 @@ fn image_to_base64(img: &ImageResource) -> Result<String> {
     let mut image_data: Vec<u8> = Vec::new();
     img.write_to(&mut Cursor::new(&mut image_data), ImageOutputFormat::Png)
         .map_err(|e| ImageEncodeFailed(e.to_string()))?;
-    Ok(base64::encode(image_data)) // TODO depreciated
+    Ok(general_purpose::STANDARD.encode(image_data))
 }
 
 #[cfg(test)]
@@ -76,7 +78,8 @@ mod tests {
     async fn test_validate_image() {
         let handler = get_handler();
         let image = image::open(P_IMG).unwrap();
-        assert!(handler.validate_image(&image).await.is_ok());
+        let res = handler.validate_image(&image).await;
+        assert!(res.is_ok());
     }
 
     #[test]
@@ -95,9 +98,10 @@ mod tests {
         dotenv().ok();
         let path = env::var("SERVICE_ACCOUNT_JSON").unwrap();
         let id = env::var("GOOGLE_PROJECT_ID").unwrap();
+        let json = fs::read_to_string(path).unwrap();
         GoogleApiHandler::new(ImageValidationInfo {
-            acceptance: [0, 1, 1, 0, 1],
-            service_account_info: path,
+            acceptance: [1, 1, 1, 1, 1],
+            service_account_info: json,
             project_id: id,
         })
         .unwrap()
