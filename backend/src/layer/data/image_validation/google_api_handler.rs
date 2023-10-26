@@ -35,7 +35,7 @@ impl GoogleApiHandler {
     pub fn new(info: ImageValidationInfo) -> Result<Self> {
         Ok(Self {
             evaluation: ImageEvaluation::new(info.acceptance),
-            request: ApiRequest::new(info.json_path, info.project_id)?,
+            request: ApiRequest::new(info.service_account_info, info.project_id)?,
         })
     }
 }
@@ -60,27 +60,39 @@ fn image_to_base64(img: &ImageResource) -> Result<String> {
 mod tests {
     #![allow(clippy::unwrap_used)]
 
-    use crate::layer::data::image_validation::google_api_handler::image_to_base64;
-    use std::fs;
+    use crate::layer::data::image_validation::google_api_handler::{GoogleApiHandler, image_to_base64};
+    use std::{env, fs};
+    use dotenvy::dotenv;
+    use crate::interface::image_validation::{ImageValidation, ImageValidationInfo};
 
-    static E_IMG: &str = "src/layer/data/image_validation/test/einstein.png";
-    static E_B64: &str = "src/layer/data/image_validation/test/einstein_b64.txt";
-    static B_IMG: &str = "src/layer/data/image_validation/test/bohr.png";
-    static B_B64: &str = "src/layer/data/image_validation/test/bohr_b64.txt";
-    static O_IMG: &str = "src/layer/data/image_validation/test/oppenheimer.png";
-    static O_B64: &str = "src/layer/data/image_validation/test/oppenheimer_b64.txt";
+    const J_IMG: &str = "src/layer/data/image_validation/test/test.jpg";
+    const J_B64: &str = "src/layer/data/image_validation/test/j_test.txt";
+    const P_IMG: &str = "src/layer/data/image_validation/test/test.png";
+    const P_B64: &str = "src/layer/data/image_validation/test/p_test.txt";
+
+    #[tokio::test]
+    async fn test_validate_image() {
+        let handler = get_handler();
+        let image = image::open(P_IMG).unwrap();
+        assert!(handler.validate_image(&image).await.is_ok());
+    }
+
     #[test]
-    #[ignore] //TODO fix
     fn test_image_to_base64() {
-        let b_img = image::open(B_IMG).unwrap();
-        let o_img = image::open(O_IMG).unwrap();
-        let e_img = image::open(E_IMG).unwrap();
-        assert_eq!(image_to_base64(&b_img).unwrap(), load_b64str(B_B64));
-        assert_eq!(image_to_base64(&o_img).unwrap(), load_b64str(O_B64));
-        assert_eq!(image_to_base64(&e_img).unwrap(), load_b64str(E_B64));
+        let j_img = image::open(J_IMG).unwrap();
+        let p_img = image::open(P_IMG).unwrap();
+        assert_eq!(image_to_base64(&j_img).unwrap(), load_b64str(J_B64));
+        assert_eq!(image_to_base64(&p_img).unwrap(), load_b64str(P_B64));
     }
 
     fn load_b64str(path: &str) -> String {
         fs::read_to_string(path).unwrap()
+    }
+
+    fn get_handler() -> GoogleApiHandler {
+        dotenv().ok();
+        let path = env::var("SERVICE_ACCOUNT_JSON").unwrap();
+        let id = env::var("GOOGLE_PROJECT_ID").unwrap();
+        GoogleApiHandler::new(ImageValidationInfo { acceptance: [0,1,1,0,1], service_account_info: path, project_id: id }).unwrap()
     }
 }

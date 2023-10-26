@@ -91,22 +91,23 @@ fn build_request_body(b64_image: &str) -> String {
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used)]
+
+    use std::env;
+    use dotenvy::dotenv;
     use crate::layer::data::image_validation::api_request::ApiRequest;
 
     // Very Small b64 image
-    static B64_IMAGE: &str = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";
-    static JSON_PATH: &str = "src/layer/data/image_validation/test/test-client.json";
+    const B64_IMAGE: &str = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";
+    const JSON_PATH: &str = "src/layer/data/image_validation/test/test-client.json";
 
     #[tokio::test]
-    #[ignore]
     async fn test_generate_auth_token() {
-        let api_req = ApiRequest::new(String::from(JSON_PATH), String::from("mensaka")).unwrap();
+        dotenv().ok();
+        let path = env::var("SERVICE_ACCOUNT_JSON").unwrap();
+        let api_req = ApiRequest::new(String::from(path), String::from("mensaka")).unwrap();
         let resp = api_req
             .encoded_image_validation(String::from(B64_IMAGE))
             .await;
         assert!(resp.is_ok());
-        println!("{resp:?}");
     }
-
-    // Tests are only possible if we get the client.json hidden in the ci
 }
