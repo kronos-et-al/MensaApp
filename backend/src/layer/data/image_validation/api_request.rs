@@ -91,10 +91,9 @@ fn build_request_body(b64_image: &str) -> String {
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used)]
-
-    use std::env;
-    use dotenvy::dotenv;
     use crate::layer::data::image_validation::api_request::ApiRequest;
+    use dotenvy::dotenv;
+    use std::env;
 
     // Very Small b64 image
     const B64_IMAGE: &str = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";

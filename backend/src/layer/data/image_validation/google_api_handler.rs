@@ -60,10 +60,12 @@ fn image_to_base64(img: &ImageResource) -> Result<String> {
 mod tests {
     #![allow(clippy::unwrap_used)]
 
-    use crate::layer::data::image_validation::google_api_handler::{GoogleApiHandler, image_to_base64};
-    use std::{env, fs};
-    use dotenvy::dotenv;
     use crate::interface::image_validation::{ImageValidation, ImageValidationInfo};
+    use crate::layer::data::image_validation::google_api_handler::{
+        image_to_base64, GoogleApiHandler,
+    };
+    use dotenvy::dotenv;
+    use std::{env, fs};
 
     const J_IMG: &str = "src/layer/data/image_validation/test/test.jpg";
     const J_B64: &str = "src/layer/data/image_validation/test/j_test.txt";
@@ -93,6 +95,11 @@ mod tests {
         dotenv().ok();
         let path = env::var("SERVICE_ACCOUNT_JSON").unwrap();
         let id = env::var("GOOGLE_PROJECT_ID").unwrap();
-        GoogleApiHandler::new(ImageValidationInfo { acceptance: [0,1,1,0,1], service_account_info: path, project_id: id }).unwrap()
+        GoogleApiHandler::new(ImageValidationInfo {
+            acceptance: [0, 1, 1, 0, 1],
+            service_account_info: path,
+            project_id: id,
+        })
+        .unwrap()
     }
 }
