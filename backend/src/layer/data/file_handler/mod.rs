@@ -41,7 +41,7 @@ impl ImageStorage for FileHandler {
 
         let file_path_string = file_path.display().to_string();
 
-        tokio::task::spawn_blocking(move || image.save(file_path_copy))
+        tokio::task::spawn_blocking(move || image.save(file_path))
             .await
             .expect("image saving should not panic nor get aborted")?;
 
