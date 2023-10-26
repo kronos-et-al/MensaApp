@@ -5,10 +5,10 @@ use crate::layer::data::image_validation::api_request::ApiRequest;
 use crate::layer::data::image_validation::image_evaluation::ImageEvaluation;
 use crate::util::ImageResource;
 use async_trait::async_trait;
+use base64::engine::general_purpose;
+use base64::Engine;
 use image::ImageOutputFormat;
 use std::io::Cursor;
-use base64::Engine;
-use base64::engine::general_purpose;
 
 /// The [`GoogleApiHandler`] struct is used to manage tasks
 /// of the [`crate::layer::data::image_validation`] component.
