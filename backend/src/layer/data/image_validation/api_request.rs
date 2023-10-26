@@ -4,13 +4,13 @@ use crate::layer::data::image_validation::json_structs::{SafeSearchJson, SafeSea
 use google_jwt_auth::AuthConfig;
 use std::fs;
 
-static API_REST_URL: &str = "https://vision.googleapis.com/v1/images:annotate";
-static API_USAGE: &str = "https://www.googleapis.com/auth/cloud-vision";
-static PROJECT_ID_HEADER: &str = "x-goog-user-project";
-static REQUEST_TYPE: &str = "SAFE_SEARCH_DETECTION";
-static CONTENT_TYPE: &str = "application/json";
-static TOKEN_LIFETIME: i64 = 3600;
-static CHARSET: &str = "utf-8";
+const API_REST_URL: &str = "https://vision.googleapis.com/v1/images:annotate";
+const API_USAGE: &str = "https://www.googleapis.com/auth/cloud-vision";
+const PROJECT_ID_HEADER: &str = "x-goog-user-project";
+const REQUEST_TYPE: &str = "SAFE_SEARCH_DETECTION";
+const CONTENT_TYPE: &str = "application/json";
+const TOKEN_LIFETIME: i64 = 3600;
+const CHARSET: &str = "utf-8";
 
 /// The [`ApiRequest`] struct is used to send images and
 /// requests safe-search results from the api rest interface.
