@@ -21,6 +21,7 @@ env:
   SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
   ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
   GOOGLE_CLIENT_JSON: ${{ secrets.GOOGLE_CLIENT_JSON }}
+  GOOGLE_PROJECT_ID: ${{ vars.GOOGLE_PROJECT_ID }}
 
 
 jobs:
