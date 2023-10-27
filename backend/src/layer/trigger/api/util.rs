@@ -132,10 +132,14 @@ mod tests {
 
         let image = include_bytes!("../../logic/api_command/tests/test.jpg");
         file.write_all(image).await.unwrap();
+        file.flush().await.unwrap();
+        drop(file);
+
         let file = std::fs::File::open(&path).unwrap();
 
         let hash = Sha512::new().chain_update(image).finalize().to_vec();
         let hash64 = base64::prelude::BASE64_STANDARD.encode(hash);
+        println!("{hash64}");
 
         let upload = UploadValue {
             filename: filename.into(),
