@@ -107,7 +107,7 @@ jobs:
         cargo sqlx database setup
     - name: Prepare secret file
       run: |
-        echo $GOOGLE_CLIENT_JSON >> secret.json
+        echo "$GOOGLE_CLIENT_JSON" >> secret.json
         echo "SERVICE_ACCOUNT_JSON=$(realpath secret.json)" >> $GITHUB_ENV
     - name: Run tests
       run: cargo test --verbose
@@ -143,7 +143,7 @@ jobs:
           cargo sqlx database setup
       - name: Prepare secret file
         run: |
-          echo $GOOGLE_CLIENT_JSON >> secret.json
+          echo "$GOOGLE_CLIENT_JSON" >> secret.json
           echo "SERVICE_ACCOUNT_JSON=$(realpath secret.json)" >> $GITHUB_ENV
       - name:                   Generate code coverage
         run: |
