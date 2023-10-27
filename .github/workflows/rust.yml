@@ -20,7 +20,7 @@ env:
   SMTP_USERNAME: ${{ vars.SMTP_USERNAME }}
   SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
   ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
-  GOOGLE_CLIENT_JSON: ${{ secrets.GOOGLE_CLIENT_JSON }}
+  GOOGLE_CLIENT_JSON_BASE64: ${{ secrets.GOOGLE_CLIENT_JSON_BASE64 }}
   GOOGLE_PROJECT_ID: ${{ vars.GOOGLE_PROJECT_ID }}
 
 
@@ -107,8 +107,8 @@ jobs:
         cargo sqlx database setup
     - name: Prepare secret file
       run: |
-        echo "$GOOGLE_CLIENT_JSON" >> secret.json
-        cat secret.json
+        echo "$GOOGLE_CLIENT_JSON_BASE64" >> secret.base64
+        base64 --decode secret.base64 > secret.json
         echo "SERVICE_ACCOUNT_JSON=$(realpath secret.json)" >> $GITHUB_ENV
     - name: Run tests
       run: cargo test --verbose
@@ -144,8 +144,8 @@ jobs:
           cargo sqlx database setup
       - name: Prepare secret file
         run: |
-          echo "$GOOGLE_CLIENT_JSON" >> secret.json
-          cat secret.json
+          echo "$GOOGLE_CLIENT_JSON_BASE64" >> secret.base64
+          base64 --decode secret.base64 > secret.json
           echo "SERVICE_ACCOUNT_JSON=$(realpath secret.json)" >> $GITHUB_ENV
       - name:                   Generate code coverage
         run: |
