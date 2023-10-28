@@ -36,7 +36,7 @@ sha2 = "0.10.7"
 heck = "0.4.1"
 dotenvy = "0.15.7"
 reqwest = { version = "0.11", features = ["json"] }
-scraper = "0.17.1"
+scraper = "0.18.0"
 regex = "1.9.1"
 futures = "0.3.28"
 tokio-cron-scheduler = "0.9.4"
@@ -48,7 +48,7 @@ sqlx = { version = "0.7", features = [
     "chrono",
     "macros",
 ] }
-lettre = "0.10.4"
+lettre = "0.11.1"
 string_template = "0.2.1"
 lazy_static = "1.4.0"
 colored = "2.0.4"
