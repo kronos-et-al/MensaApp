@@ -19,7 +19,7 @@ use tracing::info;
 
 const DEFAULT_CANTEENS: &str = "mensa_adenauerring,mensa_gottesaue,mensa_moltke,mensa_x1moltkestrasse,mensa_erzberger,mensa_tiefenbronner,mensa_holzgarten";
 const DEFAULT_BASE_URL: &str = "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/";
-const DEFAULT_UPDATE_PARSE_SCHEDULE: &str = "0 */15 10-15 * * *";
+const DEFAULT_UPDATE_PARSE_SCHEDULE: &str = "0 */15 7-15 * * *";
 const DEFAULT_NIGHTLY_SCHEDULE: &str = "0 0 2 * * *";
 const DEFAULT_LOG_CONFIG: &str = "warn,mensa_app_backend=info";
 const DEFAULT_USER_AGENT: &str = concat!("MensaKa ", env!("CARGO_PKG_VERSION"));
