@@ -1,7 +1,8 @@
 //! Module for setting up the logging framework.
 use chrono::Local;
+use time::{format_description::well_known::Rfc2822, UtcOffset};
 use tracing::info;
-use tracing_subscriber::{EnvFilter, FmtSubscriber};
+use tracing_subscriber::{fmt::time::OffsetTime, EnvFilter, FmtSubscriber};
 
 /// Struct containing all configurations available for the logging system.
 pub struct LogInfo {
@@ -22,8 +23,14 @@ impl Logger {
             .parse(&info.log_config)
             .expect("could not parse logging config");
 
+        let sec_offset = Local::now().offset().local_minus_utc();
+
         let subscriber = FmtSubscriber::builder()
             .with_env_filter(env_filter)
+            .with_timer(OffsetTime::new(
+                UtcOffset::from_whole_seconds(sec_offset).expect("valid utc offset"),
+                Rfc2822,
+            ))
             .pretty()
             .finish();
         tracing::subscriber::set_global_default(subscriber)
@@ -33,8 +40,7 @@ impl Logger {
 
         drop(info); // prevent warning: initialization should take info.
 
-        let offset = Local::now().offset().to_string();
-        info!("Using time offset {offset}.");
+        info!("Using time offset {}.", Local::now().offset().to_string());
     }
 }
 
