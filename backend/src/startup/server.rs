@@ -4,6 +4,8 @@ use thiserror::Error;
 use tokio::signal::ctrl_c;
 use tracing::info;
 
+use crate::interface::image_validation::ImageValidationError;
+use crate::layer::data::image_validation::google_api_handler::GoogleApiHandler;
 use crate::{
     interface::{api_command::CommandError, mensa_parser::ParseError, persistent_data::DataError},
     layer::{
@@ -14,7 +16,7 @@ use crate::{
             swka_parser::swka_parse_manager::SwKaParseManager,
         },
         logic::{
-            api_command::{command_handler::CommandHandler, mocks::CommandImageValidationMock},
+            api_command::command_handler::CommandHandler,
             mealplan_management::meal_plan_manager::MealPlanManager,
         },
         trigger::{api::server::ApiServer, scheduling::scheduler::Scheduler},
@@ -33,6 +35,18 @@ pub enum ServerError {
     /// A necessary environment variable was not set.
     #[error("the following environment variable must be set: {0}")]
     MissingEnvVar(String, VarError),
+    /// A environment variable is not formatted correctly.
+    #[error(
+        "The env var '{var}' is in the wrong format: got `{gotten}` but expected {expected_format}"
+    )]
+    InvalidFormatError {
+        /// environment variable this error applies to
+        var: String,
+        /// gotten value in environment variable
+        gotten: String,
+        /// expected format description
+        expected_format: String,
+    },
     /// Error while creating the mail sender.
     #[error("error while creating mail sender component: {0}")]
     MailError(#[from] MailError),
@@ -42,6 +56,9 @@ pub enum ServerError {
     /// Error while creating mensa parser component.
     #[error("error while creating mensa parser component: {0}")]
     ParseError(#[from] ParseError),
+    /// Error while creating image_validation component.
+    #[error("error while creating image_validation component: {0}")]
+    ValidationApiError(#[from] ImageValidationError),
     /// Io error
     #[error("io error: {0}")]
     IoError(#[from] std::io::Error),
@@ -100,7 +117,7 @@ impl Server {
         let mail = MailSender::new(config.read_mail_info()?)?;
         let parser = SwKaParseManager::new(config.read_swka_info()?)?;
         let file_handler = FileHandler::new(config.read_file_handler_info().await?);
-        let google_vision = CommandImageValidationMock; // todo
+        let google_vision = GoogleApiHandler::new(config.get_image_validation_info().await?)?;
 
         // logic layer
         let command = CommandHandler::new(
