@@ -75,7 +75,7 @@ You need to install rust and cargo.
 #### Command line arguments
 ```
 ==================================================
-   MensaApp Backend v0.1 🥘
+   MensaApp Backend v0.3.0 🥘
 ==================================================
 This binary runs the backend to for the mensa app,
 including a graphql server.
@@ -86,13 +86,16 @@ Licensed under the MIT license.
 
 
 Available commands:
-help      --help -h -?
+help                 --help -h -?
           shows this page
 
-migrate   --migrate
+migrate              --migrate
           runs the database migrations
           before continuing like normal
 
+migrate images       --migrate-images
+          migrates images from hoster
+          to local storage
 ```
 
 ### Graphql mock server
