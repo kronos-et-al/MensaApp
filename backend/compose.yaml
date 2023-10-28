@@ -22,7 +22,7 @@ services:
     depends_on:
       - database
   database:
-    image: postgres
+    image: postgres:16
     volumes:
       - dbdata:/var/lib/postgresql/data # or specify path where your database should be stored
     environment:
@@ -39,7 +39,7 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=
       - TZ=Europe/Berlin
     ports:
-      - 8888:80
+      - 8080:80
     volumes:
       - pgadmin:/var/lib/pgadmin
     restart: unless-stopped
