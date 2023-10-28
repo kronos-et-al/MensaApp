@@ -1,4 +1,6 @@
 //! Module for setting up the logging framework.
+use chrono::Local;
+use tracing::info;
 use tracing_subscriber::{EnvFilter, FmtSubscriber};
 
 /// Struct containing all configurations available for the logging system.
@@ -17,7 +19,7 @@ impl Logger {
     /// if the logging config could not be read from the .env file or if the subscriber could not be set
     pub fn init(info: LogInfo) {
         let env_filter = EnvFilter::builder()
-            .parse(info.log_config)
+            .parse(&info.log_config)
             .expect("could not parse logging config");
 
         let subscriber = FmtSubscriber::builder()
@@ -26,6 +28,13 @@ impl Logger {
             .finish();
         tracing::subscriber::set_global_default(subscriber)
             .expect("setting default subscriber failed");
+
+        info!("Using log config `{}`.", info.log_config);
+
+        drop(info); // prevent warning: initialization should take info.
+
+        let offset = Local::now().offset().to_string();
+        info!("Using time offset {offset}.");
     }
 }
 
