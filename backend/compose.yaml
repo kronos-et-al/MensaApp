@@ -13,6 +13,7 @@ services:
       - SMTP_PASSWORD=<password of mail server>
       - ADMIN_EMAIL=<email address admin notofocations should be send to>
       - GOOGLE_PROJECT_ID=<google project id for service account>
+      - BASE_URL=<url where api is available>
       - TZ=Europe/Berlin
     volumes: # please configure accordingly <-----------------------------------------------------------
       - <image_path>:/data/images:rw

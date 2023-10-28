@@ -25,6 +25,7 @@ ENV ADMIN_EMAIL=
 ENV GOOGLE_PROJECT_ID=
 ENV SERVICE_ACCOUNT_JSON=/data/service_account.json
 ENV IMAGE_DIR=/data/images
+ENV BASE_URL=
 
 
 ENTRYPOINT ["mensa-app-backend"]
