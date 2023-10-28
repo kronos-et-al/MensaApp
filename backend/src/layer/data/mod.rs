@@ -2,5 +2,6 @@
 
 pub mod database;
 pub mod file_handler;
+pub mod image_validation;
 pub mod mail;
 pub mod swka_parser;
