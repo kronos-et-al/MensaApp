@@ -215,12 +215,10 @@ impl ConfigReader {
     /// - when the acceptance values could not be parsed
     pub async fn get_image_validation_info(&self) -> Result<ImageValidationInfo> {
         let project_id = read_var("GOOGLE_PROJECT_ID")?;
-        let acceptance_str = read_var("IMAGE_ACCEPTANCE_VALUES")
-            .unwrap_or_else(|_| DEFAULT_IMAGE_ACCEPTANCE_VALUES.into());
-        let acceptance = parse_to_array(&acceptance_str);
+        let acceptance = read_acceptence_var("IMAGE_ACCEPTANCE_VALUES")?;
         let service_account_info =
             tokio::fs::read_to_string(read_var("SERVICE_ACCOUNT_JSON")?).await?;
-        info!("Evaluating images for project '{project_id}' with the category levels '{acceptance_str}'");
+        info!("Using google cloud project '{project_id}' for image verification with the category levels '{acceptance:?}'");
         Ok(ImageValidationInfo {
             acceptance,
             service_account_info,
@@ -233,15 +231,20 @@ fn read_var(var: &str) -> Result<String> {
     env::var(var).map_err(|e| ServerError::MissingEnvVar(var.to_string(), e))
 }
 
-fn parse_to_array(str_arr: &str) -> [u8; 5] {
-    String::into_bytes(str_arr.replace(',', ""))
-        .try_into()
-        .unwrap_or_else(|v: Vec<u8>| {
-            panic!(
-                "ImageValidation-Initialization: Expected a Vec of length {} but was {}.",
-                5,
-                v.len()
-            )
+fn read_acceptence_var(key: &str) -> Result<[u8; 5]> {
+    let str_arr = read_var(key).unwrap_or_else(|_| DEFAULT_IMAGE_ACCEPTANCE_VALUES.into());
+
+    str_arr
+        .split(',')
+        .map(str::trim)
+        .map(str::parse::<u8>)
+        .map(|r| r.ok().and_then(|i| (0..=5).contains(&i).then_some(i)))
+        .collect::<Option<Vec<_>>>()
+        .and_then(|v| v.try_into().ok())
+        .ok_or(ServerError::InvalidFormatError {
+            var: key.into(),
+            gotten: str_arr,
+            expected_format: "`x,x,x,x,x` where x is in `0..=5`".into(),
         })
 }
 
@@ -257,7 +260,16 @@ fn get_max_weeks_data() -> u32 {
 mod tests {
     use tracing_test::traced_test;
 
-    use super::ConfigReader;
+    use super::{read_acceptence_var, ConfigReader};
+
+    #[test]
+    fn test_read_acceptence_var() {
+        let var = "TEST";
+        std::env::set_var(var, "1,2, 3 ,4,05");
+
+        let res = read_acceptence_var(var).expect("should parse");
+        assert_eq!([1, 2, 3, 4, 5], res);
+    }
 
     #[tokio::test]
     #[traced_test]

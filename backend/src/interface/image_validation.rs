@@ -51,7 +51,7 @@ pub enum ImageValidationError {
 
 /// Structure that contains all information necessary for the image validation component.
 pub struct ImageValidationInfo {
-    /// Five numbers between 0 to 6 to set each level of a category.
+    /// Five numbers from 0 to 5 to set each level of a category.
     pub acceptance: [u8; 5],
     /// This information is needed to request authentication tokens.
     pub service_account_info: String,

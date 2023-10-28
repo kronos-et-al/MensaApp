@@ -35,6 +35,18 @@ pub enum ServerError {
     /// A necessary environment variable was not set.
     #[error("the following environment variable must be set: {0}")]
     MissingEnvVar(String, VarError),
+    /// A environment variable is not formatted correctly.
+    #[error(
+        "The env var '{var}' is in the wrong format: got `{gotten}` but expected {expected_format}"
+    )]
+    InvalidFormatError {
+        /// environment variable this error applies to
+        var: String,
+        /// gotten value in environment variable
+        gotten: String,
+        /// expected format description
+        expected_format: String,
+    },
     /// Error while creating the mail sender.
     #[error("error while creating mail sender component: {0}")]
     MailError(#[from] MailError),
