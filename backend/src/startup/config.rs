@@ -13,6 +13,7 @@ use crate::layer::{
     logic::api_command::image_preprocessing::ImagePreprocessingInfo,
     trigger::{api::server::ApiServerInfo, scheduling::scheduler::ScheduleInfo},
 };
+use chrono::Local;
 use dotenvy::dotenv;
 use std::{env, path::PathBuf, time::Duration};
 use tracing::info;
@@ -64,9 +65,12 @@ impl ConfigReader {
     /// # Errors
     /// when the environment variables are not set and no default is provided internally.
     pub fn read_log_info(&self) -> Result<LogInfo> {
-        let info = LogInfo {
-            log_config: read_var("LOG_CONFIG").unwrap_or_else(|_| DEFAULT_LOG_CONFIG.into()),
-        };
+        let offset = Local::now().offset().to_string();
+        info!("Using time offset {offset}.");
+
+        let log_config = read_var("LOG_CONFIG").unwrap_or_else(|_| DEFAULT_LOG_CONFIG.into());
+        info!("Using log config `{log_config}`.");
+        let info = LogInfo { log_config };
         Ok(info)
     }
 
