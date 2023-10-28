@@ -1,4 +1,5 @@
 //! This module contains the server, the heart of the application.
+use std::fmt::{Debug, Display};
 use std::{env::VarError, num::ParseIntError};
 use thiserror::Error;
 use tokio::signal::ctrl_c;
@@ -30,7 +31,7 @@ use super::cli::SubcommandError;
 pub type Result<T> = std::result::Result<T, ServerError>;
 
 /// Error indicating that there was an error while starting/stopping the server.
-#[derive(Debug, Error)]
+#[derive(Error)]
 pub enum ServerError {
     /// A necessary environment variable was not set.
     #[error("the following environment variable must be set: {0}")]
@@ -74,6 +75,12 @@ pub enum ServerError {
     /// Error when running a subcommand.
     #[error("error when executing subcommand: {0}")]
     SubcommandError(#[from] SubcommandError),
+}
+
+impl Debug for ServerError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        Display::fmt(&self, f)
+    }
 }
 
 /// Class providing the combined server functions to the outside.
