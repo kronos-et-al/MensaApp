@@ -1653,7 +1653,7 @@ dependencies = [
 
 [[package]]
 name = "mensa-app-backend"
-version = "0.3.0"
+version = "1.0.0"
 dependencies = [
  "async-graphql",
  "async-graphql-axum",
