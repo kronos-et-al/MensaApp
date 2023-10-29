@@ -55,6 +55,7 @@ lazy_static = "1.4.0"
 colored = "2.0.4"
 image = "0.24.0"
 tower-http = { version = "0.4.4", features = ["fs"] }
+tower = { version = "0.4.13", features = ["limit", "buffer"] }
 serde = "1.0.188"
 google-jwt-auth = "0.0.2"
 hyper = { version = "0.14" }

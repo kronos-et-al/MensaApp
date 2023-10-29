@@ -14,7 +14,7 @@ use crate::layer::{
     trigger::{api::server::ApiServerInfo, scheduling::scheduler::ScheduleInfo},
 };
 use dotenvy::dotenv;
-use std::{env, path::PathBuf, time::Duration};
+use std::{env, num::NonZeroU64, path::PathBuf, time::Duration};
 use tracing::info;
 
 const DEFAULT_CANTEENS: &str = "mensa_adenauerring,mensa_gottesaue,mensa_moltke,mensa_x1moltkestrasse,mensa_erzberger,mensa_tiefenbronner,mensa_holzgarten";
@@ -163,7 +163,17 @@ impl ConfigReader {
                 .and_then(|p| p.parse().ok())
                 .unwrap_or(DEFAULT_HTTP_PORT),
             image_dir: read_var("IMAGE_DIR").map(PathBuf::from)?,
+            rate_limit: read_var("RATE_LIMIT")
+                .ok()
+                .and_then(|r| r.parse().ok())
+                .and_then(NonZeroU64::new),
         };
+
+        info.rate_limit.map_or_else(
+            || info!("Using no rate limit."),
+            |limit| info!("Using a rate limit of {limit} graphql requests per second"),
+        );
+
         Ok(info)
     }
 

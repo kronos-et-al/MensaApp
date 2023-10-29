@@ -33,6 +33,7 @@ async fn main() {
     let info = ApiServerInfo {
         port: 8090,
         image_dir: temp_dir(),
+        rate_limit: None,
     };
 
     let image_pre_info = ImagePreprocessingInfo {
