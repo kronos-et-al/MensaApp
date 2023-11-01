@@ -24,7 +24,7 @@ The goal of this application is to provide easy access to the meal plans of the 
 - Mark meals as favorites to highlight them locally
 
 ## Install
-This app is available on Google Play for Android ant the App Store for iOS.
+This app is available on Google Play for Android and the App Store for iOS.
 
 <a href='https://play.google.com/store/apps/details?id=de.mensa_ka.app&pli=1&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' height=80em/></a>
 <a href='https://apps.apple.com/us/app/mensa-ka/id6464076864'><img style='padding: 13px' alt='Download on the App Store' src='doc\img\Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg' height=53em/></a>
