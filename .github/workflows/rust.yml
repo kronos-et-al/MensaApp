@@ -60,7 +60,7 @@ jobs:
         cargo install sqlx-cli --no-default-features --features native-tls,postgres
         cargo sqlx database setup
     - name: Check docs
-      run: RUSTDOCFLAGS="-D warnings" cargo doc
+      run: RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
     - name: Check linter warnings
       run: | 
           rustup component add clippy
