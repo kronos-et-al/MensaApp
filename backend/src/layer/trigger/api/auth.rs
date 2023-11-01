@@ -19,7 +19,10 @@ use base64::{
     Engine,
 };
 use hmac::{Hmac, Mac};
-use hyper::{body::Bytes, StatusCode};
+use hyper::{
+    body::{Bytes, HttpBody},
+    StatusCode,
+};
 use mime::Mime;
 use sha2::Sha512;
 use thiserror::Error;
@@ -120,6 +123,8 @@ impl Credentials for MensaAuthHeader {
 pub(super) enum AuthMiddlewareError {
     #[error("Could not read body: {0}")]
     UnableToReadBody(#[from] hyper::Error),
+    #[error("`Content-Length` larger than {max} or not set.")]
+    BodyTooLarge { max: u64 },
     #[error("error while inspecting multipart request: {0}")]
     MultipartError(#[from] MultipartError),
     #[error("error while inspecting multipart request (generic): {0}")]
@@ -134,6 +139,8 @@ impl IntoResponse for AuthMiddlewareError {
     }
 }
 
+const MAX_BODY_SIZE: u64 = 1 << 30; // to prevent dos attack, may need to be smaller to be effective? (but large images should still be uploadable)
+
 pub(super) async fn auth_middleware(
     content_type: Option<TypedHeader<ContentType>>,
     auth: Option<TypedHeader<Authorization<MensaAuthHeader>>>,
@@ -143,6 +150,11 @@ pub(super) async fn auth_middleware(
 ) -> Result<impl IntoResponse, AuthMiddlewareError> {
     let auth_header = auth.map(|a| a.0 .0);
     let (parts, body) = req.into_parts();
+
+    if !body.size_hint().upper().is_some_and(|u| u <= MAX_BODY_SIZE) {
+        return Err(AuthMiddlewareError::BodyTooLarge { max: MAX_BODY_SIZE });
+    }
+
     let body_bytes = hyper::body::to_bytes(body).await?;
 
     let bytes_to_hash = if content_type.is_some_and(|c| is_multipart(c.0)) {

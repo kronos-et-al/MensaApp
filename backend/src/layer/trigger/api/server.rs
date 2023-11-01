@@ -5,9 +5,11 @@ use std::{
     future::Future,
     mem,
     net::{Ipv6Addr, SocketAddrV6},
+    num::NonZeroU64,
     path::PathBuf,
     pin::Pin,
     sync::Arc,
+    time::Duration,
 };
 
 use async_graphql::{
@@ -17,14 +19,17 @@ use async_graphql::{
 };
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
+    error_handling::HandleErrorLayer,
     handler::Handler,
     middleware,
     response::{self, IntoResponse},
     routing::get,
-    Extension, Router, Server,
+    BoxError, Extension, Router, Server,
 };
 
+use hyper::StatusCode;
 use tokio::sync::Notify;
+use tower::{buffer::BufferLayer, limit::RateLimitLayer, ServiceBuilder};
 use tower_http::services::ServeDir;
 use tracing::{debug, info, info_span, Instrument};
 
@@ -52,6 +57,8 @@ pub struct ApiServerInfo {
     pub port: u16,
     /// Directory where images are stored.
     pub image_dir: PathBuf,
+    /// Max number of requests per second, `None` means disabled.
+    pub rate_limit: Option<NonZeroU64>,
 }
 
 enum State {
@@ -114,13 +121,29 @@ impl ApiServer {
 
         let auth = middleware::from_fn_with_state(self.api_keys.clone(), auth_middleware);
 
+        let rate_limit = ServiceBuilder::new()
+            .layer(HandleErrorLayer::new(|err: BoxError| async move {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    format!("Unhandled error: {err}"),
+                )
+            }))
+            .layer(BufferLayer::new(1024))
+            .layer(RateLimitLayer::new(
+                self.server_info
+                    .rate_limit
+                    .map_or(u64::MAX, NonZeroU64::get), // disable if none
+                Duration::from_secs(1),
+            ));
+
         let app = Router::new()
             .route(
                 "/",
                 get(graphql_playground).post(graphql_handler.layer(auth)),
             )
             .layer(Extension(self.schema.clone()))
-            .nest_service(IMAGE_BASE_PATH, ServeDir::new(&self.server_info.image_dir));
+            .nest_service(IMAGE_BASE_PATH, ServeDir::new(&self.server_info.image_dir))
+            .layer(rate_limit);
 
         let socket = std::net::SocketAddr::V6(SocketAddrV6::new(
             Ipv6Addr::UNSPECIFIED,
@@ -242,6 +265,7 @@ mod tests {
         let info = ApiServerInfo {
             port: TEST_PORT,
             image_dir: temp_dir(),
+            rate_limit: None,
         };
         ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await
     }
@@ -250,6 +274,7 @@ mod tests {
         let info = ApiServerInfo {
             port: TEST_PORT,
             image_dir,
+            rate_limit: None,
         };
         ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await
     }

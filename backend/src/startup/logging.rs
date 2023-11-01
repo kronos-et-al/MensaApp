@@ -1,5 +1,8 @@
 //! Module for setting up the logging framework.
-use tracing_subscriber::{EnvFilter, FmtSubscriber};
+use chrono::Local;
+use time::{format_description::well_known::Rfc2822, UtcOffset};
+use tracing::info;
+use tracing_subscriber::{fmt::time::OffsetTime, EnvFilter, FmtSubscriber};
 
 /// Struct containing all configurations available for the logging system.
 pub struct LogInfo {
@@ -17,15 +20,27 @@ impl Logger {
     /// if the logging config could not be read from the .env file or if the subscriber could not be set
     pub fn init(info: LogInfo) {
         let env_filter = EnvFilter::builder()
-            .parse(info.log_config)
+            .parse(&info.log_config)
             .expect("could not parse logging config");
+
+        let sec_offset = Local::now().offset().local_minus_utc();
 
         let subscriber = FmtSubscriber::builder()
             .with_env_filter(env_filter)
+            .with_timer(OffsetTime::new(
+                UtcOffset::from_whole_seconds(sec_offset).expect("valid utc offset"),
+                Rfc2822,
+            ))
             .pretty()
             .finish();
         tracing::subscriber::set_global_default(subscriber)
             .expect("setting default subscriber failed");
+
+        info!("Using log config `{}`.", info.log_config);
+
+        drop(info); // prevent warning: initialization should take info.
+
+        info!("Using time offset {}.", Local::now().offset().to_string());
     }
 }
 

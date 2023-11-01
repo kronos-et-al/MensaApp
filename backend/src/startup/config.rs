@@ -14,12 +14,12 @@ use crate::layer::{
     trigger::{api::server::ApiServerInfo, scheduling::scheduler::ScheduleInfo},
 };
 use dotenvy::dotenv;
-use std::{env, path::PathBuf, time::Duration};
+use std::{env, num::NonZeroU64, path::PathBuf, time::Duration};
 use tracing::info;
 
 const DEFAULT_CANTEENS: &str = "mensa_adenauerring,mensa_gottesaue,mensa_moltke,mensa_x1moltkestrasse,mensa_erzberger,mensa_tiefenbronner,mensa_holzgarten";
 const DEFAULT_BASE_URL: &str = "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/";
-const DEFAULT_UPDATE_PARSE_SCHEDULE: &str = "0 */15 10-15 * * *";
+const DEFAULT_UPDATE_PARSE_SCHEDULE: &str = "0 */15 7-15 * * *";
 const DEFAULT_NIGHTLY_SCHEDULE: &str = "0 0 2 * * *";
 const DEFAULT_LOG_CONFIG: &str = "warn,mensa_app_backend=info";
 const DEFAULT_USER_AGENT: &str = concat!("MensaKa ", env!("CARGO_PKG_VERSION"));
@@ -64,6 +64,7 @@ impl ConfigReader {
     /// # Errors
     /// when the environment variables are not set and no default is provided internally.
     pub fn read_log_info(&self) -> Result<LogInfo> {
+        // note: no logging here because logging is not yet initialized.
         let info = LogInfo {
             log_config: read_var("LOG_CONFIG").unwrap_or_else(|_| DEFAULT_LOG_CONFIG.into()),
         };
@@ -162,7 +163,17 @@ impl ConfigReader {
                 .and_then(|p| p.parse().ok())
                 .unwrap_or(DEFAULT_HTTP_PORT),
             image_dir: read_var("IMAGE_DIR").map(PathBuf::from)?,
+            rate_limit: read_var("RATE_LIMIT")
+                .ok()
+                .and_then(|r| r.parse().ok())
+                .and_then(NonZeroU64::new),
         };
+
+        info.rate_limit.map_or_else(
+            || info!("Using no rate limit."),
+            |limit| info!("Using a rate limit of {limit} graphql requests per second"),
+        );
+
         Ok(info)
     }
 

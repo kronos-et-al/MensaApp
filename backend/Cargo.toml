@@ -1,6 +1,6 @@
 [package]
 name = "mensa-app-backend"
-version = "0.3.0"
+version = "1.0.0"
 edition = "2021"
 authors = [
     "Alexander Albers <usvan@student.kit.edu>",
@@ -30,13 +30,14 @@ async-graphql = { version = "6.0.0", features = [
 async-graphql-axum = "6.0.0"
 tokio = { version = "1.29.0", features = ["full"] }
 tracing = "0.1"
-tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3.17", features = ["env-filter", "time"] }
+time = { version = "0.3.30", features = ["formatting"] }
 base64 = "0.21.2"
 sha2 = "0.10.7"
 heck = "0.4.1"
 dotenvy = "0.15.7"
 reqwest = { version = "0.11", features = ["json"] }
-scraper = "0.17.1"
+scraper = "0.18.0"
 regex = "1.9.1"
 futures = "0.3.28"
 tokio-cron-scheduler = "0.9.4"
@@ -48,12 +49,13 @@ sqlx = { version = "0.7", features = [
     "chrono",
     "macros",
 ] }
-lettre = "0.10.4"
+lettre = "0.11.1"
 string_template = "0.2.1"
 lazy_static = "1.4.0"
 colored = "2.0.4"
 image = "0.24.0"
 tower-http = { version = "0.4.4", features = ["fs"] }
+tower = { version = "0.4.13", features = ["limit", "buffer"] }
 serde = "1.0.188"
 google-jwt-auth = "0.0.2"
 hyper = { version = "0.14" }
