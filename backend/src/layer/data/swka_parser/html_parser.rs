@@ -139,6 +139,7 @@ const INVALID_ROOT_NODE_MESSAGE: &str =
     "could not find mensa root node. this could mean a wrong webpage got loaded";
 
 /// A static class, that transforms html files into datatypes, that can be used for further processing using the `HTMLParser::transform` function.
+#[derive(Debug)]
 pub struct HTMLParser;
 
 impl HTMLParser {

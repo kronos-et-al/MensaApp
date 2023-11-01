@@ -1,8 +1,14 @@
 [package]
 name = "mensa-app-backend"
-version = "0.2.0"
+version = "1.0.0"
 edition = "2021"
-authors = ["Alexander Albers <usvan@student.kit.edu>", "Peer Booken <uglrl@student.kit.edu>", "Elena Häußler <uqhnu@student.kit.edu>", "Alexander Kutschera <ubsbo@student.kit.edu>", "Jonatan Ziegler <udslu@student.kit.edu"]
+authors = [
+    "Alexander Albers <usvan@student.kit.edu>",
+    "Peer Booken <uglrl@student.kit.edu>",
+    "Elena Häußler <uqhnu@student.kit.edu>",
+    "Alexander Kutschera <ubsbo@student.kit.edu>",
+    "Jonatan Ziegler <udslu@student.kit.edu",
+]
 description = "Backend application for providing and synchronizing meal plan data of the canteens of the Studierendenwerk Karlsruhe."
 repository = "https://github.com/kronos-et-al/MensaApp"
 license = "MIT"
@@ -14,40 +20,59 @@ async-trait = "0.1.68"
 chrono = "0.4.26"
 thiserror = "1.0.40"
 uuid = "1.4.0"
-axum = {version = "0.6.18", features = ["http2", "macros"]}
-async-graphql = {version = "5.0.10", features = ["chrono", "uuid", "tracing"]}
-async-graphql-axum = "5.0.10"
-tokio = {version = "1.29.0", features = ["full"]}
+axum = { version = "0.6.18", features = ["http2", "macros", "multipart"] }
+async-graphql = { version = "6.0.0", features = [
+    "chrono",
+    "uuid",
+    "tracing",
+    "unblock",
+] }
+async-graphql-axum = "6.0.0"
+tokio = { version = "1.29.0", features = ["full"] }
 tracing = "0.1"
-tracing-subscriber = {version = "0.3.17", features = ["env-filter"]}
+tracing-subscriber = { version = "0.3.17", features = ["env-filter", "time"] }
+time = { version = "0.3.30", features = ["formatting"] }
 base64 = "0.21.2"
 sha2 = "0.10.7"
 heck = "0.4.1"
 dotenvy = "0.15.7"
 reqwest = { version = "0.11", features = ["json"] }
-serde = "1.0.171"
-scraper = "0.17.1"
+scraper = "0.18.0"
 regex = "1.9.1"
 futures = "0.3.28"
 tokio-cron-scheduler = "0.9.4"
-sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-native-tls", "postgres", "uuid", "chrono", "macros"] }
-lettre = "0.10.4"
+sqlx = { version = "0.7", features = [
+    "runtime-tokio",
+    "tls-native-tls",
+    "postgres",
+    "uuid",
+    "chrono",
+    "macros",
+] }
+lettre = "0.11.1"
 string_template = "0.2.1"
 lazy_static = "1.4.0"
 colored = "2.0.4"
-serde_json = "1.0"
-bs58 = "0.5.0"
+image = "0.24.0"
+tower-http = { version = "0.4.4", features = ["fs"] }
+tower = { version = "0.4.13", features = ["limit", "buffer"] }
+serde = "1.0.188"
+google-jwt-auth = "0.0.2"
+hyper = { version = "0.14" }
+mime = "0.3.17"
+hmac = "0.12.1"
 
 [dev-dependencies]
-serde_json = "1.0"
 serial_test = "2.0.0"
 rand = "0.8.0"
 tracing-test = "0.2.4"
 rusty-fork = "0.3.0"
+tempfile = "3.8.0"
+serde_json = "1.0.107"
 
 [[bin]]
 name = "graphql_mock"
-path = "src/layer/trigger/graphql/bin.rs"
+path = "src/layer/trigger/api/bin.rs"
 
 [profile.dev.package.sqlx-macros]
 opt-level = 3

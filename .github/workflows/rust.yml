@@ -20,10 +20,21 @@ env:
   SMTP_USERNAME: ${{ vars.SMTP_USERNAME }}
   SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
   ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
+  GOOGLE_CLIENT_JSON_BASE64: ${{ secrets.GOOGLE_CLIENT_JSON_BASE64 }}
+  GOOGLE_PROJECT_ID: ${{ vars.GOOGLE_PROJECT_ID }}
 
 
 jobs:
   build_rust:
+    runs-on: ubuntu-latest
+    needs: [build, test, coverage]
+    steps:
+    - name: Print success 
+      run: | 
+        echo "Building, testing and coverage succeeded!"
+
+
+  build:
     runs-on: ubuntu-latest
     container: rust:latest
     defaults:
@@ -42,15 +53,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/cache@v3
+    - run: rustup toolchain install stable --profile minimal
+    - uses: Swatinem/rust-cache@v2
       with:
-        path: |
-          ~/.cargo/bin/
-          ~/.cargo/registry/index/
-          ~/.cargo/registry/cache/
-          ~/.cargo/git/db/
-          target/
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        key: "build"
     - name: Check formatting
       run: |
         rustup component add rustfmt
@@ -59,21 +65,56 @@ jobs:
       run: |
         cargo install sqlx-cli --no-default-features --features native-tls,postgres
         cargo sqlx database setup
+    - name: Check prepared sql query information
+      run: cargo sqlx prepare --check
     - name: Check docs
       run: RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
+    - name: Build
+      run: cargo build --verbose
     - name: Check linter warnings
       run: | 
           rustup component add clippy
           cargo clippy --all-targets -- -D warnings
-    - name: Check prepared sql query information
-      run: cargo sqlx prepare --check
-    - name: Build
-      run: cargo build --verbose
+
+
+
+  test:
+    runs-on: ubuntu-latest
+    container: rust:latest
+    defaults:
+      run:
+        working-directory: ./backend
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v3
+    - run: rustup toolchain install stable --profile minimal
+    - uses: Swatinem/rust-cache@v2
+      with:
+        key: "test"
+    - name: Setup database
+      run: |
+        cargo install sqlx-cli --no-default-features --features native-tls,postgres
+        cargo sqlx database setup
+    - name: Prepare secret file
+      run: |
+        echo "$GOOGLE_CLIENT_JSON_BASE64" >> secret.base64
+        base64 --decode secret.base64 > secret.json
+        echo "SERVICE_ACCOUNT_JSON=$(realpath secret.json)" >> $GITHUB_ENV
     - name: Run tests
       run: cargo test --verbose
 
-  test:
-    name:                       coverage
+
+  coverage:
     runs-on:                    ubuntu-latest
     defaults:
       run:
@@ -92,27 +133,25 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - name:                   Checkout repository
-        uses:                   actions/checkout@v2
-      - uses: actions/cache@v3
+      - uses:                   actions/checkout@v2
+      - run: rustup toolchain install stable --profile minimal
+      - uses: Swatinem/rust-cache@v2
         with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: "coverage"
       - name: Setup database
         run: |
           cargo install sqlx-cli --no-default-features --features native-tls,postgres
           cargo sqlx database setup
+      - name: Prepare secret file
+        run: |
+          echo "$GOOGLE_CLIENT_JSON_BASE64" >> secret.base64
+          base64 --decode secret.base64 > secret.json
+          echo "SERVICE_ACCOUNT_JSON=$(realpath secret.json)" >> $GITHUB_ENV
       - name:                   Generate code coverage
         run: |
-          cargo +nightly tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
+          cargo tarpaulin --all-targets --skip-clean --workspace --timeout 120 --out xml
       - name:                   Upload to codecov.io
         uses:                   codecov/codecov-action@v2
         with:
           token:                ${{secrets.CODECOV_TOKEN}}
           fail_ci_if_error:     true
-
