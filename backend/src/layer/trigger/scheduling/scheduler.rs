@@ -1,8 +1,7 @@
+//! Module containing the scheduler to schedule regular actions.
 use std::{sync::Arc, time::Instant};
 
-use crate::interface::{
-    image_review::ImageReviewScheduling, mealplan_management::MensaParseScheduling,
-};
+use crate::interface::mealplan_management::MensaParseScheduling;
 
 use tokio::sync::Notify;
 use tokio_cron_scheduler::{Job, JobScheduler};
@@ -12,8 +11,6 @@ use tracing::{info, info_span, Instrument};
 ///
 /// **Important:** Unlike regular cron expressions, seconds also have to be specified, see [here](https://lib.rs/crates/tokio-cron-scheduler).
 pub struct ScheduleInfo {
-    /// Cron-like schedule for running the image review process to check for no longer existing images, see [`ImageReviewScheduling`].
-    pub image_review_schedule: String,
     /// Cron-like schedule for running the meal plan update process for the current day's meal plan, see [`MensaParseScheduling`].
     pub update_parse_schedule: String,
     /// Cron-like schedule for running the meal plan update process for all available meal plan data, see [`MensaParseScheduling`].
@@ -42,35 +39,11 @@ impl Scheduler {
     /// 3. If the jobs could not be scheduled
     pub async fn new(
         info: ScheduleInfo,
-        image_scheduling: impl ImageReviewScheduling + 'static,
         parse_scheduling: impl MensaParseScheduling + 'static,
     ) -> Self {
         let scheduler = JobScheduler::new()
             .await
             .expect("cannot initialize scheduler");
-
-        // === image review ===
-
-        let image_review = Arc::new(image_scheduling);
-
-        let image_review_job =
-            Job::new_async(info.image_review_schedule.as_ref(), move |_, _| {
-                let image_review = image_review.clone();
-                Box::pin(async move {
-                    info!("Started image review.");
-                    let start = Instant::now();
-
-                    image_review.start_image_review().await;
-
-                    info!("Finished image review in {:?}.", start.elapsed());
-                }.instrument(info_span!("image_review")))
-            })
-            .expect("could not create schedule for image reviewing, you should also specify seconds in your cron expression");
-
-        scheduler
-            .add(image_review_job)
-            .await
-            .expect("could not add job for image reviewing to scheduler");
 
         // === mensa parsing ===
 
@@ -179,7 +152,7 @@ impl Scheduler {
 mod tests {
     use std::time::Duration;
 
-    use crate::layer::trigger::scheduling::mocks::{ImageReviewMock, MensaParseMock};
+    use crate::layer::trigger::scheduling::mocks::MensaParseMock;
 
     use super::*;
     #[tokio::test]
@@ -187,12 +160,10 @@ mod tests {
         let info = ScheduleInfo {
             full_parse_schedule: "*/1 * * * * *".into(),
             update_parse_schedule: "*/2 * * * * *".into(),
-            image_review_schedule: "*/5 * * * * *".into(),
         };
         let mensa_parser = MensaParseMock::default();
-        let image_parser = ImageReviewMock::default();
 
-        let mut scheduler = Scheduler::new(info, image_parser.clone(), mensa_parser.clone()).await;
+        let mut scheduler = Scheduler::new(info, mensa_parser.clone()).await;
 
         scheduler.start().await;
 
@@ -209,10 +180,6 @@ mod tests {
             (4..=5).contains(&mensa_parser.get_update_calls()),
             "update parse was not called right amount"
         );
-        assert!(
-            (1..=2).contains(&image_parser.get_calls()),
-            "image review was not called right amount"
-        );
     }
 
     #[tokio::test]
@@ -221,12 +188,10 @@ mod tests {
         let info = ScheduleInfo {
             full_parse_schedule: "*/1 * * * * *".into(),
             update_parse_schedule: "*/2 * * * * *".into(),
-            image_review_schedule: "*/5 * * * * *".into(),
         };
         let mensa_parser = MensaParseMock::default();
-        let image_parser = ImageReviewMock::default();
 
-        let mut scheduler = Scheduler::new(info, image_parser.clone(), mensa_parser.clone()).await;
+        let mut scheduler = Scheduler::new(info, mensa_parser.clone()).await;
         scheduler.start().await;
         scheduler.start().await;
         scheduler.shutdown().await;
@@ -238,12 +203,10 @@ mod tests {
         let info = ScheduleInfo {
             full_parse_schedule: "*/1 * * * * *".into(),
             update_parse_schedule: "*/2 * * * * *".into(),
-            image_review_schedule: "*/5 * * * * *".into(),
         };
         let mensa_parser = MensaParseMock::default();
-        let image_parser = ImageReviewMock::default();
 
-        let mut scheduler = Scheduler::new(info, image_parser.clone(), mensa_parser.clone()).await;
+        let mut scheduler = Scheduler::new(info, mensa_parser.clone()).await;
         scheduler.shutdown().await;
     }
 }

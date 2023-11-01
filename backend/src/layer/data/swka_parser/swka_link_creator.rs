@@ -14,6 +14,8 @@ use crate::util::Date;
 const URL_SEPARATOR: char = '/';
 const WEEK_SELECTOR: &str = "?kw=";
 
+/// Class for creating the URLs necessary to request the meal plans.
+#[derive(Debug)]
 pub struct SwKaLinkCreator {
     base_url: String,
     valid_canteens: Vec<String>,

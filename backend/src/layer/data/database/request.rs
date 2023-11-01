@@ -1,3 +1,4 @@
+//! Module responsible for handling database requests for api requests.
 use async_trait::async_trait;
 use chrono::{Duration, Local};
 use sqlx::{Pool, Postgres};
@@ -219,9 +220,7 @@ impl RequestDataAccess for PersistentRequestData {
         .map(|r| {
             Ok(Image {
                 id: r.image_id,
-                url: null_error!(r.url),
                 rank: null_error!(r.rank),
-                image_hoster_id: null_error!(r.hoster_id),
                 downvotes: u32::try_from(null_error!(r.downvotes))?,
                 upvotes: u32::try_from(null_error!(r.upvotes))?,
                 approved: null_error!(r.approved),
@@ -515,8 +514,6 @@ mod tests {
     fn provide_dummy_images() -> Vec<Image> {
         let image1 = Image {
             id: Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap(),
-            image_hoster_id: "test2".to_string(),
-            url: "www.test.com".to_string(),
             approved: true,
             rank: 0.5,
             downvotes: 0,
@@ -526,8 +523,6 @@ mod tests {
         };
         let image2 = Image {
             id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
-            image_hoster_id: "test".to_string(),
-            url: "www.test.com".to_string(),
             approved: false,
             ..image1
         };

@@ -5,17 +5,24 @@ use crate::{interface::mensa_parser::model::ParseCanteen, util::Date};
 use async_trait::async_trait;
 use thiserror::Error;
 
+/// Result returned from parse operations, potentially containing a [`ParseError`].
 pub type Result<T> = std::result::Result<T, ParseError>;
 
+/// Error indicating that something went wrong while parsing.
 #[derive(Debug, Error)]
 pub enum ParseError {
+    /// A html node was expected but not found in the document.
     #[error("the node was not found: {0}")]
     InvalidHtmlDocument(String),
-    #[error("no connection could be established")]
+    /// No connection to the meal plan webpage could be established
+    #[error("no connection could be established: {0}")]
     NoConnectionEstablished(String),
-    #[error("some html code couldn't be decoded")]
+    //todo! Improve error message & check occurence.
+    /// Html document could not be decoded.
+    #[error("some html code couldn't be decoded: {0}")]
     DecodeFailed(String),
-    #[error("the html reqwest client creation failed")]
+    /// Could not build client for making web requests.
+    #[error("the html reqwest client creation failed: {0}")]
     ClientBuilderFailed(String),
 }
 

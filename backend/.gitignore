@@ -16,3 +16,6 @@ target/
 # test coverage
 lcov.info
 *.profraw
+
+# private test data
+src/layer/data/image_validation/test/test-client.json

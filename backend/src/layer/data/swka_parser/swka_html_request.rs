@@ -6,6 +6,8 @@ use reqwest::Client;
 use std::time::Duration;
 use tracing::trace;
 
+/// Class for requesting the meal plan's webpage.
+#[derive(Debug)]
 pub struct SwKaHtmlRequest {
     client: Client,
 }
@@ -52,7 +54,11 @@ impl SwKaHtmlRequest {
             .await
             .and_then(reqwest::Response::error_for_status)
             .map_err(|e| ParseError::NoConnectionEstablished(e.to_string()))?;
-        trace!("loaded mensa page at {}", resp.url());
+        trace!(
+            status_code = %resp.status(),
+            "loaded mensa page at {}",
+            resp.url()
+        );
         resp.text()
             .await
             .map_err(|e| ParseError::DecodeFailed(e.to_string()))

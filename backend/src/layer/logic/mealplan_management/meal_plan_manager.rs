@@ -1,3 +1,4 @@
+//! See [`MealPlanManager`].
 use crate::interface::mealplan_management::MensaParseScheduling;
 use crate::interface::mensa_parser::model::ParseCanteen;
 use crate::interface::mensa_parser::MealplanParser;
@@ -8,6 +9,7 @@ use async_trait::async_trait;
 use chrono::Local;
 use tracing::{error, trace, warn};
 
+/// Class responsible for managing the meal plan update process.
 pub struct MealPlanManager<Parser, DataAccess>
 where
     Parser: MealplanParser,
@@ -22,6 +24,7 @@ where
     DataAccess: MealplanManagementDataAccess,
     Parser: MealplanParser,
 {
+    /// Creates a new instance using the given data store and parser to get meal the raw meal plans.
     pub const fn new(database: DataAccess, meal_plan_parser: Parser) -> Self {
         Self {
             resolver: RelationResolver::new(database),
@@ -33,8 +36,8 @@ where
         for parse_canteen in parse_canteens {
             let name = &parse_canteen.name.clone();
             match self.resolver.resolve(parse_canteen, date).await {
-                Ok(()) => trace!("resolved canteen '{name}' with no errors"),
-                Err(error) => warn!("resolved canteen '{name}' with errors: {error}"),
+                Ok(()) => trace!(%date, "resolved canteen '{name}' with no errors"),
+                Err(error) => warn!(%date, "resolved canteen '{name}' with errors: {error}"),
             }
         }
     }
@@ -57,7 +60,7 @@ where
                 self.start_resolving(parse_canteens, today).await;
             }
             Err(error) => {
-                error!("canteens parsed with error and can't be resolved: {error}");
+                error!(%today, "canteens parsed with error and can't be resolved: {error}");
             }
         }
     }

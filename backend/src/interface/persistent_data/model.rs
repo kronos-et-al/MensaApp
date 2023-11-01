@@ -5,7 +5,7 @@ use crate::util::{self, Date};
 use util::{MealType, Uuid};
 
 /// Struct to storage related data. Contains all api-key related information.
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ApiKey {
     /// The api-key
     pub key: String,
@@ -80,10 +80,6 @@ pub struct Side {
 pub struct Image {
     /// Database-identification of the image.
     pub id: Uuid,
-    /// Image-identification of the image hoster.
-    pub image_hoster_id: String,
-    /// Direct link to the image on the image-hoster website.
-    pub url: String,
     /// Rank of the image. Used for sorting und prioritizing an image.
     pub rank: f32,
     /// Amount of upvotes for the image.

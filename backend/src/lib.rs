@@ -1,9 +1,13 @@
 #![forbid(unsafe_code)]
 #![warn(
+    missing_docs,
+    unreachable_pub,
+    unused_crate_dependencies,
     clippy::pedantic,
     clippy::nursery,
     clippy::unwrap_used,
-    clippy::dbg_macro
+    clippy::dbg_macro,
+    clippy::todo
 )]
 #![allow(clippy::module_name_repetitions)]
 //! # MensaApp-Backend
