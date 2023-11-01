@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:app/view/core/buttons/MensaButton.dart';
 import 'package:app/view/core/buttons/MensaTapable.dart';
 import 'package:app/view/core/dialogs/MensaDialog.dart';
+import 'package:app/view/core/icons/image/CameraIcon.dart';
 import 'package:app/view/core/icons/navigation/NavigationAddImageIcon.dart';
 import 'package:app/view/core/input_components/MensaTextField.dart';
 import 'package:app/view_model/logic/image/IImageAccess.dart';
@@ -92,9 +93,6 @@ class _UploadImageDialogState extends State<UploadImageDialog> {
                     width: 8,
                   ) : Container(),
                   (Platform.isAndroid || Platform.isIOS) ? MensaTapable(
-                      child: const Padding(
-                          padding: EdgeInsets.all(2),
-                          child: NavigationAddImageIcon()),
                       onTap: () async {
                         final ImagePicker picker = ImagePicker();
                         final XFile? image =
@@ -105,17 +103,36 @@ class _UploadImageDialogState extends State<UploadImageDialog> {
                           _imageBytes = bytes;
                         });
                       },
-                      semanticLabel: FlutterI18n.translate(context, "image.labelTakeImage")) : Container(),
+                      semanticLabel: FlutterI18n.translate(context, "image.labelTakeImage"),
+                      child: const Padding(
+                          padding: EdgeInsets.all(2),
+                          child: CameraIcon())) : Container(),
                 ],
               ),
               const SizedBox(height: 16),
-              Text(
-                  FlutterI18n.translate(
-                      context, "image.linkSmallTextOwnImages"),
-                  style: const TextStyle(fontSize: 12)),
-              Text(
-                FlutterI18n.translate(context, "image.linkSmallTextDisplayed"),
-                style: const TextStyle(fontSize: 12),
+              RichText(
+                text: TextSpan(
+                    style: TextStyle(
+                        fontSize: 12, color: theme.colorScheme.onBackground),
+                    children: [
+                      TextSpan(
+                          text: FlutterI18n.translate(
+                              context, "image.linkFirstPoint")),
+                      TextSpan(
+                        text: FlutterI18n.translate(
+                            context, "image.linkFirstLink"),
+                        style: TextStyle(
+                            color: theme.colorScheme.primary,
+                            decoration: TextDecoration.underline),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            _launchURL();
+                          },
+                      ),
+                      TextSpan(
+                          text: FlutterI18n.translate(context,
+                              "image.linkFirstPointSecondText"))
+                    ]),
               ),
             ],
           )),
@@ -185,7 +202,7 @@ class _UploadImageDialogState extends State<UploadImageDialog> {
   }
 
   static void _launchURL() async {
-    Uri url = Uri.parse('https://flickr.com/');
+    Uri url = Uri.parse('http://creativecommons.org/publicdomain/zero/1.0');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       throw 'Could not launch $url';
     }
