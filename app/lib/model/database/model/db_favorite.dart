@@ -4,7 +4,7 @@ import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 /// This class represents a favorite in the database.
 class DBFavorite implements DatabaseModel {
   final String _mealID;
-  final String _lastDate;
+  final String? _lastDate;
   final FoodType _foodType;
   final DateTime _servedDate;
   final String _servedLineId;
@@ -89,7 +89,7 @@ class DBFavorite implements DatabaseModel {
     return '''
     CREATE TABLE $tableName (
       $columnMealID TEXT PRIMARY KEY,
-      $columnLastDate TEXT NOT NULL,
+      $columnLastDate TEXT,
       $columnFoodType TEXT,
       $columnPriceStudent INTEGER CHECK($columnPriceStudent > 0),
       $columnPriceEmployee INTEGER CHECK($columnPriceEmployee > 0),
@@ -117,7 +117,7 @@ class DBFavorite implements DatabaseModel {
   FoodType get foodType => _foodType;
 
   /// This method returns the last date of the favorite.
-  String get lastDate => _lastDate;
+  String? get lastDate => _lastDate;
 
   /// This method returns the id of the favorite.
   String get mealID => _mealID;
