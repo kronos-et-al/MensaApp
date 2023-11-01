@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:app/view/core/buttons/MensaButton.dart';
@@ -87,10 +88,10 @@ class _UploadImageDialogState extends State<UploadImageDialog> {
                           },
                           text: FlutterI18n.translate(context, "image.labelSelectImage"),
                           semanticLabel: FlutterI18n.translate(context, "image.labelSelectImage"))),
-                  const SizedBox(
+                  (Platform.isAndroid || Platform.isIOS) ? const SizedBox(
                     width: 8,
-                  ),
-                  MensaTapable(
+                  ) : Container(),
+                  (Platform.isAndroid || Platform.isIOS) ? MensaTapable(
                       child: const Padding(
                           padding: EdgeInsets.all(2),
                           child: NavigationAddImageIcon()),
@@ -104,7 +105,7 @@ class _UploadImageDialogState extends State<UploadImageDialog> {
                           _imageBytes = bytes;
                         });
                       },
-                      semanticLabel: FlutterI18n.translate(context, "image.labelTakeImage"))
+                      semanticLabel: FlutterI18n.translate(context, "image.labelTakeImage")) : Container(),
                 ],
               ),
               const SizedBox(height: 16),
