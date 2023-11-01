@@ -15,8 +15,11 @@
   "linkFourthPoint": "Link unten einfügen",
   "linkTextFieldDescription": "Flickr Link zu Bild",
   "linkSmallTextOwnImages": "Es dürfen nur eigene Bilder hochgeladen werden.",
-  "linkSmallTextDisplayed": "Die hochgeladenen Bilder werden anderen Nutzern angezeigt.",
+  "linkSmallTextDisplayed": "Die hochgeladenen Bilder werden anderen Nutzern angezeigt.\nMit dem Hochladen eines Bildes stimmst du zu, dass dein Bild als Public Domain Work veröffentlicht wird.",
   "linkButton": "Hochladen",
+
+  "labelSelectImage": "Bild auswählen",
+  "labelTakeImage": "Bild aufnehmen",
 
   "loadingError": "Bild konnte nicht geladen werden",
 
