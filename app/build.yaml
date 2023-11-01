@@ -5,3 +5,7 @@ targets:
         options:
           clients:
             - graphql_flutter
+          scalars:
+            Upload:
+              type: MultipartFile
+              import: 'package:http/http.dart'

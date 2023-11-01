@@ -64,25 +64,6 @@ class MealAccordionInfo extends StatelessWidget {
                 Expanded(child: I18nText("additive.${e.name}")),
               ],
             )),
-        (_lastServed != null || _nextServed != null || _frequency != null)
-            ? const SizedBox(
-          height: 8,
-        )
-            : const SizedBox(
-          height: 0,
-        ),
-        _lastServed != null ? Text(FlutterI18n.translate(
-            context, "mealDetails.lastServed", translationParams: {
-          "lastServed": _dateFormat.format(_lastServed!)
-        })) : const SizedBox(height: 0),
-        _nextServed != null ? Text(FlutterI18n.translate(
-            context, "mealDetails.nextServed", translationParams: {
-          "nextServed": _dateFormat.format(_nextServed!)
-        })) : const SizedBox(height: 0),
-        _frequency != null ? Text(FlutterI18n.translate(
-            context, "mealDetails.frequency", translationParams: {
-          "frequency": _frequency.toString()
-        })) : const SizedBox(height: 0),
       ],
     );
   }
