@@ -20,7 +20,7 @@ async-trait = "0.1.68"
 chrono = "0.4.26"
 thiserror = "1.0.40"
 uuid = "1.4.0"
-axum = { version = "0.6.18", features = ["http2", "macros", "multipart"] }
+axum = { version = "0.6.18", features = ["http2", "macros", "multipart", "tracing"] }
 async-graphql = { version = "6.0.0", features = [
     "chrono",
     "uuid",

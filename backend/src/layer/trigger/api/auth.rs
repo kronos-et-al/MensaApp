@@ -125,7 +125,7 @@ pub(super) enum AuthMiddlewareError {
     UnableToReadBody(#[from] hyper::Error),
     #[error("`Content-Length` larger than {max} or not set.")]
     BodyTooLarge { max: u64 },
-    #[error("error while inspecting multipart request: {0}")]
+    #[error("error while inspecting multipart request: {0:?}")]
     MultipartError(#[from] MultipartError),
     #[error("error while inspecting multipart request (generic): {0}")]
     GenericMultipartError(String),
