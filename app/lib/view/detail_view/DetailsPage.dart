@@ -55,6 +55,20 @@ class DetailsPageState extends State<DetailsPage> {
 
   final DateFormat _dateFormat = DateFormat.yMd("de_DE");
 
+  int? _changedRating;
+
+  @override
+  void initState() {
+    _changedRating = widget._meal.individualRating;
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    _changedRating = widget._meal.individualRating;
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     // These provider are necessary for the synchronization of each other. They need to be initialized even if they are unused.
@@ -320,15 +334,23 @@ class DetailsPageState extends State<DetailsPage> {
                                               )),
                                           Row(children: [
                                             MensaRatingInput(
-                                              value: meal.individualRating
-                                                  .toDouble(),
-                                              disabled: true,
+                                              value:
+                                                  _changedRating?.toDouble() ??
+                                                      meal.individualRating
+                                                          .toDouble(),
                                               color: Theme.of(context)
                                                   .colorScheme
                                                   .onSurface,
                                               size: 20,
                                               max: 5,
-                                              onChanged: (_) {},
+                                              onChanged: (value) async {
+                                                setState(() {
+                                                  _changedRating = value;
+                                                });
+                                                await mealAccess
+                                                    .updateMealRating(
+                                                        value.toInt(), meal);
+                                              },
                                             ),
                                             const Spacer(),
                                             MensaButton(
@@ -367,25 +389,46 @@ class DetailsPageState extends State<DetailsPage> {
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.bold,
                                               )),
-                                          (meal.lastServed != null || meal.nextServed != null || meal.numberOfOccurance != null)
+                                          (meal.lastServed != null ||
+                                                  meal.nextServed != null ||
+                                                  meal.numberOfOccurance !=
+                                                      null)
                                               ? const SizedBox(
-                                            height: 8,
-                                          )
+                                                  height: 8,
+                                                )
                                               : const SizedBox(
-                                            height: 0,
-                                          ),
-                                          meal.lastServed != null ? Text(FlutterI18n.translate(
-                                              context, "mealDetails.lastServed", translationParams: {
-                                            "lastServed": _dateFormat.format(meal.lastServed!)
-                                          })) : const SizedBox(height: 0),
-                                          meal.nextServed != null ? Text(FlutterI18n.translate(
-                                              context, "mealDetails.nextServed", translationParams: {
-                                            "nextServed": _dateFormat.format(meal.nextServed!)
-                                          })) : const SizedBox(height: 0),
-                                          meal.numberOfOccurance != null ? Text(FlutterI18n.translate(
-                                              context, "mealDetails.frequency", translationParams: {
-                                            "frequency": meal.numberOfOccurance.toString()
-                                          })) : const SizedBox(height: 0),
+                                                  height: 0,
+                                                ),
+                                          meal.lastServed != null
+                                              ? Text(FlutterI18n.translate(
+                                                  context,
+                                                  "mealDetails.lastServed",
+                                                  translationParams: {
+                                                      "lastServed":
+                                                          _dateFormat.format(
+                                                              meal.lastServed!)
+                                                    }))
+                                              : const SizedBox(height: 0),
+                                          meal.nextServed != null
+                                              ? Text(FlutterI18n.translate(
+                                                  context,
+                                                  "mealDetails.nextServed",
+                                                  translationParams: {
+                                                      "nextServed":
+                                                          _dateFormat.format(
+                                                              meal.nextServed!)
+                                                    }))
+                                              : const SizedBox(height: 0),
+                                          meal.numberOfOccurance != null
+                                              ? Text(FlutterI18n.translate(
+                                                  context,
+                                                  "mealDetails.frequency",
+                                                  translationParams: {
+                                                      "frequency": meal
+                                                          .numberOfOccurance
+                                                          .toString()
+                                                    }))
+                                              : const SizedBox(height: 0),
                                         ],
                                       ),
                                     ),

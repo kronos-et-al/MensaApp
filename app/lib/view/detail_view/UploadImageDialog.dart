@@ -59,6 +59,8 @@ class _UploadImageDialogState extends State<UploadImageDialog> {
   XFile? _image;
   Uint8List? _imageBytes;
 
+  bool _loading = false;
+
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -80,33 +82,39 @@ class _UploadImageDialogState extends State<UploadImageDialog> {
                           onPressed: () async {
                             final ImagePicker picker = ImagePicker();
                             final XFile? image = await picker.pickImage(
-                                source: ImageSource.gallery);
+                                source: ImageSource.gallery, imageQuality: 90);
                             Uint8List bytes = await image!.readAsBytes();
                             setState(() {
                               _image = image;
                               _imageBytes = bytes;
                             });
                           },
-                          text: FlutterI18n.translate(context, "image.labelSelectImage"),
-                          semanticLabel: FlutterI18n.translate(context, "image.labelSelectImage"))),
-                  (Platform.isAndroid || Platform.isIOS) ? const SizedBox(
-                    width: 8,
-                  ) : Container(),
-                  (Platform.isAndroid || Platform.isIOS) ? MensaTapable(
-                      onTap: () async {
-                        final ImagePicker picker = ImagePicker();
-                        final XFile? image =
-                            await picker.pickImage(source: ImageSource.camera);
-                        Uint8List bytes = await image!.readAsBytes();
-                        setState(() {
-                          _image = image;
-                          _imageBytes = bytes;
-                        });
-                      },
-                      semanticLabel: FlutterI18n.translate(context, "image.labelTakeImage"),
-                      child: const Padding(
-                          padding: EdgeInsets.all(2),
-                          child: CameraIcon())) : Container(),
+                          text: FlutterI18n.translate(
+                              context, "image.labelSelectImage"),
+                          semanticLabel: FlutterI18n.translate(
+                              context, "image.labelSelectImage"))),
+                  (Platform.isAndroid || Platform.isIOS)
+                      ? const SizedBox(
+                          width: 8,
+                        )
+                      : Container(),
+                  (Platform.isAndroid || Platform.isIOS)
+                      ? MensaTapable(
+                          onTap: () async {
+                            final ImagePicker picker = ImagePicker();
+                            final XFile? image = await picker.pickImage(
+                                source: ImageSource.camera, imageQuality: 90);
+                            Uint8List bytes = await image!.readAsBytes();
+                            setState(() {
+                              _image = image;
+                              _imageBytes = bytes;
+                            });
+                          },
+                          semanticLabel: FlutterI18n.translate(
+                              context, "image.labelTakeImage"),
+                          child: const Padding(
+                              padding: EdgeInsets.all(2), child: CameraIcon()))
+                      : Container(),
                 ],
               ),
               const SizedBox(height: 16),
@@ -130,8 +138,8 @@ class _UploadImageDialogState extends State<UploadImageDialog> {
                           },
                       ),
                       TextSpan(
-                          text: FlutterI18n.translate(context,
-                              "image.linkFirstPointSecondText"))
+                          text: FlutterI18n.translate(
+                              context, "image.linkFirstPointSecondText"))
                     ]),
               ),
             ],
@@ -142,20 +150,26 @@ class _UploadImageDialogState extends State<UploadImageDialog> {
             children: [
               const Spacer(),
               MensaButton(
+                  disabled: _loading || _image == null,
+                  loading: _loading,
                   semanticLabel: FlutterI18n.translate(
                       context, "semantics.imageSubmitUpload"),
                   onPressed: () async {
-
                     if (_image != null && _imageBytes != null) {
-                      print(_image!.mimeType);
-                      MediaType _mediaType = MediaType.parse(parseMimeType(_image!));
-                      print(_mediaType);
+                      setState(() {
+                        _loading = true;
+                      });
                       final result = await context
                           .read<IImageAccess>()
-                          .linkImage(_imageBytes!,
-                              MediaType.parse(parseMimeType(_image!)), widget._meal);
+                          .linkImage(
+                              _imageBytes!,
+                              MediaType.parse(parseMimeType(_image!)),
+                              widget._meal);
                       if (!context.mounted) return;
 
+                      setState(() {
+                        _loading = false;
+                      });
                       Navigator.pop(context);
 
                       switch (result) {
