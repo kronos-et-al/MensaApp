@@ -29,6 +29,8 @@ use thiserror::Error;
 
 use crate::{interface::persistent_data::model::ApiKey, util::Uuid};
 
+use super::server::MAX_BODY_SIZE;
+
 pub(super) type AuthResult<T> = Result<T, AuthError>;
 
 const AUTH_DOC_URL: &str = "https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md";
@@ -138,8 +140,6 @@ impl IntoResponse for AuthMiddlewareError {
         (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()).into_response()
     }
 }
-
-const MAX_BODY_SIZE: u64 = 1 << 30; // to prevent dos attack, may need to be smaller to be effective? (but large images should still be uploadable)
 
 pub(super) async fn auth_middleware(
     content_type: Option<TypedHeader<ContentType>>,

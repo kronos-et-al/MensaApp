@@ -20,6 +20,7 @@ use async_graphql::{
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
     error_handling::HandleErrorLayer,
+    extract::DefaultBodyLimit,
     handler::Handler,
     middleware,
     response::{self, IntoResponse},
@@ -77,6 +78,8 @@ impl Display for State {
         write!(f, "{msg}")
     }
 }
+
+pub(super) const MAX_BODY_SIZE: u64 = 100 << 20; // 100 MiB
 
 /// Class witch controls the webserver for API requests.
 pub struct ApiServer {
@@ -143,7 +146,12 @@ impl ApiServer {
             )
             .layer(Extension(self.schema.clone()))
             .nest_service(IMAGE_BASE_PATH, ServeDir::new(&self.server_info.image_dir))
-            .layer(rate_limit);
+            .layer(rate_limit)
+            .layer(DefaultBodyLimit::max(
+                MAX_BODY_SIZE
+                    .try_into()
+                    .expect("max body size should fit in usize"),
+            ));
 
         let socket = std::net::SocketAddr::V6(SocketAddrV6::new(
             Ipv6Addr::UNSPECIFIED,
