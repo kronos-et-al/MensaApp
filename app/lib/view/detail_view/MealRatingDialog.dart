@@ -23,6 +23,8 @@ class MealRatingDialog extends StatefulWidget {
 class _MealRatingDialogState extends State<MealRatingDialog> {
   int? rating;
 
+  bool _loading = false;
+
   @override
   Widget build(BuildContext context) {
     Meal meal = widget._meal;
@@ -50,16 +52,23 @@ class _MealRatingDialogState extends State<MealRatingDialog> {
               children: [
                 const Spacer(),
                 MensaButton(
+                    disabled: _loading,
+                    loading: _loading,
                     semanticLabel: FlutterI18n.translate(
                         context, "semantics.mealRatingSubmit"),
                     onPressed: () async {
+                      setState(() {
+                        _loading = true;
+                      });
                       final result =
                           await context.read<IMealAccess>().updateMealRating(
                                 rating!,
                                 meal,
                               );
                       if (!context.mounted) return;
-
+                      setState(() {
+                        _loading = false;
+                      });
                       if (result) {
                         final snackBar = SnackBar(
                             content: Text(
