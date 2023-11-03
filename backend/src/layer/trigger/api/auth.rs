@@ -1,35 +1,28 @@
 //! Module responsible for authenticating graphql requests.
 //! For more details, see <https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md>.
 
-use std::fmt::Display;
+use std::{error::Error, fmt::Display, io::Cursor};
 
 use axum::{
-    extract::{self, multipart::MultipartError, FromRequest},
+    extract,
     headers::{authorization::Credentials, Authorization, ContentType},
-    http::{
-        request::{self, Parts},
-        Request,
-    },
+    http::{request::Parts, Request},
     middleware::Next,
     response::IntoResponse,
-    TypedHeader,
+    RequestExt, TypedHeader,
 };
 use base64::{
     engine::general_purpose::{self, STANDARD},
     Engine,
 };
 use hmac::{Hmac, Mac};
-use hyper::{
-    body::{Bytes, HttpBody},
-    StatusCode,
-};
+use hyper::{body::Bytes, StatusCode};
 use mime::Mime;
+use multer::{parse_boundary, Multipart};
 use sha2::Sha512;
 use thiserror::Error;
 
 use crate::{interface::persistent_data::model::ApiKey, util::Uuid};
-
-use super::server::MAX_BODY_SIZE;
 
 pub(super) type AuthResult<T> = Result<T, AuthError>;
 
@@ -123,14 +116,10 @@ impl Credentials for MensaAuthHeader {
 
 #[derive(Error, Debug)]
 pub(super) enum AuthMiddlewareError {
-    #[error("Could not read body: {0}")]
-    UnableToReadBody(#[from] hyper::Error),
-    #[error("`Content-Length` larger than {max} or not set.")]
-    BodyTooLarge { max: u64 },
-    #[error("error while inspecting multipart request: {0:?}")]
-    MultipartError(#[from] MultipartError),
-    #[error("error while inspecting multipart request (generic): {0}")]
-    GenericMultipartError(String),
+    #[error("could not read body: {0}")]
+    UnableToReadBody(Box<dyn Error>),
+    #[error("error inspecting multipart request: {0}")]
+    MultipartError(#[from] multer::Error),
     #[error("multipart request needs `operations` part")]
     MissingOperationsPart,
 }
@@ -149,18 +138,14 @@ pub(super) async fn auth_middleware(
     next: Next<axum::body::Body>,
 ) -> Result<impl IntoResponse, AuthMiddlewareError> {
     let auth_header = auth.map(|a| a.0 .0);
-    let (parts, body) = req.into_parts();
 
-    if !body.size_hint().upper().is_some_and(|u| u <= MAX_BODY_SIZE) {
-        return Err(AuthMiddlewareError::BodyTooLarge { max: MAX_BODY_SIZE });
-    }
+    let (parts, body_bytes) = read_bytes_from_request(req).await?;
 
-    let body_bytes = hyper::body::to_bytes(body).await?;
-
-    let bytes_to_hash = if content_type.is_some_and(|c| is_multipart(c.0)) {
-        extract_operation_bytes_from_multipart(&parts, &body_bytes).await?
-    } else {
-        body_bytes.clone()
+    let bytes_to_hash = match content_type {
+        Some(TypedHeader(content_type)) if is_multipart(content_type.clone()) => {
+            extract_operation_bytes_from_multipart(&content_type, &body_bytes).await?
+        }
+        _ => body_bytes.clone(),
     };
 
     let auth = AuthInfo {
@@ -184,34 +169,42 @@ pub(super) async fn auth_middleware(
     Ok(next.run(req).await)
 }
 
+async fn read_bytes_from_request(
+    req: Request<hyper::Body>,
+) -> Result<(Parts, Bytes), AuthMiddlewareError> {
+    Ok(match req.with_limited_body() {
+        Ok(r) => {
+            let (p, b) = r.into_parts();
+            (
+                p,
+                hyper::body::to_bytes(b)
+                    .await
+                    .map_err(|e| AuthMiddlewareError::UnableToReadBody(e))?,
+            )
+        }
+        Err(r) => {
+            let (p, b) = r.into_parts();
+            (
+                p,
+                hyper::body::to_bytes(b)
+                    .await
+                    .map_err(|e| AuthMiddlewareError::UnableToReadBody(Box::new(e)))?,
+            )
+        }
+    })
+}
+
 fn is_multipart(content_type: ContentType) -> bool {
     Mime::from(content_type).essence_str() == mime::MULTIPART_FORM_DATA.essence_str()
 }
 
 async fn extract_operation_bytes_from_multipart(
-    parts: &Parts,
+    content_type: &ContentType,
     body_bytes: &Bytes,
 ) -> Result<Bytes, AuthMiddlewareError> {
-    // copy parts
-    let mut parts_builder = request::Builder::new()
-        .method(parts.method.clone())
-        .uri(parts.uri.clone())
-        .version(parts.version);
-    parts_builder
-        .headers_mut()
-        .ok_or(AuthMiddlewareError::GenericMultipartError(String::new()))?
-        .extend(parts.headers.clone());
-    let parts = parts_builder
-        .body(())
-        .map_err(|e| AuthMiddlewareError::GenericMultipartError(e.to_string()))?
-        .into_parts()
-        .0;
+    let boundary = parse_boundary(content_type.to_string())?;
 
-    // inspect copy of multipart request
-    let req = Request::from_parts(parts, hyper::Body::from(body_bytes.clone()));
-    let mut multipart = axum::extract::Multipart::from_request(req, &())
-        .await
-        .map_err(|e| AuthMiddlewareError::GenericMultipartError(e.to_string()))?;
+    let mut multipart = Multipart::with_reader(Cursor::new(body_bytes), boundary);
 
     let mut operations_bytes = None;
 
@@ -291,11 +284,8 @@ fn read_auth_from_header(header: &str) -> Option<MensaAuthHeader> {
 mod tests {
     #![allow(clippy::unwrap_used)]
 
-    use std::str::FromStr;
-
-    use hyper::Version;
-
     use super::*;
+    use std::str::FromStr;
 
     #[test]
     fn test_auth_info_parsing() {
@@ -358,28 +348,36 @@ mod tests {
 
     #[tokio::test]
     async fn test_extract_operation_bytes() {
-        let body = b"--boundary\r\nContent-Disposition: form-data; name=\"operations\"\r\n\r\n{\"operationName\":null,\"variables\":{\"mealId\":\"bd3c88f9-5dc8-4773-85dc-53305930e7b6\",\"image\":null},\"query\":\"mutation LinkImage($mealId: UUID!, $image: Upload!) {\\n  __typename\\n  addImage(mealId: $mealId, image: $image)\\n}\"}\r\n--boundary\r\nContent-Disposition: form-data; name=\"map\"\r\n\r\n{\"0\":[\"variables.image\"]}\r\n--boundary\r\ncontent-type: text/plain; charset=utf-8\r\ncontent-disposition: form-data; name=\"0\"; filename=\"a\"\r\n\r\nimage\r\n--boundary--";
+        let body = b"--boundary\r\nContent-Disposition: form-data; name=\"operations\"\r\n\r\n{\"operationName\":null,\"variables\":{\"mealId\":\"bd3c88f9-5dc8-4773-85dc-53305930e7b6\",\"image\":null},\"query\":\"mutation LinkImage($mealId: UUID!, $image: Upload!) {\\n  __typename\\n  addImage(mealId: $mealId, image: $image)\\n}\"}\r\n--boundary\r\nContent-Disposition: form-data; name=\"map\"\r\n\r\n{\"0\":[\"variables.image\"]}\r\n--boundary\r\ncontent-type: text/plain; charset=utf-8\r\ncontent-disposition: form-data; name=\"0\"; filename=\"a\"\r\n\r\nimage\r\n--boundary--".as_ref();
 
         let operations = Bytes::from(
             r#"{"operationName":null,"variables":{"mealId":"bd3c88f9-5dc8-4773-85dc-53305930e7b6","image":null},"query":"mutation LinkImage($mealId: UUID!, $image: Upload!) {\n  __typename\n  addImage(mealId: $mealId, image: $image)\n}"}"#,
         );
 
-        let request = Request::builder()
-            .method("POST")
-            .uri("/")
-            .version(Version::HTTP_11)
-            .header("Content-Type", "multipart/form-data; boundary=boundary")
-            .header(
-                "Authorization",
-                "Mensa ZTk5N2MyZTMtNjhlMS00YjZkLWIzMjgtNGFkY2Q1NzNjODM0Ojo=",
-            )
-            .header("Content-Length", 504)
-            .body(Bytes::from(body.as_slice()))
+        let content_type = ContentType::from_str("multipart/form-data; boundary=boundary").unwrap();
+        let bytes = Bytes::from(body);
+
+        let extracted = extract_operation_bytes_from_multipart(&content_type, &bytes)
+            .await
             .unwrap();
 
-        let (parts, body_bytes) = request.into_parts();
+        assert_eq!(operations, extracted);
+    }
 
-        let extracted = extract_operation_bytes_from_multipart(&parts, &body_bytes)
+    #[tokio::test]
+    async fn test_extract_operation_bytes_large() {
+        let body = [b"--boundary\r\nContent-Disposition: form-data; name=\"operations\"\r\n\r\n{\"operationName\":null,\"variables\":{\"mealId\":\"bd3c88f9-5dc8-4773-85dc-53305930e7b6\",\"image\":null},\"query\":\"mutation LinkImage($mealId: UUID!, $image: Upload!) {\\n  __typename\\n  addImage(mealId: $mealId, image: $image)\\n}\"}\r\n--boundary\r\nContent-Disposition: form-data; name=\"map\"\r\n\r\n{\"0\":[\"variables.image\"]}\r\n--boundary\r\ncontent-type: image/jpeg\r\ncontent-disposition: form-data; name=\"0\"; filename=\"a\"\r\n\r\n".as_ref(), 
+        include_bytes!("test_data/test_real.jpg").as_ref(),
+        b"\r\n--boundary--".as_ref()].concat();
+
+        let operations = Bytes::from(
+            r#"{"operationName":null,"variables":{"mealId":"bd3c88f9-5dc8-4773-85dc-53305930e7b6","image":null},"query":"mutation LinkImage($mealId: UUID!, $image: Upload!) {\n  __typename\n  addImage(mealId: $mealId, image: $image)\n}"}"#,
+        );
+
+        let content_type = ContentType::from_str("multipart/form-data; boundary=boundary").unwrap();
+        let bytes = Bytes::from(body);
+
+        let extracted = extract_operation_bytes_from_multipart(&content_type, &bytes)
             .await
             .unwrap();
 

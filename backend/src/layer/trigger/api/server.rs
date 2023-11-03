@@ -79,7 +79,7 @@ impl Display for State {
     }
 }
 
-pub(super) const MAX_BODY_SIZE: u64 = 100 << 20; // 100 MiB
+pub(super) const MAX_BODY_SIZE: u64 = 100 << 20; // 100 MiB // todo make env config
 
 /// Class witch controls the webserver for API requests.
 pub struct ApiServer {
@@ -429,4 +429,6 @@ mod tests {
 
         reader.decode().expect("Should decode response to image")
     }
+
+    // Todo test large image upload
 }

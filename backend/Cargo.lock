@@ -1674,6 +1674,7 @@ dependencies = [
  "lazy_static",
  "lettre",
  "mime",
+ "multer",
  "rand",
  "regex",
  "reqwest",
@@ -1756,6 +1757,8 @@ dependencies = [
  "memchr",
  "mime",
  "spin 0.9.8",
+ "tokio",
+ "tokio-util",
  "version_check",
 ]
 
