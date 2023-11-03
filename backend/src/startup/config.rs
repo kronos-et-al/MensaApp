@@ -30,6 +30,7 @@ const DEFAULT_PARSE_WEEKS: u32 = 4;
 const DEFAULT_MAX_IMAGE_WIDTH: u32 = 1920;
 const DEFAULT_MAX_IMAGE_HEIGHT: u32 = 1080;
 const DEFAULT_IMAGE_ACCEPTANCE_VALUES: &str = "0,0,0,0,0";
+const DEFAULT_UPLOAD_SIZE: u64 = 10 << 20; // 10 MiB
 
 /// Class for reading configuration from environment variables.
 pub struct ConfigReader {}
@@ -167,12 +168,18 @@ impl ConfigReader {
                 .ok()
                 .and_then(|r| r.parse().ok())
                 .and_then(NonZeroU64::new),
+            max_body_size: read_var("MAX_UPLOAD_SIZE")
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(DEFAULT_UPLOAD_SIZE),
         };
 
         info.rate_limit.map_or_else(
             || info!("Using no rate limit."),
             |limit| info!("Using a rate limit of {limit} graphql requests per second"),
         );
+
+        info!("Using max upload size of {} bytes.", info.max_body_size);
 
         Ok(info)
     }

@@ -60,6 +60,8 @@ pub struct ApiServerInfo {
     pub image_dir: PathBuf,
     /// Max number of requests per second, `None` means disabled.
     pub rate_limit: Option<NonZeroU64>,
+    /// Maximum accepted http body size
+    pub max_body_size: u64,
 }
 
 enum State {
@@ -78,8 +80,6 @@ impl Display for State {
         write!(f, "{msg}")
     }
 }
-
-pub(super) const MAX_BODY_SIZE: u64 = 100 << 20; // 100 MiB // todo make env config
 
 /// Class witch controls the webserver for API requests.
 pub struct ApiServer {
@@ -148,7 +148,8 @@ impl ApiServer {
             .nest_service(IMAGE_BASE_PATH, ServeDir::new(&self.server_info.image_dir))
             .layer(rate_limit)
             .layer(DefaultBodyLimit::max(
-                MAX_BODY_SIZE
+                self.server_info
+                    .max_body_size
                     .try_into()
                     .expect("max body size should fit in usize"),
             ));
@@ -268,12 +269,14 @@ mod tests {
     use super::{ApiServerInfo, IMAGE_BASE_PATH};
 
     const TEST_PORT: u16 = 12345;
+    const BODY_SIZE: u64 = 10 << 20;
 
     async fn get_test_server() -> ApiServer {
         let info = ApiServerInfo {
             port: TEST_PORT,
             image_dir: temp_dir(),
             rate_limit: None,
+            max_body_size: BODY_SIZE,
         };
         ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await
     }
@@ -283,6 +286,7 @@ mod tests {
             port: TEST_PORT,
             image_dir,
             rate_limit: None,
+            max_body_size: BODY_SIZE,
         };
         ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await
     }
