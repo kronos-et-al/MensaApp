@@ -214,6 +214,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
   @override
   Future<String?> refreshMealplan() async {
+    DateTime requestingDate = _displayedDate.copyWith();
     await _doneInitialization;
 
     final mealPlan = await _getMealPlanFromServer();
@@ -223,6 +224,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     }
 
     await _database.updateAll(mealPlan);
+
+    if (requestingDate != _displayedDate) return null;
 
     _mealPlans = mealPlan;
 
