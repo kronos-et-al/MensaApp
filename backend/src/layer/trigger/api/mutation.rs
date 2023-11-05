@@ -14,10 +14,13 @@ pub struct MutationRoot;
 impl MutationRoot {
     /// This mutation adds an image to the specified main dish.
     /// The user has to be authenticated.
+    /// Images will be visible to other users.
     ///
-    /// The image my not contain inappropriate content, otherwise the request fails.
+    /// By uploading an image you agree to license it under the [CC0](https://creativecommons.org/publicdomain/zero/1.0/) license and pledge to have the right to do so.
     ///
-    /// If the image was added is successful, `true` is returned.
+    /// The image may not contain inappropriate content, otherwise the request may fail.
+    ///
+    /// If the image was added is successfully, `true` is returned.
     #[instrument(skip(self, ctx, image), fields(file_name = image.value(ctx)?.filename, file_type = image.value(ctx)?.content_type))]
     async fn add_image(
         &self,
