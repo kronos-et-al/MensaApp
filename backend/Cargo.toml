@@ -20,7 +20,12 @@ async-trait = "0.1.68"
 chrono = "0.4.26"
 thiserror = "1.0.40"
 uuid = "1.4.0"
-axum = { version = "0.6.18", features = ["http2", "macros", "multipart"] }
+axum = { version = "0.6.18", features = [
+    "http2",
+    "macros",
+    "multipart",
+    "tracing",
+] }
 async-graphql = { version = "6.0.0", features = [
     "chrono",
     "uuid",
@@ -61,6 +66,7 @@ google-jwt-auth = "0.0.2"
 hyper = { version = "0.14" }
 mime = "0.3.17"
 hmac = "0.12.1"
+multer = { version = "2.1.0", features = ["tokio-io"] }
 
 [dev-dependencies]
 serial_test = "2.0.0"

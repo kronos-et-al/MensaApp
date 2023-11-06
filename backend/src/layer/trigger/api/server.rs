@@ -20,6 +20,7 @@ use async_graphql::{
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
     error_handling::HandleErrorLayer,
+    extract::DefaultBodyLimit,
     handler::Handler,
     middleware,
     response::{self, IntoResponse},
@@ -59,6 +60,8 @@ pub struct ApiServerInfo {
     pub image_dir: PathBuf,
     /// Max number of requests per second, `None` means disabled.
     pub rate_limit: Option<NonZeroU64>,
+    /// Maximum accepted http body size
+    pub max_body_size: u64,
 }
 
 enum State {
@@ -143,7 +146,13 @@ impl ApiServer {
             )
             .layer(Extension(self.schema.clone()))
             .nest_service(IMAGE_BASE_PATH, ServeDir::new(&self.server_info.image_dir))
-            .layer(rate_limit);
+            .layer(rate_limit)
+            .layer(DefaultBodyLimit::max(
+                self.server_info
+                    .max_body_size
+                    .try_into()
+                    .expect("max body size should fit in usize"),
+            ));
 
         let socket = std::net::SocketAddr::V6(SocketAddrV6::new(
             Ipv6Addr::UNSPECIFIED,
@@ -245,27 +254,32 @@ mod tests {
     use std::{env::temp_dir, io::Cursor, path::PathBuf};
 
     use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
+    use base64::{engine::general_purpose, Engine};
+    use hmac::{Hmac, Mac};
     use image::{io::Reader, DynamicImage, ImageBuffer, ImageFormat};
     use reqwest::header::{AUTHORIZATION, CONTENT_TYPE};
     use serial_test::serial;
+    use sha2::{Digest, Sha512};
 
     use crate::{
         layer::trigger::api::{
             mock::{AuthDataMock, CommandMock, RequestDatabaseMock},
             server::ApiServer,
         },
-        util::ImageResource,
+        util::{ImageResource, Uuid},
     };
 
     use super::{ApiServerInfo, IMAGE_BASE_PATH};
 
     const TEST_PORT: u16 = 12345;
+    const BODY_SIZE: u64 = 10 << 20;
 
     async fn get_test_server() -> ApiServer {
         let info = ApiServerInfo {
             port: TEST_PORT,
             image_dir: temp_dir(),
             rate_limit: None,
+            max_body_size: BODY_SIZE,
         };
         ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await
     }
@@ -275,6 +289,7 @@ mod tests {
             port: TEST_PORT,
             image_dir,
             rate_limit: None,
+            max_body_size: BODY_SIZE,
         };
         ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await
     }
@@ -420,5 +435,118 @@ mod tests {
         reader.set_format(ImageFormat::from_mime_type(file_type).unwrap());
 
         reader.decode().expect("Should decode response to image")
+    }
+
+    #[tokio::test]
+    #[serial]
+    async fn test_large_image_upload() {
+        let mut server = get_test_server().await;
+        server.start();
+
+        let image = include_bytes!("test_data/test_real.jpg").as_ref();
+
+        let hash = Sha512::new().chain_update(image).finalize().to_vec();
+        let base64_hash = general_purpose::STANDARD.encode(hash);
+
+        let operations = [b"{\"operationName\":null,\"variables\":{\"mealId\":\"bd3c88f9-5dc8-4773-85dc-53305930e7b6\",\"image\":null, \"hash\": \"".as_ref(), 
+        base64_hash.as_bytes(),
+        b"\"},\"query\":\"mutation LinkImage($mealId: UUID!, $image: Upload!, $hash: String!) {\\n  __typename\\n  addImage(mealId: $mealId, image: $image, hash: $hash)\\n}\"}"].concat();
+
+        let api_key = "1234567890";
+        let hmac = Hmac::<Sha512>::new_from_slice(api_key.as_bytes())
+            .unwrap()
+            .chain_update(&operations)
+            .finalize()
+            .into_bytes()
+            .to_vec();
+
+        let hmac_base64 = general_purpose::STANDARD.encode(hmac);
+        let client_id = Uuid::default();
+        let auth = format!("{client_id}:{api_key}:{hmac_base64}");
+        let auth = general_purpose::STANDARD.encode(auth.as_bytes());
+
+        let test_request = [b"--boundary\r\nContent-Disposition: form-data; name=\"operations\"\r\n\r\n".as_ref(), &operations, b"\r\n--boundary\r\nContent-Disposition: form-data; name=\"map\"\r\n\r\n{\"0\":[\"variables.image\"]}\r\n--boundary\r\ncontent-type: image/jpeg\r\ncontent-disposition: form-data; name=\"0\"; filename=\"a\"\r\n\r\n".as_ref(), 
+        image,
+        b"\r\n--boundary--".as_ref()].concat();
+
+        let client = reqwest::Client::new();
+        let resp = client
+            .post(format!("http://localhost:{TEST_PORT}"))
+            .header(AUTHORIZATION, format!("Mensa {auth}"))
+            .header(CONTENT_TYPE, "multipart/form-data; boundary=boundary")
+            .body(test_request)
+            .send()
+            .await
+            .unwrap()
+            .text()
+            .await
+            .unwrap();
+
+        assert_eq!(
+            "{\"data\":{\"__typename\":\"MutationRoot\",\"addImage\":true}}", resp,
+            "wrong data returned on graphql upload image check."
+        );
+
+        server.shutdown().await;
+    }
+
+    #[tokio::test]
+    #[serial]
+    async fn test_too_large_image_upload() {
+        let info = ApiServerInfo {
+            port: TEST_PORT,
+            image_dir: temp_dir(),
+            rate_limit: None,
+            max_body_size: 1 << 10,
+        };
+        let mut server = ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await;
+
+        server.start();
+
+        let image = include_bytes!("test_data/test_real.jpg").as_ref();
+
+        let hash = Sha512::new().chain_update(image).finalize().to_vec();
+        let base64_hash = general_purpose::STANDARD.encode(hash);
+
+        let operations = [b"{\"operationName\":null,\"variables\":{\"mealId\":\"bd3c88f9-5dc8-4773-85dc-53305930e7b6\",\"image\":null, \"hash\": \"".as_ref(), 
+        base64_hash.as_bytes(),
+        b"\"},\"query\":\"mutation LinkImage($mealId: UUID!, $image: Upload!, $hash: String!) {\\n  __typename\\n  addImage(mealId: $mealId, image: $image, hash: $hash)\\n}\"}"].concat();
+
+        let api_key = "1234567890";
+        let hmac = Hmac::<Sha512>::new_from_slice(api_key.as_bytes())
+            .unwrap()
+            .chain_update(&operations)
+            .finalize()
+            .into_bytes()
+            .to_vec();
+
+        let hmac_base64 = general_purpose::STANDARD.encode(hmac);
+        let client_id = Uuid::default();
+        let auth = format!("{client_id}:{api_key}:{hmac_base64}");
+        let auth = general_purpose::STANDARD.encode(auth.as_bytes());
+
+        let test_request = [b"--boundary\r\nContent-Disposition: form-data; name=\"operations\"\r\n\r\n".as_ref(), &operations, b"\r\n--boundary\r\nContent-Disposition: form-data; name=\"map\"\r\n\r\n{\"0\":[\"variables.image\"]}\r\n--boundary\r\ncontent-type: image/jpeg\r\ncontent-disposition: form-data; name=\"0\"; filename=\"a\"\r\n\r\n".as_ref(), 
+        image,
+        b"\r\n--boundary--".as_ref()].concat();
+
+        let client = reqwest::Client::new();
+        let resp = client
+            .post(format!("http://localhost:{TEST_PORT}"))
+            .header(AUTHORIZATION, format!("Mensa {auth}"))
+            .header(CONTENT_TYPE, "multipart/form-data; boundary=boundary")
+            .body(test_request)
+            .send()
+            .await
+            .unwrap()
+            .text()
+            .await
+            .unwrap();
+
+        assert_eq!(
+            "could not read body: length limit exceeded", resp,
+            "wrong data returned on graphql upload image check."
+        );
+
+        server.shutdown().await;
     }
 }
