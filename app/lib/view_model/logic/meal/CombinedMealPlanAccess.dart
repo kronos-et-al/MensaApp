@@ -54,7 +54,9 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     final canteenString = _preferences.getCanteen();
     Canteen? canteen;
     // get default canteen from server if canteen id not saved in local storage
-    if (canteenString == null || canteenString.isEmpty || await _database.getCanteenById(canteenString) == null) {
+    if (canteenString == null ||
+        canteenString.isEmpty ||
+        await _database.getCanteenById(canteenString) == null) {
       canteen = await _api.getDefaultCanteen();
 
       // save canteen id in local storage
@@ -88,7 +90,10 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     // get meal plans form server
     if (_mealPlans.isEmpty) {
-      await refreshAll();
+      print("loading initial day");
+      await refreshMealplan();
+      print("initial day loaded");
+      refreshAll();
     } else {
       await _setNewMealPlan();
       refreshAll();
@@ -99,14 +104,15 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     List<MealPlan> mealPlans = switch (await _api.updateAll()) {
       Success(value: final mealplan) => mealplan,
       Failure(exception: final exception) =>
-          _convertMealPlanExceptionToMealPlan(exception)
+        _convertMealPlanExceptionToMealPlan(exception)
     };
 
     // update all if connection to server is successful
     if (mealPlans.isNotEmpty) {
       await _database.updateAll(mealPlans);
     }
-    _mealPlans = switch (await _database.getMealPlan(_displayedDate, _activeCanteen)) {
+    _mealPlans = switch (
+        await _database.getMealPlan(_displayedDate, _activeCanteen)) {
       Success(value: final mealplan) => mealplan,
       Failure() => []
     };
@@ -215,7 +221,6 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   @override
   Future<String?> refreshMealplan() async {
     DateTime requestingDate = _displayedDate.copyWith();
-    await _doneInitialization;
 
     final mealPlan = await _getMealPlanFromServer();
 
@@ -363,11 +368,15 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       numberOfRatings += 1;
 
       // change average rating
-      newRating = (changedMeal.averageRating * changedMeal.numberOfRatings +
-          rating) / numberOfRatings;
+      newRating =
+          (changedMeal.averageRating * changedMeal.numberOfRatings + rating) /
+              numberOfRatings;
     } else {
       // change average rating
-      newRating = (changedMeal.averageRating * changedMeal.numberOfRatings - changedMeal.individualRating + rating) / numberOfRatings;
+      newRating = (changedMeal.averageRating * changedMeal.numberOfRatings -
+              changedMeal.individualRating +
+              rating) /
+          numberOfRatings;
     }
 
     Meal newMeal = Meal.copy(
@@ -548,7 +557,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       }
     }
 
-    final price = meal.price.getPrice(_preferences.getPriceCategory() ?? PriceCategory.student);
+    final price = meal.price
+        .getPrice(_preferences.getPriceCategory() ?? PriceCategory.student);
 
     // check price
     if (_filter.price < price) {
