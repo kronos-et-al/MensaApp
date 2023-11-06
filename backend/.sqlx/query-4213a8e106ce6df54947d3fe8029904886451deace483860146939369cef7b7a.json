@@ -1,0 +1,84 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT food_id \n            FROM food\n            WHERE similarity(name, $1) >= $4 AND food_type = $2 AND food_id NOT IN (SELECT food_id FROM meal)\n            AND food_id IN (\n                -- all food_id's with same allergens\n                SELECT food_id \n                FROM food_allergen FULL JOIN food USING (food_id)\n                GROUP BY food_id \n\t\t\t\tHAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $3::allergen[]\n\t\t\t\tAND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $3::allergen[]\n            )\n            ORDER BY similarity(name, $1) DESC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "food_id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        {
+          "Custom": {
+            "name": "meal_type",
+            "kind": {
+              "Enum": [
+                "VEGAN",
+                "VEGETARIAN",
+                "BEEF",
+                "BEEF_AW",
+                "PORK",
+                "PORK_AW",
+                "FISH",
+                "UNKNOWN"
+              ]
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "_allergen",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "allergen",
+                  "kind": {
+                    "Enum": [
+                      "CA",
+                      "DI",
+                      "EI",
+                      "ER",
+                      "FI",
+                      "GE",
+                      "HF",
+                      "HA",
+                      "KA",
+                      "KR",
+                      "LU",
+                      "MA",
+                      "ML",
+                      "PA",
+                      "PE",
+                      "PI",
+                      "QU",
+                      "RO",
+                      "SA",
+                      "SE",
+                      "SF",
+                      "SN",
+                      "SO",
+                      "WA",
+                      "WE",
+                      "WT",
+                      "LA",
+                      "GL"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "Float4"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "4213a8e106ce6df54947d3fe8029904886451deace483860146939369cef7b7a"
+}

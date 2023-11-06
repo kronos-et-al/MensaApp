@@ -34,6 +34,7 @@ async fn main() {
         port: 8090,
         image_dir: temp_dir(),
         rate_limit: None,
+        max_body_size: 10 << 20,
     };
 
     let image_pre_info = ImagePreprocessingInfo {
