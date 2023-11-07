@@ -73,7 +73,6 @@ class MealPlanView extends StatelessWidget {
                                   )),
                               body: MealPlanInitialisationError());
                         }
-                        print(mealAccess.failedInitializing);
                         if (!snapshot.hasData) {
                           return Scaffold(
                               appBar: MensaAppBar(
