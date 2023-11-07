@@ -11,6 +11,7 @@ import 'package:app/view/mealplan/MealPlanClosed.dart';
 import 'package:app/view/mealplan/MealPlanDateSelect.dart';
 import 'package:app/view/mealplan/MealPlanError.dart';
 import 'package:app/view/mealplan/MealPlanFilter.dart';
+import 'package:app/view/mealplan/MealPlanInitialisatsionError.dart';
 import 'package:app/view/mealplan/MealPlanNoData.dart';
 import 'package:app/view/mealplan/MealPlanToolbar.dart';
 import 'package:app/view/mealplan/MensaCanteenSelect.dart';
@@ -53,7 +54,70 @@ class MealPlanView extends StatelessWidget {
                         mealAccess.isFilterActive()
                       ], eagerError: true),
                       builder: (context, snapshot) {
+                        if (mealAccess.failedInitializing) {
+                          return Scaffold(
+                              appBar: MensaAppBar(
+                                  appBarHeight: kToolbarHeight,
+                                  child: Semantics(
+                                    header: true,
+                                    child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            16, 16, 16, 0),
+                                        child: Text(
+                                          FlutterI18n.translate(
+                                              context, "common.appTitle"),
+                                          style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        )),
+                                  )),
+                              body: MealPlanInitialisationError());
+                        }
+                        print(mealAccess.failedInitializing);
                         if (!snapshot.hasData) {
+                          return Scaffold(
+                              appBar: MensaAppBar(
+                                  appBarHeight: kToolbarHeight,
+                                  child: Semantics(
+                                    header: true,
+                                    child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            16, 16, 16, 0),
+                                        child: Text(
+                                          FlutterI18n.translate(
+                                              context, "common.appTitle"),
+                                          style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        )),
+                                  )),
+                              body: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const CircularProgressIndicator(),
+                                    const SizedBox(height: 32),
+                                    Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 64),
+                                        child: Text(
+                                            FlutterI18n.translate(
+                                                context, "common.welcomeTitle"),
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold))),
+                                    const SizedBox(height: 16),
+                                    Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 64),
+                                        child: Text(
+                                            FlutterI18n.translate(
+                                                context, "common.welcomeLabel"),
+                                            textAlign: TextAlign.center))
+                                  ],
+                                ),
+                              ));
                           return const Center(
                             child: CircularProgressIndicator(),
                           );
@@ -85,13 +149,12 @@ class MealPlanView extends StatelessWidget {
                                         child: Row(
                                           children: [
                                             MensaTapable(
-                                              semanticLabel: FlutterI18n
-                                                  .translate(
-                                                      context,
-                                                      mealPlanFormat == MealPlanFormat
-                                                          .grid
-                                                          ? 'semantics.mealPlanToggleList'
-                                                          : 'semantics.mealPlanToggleGrid'),
+                                                semanticLabel: FlutterI18n.translate(
+                                                    context,
+                                                    mealPlanFormat ==
+                                                            MealPlanFormat.grid
+                                                        ? 'semantics.mealPlanToggleList'
+                                                        : 'semantics.mealPlanToggleGrid'),
                                                 child: Padding(
                                                     padding:
                                                         const EdgeInsets.all(
@@ -119,7 +182,10 @@ class MealPlanView extends StatelessWidget {
                                             ),
                                             const Spacer(),
                                             MensaTapable(
-                                              semanticLabel: FlutterI18n.translate(context, "semantics.mealPlanFilter"),
+                                                semanticLabel:
+                                                    FlutterI18n.translate(
+                                                        context,
+                                                        "semantics.mealPlanFilter"),
                                                 child: Padding(
                                                     padding:
                                                         const EdgeInsets.all(

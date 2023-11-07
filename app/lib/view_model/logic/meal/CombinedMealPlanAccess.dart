@@ -44,6 +44,12 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     _doneInitialization = _init();
   }
 
+  @override
+  Future<void> reInit() async {
+    _doneInitialization = _init();
+    return _doneInitialization;
+  }
+
   Future<void> _init() async {
     _displayedDate = DateTime.now();
     _filter = _preferences.getFilterPreferences() ?? FilterPreferences();
@@ -61,8 +67,13 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
       // save canteen id in local storage
       if (canteen != null) {
+        failedInitializing = false;
         await _database.updateCanteen(canteen);
         _preferences.setCanteen(canteen.id);
+      } else {
+        failedInitializing = true;
+        _noDataYet = false;
+        _mealPlans = [];
       }
     } else {
       // get canteen from database
@@ -695,4 +706,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   Future<bool> isFilterActive() async {
     return Future.value(_activeFilter);
   }
+
+  @override
+  bool failedInitializing = false;
 }
