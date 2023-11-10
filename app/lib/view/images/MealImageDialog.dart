@@ -12,16 +12,19 @@ import 'package:app/view/core/icons/image/ThumbUpOutlinedIcon.dart';
 import 'package:app/view/core/icons/navigation/NavigationCloseIcon.dart';
 import 'package:app/view/detail_view/UploadImageDialog.dart';
 import 'package:app/view/images/ImageReportDialog.dart';
+import 'package:app/view/images/MealImageView.dart';
 import 'package:app/view_model/logic/image/IImageAccess.dart';
 import 'package:app/view_model/logic/meal/IMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
+import 'package:zoom_widget/zoom_widget.dart';
 
 /// This widget is used to display the images of a meal.
 class MealImageDialog extends StatefulWidget {
@@ -38,6 +41,8 @@ class _MealImageDialogState extends State<MealImageDialog> {
   int currentPage = 0;
   final PageController pageController = PageController();
   bool isClosing = false;
+
+  bool _pagingEnabled = true;
 
   @override
   void initState() {
@@ -92,6 +97,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
                           ),
                         )),
                     content: PageView.builder(
+                      physics: _pagingEnabled ? const PageScrollPhysics() : const NeverScrollableScrollPhysics(),
                       itemCount: (meal.images?.length ?? 0),
                       controller: pageController,
                       itemBuilder: (context, index) {
@@ -111,8 +117,32 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                     context, "image.newImageButton"),
                               ));
                         }
-                        return Center(
-                            child: Image.network(
+                        return MealImageView(imageData: meal.images![index], onScaleChanged: (scale) {
+                          setState(() {
+                            _pagingEnabled = scale <= 1.0;
+                          });
+                        });
+                        return LayoutBuilder(builder: (context, constraints) => CachedNetworkImage(
+                            imageUrl: meal.images![index].url,
+                            progressIndicatorBuilder: (context, url, progress) => Center(child: CircularProgressIndicator(value: progress.progress)),
+                            imageBuilder: (context, imageProvider) => Zoom(
+                              opacityScrollBars: 0,
+                              doubleTapZoom: true,
+                              child: Center(
+                                child: Container(
+                                  width: constraints.maxWidth,
+                                  height: constraints.maxHeight,
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.background,
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  )
+                                ))
+                            ),
+                          )
+                            /*child: Image.network(
                               meal.images![index].url,
                               fit: BoxFit.contain,
                               errorBuilder: (context, error, stackTrace) =>
@@ -132,7 +162,8 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                   child: child,
                                 );
                               },
-                            ));
+                            )*/
+                        );
                       },
                     ),
                     actions: (meal.images!.isEmpty ||
