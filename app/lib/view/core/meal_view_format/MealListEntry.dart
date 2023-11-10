@@ -14,6 +14,7 @@ class MealListEntry extends StatelessWidget {
   final Meal _meal;
   final Line _line;
   final DateTime _date;
+  final bool _enableFavoriteHighlight;
 
   // TODO use locale
   final NumberFormat _priceFormat =
@@ -21,15 +22,22 @@ class MealListEntry extends StatelessWidget {
 
   /// Creates a MealListEntry.
   MealListEntry(
-      {super.key, required Meal meal, required Line line, required DateTime date})
+      {super.key,
+      required Meal meal,
+      required Line line,
+      required DateTime date,
+      bool enableFavoriteHighlight = true})
       : _meal = meal,
         _line = line,
-        _date = date;
+        _date = date,
+        _enableFavoriteHighlight = enableFavoriteHighlight;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.symmetric(vertical: _meal.isFavorite ? 5.5 : 8, horizontal: _meal.isFavorite ? 9.5 : 12),
+        padding: EdgeInsets.symmetric(
+            vertical: _meal.isFavorite ? 5.5 : 8,
+            horizontal: _meal.isFavorite ? 9.5 : 12),
         child: GestureDetector(
             onTap: () => {
                   Navigator.of(context).push(MaterialPageRoute(
@@ -48,11 +56,11 @@ class MealListEntry extends StatelessWidget {
                     topRight: Radius.circular(8),
                     bottomRight: Radius.circular(8)),
                 color: Theme.of(context).colorScheme.surface,
-                border: Border.all(
+                border: _enableFavoriteHighlight ? Border.all(
                     color: _meal.isFavorite
                         ? Theme.of(context).colorScheme.secondary
                         : Theme.of(context).colorScheme.surface,
-                    width: _meal.isFavorite ? 2.5 : 0),
+                    width: _meal.isFavorite ? 2.5 : 0) : Border.all(width: 0),
               ),
               child: IntrinsicHeight(
                   child: Row(
