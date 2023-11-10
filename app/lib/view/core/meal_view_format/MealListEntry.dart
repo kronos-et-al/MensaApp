@@ -29,7 +29,7 @@ class MealListEntry extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        padding: EdgeInsets.symmetric(vertical: _meal.isFavorite ? 5.5 : 8, horizontal: _meal.isFavorite ? 9.5 : 12),
         child: GestureDetector(
             onTap: () => {
                   Navigator.of(context).push(MaterialPageRoute(
@@ -42,8 +42,17 @@ class MealListEntry extends StatelessWidget {
                 },
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10.5),
+                    bottomLeft: Radius.circular(10.5),
+                    topRight: Radius.circular(8),
+                    bottomRight: Radius.circular(8)),
                 color: Theme.of(context).colorScheme.surface,
+                border: Border.all(
+                    color: _meal.isFavorite
+                        ? Theme.of(context).colorScheme.secondary
+                        : Theme.of(context).colorScheme.surface,
+                    width: _meal.isFavorite ? 2.5 : 0),
               ),
               child: IntrinsicHeight(
                   child: Row(
@@ -53,6 +62,7 @@ class MealListEntry extends StatelessWidget {
                         meal: _meal,
                         height: 86,
                         width: 86,
+                        enableFavoriteButton: false,
                         onImagePressed: () => {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => DetailsPage(

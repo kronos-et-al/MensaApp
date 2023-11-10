@@ -71,13 +71,19 @@ class MealPreviewImage extends StatelessWidget {
                   Align(
                       alignment: const Alignment(1.0, -1.0),
                       child: Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Icon(
-                              _meal.isFavorite
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              size: 24,
-                              color: Theme.of(context).colorScheme.secondary))),
+                        padding: const EdgeInsets.all(4),
+                        child: Stack(
+                          children: [
+                            Icon(Icons.favorite,
+                                size: 28,
+                                color: Theme.of(context).colorScheme.onBackground),
+                            Icon(Icons.favorite_border,
+                                size: 28,
+                                color:
+                                    Theme.of(context).colorScheme.background),
+                          ],
+                        ),
+                      )),
               ])));
     } else {
       return Material(
@@ -91,28 +97,38 @@ class MealPreviewImage extends StatelessWidget {
                     width: _width,
                     height: _height,
                     decoration: BoxDecoration(
-                        borderRadius: _borderRadius, color: theme.colorScheme.primary),
+                        borderRadius: _borderRadius,
+                        color: theme.colorScheme.primary),
                     child: ClipRRect(
                         borderRadius: _borderRadius,
                         child: Stack(children: [
                           Center(
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  LogoIcon(size: min(96, _height! - 16)),
-                                ],
-                              )),
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              LogoIcon(size: min(96, _height! - 16)),
+                            ],
+                          )),
                           if (_enableFavoriteButton && _meal.isFavorite)
                             Align(
                                 alignment: const Alignment(1.0, -1.0),
                                 child: Padding(
-                                    padding: const EdgeInsets.all(4),
-                                    child: Icon(
-                                        _meal.isFavorite
-                                            ? Icons.favorite
-                                            : Icons.favorite_border,
-                                        size: 24,
-                                        color: Theme.of(context).colorScheme.secondary))),
+                                  padding: const EdgeInsets.all(4),
+                                  child: Stack(
+                                    children: [
+                                      Icon(Icons.favorite,
+                                          size: 28,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface),
+                                      Icon(Icons.favorite_border,
+                                          size: 28,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .surface),
+                                    ],
+                                  ),
+                                ))
                         ]))),
                 imageBuilder: (context, imageProvider) => Container(
                     width: _width,
@@ -129,15 +145,22 @@ class MealPreviewImage extends StatelessWidget {
                         Align(
                             alignment: const Alignment(1.0, -1.0),
                             child: Padding(
-                                padding: const EdgeInsets.all(4),
-                                child: Icon(
-                                    _meal.isFavorite
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
-                                    size: 24,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondary))),
+                              padding: const EdgeInsets.all(4),
+                              child: Stack(
+                                children: [
+                                  Icon(Icons.favorite,
+                                      size: 28,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                  Icon(Icons.favorite_border,
+                                      size: 28,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surface),
+                                ],
+                              ),
+                            )),
                     ])),
               )));
     }

@@ -32,7 +32,7 @@ class MealGridEntry extends StatelessWidget {
             width: _width,
             child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                    EdgeInsets.symmetric(vertical: _meal.isFavorite ? 5.5 : 8, horizontal: _meal.isFavorite ? 9.5 : 12),
                 child: GestureDetector(
                     onTap: () => {
                           Navigator.of(context).push(MaterialPageRoute(
@@ -50,13 +50,14 @@ class MealGridEntry extends StatelessWidget {
                             color: _meal.isFavorite
                                 ? Theme.of(context).colorScheme.secondary
                                 : Theme.of(context).colorScheme.surface,
-                            width: _meal.isFavorite ? 2 : 0),
+                            width: _meal.isFavorite ? 2.5 : 0),
                       ),
                       child: Column(children: [
                         MealPreviewImage(
                             meal: _meal,
                             height: 180,
                             displayFavorite: true,
+                            enableFavoriteButton: true,
                             onImagePressed: () => {
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (context) => DetailsPage(
