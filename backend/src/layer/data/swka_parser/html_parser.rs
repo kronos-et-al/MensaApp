@@ -86,7 +86,7 @@
 //! ```
 
 use crate::interface::mensa_parser::{
-    model::{Dish, ParseCanteen, ParseLine},
+    model::{Dish, NutritionData, ParseCanteen, ParseLine},
     ParseError,
 };
 use crate::util::{Additive, Allergen, Date, MealType, Price};
@@ -117,6 +117,12 @@ lazy_static! {
     static ref ALLERGEN_REGEX: Regex = Regex::new(r"[A-Z]\w+").expect(REGEX_PARSE_E_MSG);
     /// A regex for getting additives. An additive consists of one or two digits.
     static ref ADDITIVE_REGEX: Regex = Regex::new(r"[0-9]{1,2}").expect(REGEX_PARSE_E_MSG);
+
+    static ref ENERGY_REGEX: Regex = Regex::new(r"([1-9][0-9]*) kcal").expect(REGEX_PARSE_E_MSG);
+
+    static ref WEIGHT_REGEX: Regex = Regex::new(r"([1-9][0-9]*) g").expect(REGEX_PARSE_E_MSG);
+
+    static ref ID_REGEX: Regex = Regex::new(r"[0-9]{18,}").expect(REGEX_PARSE_E_MSG);
 }
 
 const DISH_NODE_CLASS_SELECTOR_PREFIX: &str = "tr.mt-";
@@ -296,6 +302,7 @@ impl HTMLParser {
             additives: Self::get_dish_additives(dish_node).unwrap_or_default(),
             meal_type: Self::get_dish_type(dish_node).unwrap_or(MealType::Unknown),
             env_score: Self::get_dish_env_score(dish_node).unwrap_or_default(),
+            nutrition_data: Self::get_dish_nutrition_data(dish_node),
         })
     }
 
@@ -385,6 +392,42 @@ impl HTMLParser {
             .parse::<u32>()
             .ok()
     }
+
+    fn get_dish_nutrition_data(dish_node: &ElementRef) -> Option<NutritionData> {
+        let nutrition_node = Self::get_nutrition_node(dish_node)?;
+        Some(NutritionData {
+            energy: Self::get_nutrients(&nutrition_node, "energie", &ENERGY_REGEX)?,
+            protein: Self::get_nutrients(&nutrition_node, "proteine", &WEIGHT_REGEX)?,
+            carbohydrates: Self::get_nutrients(&nutrition_node, "kohlenhydrate", &WEIGHT_REGEX)?,
+            sugar: Self::get_nutrients(&nutrition_node, "zucker", &WEIGHT_REGEX)?,
+            fat: Self::get_nutrients(&nutrition_node, "fett", &WEIGHT_REGEX)?,
+            saturated_fat: Self::get_nutrients(&nutrition_node, "gesaettigt", &WEIGHT_REGEX)?,
+            salt: Self::get_nutrients(&nutrition_node, "salz", &WEIGHT_REGEX)?,
+        })
+    }
+
+    fn get_nutrition_node<'a>(dish_node: &'a ElementRef<'a>) -> Option<ElementRef<'a>> {
+        let meal_id = Self::get_meal_id(dish_node)?;
+        let string = format!("td.nutrition_facts_row.co2_id-{meal_id}");
+        let selector = Selector::parse(&string).ok()?;
+        let node = ElementRef::wrap(dish_node.parent()?)?;
+        node.select(&selector).next()
+    }
+
+    fn get_meal_id(dish_node: &ElementRef) -> Option<String> {
+        Some(ID_REGEX.find(&dish_node.html())?.as_str().to_string())
+    }
+
+    fn get_nutrients(nutrition_node: &ElementRef, name: &str, regex: &Regex) -> Option<u32> {
+        let selector = Selector::parse(&format!("div.{name}")).ok()?;
+        let node = nutrition_node.select(&selector).next()?;
+        regex
+            .captures(&node.inner_html())?
+            .get(1)?
+            .as_str()
+            .parse()
+            .ok()
+    }
 }
 
 #[cfg(test)]
@@ -458,7 +501,7 @@ mod tests {
         let file_contents = read_from_file(path).unwrap();
         let canteen_data = HTMLParser::new().transform(&file_contents, 42_u32).unwrap();
 
-        //write_output_to_file(path, &canteen_data);
+        let _ = write_output_to_file(path, &canteen_data);
         let expected = read_from_file(&path.replace(".html", ".txt"))
             .unwrap()
             .replace("\r\n", "\n");

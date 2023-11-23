@@ -21,6 +21,17 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 1,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 797,
+                                    protein: 34,
+                                    carbohydrates: 94,
+                                    sugar: 10,
+                                    fat: 30,
+                                    saturated_fat: 10,
+                                    salt: 6,
+                                },
+                            ),
                         },
                         Dish {
                             name: "zu jedem Gericht reichen wir ein Dessert oder Salat",
@@ -34,6 +45,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "2 Dampfnudeln mit Vanillesoße",
@@ -51,6 +63,17 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 2,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 716,
+                                    protein: 19,
+                                    carbohydrates: 114,
+                                    sugar: 25,
+                                    fat: 19,
+                                    saturated_fat: 3,
+                                    salt: 3,
+                                },
+                            ),
                         },
                     ],
                     pos: 0,
@@ -70,6 +93,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Mediterraner Gemüsegulasch mit Räuchertofu, dazu Sommerweizen",
@@ -87,6 +111,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 1,
@@ -114,6 +139,7 @@
                             ],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Blattsalat",
@@ -127,6 +153,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagesdessert",
@@ -140,6 +167,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 2,
@@ -159,6 +187,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagesdessert",
@@ -172,6 +201,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Hausgemachte Gnocchi mit verschiedenen Soßen",
@@ -185,6 +215,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 3,
@@ -204,6 +235,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagesdessert",
@@ -217,6 +249,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagessuppe",
@@ -230,6 +263,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Cordon bleu vom Schwein mit Bratensoße",
@@ -250,6 +284,17 @@
                             ],
                             meal_type: Pork,
                             env_score: 2,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 681,
+                                    protein: 11,
+                                    carbohydrates: 48,
+                                    sugar: 11,
+                                    fat: 48,
+                                    saturated_fat: 4,
+                                    salt: 5,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Kroketten",
@@ -268,6 +313,17 @@
                             ],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 583,
+                                    protein: 7,
+                                    carbohydrates: 52,
+                                    sugar: 1,
+                                    fat: 37,
+                                    saturated_fat: 3,
+                                    salt: 2,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Bohnengemüse",
@@ -285,6 +341,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 1,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 4,
@@ -304,6 +361,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Verschiedene Desserts im Portionsbecher",
@@ -323,6 +381,7 @@
                             ],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Schweine- und Hähnchenschnitzel, vegetarische Leckereien, Salatbuffet und Pommes - alles zur Wahl zu einem Preis",
@@ -347,6 +406,17 @@
                             ],
                             meal_type: Pork,
                             env_score: 0,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 837,
+                                    protein: 32,
+                                    carbohydrates: 62,
+                                    sugar: 8,
+                                    fat: 49,
+                                    saturated_fat: 5,
+                                    salt: 3,
+                                },
+                            ),
                         },
                     ],
                     pos: 5,
@@ -366,6 +436,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Hamburger Buffet Preis je 100 g",
@@ -390,6 +461,17 @@
                             ],
                             meal_type: Beef,
                             env_score: 0,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 597,
+                                    protein: 33,
+                                    carbohydrates: 55,
+                                    sugar: 7,
+                                    fat: 25,
+                                    saturated_fat: 10,
+                                    salt: 4,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings, Preis je 100 g",
@@ -406,6 +488,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 6,
@@ -425,6 +508,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 7,
@@ -447,6 +531,17 @@
                             additives: [],
                             meal_type: Beef,
                             env_score: 1,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 527,
+                                    protein: 11,
+                                    carbohydrates: 35,
+                                    sugar: 32,
+                                    fat: 37,
+                                    saturated_fat: 13,
+                                    salt: 5,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Vegane Tofu - Bratwurst mit Currysoße",
@@ -466,6 +561,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "koerifrites",
@@ -479,6 +575,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 2,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Zu jeder Currywurst reichen wir frisches Baguette",
@@ -494,6 +591,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 8,
@@ -517,6 +615,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tomatenstrudel",
@@ -537,6 +636,7 @@
                             ],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 9,
@@ -563,6 +663,7 @@
                             ],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza alla bolognese - Pizza mit Rinderhackfleisch, Lauch und roten Zwiebeln",
@@ -579,6 +680,7 @@
                             additives: [],
                             meal_type: BeefAw,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Mykonos vegan - Paprika, Oliven, rote Zwiebeln, vegane Käsealternative und Mais",
@@ -597,6 +699,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
@@ -614,6 +717,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Mykonos - Hirtenkäse, Paprika, Oliven, rote Zwiebeln und Mais",
@@ -632,6 +736,7 @@
                             ],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 10,
@@ -658,6 +763,7 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 12,
@@ -692,6 +798,17 @@
                             ],
                             meal_type: PorkAw,
                             env_score: 2,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 943,
+                                    protein: 32,
+                                    carbohydrates: 85,
+                                    sugar: 5,
+                                    fat: 51,
+                                    saturated_fat: 19,
+                                    salt: 4,
+                                },
+                            ),
                         },
                         Dish {
                             name: "zu jedem Gericht reichen wir frisches Obst oder Salat",
@@ -707,6 +824,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pasta in Tomaten - Broccolisoße mit Reibekäse",
@@ -726,6 +844,17 @@
                             ],
                             meal_type: Vegetarian,
                             env_score: 3,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 856,
+                                    protein: 27,
+                                    carbohydrates: 91,
+                                    sugar: 11,
+                                    fat: 39,
+                                    saturated_fat: 7,
+                                    salt: 4,
+                                },
+                            ),
                         },
                     ],
                     pos: 0,
@@ -751,6 +880,17 @@
                             ],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 330,
+                                    protein: 8,
+                                    carbohydrates: 55,
+                                    sugar: 3,
+                                    fat: 5,
+                                    saturated_fat: 5,
+                                    salt: 2,
+                                },
+                            ),
                         },
                         Dish {
                             name: "zu jedem Gericht reichen wir frisches Obst oder Salat",
@@ -766,6 +906,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 1,
@@ -785,6 +926,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagesdessert",
@@ -798,6 +940,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Hackfleisch - Reispfanne",
@@ -813,6 +956,17 @@
                             additives: [],
                             meal_type: BeefAw,
                             env_score: 2,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 721,
+                                    protein: 39,
+                                    carbohydrates: 86,
+                                    sugar: 7,
+                                    fat: 22,
+                                    saturated_fat: 4,
+                                    salt: 4,
+                                },
+                            ),
                         },
                     ],
                     pos: 2,
@@ -832,6 +986,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagesdessert",
@@ -845,6 +1000,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Hausgemachte Gnocchi mit verschiedenen Soßen",
@@ -858,6 +1014,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 3,
@@ -877,6 +1034,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagesdessert",
@@ -890,6 +1048,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagessuppe",
@@ -903,6 +1062,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Bifteki mit Tsatsiki",
@@ -922,6 +1082,17 @@
                             additives: [],
                             meal_type: Beef,
                             env_score: 2,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 1312,
+                                    protein: 20,
+                                    carbohydrates: 25,
+                                    sugar: 6,
+                                    fat: 127,
+                                    saturated_fat: 17,
+                                    salt: 4,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Country Potatoes",
@@ -935,6 +1106,17 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 572,
+                                    protein: 6,
+                                    carbohydrates: 55,
+                                    sugar: 3,
+                                    fat: 35,
+                                    saturated_fat: 3,
+                                    salt: 1,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Karottengemüse",
@@ -952,6 +1134,17 @@
                             ],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 91,
+                                    protein: 2,
+                                    carbohydrates: 10,
+                                    sugar: 9,
+                                    fat: 4,
+                                    saturated_fat: 2,
+                                    salt: 1,
+                                },
+                            ),
                         },
                     ],
                     pos: 4,
@@ -971,6 +1164,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Verschiedene Desserts im Portionsbecher",
@@ -990,6 +1184,7 @@
                             ],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Schweine- und Hähnchenschnitzel, vegetarische Leckereien, Salatbuffet und Pommes - alles zur Wahl zu einem Preis",
@@ -1014,6 +1209,17 @@
                             ],
                             meal_type: Pork,
                             env_score: 0,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 837,
+                                    protein: 32,
+                                    carbohydrates: 62,
+                                    sugar: 8,
+                                    fat: 49,
+                                    saturated_fat: 5,
+                                    salt: 3,
+                                },
+                            ),
                         },
                     ],
                     pos: 5,
@@ -1033,6 +1239,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Hamburger Buffet Preis je 100 g",
@@ -1057,6 +1264,17 @@
                             ],
                             meal_type: Beef,
                             env_score: 0,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 597,
+                                    protein: 33,
+                                    carbohydrates: 55,
+                                    sugar: 7,
+                                    fat: 25,
+                                    saturated_fat: 10,
+                                    salt: 4,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings, Preis je 100 g",
@@ -1073,6 +1291,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 6,
@@ -1092,6 +1311,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 7,
@@ -1114,6 +1334,17 @@
                             additives: [],
                             meal_type: Beef,
                             env_score: 1,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 527,
+                                    protein: 11,
+                                    carbohydrates: 35,
+                                    sugar: 32,
+                                    fat: 37,
+                                    saturated_fat: 13,
+                                    salt: 5,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Vegane Tofu - Bratwurst mit Currysoße",
@@ -1133,6 +1364,17 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 556,
+                                    protein: 26,
+                                    carbohydrates: 37,
+                                    sugar: 34,
+                                    fat: 32,
+                                    saturated_fat: 3,
+                                    salt: 4,
+                                },
+                            ),
                         },
                         Dish {
                             name: "koerifrites",
@@ -1146,6 +1388,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 2,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Zu jeder Currywurst reichen wir frisches Baguette",
@@ -1161,6 +1404,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 8,
@@ -1184,6 +1428,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Fleischkäse im Brötchen",
@@ -1204,6 +1449,7 @@
                             ],
                             meal_type: Pork,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 9,
@@ -1230,6 +1476,7 @@
                             ],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza alla bolognese - Pizza mit Rinderhackfleisch, Lauch und roten Zwiebeln",
@@ -1246,6 +1493,7 @@
                             additives: [],
                             meal_type: BeefAw,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Mykonos vegan - Paprika, Oliven, rote Zwiebeln, vegane Käsealternative und Mais",
@@ -1264,6 +1512,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
@@ -1281,6 +1530,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Mykonos - Hirtenkäse, Paprika, Oliven, rote Zwiebeln und Mais",
@@ -1299,6 +1549,7 @@
                             ],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 10,
@@ -1325,6 +1576,7 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 12,
@@ -1353,6 +1605,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Linseneintopf mit Saiten und Baguettebrötchen",
@@ -1373,6 +1626,17 @@
                             ],
                             meal_type: PorkAw,
                             env_score: 2,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 951,
+                                    protein: 45,
+                                    carbohydrates: 100,
+                                    sugar: 4,
+                                    fat: 35,
+                                    saturated_fat: 12,
+                                    salt: 4,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Linseneintopf mit veganer Soja - Wurst und Baguettebrötchen",
@@ -1391,6 +1655,17 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 849,
+                                    protein: 47,
+                                    carbohydrates: 105,
+                                    sugar: 4,
+                                    fat: 21,
+                                    saturated_fat: 2,
+                                    salt: 4,
+                                },
+                            ),
                         },
                     ],
                     pos: 0,
@@ -1410,6 +1685,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tomaten-Chili-Knoblauchspaghetti mit Tofu",
@@ -1428,6 +1704,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 1,
@@ -1447,6 +1724,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Schupfnudel-Karotten-Champignon-Pfanne mit Hirtenkäse-Quark-Dip",
@@ -1464,6 +1742,17 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 2,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 860,
+                                    protein: 30,
+                                    carbohydrates: 116,
+                                    sugar: 10,
+                                    fat: 28,
+                                    saturated_fat: 5,
+                                    salt: 2,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Verschiedene Dessert",
@@ -1481,6 +1770,7 @@
                             ],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 2,
@@ -1500,6 +1790,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Hausgemachte Gnocchi mit verschiedenen Soßen",
@@ -1513,6 +1804,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Verschiedene Dessert",
@@ -1530,6 +1822,7 @@
                             ],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 3,
@@ -1549,6 +1842,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagessuppe",
@@ -1562,6 +1856,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Party Frikadellen mit Senfsoße",
@@ -1583,6 +1878,17 @@
                             ],
                             meal_type: Pork,
                             env_score: 2,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 284,
+                                    protein: 9,
+                                    carbohydrates: 18,
+                                    sugar: 6,
+                                    fat: 18,
+                                    saturated_fat: 8,
+                                    salt: 4,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Sommergemüse",
@@ -1598,6 +1904,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Langkornreis",
@@ -1611,6 +1918,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Verschiedene Dessert",
@@ -1628,6 +1936,7 @@
                             ],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 4,
@@ -1653,6 +1962,7 @@
                             ],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Schweine- und Hähnchenschnitzel, vegetarische Leckereien, Salatbuffet und Pommes - alles zur Wahl zu einem Preis",
@@ -1677,6 +1987,17 @@
                             ],
                             meal_type: Pork,
                             env_score: 0,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 837,
+                                    protein: 32,
+                                    carbohydrates: 62,
+                                    sugar: 8,
+                                    fat: 49,
+                                    saturated_fat: 5,
+                                    salt: 3,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Verschiedene Dessert",
@@ -1694,6 +2015,7 @@
                             ],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 5,
@@ -1724,6 +2046,17 @@
                             ],
                             meal_type: Beef,
                             env_score: 0,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 597,
+                                    protein: 33,
+                                    carbohydrates: 55,
+                                    sugar: 7,
+                                    fat: 25,
+                                    saturated_fat: 10,
+                                    salt: 4,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings, Preis je 100 g",
@@ -1740,6 +2073,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Verschiedene Dessert",
@@ -1757,6 +2091,7 @@
                             ],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 6,
@@ -1776,6 +2111,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 7,
@@ -1798,6 +2134,17 @@
                             additives: [],
                             meal_type: Beef,
                             env_score: 1,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 527,
+                                    protein: 11,
+                                    carbohydrates: 35,
+                                    sugar: 32,
+                                    fat: 37,
+                                    saturated_fat: 13,
+                                    salt: 5,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Vegane Tofu - Bratwurst mit Currysoße",
@@ -1817,6 +2164,17 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 556,
+                                    protein: 26,
+                                    carbohydrates: 37,
+                                    sugar: 34,
+                                    fat: 32,
+                                    saturated_fat: 3,
+                                    salt: 4,
+                                },
+                            ),
                         },
                         Dish {
                             name: "koerifrites",
@@ -1830,6 +2188,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 2,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Zu jeder Currywurst reichen wir frisches Baguette",
@@ -1845,6 +2204,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 8,
@@ -1873,6 +2233,7 @@
                             ],
                             meal_type: Pork,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Käse Mozzarella Fächer",
@@ -1890,6 +2251,7 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 9,
@@ -1916,6 +2278,7 @@
                             ],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza alla bolognese - Pizza mit Rinderhackfleisch, Lauch und roten Zwiebeln",
@@ -1932,6 +2295,7 @@
                             additives: [],
                             meal_type: BeefAw,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Mykonos vegan - Paprika, Oliven, rote Zwiebeln, vegane Käsealternative und Mais",
@@ -1950,6 +2314,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
@@ -1967,6 +2332,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Mykonos - Hirtenkäse, Paprika, Oliven, rote Zwiebeln und Mais",
@@ -1985,6 +2351,7 @@
                             ],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 10,
@@ -2011,6 +2378,7 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 12,
@@ -2047,6 +2415,17 @@
                             ],
                             meal_type: Pork,
                             env_score: 2,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 743,
+                                    protein: 37,
+                                    carbohydrates: 87,
+                                    sugar: 7,
+                                    fat: 24,
+                                    saturated_fat: 13,
+                                    salt: 3,
+                                },
+                            ),
                         },
                         Dish {
                             name: "zu jedem Gericht reichen wir frisches Obst oder Salat",
@@ -2062,6 +2441,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pasta mit Rote Linsen - Bolognese und Reibekäse",
@@ -2079,6 +2459,17 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 2,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 1173,
+                                    protein: 62,
+                                    carbohydrates: 152,
+                                    sugar: 10,
+                                    fat: 28,
+                                    saturated_fat: 9,
+                                    salt: 5,
+                                },
+                            ),
                         },
                     ],
                     pos: 0,
@@ -2100,6 +2491,17 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 796,
+                                    protein: 19,
+                                    carbohydrates: 107,
+                                    sugar: 16,
+                                    fat: 29,
+                                    saturated_fat: 15,
+                                    salt: 1,
+                                },
+                            ),
                         },
                         Dish {
                             name: "zu jedem Gericht reichen wir frisches Obst oder Salat",
@@ -2115,6 +2517,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 1,
@@ -2134,6 +2537,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagesdessert",
@@ -2147,6 +2551,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Solidaritätsessen: Vegane Paella",
@@ -2165,6 +2570,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 2,
@@ -2184,6 +2590,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagesdessert",
@@ -2197,6 +2604,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Hausgemachte Gnocchi mit verschiedenen Soßen",
@@ -2210,6 +2618,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 3,
@@ -2229,6 +2638,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagesdessert",
@@ -2242,6 +2652,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagessuppe",
@@ -2255,6 +2666,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Kalbfleischbällchen mit Paprikasoße",
@@ -2274,6 +2686,17 @@
                             ],
                             meal_type: Beef,
                             env_score: 1,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 429,
+                                    protein: 31,
+                                    carbohydrates: 18,
+                                    sugar: 3,
+                                    fat: 24,
+                                    saturated_fat: 9,
+                                    salt: 7,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Ofenkartoffel",
@@ -2287,6 +2710,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Balkangemüse",
@@ -2304,6 +2728,17 @@
                             ],
                             meal_type: Vegan,
                             env_score: 2,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 154,
+                                    protein: 3,
+                                    carbohydrates: 15,
+                                    sugar: 9,
+                                    fat: 7,
+                                    saturated_fat: 3,
+                                    salt: 1,
+                                },
+                            ),
                         },
                     ],
                     pos: 4,
@@ -2323,6 +2758,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Verschiedene Desserts im Portionsbecher",
@@ -2342,6 +2778,7 @@
                             ],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Schweine- und Hähnchenschnitzel, vegetarische Leckereien, Salatbuffet und Pommes - alles zur Wahl zu einem Preis",
@@ -2366,6 +2803,17 @@
                             ],
                             meal_type: Pork,
                             env_score: 0,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 837,
+                                    protein: 32,
+                                    carbohydrates: 62,
+                                    sugar: 8,
+                                    fat: 49,
+                                    saturated_fat: 5,
+                                    salt: 3,
+                                },
+                            ),
                         },
                     ],
                     pos: 5,
@@ -2385,6 +2833,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Hamburger Buffet Preis je 100 g",
@@ -2409,6 +2858,17 @@
                             ],
                             meal_type: Beef,
                             env_score: 0,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 597,
+                                    protein: 33,
+                                    carbohydrates: 55,
+                                    sugar: 7,
+                                    fat: 25,
+                                    saturated_fat: 10,
+                                    salt: 4,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings, Preis je 100 g",
@@ -2425,6 +2885,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 6,
@@ -2444,6 +2905,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 7,
@@ -2466,6 +2928,17 @@
                             additives: [],
                             meal_type: Beef,
                             env_score: 1,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 527,
+                                    protein: 11,
+                                    carbohydrates: 35,
+                                    sugar: 32,
+                                    fat: 37,
+                                    saturated_fat: 13,
+                                    salt: 5,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Vegane Tofu - Bratwurst mit Currysoße",
@@ -2485,6 +2958,17 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 556,
+                                    protein: 26,
+                                    carbohydrates: 37,
+                                    sugar: 34,
+                                    fat: 32,
+                                    saturated_fat: 3,
+                                    salt: 4,
+                                },
+                            ),
                         },
                         Dish {
                             name: "koerifrites",
@@ -2498,6 +2982,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 2,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Zu jeder Currywurst reichen wir frisches Baguette",
@@ -2513,6 +2998,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 8,
@@ -2536,6 +3022,7 @@
                             additives: [],
                             meal_type: Pork,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Spinatstrudel",
@@ -2553,6 +3040,7 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 9,
@@ -2579,6 +3067,7 @@
                             ],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza alla bolognese - Pizza mit Rinderhackfleisch, Lauch und roten Zwiebeln",
@@ -2595,6 +3084,7 @@
                             additives: [],
                             meal_type: BeefAw,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Mykonos vegan - Paprika, Oliven, rote Zwiebeln, vegane Käsealternative und Mais",
@@ -2613,6 +3103,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
@@ -2630,6 +3121,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Mykonos - Hirtenkäse, Paprika, Oliven, rote Zwiebeln und Mais",
@@ -2648,6 +3140,7 @@
                             ],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 10,
@@ -2674,6 +3167,7 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 12,
@@ -2702,6 +3196,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Scharfe Sombrero - Reispfanne mit Hackfleisch, Gemüse und Tomatensoße",
@@ -2718,6 +3213,17 @@
                             additives: [],
                             meal_type: BeefAw,
                             env_score: 2,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 737,
+                                    protein: 40,
+                                    carbohydrates: 109,
+                                    sugar: 7,
+                                    fat: 14,
+                                    saturated_fat: 3,
+                                    salt: 3,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Scharfe Sombrero - Reispfanne mit knusprigen Gemüse Crossini und Tomatensoße",
@@ -2736,6 +3242,17 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 2,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 851,
+                                    protein: 26,
+                                    carbohydrates: 136,
+                                    sugar: 22,
+                                    fat: 20,
+                                    saturated_fat: 4,
+                                    salt: 3,
+                                },
+                            ),
                         },
                     ],
                     pos: 0,
@@ -2758,6 +3275,17 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 716,
+                                    protein: 13,
+                                    carbohydrates: 73,
+                                    sugar: 13,
+                                    fat: 38,
+                                    saturated_fat: 3,
+                                    salt: 4,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Veganes Tagesdessert",
@@ -2771,6 +3299,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "zu jedem Gericht reichen wir frisches Obst oder Salat",
@@ -2786,6 +3315,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 1,
@@ -2805,6 +3335,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagesdessert",
@@ -2818,6 +3349,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Spätzle-Pilz-Pfanne",
@@ -2837,6 +3369,17 @@
                             ],
                             meal_type: Vegetarian,
                             env_score: 2,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 510,
+                                    protein: 17,
+                                    carbohydrates: 41,
+                                    sugar: 2,
+                                    fat: 29,
+                                    saturated_fat: 13,
+                                    salt: 2,
+                                },
+                            ),
                         },
                     ],
                     pos: 2,
@@ -2856,6 +3399,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagesdessert",
@@ -2869,6 +3413,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Hausgemachte Gnocchi mit verschiedenen Soßen",
@@ -2882,6 +3427,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 3,
@@ -2901,6 +3447,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagesdessert",
@@ -2914,6 +3461,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Tagessuppe",
@@ -2927,6 +3475,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Paniertes Alaska Seelachsfilet mit Kräuterdip",
@@ -2945,6 +3494,17 @@
                             additives: [],
                             meal_type: Fish,
                             env_score: 2,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 791,
+                                    protein: 34,
+                                    carbohydrates: 31,
+                                    sugar: 5,
+                                    fat: 58,
+                                    saturated_fat: 5,
+                                    salt: 2,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Mischgemüse",
@@ -2962,6 +3522,17 @@
                             ],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 91,
+                                    protein: 3,
+                                    carbohydrates: 7,
+                                    sugar: 6,
+                                    fat: 4,
+                                    saturated_fat: 2,
+                                    salt: 1,
+                                },
+                            ),
                         },
                         Dish {
                             name: "hausgemachter Kartoffelsalat",
@@ -2978,6 +3549,17 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 290,
+                                    protein: 4,
+                                    carbohydrates: 35,
+                                    sugar: 2,
+                                    fat: 13,
+                                    saturated_fat: 1,
+                                    salt: 1,
+                                },
+                            ),
                         },
                     ],
                     pos: 4,
@@ -2997,6 +3579,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Verschiedene Desserts im Portionsbecher",
@@ -3016,6 +3599,7 @@
                             ],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Schweine- und Hähnchenschnitzel, vegetarische Leckereien, Salatbuffet und Pommes - alles zur Wahl zu einem Preis",
@@ -3040,6 +3624,17 @@
                             ],
                             meal_type: Pork,
                             env_score: 0,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 837,
+                                    protein: 32,
+                                    carbohydrates: 62,
+                                    sugar: 8,
+                                    fat: 49,
+                                    saturated_fat: 5,
+                                    salt: 3,
+                                },
+                            ),
                         },
                     ],
                     pos: 5,
@@ -3070,6 +3665,17 @@
                             ],
                             meal_type: Beef,
                             env_score: 0,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 597,
+                                    protein: 33,
+                                    carbohydrates: 55,
+                                    sugar: 7,
+                                    fat: 25,
+                                    saturated_fat: 10,
+                                    salt: 4,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings, Preis je 100 g",
@@ -3086,6 +3692,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 6,
@@ -3105,6 +3712,7 @@
                             additives: [],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 7,
@@ -3127,6 +3735,17 @@
                             additives: [],
                             meal_type: Beef,
                             env_score: 1,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 527,
+                                    protein: 11,
+                                    carbohydrates: 35,
+                                    sugar: 32,
+                                    fat: 37,
+                                    saturated_fat: 13,
+                                    salt: 5,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Vegane Tofu - Bratwurst mit Currysoße",
@@ -3146,6 +3765,17 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 556,
+                                    protein: 26,
+                                    carbohydrates: 37,
+                                    sugar: 34,
+                                    fat: 32,
+                                    saturated_fat: 3,
+                                    salt: 4,
+                                },
+                            ),
                         },
                         Dish {
                             name: "koerifrites",
@@ -3159,6 +3789,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 2,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Zu jeder Currywurst reichen wir frisches Baguette",
@@ -3174,6 +3805,7 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 3,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 8,
@@ -3199,6 +3831,7 @@
                             ],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Börek mit Spinatfüllung",
@@ -3220,6 +3853,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 9,
@@ -3246,6 +3880,7 @@
                             ],
                             meal_type: Unknown,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza alla bolognese - Pizza mit Rinderhackfleisch, Lauch und roten Zwiebeln",
@@ -3262,6 +3897,7 @@
                             additives: [],
                             meal_type: BeefAw,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Mykonos vegan - Paprika, Oliven, rote Zwiebeln, vegane Käsealternative und Mais",
@@ -3280,6 +3916,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
@@ -3297,6 +3934,7 @@
                             ],
                             meal_type: Vegan,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Mykonos - Hirtenkäse, Paprika, Oliven, rote Zwiebeln und Mais",
@@ -3315,6 +3953,7 @@
                             ],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 10,
@@ -3341,6 +3980,7 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 0,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 12,

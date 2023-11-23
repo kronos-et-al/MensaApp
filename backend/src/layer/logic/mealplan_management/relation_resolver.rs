@@ -170,6 +170,7 @@ mod test {
             additives: vec![],
             meal_type: MealType::Vegan,
             env_score: 0,
+            nutrition_data: None,
         }
     }
 
@@ -186,6 +187,7 @@ mod test {
             additives: vec![],
             meal_type: MealType::Vegan,
             env_score: 0,
+            nutrition_data: None,
         }
     }
 

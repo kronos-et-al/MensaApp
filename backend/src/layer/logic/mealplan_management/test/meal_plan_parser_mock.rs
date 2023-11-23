@@ -30,6 +30,7 @@ fn get_dish(dish_number: u32) -> Dish {
         additives: vec![Alcohol],
         meal_type: Vegan,
         env_score: 0,
+        nutrition_data: None,
     }
 }
 

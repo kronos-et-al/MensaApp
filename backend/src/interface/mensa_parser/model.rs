@@ -39,4 +39,25 @@ pub struct Dish {
     pub meal_type: MealType,
     /// The environmental score of the dish, which is an integer between 0 and 3. (Higher is better) 0 indicates that no score was present.
     pub env_score: u32,
+    /// The nutritional information of the dish
+    pub nutrition_data: Option<NutritionData>,
+}
+
+/// The nutrients of a dish
+#[derive(Debug)]
+pub struct NutritionData {
+    /// Energy in Kcal
+    pub energy: u32,
+    /// Protein in grams
+    pub protein: u32,
+    /// Carbs in grams
+    pub carbohydrates: u32,
+    /// Sugar in grams
+    pub sugar: u32,
+    /// Fat in grams
+    pub fat: u32,
+    /// Saturated fat in grams
+    pub saturated_fat: u32,
+    /// Salt in grams
+    pub salt: u32,
 }
