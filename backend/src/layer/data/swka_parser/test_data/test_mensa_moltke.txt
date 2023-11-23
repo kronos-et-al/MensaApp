@@ -144,7 +144,17 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 0,
-                            nutrition_data: None,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 330,
+                                    protein: 3,
+                                    carbohydrates: 65,
+                                    sugar: 7,
+                                    fat: 5,
+                                    saturated_fat: 3,
+                                    salt: 0,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Dessertauswahl Diverse Desserts ab 0,50 EUR bis",
@@ -162,7 +172,17 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 0,
-                            nutrition_data: None,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 330,
+                                    protein: 3,
+                                    carbohydrates: 65,
+                                    sugar: 7,
+                                    fat: 5,
+                                    saturated_fat: 3,
+                                    salt: 0,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Salat",
@@ -248,7 +268,17 @@
                             ],
                             meal_type: Unknown,
                             env_score: 3,
-                            nutrition_data: None,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 113,
+                                    protein: 2,
+                                    carbohydrates: 18,
+                                    sugar: 15,
+                                    fat: 3,
+                                    saturated_fat: 2,
+                                    salt: 0,
+                                },
+                            ),
                         },
                         Dish {
                             name: "2 Dampfnudeln mit Vanillesoße",
@@ -394,7 +424,17 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 2,
-                            nutrition_data: None,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 737,
+                                    protein: 7,
+                                    carbohydrates: 67,
+                                    sugar: 0,
+                                    fat: 47,
+                                    saturated_fat: 8,
+                                    salt: 2,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Zu jeder Currywurst reichen wir frisches Baguette",
@@ -535,7 +575,17 @@
                             ],
                             meal_type: Vegan,
                             env_score: 3,
-                            nutrition_data: None,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 551,
+                                    protein: 25,
+                                    carbohydrates: 64,
+                                    sugar: 8,
+                                    fat: 19,
+                                    saturated_fat: 3,
+                                    salt: 0,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Dessertauswahl Diverse Desserts ab 0,50 EUR bis",
@@ -553,7 +603,17 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 0,
-                            nutrition_data: None,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 330,
+                                    protein: 3,
+                                    carbohydrates: 65,
+                                    sugar: 7,
+                                    fat: 5,
+                                    saturated_fat: 3,
+                                    salt: 0,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Salat",
@@ -788,7 +848,17 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 2,
-                            nutrition_data: None,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 737,
+                                    protein: 7,
+                                    carbohydrates: 67,
+                                    sugar: 0,
+                                    fat: 47,
+                                    saturated_fat: 8,
+                                    salt: 2,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Zu jeder Currywurst reichen wir frisches Baguette",
@@ -954,7 +1024,17 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 0,
-                            nutrition_data: None,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 330,
+                                    protein: 3,
+                                    carbohydrates: 65,
+                                    sugar: 7,
+                                    fat: 5,
+                                    saturated_fat: 3,
+                                    salt: 0,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Dessertauswahl Diverse Desserts ab 0,50 EUR bis",
@@ -972,7 +1052,17 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 0,
-                            nutrition_data: None,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 330,
+                                    protein: 3,
+                                    carbohydrates: 65,
+                                    sugar: 7,
+                                    fat: 5,
+                                    saturated_fat: 3,
+                                    salt: 0,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Salat",
@@ -1208,7 +1298,17 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 2,
-                            nutrition_data: None,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 737,
+                                    protein: 7,
+                                    carbohydrates: 67,
+                                    sugar: 0,
+                                    fat: 47,
+                                    saturated_fat: 8,
+                                    salt: 2,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Zu jeder Currywurst reichen wir frisches Baguette",
@@ -1378,7 +1478,17 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 0,
-                            nutrition_data: None,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 330,
+                                    protein: 3,
+                                    carbohydrates: 65,
+                                    sugar: 7,
+                                    fat: 5,
+                                    saturated_fat: 3,
+                                    salt: 0,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Salat",
@@ -1637,7 +1747,17 @@
                             additives: [],
                             meal_type: Vegan,
                             env_score: 2,
-                            nutrition_data: None,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 737,
+                                    protein: 7,
+                                    carbohydrates: 67,
+                                    sugar: 0,
+                                    fat: 47,
+                                    saturated_fat: 8,
+                                    salt: 2,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Zu jeder Currywurst reichen wir frisches Baguette",
@@ -1806,7 +1926,17 @@
                             additives: [],
                             meal_type: Vegetarian,
                             env_score: 0,
-                            nutrition_data: None,
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 330,
+                                    protein: 3,
+                                    carbohydrates: 65,
+                                    sugar: 7,
+                                    fat: 5,
+                                    saturated_fat: 3,
+                                    salt: 0,
+                                },
+                            ),
                         },
                         Dish {
                             name: "Salat",

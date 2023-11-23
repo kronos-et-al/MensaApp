@@ -118,9 +118,9 @@ lazy_static! {
     /// A regex for getting additives. An additive consists of one or two digits.
     static ref ADDITIVE_REGEX: Regex = Regex::new(r"[0-9]{1,2}").expect(REGEX_PARSE_E_MSG);
 
-    static ref ENERGY_REGEX: Regex = Regex::new(r"([1-9][0-9]*) kcal").expect(REGEX_PARSE_E_MSG);
+    static ref ENERGY_REGEX: Regex = Regex::new(r"([0-9]+) kcal").expect(REGEX_PARSE_E_MSG);
 
-    static ref WEIGHT_REGEX: Regex = Regex::new(r"([1-9][0-9]*) g").expect(REGEX_PARSE_E_MSG);
+    static ref WEIGHT_REGEX: Regex = Regex::new(r"([0-9]+) g").expect(REGEX_PARSE_E_MSG);
 
     static ref ID_REGEX: Regex = Regex::new(r"[0-9]{18,}").expect(REGEX_PARSE_E_MSG);
 }
@@ -501,7 +501,7 @@ mod tests {
         let file_contents = read_from_file(path).unwrap();
         let canteen_data = HTMLParser::new().transform(&file_contents, 42_u32).unwrap();
 
-        let _ = write_output_to_file(path, &canteen_data);
+        //let _ = write_output_to_file(path, &canteen_data);
         let expected = read_from_file(&path.replace(".html", ".txt"))
             .unwrap()
             .replace("\r\n", "\n");
