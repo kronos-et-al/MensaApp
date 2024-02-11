@@ -2,7 +2,7 @@
 pub mod model;
 
 use crate::interface::persistent_data::model::{ApiKey, Canteen, Image, Line, Meal, Side};
-use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason, Uuid};
+use crate::util::{Additive, Allergen, Date, FoodType, Price, ReportReason, Uuid};
 use async_trait::async_trait;
 use sqlx::migrate::MigrateError;
 use std::num::TryFromIntError;
@@ -70,7 +70,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     async fn get_similar_meal(
         &self,
         similar_name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>>;
@@ -80,7 +80,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     async fn get_similar_side(
         &self,
         similar_name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>>;
@@ -113,7 +113,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     async fn insert_meal(
         &self,
         name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Uuid>;
@@ -122,7 +122,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     async fn insert_side(
         &self,
         name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Uuid>;

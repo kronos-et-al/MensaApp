@@ -89,7 +89,7 @@ use crate::interface::mensa_parser::{
     model::{Dish, NutritionData, ParseCanteen, ParseLine},
     ParseError,
 };
-use crate::util::{Additive, Allergen, Date, MealType, Price};
+use crate::util::{Additive, Allergen, Date, FoodType, Price};
 use lazy_static::lazy_static;
 use regex::Regex;
 use scraper::element_ref::Text;
@@ -134,7 +134,7 @@ const ENV_SCORE_ATTRIBUTE_NAME: &str = "data-rating";
 
 const DATE_FORMAT: &str = "%Y-%m-%d";
 
-const NUMBER_OF_MEAL_TYPES: usize = 8;
+const NUMBER_OF_FOOD_TYPES: usize = 8;
 const PRICE_TYPE_COUNT: usize = 4;
 
 const LINE_CLOSED_MEAL_NAME: &str = "GESCHLOSSEN";
@@ -288,7 +288,7 @@ impl HTMLParser {
     }
 
     fn get_dish_nodes<'a>(line_node: &'a ElementRef<'a>) -> Vec<ElementRef<'a>> {
-        (0..NUMBER_OF_MEAL_TYPES)
+        (0..NUMBER_OF_FOOD_TYPES)
             .filter_map(|i| Selector::parse(&format!("{DISH_NODE_CLASS_SELECTOR_PREFIX}{i}")).ok())
             .flat_map(|selector| line_node.select(&selector).collect::<Vec<_>>())
             .collect()
@@ -300,7 +300,7 @@ impl HTMLParser {
             price: Self::get_dish_price(dish_node),
             allergens: Self::get_dish_allergens(dish_node).unwrap_or_default(),
             additives: Self::get_dish_additives(dish_node).unwrap_or_default(),
-            meal_type: Self::get_dish_type(dish_node).unwrap_or(MealType::Unknown),
+            food_type: Self::get_dish_type(dish_node).unwrap_or(FoodType::Unknown),
             env_score: Self::get_dish_env_score(dish_node).unwrap_or_default(),
             nutrition_data: Self::get_dish_nutrition_data(dish_node),
         })
@@ -376,12 +376,12 @@ impl HTMLParser {
             .collect()
     }
 
-    fn get_dish_type(dish_node: &ElementRef) -> Option<MealType> {
+    fn get_dish_type(dish_node: &ElementRef) -> Option<FoodType> {
         let dish_type_node = dish_node.select(&DISH_TYPE_NODE_CLASS_SELECTOR).next()?;
         dish_type_node
             .value()
             .attr(DISH_TYPE_ATTRIBUTE_NAME)
-            .map(MealType::parse)
+            .map(FoodType::parse)
     }
 
     fn get_dish_env_score(dish_node: &ElementRef) -> Option<u32> {

@@ -140,10 +140,10 @@ async fn test_complete_request() {
             meals(date: "2000-01-01") {
               id
               name
-              mealType
+              foodType
               ratings {
                 averageRating
-                ratingsCount
+                count
                 personalRating
               }
               price {
@@ -180,7 +180,7 @@ async fn test_complete_request() {
                   }
                 allergens
                 additives
-                mealType
+                foodType
               }
               line {
                 id
@@ -227,7 +227,7 @@ fragment mealPlan on Canteen {
 fragment mealInfo on Meal {
     id
     name
-    mealType
+    foodType
     price {
         ...price
     }
@@ -242,7 +242,7 @@ fragment mealInfo on Meal {
     ratings {
         averageRating
         personalRating
-        ratingsCount
+        count
     }
     images {
         id
@@ -261,7 +261,7 @@ fragment mealInfo on Meal {
         price {
             ...price
         }
-        mealType
+        foodType
     }
 }
 

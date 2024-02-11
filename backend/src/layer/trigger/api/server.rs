@@ -354,7 +354,7 @@ mod tests {
     }
 
     #[tokio::test]
-    #[should_panic = "tried to shutdown graphql server while not running"]
+    #[should_panic = "tried to shutdown server but in state finished"]
     /// test what happens when server is shutdown but not running.
     async fn test_not_running() {
         let mut server = get_test_server().await;

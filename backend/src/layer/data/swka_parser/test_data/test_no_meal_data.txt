@@ -74,7 +74,7 @@
                             additives: [
                                 PreservingAgents,
                             ],
-                            meal_type: Unknown,
+                            food_type: Unknown,
                             env_score: 0,
                             nutrition_data: None,
                         },
@@ -92,7 +92,7 @@
                             additives: [
                                 Colorant,
                             ],
-                            meal_type: Vegan,
+                            food_type: Vegan,
                             env_score: 0,
                             nutrition_data: None,
                         },
@@ -188,7 +188,7 @@
                             additives: [
                                 PreservingAgents,
                             ],
-                            meal_type: Unknown,
+                            food_type: Unknown,
                             env_score: 0,
                             nutrition_data: None,
                         },
@@ -206,7 +206,7 @@
                             additives: [
                                 Colorant,
                             ],
-                            meal_type: Vegan,
+                            food_type: Vegan,
                             env_score: 0,
                             nutrition_data: None,
                         },
@@ -302,7 +302,7 @@
                             additives: [
                                 PreservingAgents,
                             ],
-                            meal_type: Unknown,
+                            food_type: Unknown,
                             env_score: 0,
                             nutrition_data: None,
                         },
@@ -320,7 +320,7 @@
                             additives: [
                                 Colorant,
                             ],
-                            meal_type: Vegan,
+                            food_type: Vegan,
                             env_score: 0,
                             nutrition_data: None,
                         },
@@ -416,7 +416,7 @@
                             additives: [
                                 PreservingAgents,
                             ],
-                            meal_type: Unknown,
+                            food_type: Unknown,
                             env_score: 0,
                             nutrition_data: None,
                         },
@@ -434,7 +434,7 @@
                             additives: [
                                 Colorant,
                             ],
-                            meal_type: Vegan,
+                            food_type: Vegan,
                             env_score: 0,
                             nutrition_data: None,
                         },
@@ -530,7 +530,7 @@
                             additives: [
                                 PreservingAgents,
                             ],
-                            meal_type: Unknown,
+                            food_type: Unknown,
                             env_score: 0,
                             nutrition_data: None,
                         },
@@ -548,7 +548,7 @@
                             additives: [
                                 Colorant,
                             ],
-                            meal_type: Vegan,
+                            food_type: Vegan,
                             env_score: 0,
                             nutrition_data: None,
                         },

@@ -1,5 +1,5 @@
 use crate::layer::trigger::api::util::ApiUtil;
-use crate::util::MealType;
+use crate::util::FoodType;
 use crate::{
     interface::persistent_data::model,
     util::{Additive, Allergen, Date, Uuid},
@@ -19,7 +19,7 @@ pub(in super::super) struct Meal {
     name: String,
     /// Type of this meal.
     /// Here the type of meat which is contained in the meal, or whether it is vegetarian or vegan, is specified.
-    food_type: MealType,
+    food_type: FoodType,
     /// The ratings given by the users to the meal.
     ratings: Ratings,
     /// The prices of the dish each for the four groups of people students, employees, pupils and guests.
@@ -161,7 +161,7 @@ impl From<model::Meal> for Meal {
             },
             date: value.date,
             line_id: value.line_id,
-            food_type: value.meal_type,
+            food_type: value.food_type,
         }
     }
 }

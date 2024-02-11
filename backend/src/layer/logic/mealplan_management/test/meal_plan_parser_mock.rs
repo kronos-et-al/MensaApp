@@ -12,7 +12,7 @@ use crate::{
         Additive::Alcohol,
         Allergen::{Er, Pe},
         Date,
-        MealType::Vegan,
+        FoodType::Vegan,
         Price,
     },
 };
@@ -28,7 +28,7 @@ fn get_dish(dish_number: u32) -> Dish {
         },
         allergens: vec![Pe, Er],
         additives: vec![Alcohol],
-        meal_type: Vegan,
+        food_type: Vegan,
         env_score: 0,
         nutrition_data: None,
     }

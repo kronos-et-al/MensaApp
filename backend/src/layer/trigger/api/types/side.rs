@@ -1,4 +1,4 @@
-use crate::util::MealType;
+use crate::util::FoodType;
 use crate::{
     interface::persistent_data::model,
     layer::trigger::api::util::ApiUtil,
@@ -17,7 +17,7 @@ pub(in super::super) struct Side {
     /// The name of the side
     name: String,
     /// Here the type of meat which is contained in the side, or whether it is vegetarian or vegan, is specified.
-    meal_type: MealType,
+    food_type: FoodType,
     /// The price of the side
     price: Price,
 }
@@ -56,7 +56,7 @@ impl From<model::Side> for Side {
         Self {
             id: value.id,
             name: value.name,
-            meal_type: value.meal_type,
+            food_type: value.food_type,
             price: Price {
                 student: value.price.price_student,
                 employee: value.price.price_employee,

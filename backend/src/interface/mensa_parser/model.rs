@@ -1,6 +1,6 @@
 //! These structs are used for parse operations.
 
-use crate::util::{Additive, Allergen, MealType, Price};
+use crate::util::{Additive, Allergen, FoodType, Price};
 
 /// Canteen struct containing all meal plan information of a canteen. Contains raw data.
 #[derive(Debug)]
@@ -35,8 +35,8 @@ pub struct Dish {
     pub allergens: Vec<Allergen>,
     /// All containing additives. See [Additive]
     pub additives: Vec<Additive>,
-    /// Meal-Type of the dish. See [MealType]
-    pub meal_type: MealType,
+    /// Meal-Type of the dish. See [FoodType]
+    pub food_type: FoodType,
     /// The environmental score of the dish, which is an integer between 0 and 3. (Higher is better) 0 indicates that no score was present.
     pub env_score: u32,
     /// The nutritional information of the dish

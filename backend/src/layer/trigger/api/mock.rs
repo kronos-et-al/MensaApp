@@ -11,7 +11,7 @@ use crate::interface::{
         AuthDataAccess, RequestDataAccess, Result as DataResult,
     },
 };
-use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason};
+use crate::util::{Additive, Allergen, Date, FoodType, Price, ReportReason};
 
 const INVALID_UUID: &str = "invalid uuid:";
 
@@ -79,7 +79,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         let meal = Meal {
             id: Uuid::parse_str("4ab922a0-1622-4813-98a7-954272f74b5c").expect(INVALID_UUID),
             name: "dummy_getMeal".to_string(),
-            meal_type: MealType::Vegan,
+            food_type: FoodType::Vegan,
             price: Price {
                 price_student: 0,
                 price_employee: 0,
@@ -103,7 +103,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         let meal1 = Meal {
             id: Uuid::parse_str("4ab922a0-1622-4813-98a7-954272f74b5c").expect(INVALID_UUID),
             name: "dummy_meal_1".to_string(),
-            meal_type: MealType::Vegan,
+            food_type: FoodType::Vegan,
             price: Price {
                 price_student: 210,
                 price_employee: 2100,
@@ -123,7 +123,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         let meal2 = Meal {
             id: Uuid::parse_str("5fa5b832-a685-4b11-b475-f63e9844d299").expect(INVALID_UUID),
             name: "dummy_meal_2".to_string(),
-            meal_type: MealType::BeefAw,
+            food_type: FoodType::BeefAw,
             price: Price {
                 price_student: 2,
                 price_employee: 20,
@@ -143,7 +143,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         let meal3 = Meal {
             id: Uuid::parse_str("5035415d-869b-4a89-ad65-d812c781d287").expect(INVALID_UUID),
             name: "dummy_meal_3".to_string(),
-            meal_type: MealType::Vegetarian,
+            food_type: FoodType::Vegetarian,
             price: Price {
                 price_student: 42000,
                 price_employee: 4200,
@@ -167,7 +167,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         let side1 = Side {
             id: Uuid::parse_str("5ae5f6da-a9f8-4754-8e7a-e07dc79acf18").expect(INVALID_UUID),
             name: "dummy_side_1".to_string(),
-            meal_type: MealType::Vegan,
+            food_type: FoodType::Vegan,
             price: Price {
                 price_student: 320,
                 price_employee: 300,
@@ -178,7 +178,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         let side2 = Side {
             id: Uuid::parse_str("51496908-017d-4874-901b-95660abe5776").expect(INVALID_UUID),
             name: "dummy_side_2".to_string(),
-            meal_type: MealType::Fish,
+            food_type: FoodType::Fish,
             price: Price {
                 price_student: 500,
                 price_employee: 540,
@@ -189,7 +189,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         let side3 = Side {
             id: Uuid::parse_str("b75340a4-4064-4417-a868-5e602f15a884").expect(INVALID_UUID),
             name: "dummy_side_3".to_string(),
-            meal_type: MealType::Beef,
+            food_type: FoodType::Beef,
             price: Price {
                 price_student: 120,
                 price_employee: 130,

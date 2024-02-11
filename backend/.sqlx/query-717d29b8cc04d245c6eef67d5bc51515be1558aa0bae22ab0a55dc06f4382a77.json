@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT food_id, name, food_type as \"meal_type: MealType\",\n                price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,\n                new, frequency, last_served, next_served, average_rating, rating_count\n            FROM meal_detail JOIN food_plan USING (food_id)\n            WHERE food_id = $1 AND line_id = $2 AND serve_date = $3\n            ",
+  "query": "\n            SELECT food_id, name, food_type as \"food_type: MealType\",\n                price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,\n                new, frequency, last_served, next_served, average_rating, rating_count\n            FROM meal_detail JOIN food_plan USING (food_id)\n            WHERE food_id = $1 AND line_id = $2 AND serve_date = $3\n            ",
   "describe": {
     "columns": [
       {
@@ -15,10 +15,10 @@
       },
       {
         "ordinal": 2,
-        "name": "meal_type: MealType",
+        "name": "food_type: MealType",
         "type_info": {
           "Custom": {
-            "name": "meal_type",
+            "name": "food_type",
             "kind": {
               "Enum": [
                 "VEGAN",

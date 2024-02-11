@@ -2,7 +2,7 @@
 use crate::util::Price;
 use crate::util::{self, Date};
 
-use util::{MealType, Uuid};
+use util::{FoodType, Uuid};
 
 /// Struct to storage related data. Contains all api-key related information.
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -41,7 +41,7 @@ pub struct Meal {
     /// Name of the meal.
     pub name: String,
     /// Type of the meal.
-    pub meal_type: MealType,
+    pub food_type: FoodType,
     /// Price of the meal for students, employees, guests and pupils.
     pub price: Price,
     /// The date the meal was last served.
@@ -70,7 +70,7 @@ pub struct Side {
     /// Name of the side.
     pub name: String,
     /// Type of the side.
-    pub meal_type: MealType,
+    pub food_type: FoodType,
     /// Price of the side for students, employees, guests and pupils.
     pub price: Price,
 }

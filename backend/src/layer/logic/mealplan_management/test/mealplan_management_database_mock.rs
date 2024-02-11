@@ -1,7 +1,7 @@
 //! This crate contains mocks of [`MealplanManagementDatabaseMock`] for testing.
 use crate::{
     interface::persistent_data::{MealplanManagementDataAccess, Result},
-    util::{Additive, Allergen, Date, MealType, Price, Uuid},
+    util::{Additive, Allergen, Date, FoodType, Price, Uuid},
 };
 use async_trait::async_trait;
 
@@ -32,7 +32,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     async fn get_similar_meal(
         &self,
         _similar_name: &str,
-        _meal_type: MealType,
+        _food_type: FoodType,
         _allergens: &[Allergen],
         _additives: &[Additive],
     ) -> Result<Option<Uuid>> {
@@ -42,7 +42,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     async fn get_similar_side(
         &self,
         _similar_name: &str,
-        _meal_type: MealType,
+        _food_type: FoodType,
         _allergens: &[Allergen],
         _additives: &[Additive],
     ) -> Result<Option<Uuid>> {
@@ -76,7 +76,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     async fn insert_meal(
         &self,
         _name: &str,
-        _meal_type: MealType,
+        _food_type: FoodType,
         _allergens: &[Allergen],
         _additives: &[Additive],
     ) -> Result<Uuid> {
@@ -86,7 +86,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     async fn insert_side(
         &self,
         _name: &str,
-        _meal_type: MealType,
+        _food_type: FoodType,
         _allergens: &[Allergen],
         _additives: &[Additive],
     ) -> Result<Uuid> {

@@ -9,7 +9,7 @@ use crate::{
         DataError, RequestDataAccess, Result,
     },
     null_error,
-    util::{Additive, Allergen, Date, MealType, Price, Uuid},
+    util::{Additive, Allergen, Date, FoodType, Price, Uuid},
 };
 
 /// Class implementing all database requests arising from graphql manipulations.
@@ -69,7 +69,7 @@ impl RequestDataAccess for PersistentRequestData {
     async fn get_meal(&self, id: Uuid, line_id: Uuid, date: Date) -> Result<Option<Meal>> {
         sqlx::query!(
             r#"
-            SELECT food_id, name, food_type as "meal_type: MealType",
+            SELECT food_id, name, food_type as "food_type: FoodType",
                 price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,
                 new, frequency, last_served, next_served, average_rating, rating_count
             FROM meal_detail JOIN food_plan USING (food_id)
@@ -87,7 +87,7 @@ impl RequestDataAccess for PersistentRequestData {
                 line_id: m.line_id,
                 date: m.date,
                 name: null_error!(m.name),
-                meal_type: null_error!(m.meal_type),
+                food_type: null_error!(m.food_type),
                 price: Price {
                     price_student: u32::try_from(m.price_student)?,
                     price_employee: u32::try_from(m.price_employee)?,
@@ -124,7 +124,7 @@ impl RequestDataAccess for PersistentRequestData {
 
         sqlx::query!(
             r#"
-            SELECT food_id, name, food_type as "meal_type: MealType",
+            SELECT food_id, name, food_type as "food_type: FoodType",
                 price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,
                 new, frequency, last_served, next_served, average_rating, rating_count
             FROM meal_detail JOIN food_plan USING (food_id)
@@ -143,7 +143,7 @@ impl RequestDataAccess for PersistentRequestData {
                 line_id: m.line_id,
                 date: m.date,
                 name: null_error!(m.name),
-                meal_type: null_error!(m.meal_type),
+                food_type: null_error!(m.food_type),
                 price: Price {
                     price_student: u32::try_from(m.price_student)?,
                     price_employee: u32::try_from(m.price_employee)?,
@@ -164,7 +164,7 @@ impl RequestDataAccess for PersistentRequestData {
     async fn get_sides(&self, line_id: Uuid, date: Date) -> Result<Vec<Side>> {
         sqlx::query!(
             r#"
-            SELECT food_id, name, food_type as "meal_type: MealType", 
+            SELECT food_id, name, food_type as "food_type: FoodType", 
             price_student, price_employee, price_guest, price_pupil
             FROM food JOIN food_plan USING (food_id)
             WHERE line_id = $1 AND serve_date = $2 AND food_id NOT IN (SELECT food_id FROM meal)
@@ -179,7 +179,7 @@ impl RequestDataAccess for PersistentRequestData {
         .map(|side| {
             Ok(Side {
                 id: side.food_id,
-                meal_type: side.meal_type,
+                food_type: side.food_type,
                 name: side.name,
                 price: Price {
                     price_student: u32::try_from(side.price_student)?,
@@ -676,7 +676,7 @@ mod tests {
         vec![Side {
             id: Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
             name: "zu jedem Gericht reichen wir ein Dessert oder Salat".to_string(),
-            meal_type: MealType::Unknown,
+            food_type: FoodType::Unknown,
             price: Price {
                 price_student: 0,
                 price_employee: 0,
@@ -690,7 +690,7 @@ mod tests {
         let meal1 = Meal {
             id: Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap(),
             name: "2 Dampfnudeln mit Vanillesoße".to_string(),
-            meal_type: MealType::Vegetarian,
+            food_type: FoodType::Vegetarian,
             price: Price {
                 price_student: 320,
                 price_employee: 420,
@@ -709,7 +709,7 @@ mod tests {
         let meal2 = Meal {
             id: Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
             name: "Geflügel - Cevapcici, Ajvar, Djuvec Reis".to_string(),
-            meal_type: MealType::Unknown,
+            food_type: FoodType::Unknown,
             ..meal1
         };
         vec![meal2, meal1]

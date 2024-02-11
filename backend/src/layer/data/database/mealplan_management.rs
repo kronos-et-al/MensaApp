@@ -4,7 +4,7 @@ use sqlx::{Pool, Postgres};
 
 use crate::{
     interface::persistent_data::{MealplanManagementDataAccess, Result},
-    util::{Additive, Allergen, Date, MealType, Price, Uuid},
+    util::{Additive, Allergen, Date, FoodType, Price, Uuid},
 };
 
 /// Class for performing database operations necessary for meal plan management.
@@ -58,7 +58,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     async fn get_similar_meal(
         &self,
         similar_name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         _additives: &[Additive],
     ) -> Result<Option<Uuid>> {
@@ -79,7 +79,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
             ORDER BY similarity(name, $1) DESC
             "#,
             similar_name,
-            meal_type as _,
+            food_type as _,
             allergens
                 .iter()
                 .copied()
@@ -95,7 +95,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     async fn get_similar_side(
         &self,
         similar_name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         _additives: &[Additive],
     ) -> Result<Option<Uuid>> {
@@ -116,7 +116,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
             ORDER BY similarity(name, $1) DESC
             "#,
             similar_name,
-            meal_type as _,
+            food_type as _,
             allergens
                 .iter()
                 .copied()
@@ -203,22 +203,22 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
     async fn insert_meal(
         &self,
         name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Uuid> {
-        self.insert_food(name, meal_type, allergens, additives, true)
+        self.insert_food(name, food_type, allergens, additives, true)
             .await
     }
 
     async fn insert_side(
         &self,
         name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Uuid> {
-        self.insert_food(name, meal_type, allergens, additives, false)
+        self.insert_food(name, food_type, allergens, additives, false)
             .await
     }
 
@@ -286,7 +286,7 @@ impl PersistentMealplanManagementData {
     async fn insert_food(
         &self,
         name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
         is_meal: bool,
@@ -294,7 +294,7 @@ impl PersistentMealplanManagementData {
         let food_id = sqlx::query_scalar!(
             r#"INSERT INTO food(name, food_type) VALUES ($1, $2) RETURNING food_id"#,
             name,
-            meal_type as _
+            food_type as _
         )
         .fetch_one(&self.pool)
         .await?;
@@ -514,55 +514,55 @@ mod test {
             (
                 Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
                 "Geflügel - Cevapcici, Ajvar, Djuvec Reis",
-                MealType::Unknown,
+                FoodType::Unknown,
                 true,
             ),
             (
                 Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap(),
                 "2 Dampfnudeln mit Vanillesoße",
-                MealType::Vegetarian,
+                FoodType::Vegetarian,
                 true,
             ),
             (
                 Uuid::parse_str("0a850476-eda4-4fd8-9f93-579eb85b8c25").unwrap(),
                 "Mediterraner Gemüsegulasch mit Räuchertofu, dazu Sommerweizen",
-                MealType::Vegan,
+                FoodType::Vegan,
                 true,
             ),
             // 'Similar' with identical addons
             (
                 Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
                 "Geflügel - Cevapcici, Ajvar, Reis",
-                MealType::Unknown,
+                FoodType::Unknown,
                 true,
             ),
             (
                 Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap(),
                 "Dampfnudeln mit Vanillesoße",
-                MealType::Vegetarian,
+                FoodType::Vegetarian,
                 true,
             ),
             (
                 Uuid::parse_str("0a850476-eda4-4fd8-9f93-579eb85b8c25").unwrap(),
                 "Mediterraner Gemüsegulasch mit Räuchertofu und Sommerweizen",
-                MealType::Vegan,
+                FoodType::Vegan,
                 true,
             ),
             // No longer 'similar' with identical addons
             (
                 Uuid::default(),
                 "Geflügel - Cevapcici",
-                MealType::Unknown,
+                FoodType::Unknown,
                 false,
             ),
-            (Uuid::default(), "Dampfnudeln", MealType::Vegetarian, false),
-            (Uuid::default(), "", MealType::Vegan, false),
+            (Uuid::default(), "Dampfnudeln", FoodType::Vegetarian, false),
+            (Uuid::default(), "", FoodType::Vegan, false),
         ];
 
-        for (uuid, name, meal_type, is_similar) in tests {
+        for (uuid, name, food_type, is_similar) in tests {
             println!("Testing values: '{uuid}', '{name}'. Should be similar: {is_similar}");
             let (additives, allergens) = addons.get(&*uuid.to_string()).unwrap();
-            req.get_similar_meal(name, meal_type, allergens, additives)
+            req.get_similar_meal(name, food_type, allergens, additives)
                 .await
                 .unwrap()
                 .map_or_else(
@@ -594,50 +594,50 @@ mod test {
             (
                 Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
                 "zu jedem Gericht reichen wir ein Dessert oder Salat",
-                MealType::Unknown,
+                FoodType::Unknown,
                 true,
             ),
             (
                 Uuid::parse_str("836b17fb-cb16-425d-8d3c-c274a9cdbd0c").unwrap(),
                 "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings, Preis je 100 g",
-                MealType::Vegan,
+                FoodType::Vegan,
                 true,
             ),
             (
                 Uuid::parse_str("2c662143-eb84-4142-aa98-bd7bdf84c498").unwrap(),
                 "Insalata piccola - kleiner Blattsalat mit Thunfisch und Paprika",
-                MealType::Unknown,
+                FoodType::Unknown,
                 true,
             ),
             // 'Similar' with identical addons
             (
                 Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
                 "zu jedem Gericht reichen wir Desserts oder Salate",
-                MealType::Unknown,
+                FoodType::Unknown,
                 true,
             ),
             (
                 Uuid::parse_str("836b17fb-cb16-425d-8d3c-c274a9cdbd0c").unwrap(),
                 "Salatbuffet mit frischer Rohkost, Blattsalate und hausgemachten Dressings",
-                MealType::Vegan,
+                FoodType::Vegan,
                 true,
             ),
             (
                 Uuid::parse_str("2c662143-eb84-4142-aa98-bd7bdf84c498").unwrap(),
                 "Insalata piccola - Blattsalat mit Thunfisch und Paprika",
-                MealType::Unknown,
+                FoodType::Unknown,
                 true,
             ),
             // No longer 'similar' with identical addons
-            (Uuid::default(), "zu jedem Gericht reichen wir ein Dessert", MealType::Unknown, false),
-            (Uuid::default(), "Salatbuffet mit frischer Rohkost", MealType::Vegan, false),
-            (Uuid::default(), "Insalata piccola", MealType::Unknown, false),
+            (Uuid::default(), "zu jedem Gericht reichen wir ein Dessert", FoodType::Unknown, false),
+            (Uuid::default(), "Salatbuffet mit frischer Rohkost", FoodType::Vegan, false),
+            (Uuid::default(), "Insalata piccola", FoodType::Unknown, false),
         ];
 
-        for (uuid, name, meal_type, is_similar) in tests {
+        for (uuid, name, food_type, is_similar) in tests {
             println!("Testing values: '{uuid}', '{name}'. Should be similar: {is_similar}");
             let (additives, allergens) = addons.get(&*uuid.to_string()).unwrap();
-            req.get_similar_side(name, meal_type, allergens, additives)
+            req.get_similar_side(name, food_type, allergens, additives)
                 .await
                 .unwrap()
                 .map_or_else(
@@ -692,13 +692,13 @@ mod test {
     async fn test_insert_food(pool: PgPool) {
         let req = PersistentMealplanManagementData { pool: pool.clone() };
 
-        let meal_type = MealType::Vegan;
+        let food_type = FoodType::Vegan;
         let name = "TEST_FOOD";
         let additives = vec![Additive::Alcohol];
         let allergens = vec![Allergen::Ca, Allergen::Pa];
 
         let res = req
-            .insert_food(name, meal_type, &allergens, &additives, true)
+            .insert_food(name, food_type, &allergens, &additives, true)
             .await;
         //assert!(res.is_ok());
         let food_id = res.unwrap();
@@ -722,7 +722,7 @@ mod test {
         assert_eq!(db_allergens, allergens);
 
         let selections = sqlx::query!(
-            r#"SELECT name, food_type as "meal_type: MealType" FROM food WHERE food_id = $1"#,
+            r#"SELECT name, food_type as "food_type: FoodType" FROM food WHERE food_id = $1"#,
             food_id
         )
         .fetch_all(&pool)
@@ -731,7 +731,7 @@ mod test {
         let selection = selections.first().unwrap();
 
         assert_eq!(selection.name, name);
-        assert_eq!(selection.meal_type, meal_type);
+        assert_eq!(selection.food_type, food_type);
     }
 
     #[sqlx::test(fixtures("canteen"))]
@@ -895,19 +895,19 @@ mod test {
         let allergens = &[Allergen::Ca, Allergen::Di];
         let additives = &[Additive::Alcohol];
         let id = data
-            .insert_meal(name, MealType::Beef, allergens, additives)
+            .insert_meal(name, FoodType::Beef, allergens, additives)
             .await
             .expect("meal should be successfully inserted");
 
         let food = sqlx::query!(
-            r#"SELECT name, food_type as "food_type: MealType" FROM food JOIN meal USING (food_id) where food_id = $1"#,
+            r#"SELECT name, food_type as "food_type: FoodType" FROM food JOIN meal USING (food_id) where food_id = $1"#,
             id
         )
         .fetch_one(&pool)
         .await
         .unwrap();
         assert_eq!(&food.name, name);
-        assert_eq!(food.food_type, MealType::Beef);
+        assert_eq!(food.food_type, FoodType::Beef);
 
         let actual_allergens = sqlx::query_scalar!(
             r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1"#,
@@ -936,19 +936,19 @@ mod test {
         let allergens = &[Allergen::Ca, Allergen::Di];
         let additives = &[Additive::Alcohol];
         let id = data
-            .insert_side(name, MealType::Beef, allergens, additives)
+            .insert_side(name, FoodType::Beef, allergens, additives)
             .await
             .expect("meal should be successfully inserted");
 
         let food = sqlx::query!(
-            r#"SELECT name, food_type as "food_type: MealType" FROM food where food_id = $1"#,
+            r#"SELECT name, food_type as "food_type: FoodType" FROM food where food_id = $1"#,
             id
         )
         .fetch_one(&pool)
         .await
         .unwrap();
         assert_eq!(&food.name, name);
-        assert_eq!(food.food_type, MealType::Beef);
+        assert_eq!(food.food_type, FoodType::Beef);
 
         // not a main dish => side
         let result = sqlx::query!("SELECT * from meal WHERE food_id = $1", id)
