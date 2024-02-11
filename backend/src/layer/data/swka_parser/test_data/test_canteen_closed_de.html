@@ -1556,9 +1556,9 @@ https://codepoetry.de
 
 
                                                                 <div class="col-4 col-medium-4 col-small-12">
-                                                                        <div><select id="food_type" name="food_type"
+                                                                        <div><select id="meal_type" name="meal_type"
                                                                                         class="p-dd"
-                                                                                        onChange="filterMeals();createCookie('canteen', 'selected_price:::'+$('#selected_price').val()+'&&&'+'food_type:::'+$('#food_type').val(), 180);">
+                                                                                        onChange="filterMeals();createCookie('canteen', 'selected_price:::'+$('#selected_price').val()+'&&&'+'meal_type:::'+$('#meal_type').val(), 180);">
                                                                                         <option value="0">Alle Gerichte
                                                                                                 zeigen</option>
                                                                                         <option value="1">Ohne Schwein
@@ -1584,7 +1584,7 @@ https://codepoetry.de
                                                                         <div><select id="selected_price"
                                                                                         name="selected_price"
                                                                                         class="p-dd"
-                                                                                        onChange="$('span[class*=price]').hide(); $('.price_'+$('#selected_price').val()).show();createCookie('canteen', 'selected_price:::'+$('#selected_price').val()+'&&&'+'food_type:::'+$('#food_type').val(), 180);createCookie('canteen', 'selected_price:::'+$('#selected_price').val(), 180);">
+                                                                                        onChange="$('span[class*=price]').hide(); $('.price_'+$('#selected_price').val()).show();createCookie('canteen', 'selected_price:::'+$('#selected_price').val()+'&&&'+'meal_type:::'+$('#meal_type').val(), 180);createCookie('canteen', 'selected_price:::'+$('#selected_price').val(), 180);">
                                                                                         <option value="1">Preise
                                                                                                 Studierende</option>
                                                                                         <option value="2">Preise Gäste
@@ -2002,7 +2002,7 @@ https://codepoetry.de
                                                                 $("#meal_interval").val(29);
 
                                                                 $('#selected_price').val();
-                                                                $('#food_type').val();
+                                                                $('#meal_type').val();
 
                                                                 $('span[class*=price]').hide();
                                                                 $('.price_' + $('#selected_price').val()).show();
@@ -2576,7 +2576,8 @@ https://codepoetry.de
                                                                                 09:00-14:30 Uhr<br />Fr. 09:00-14:00 Uhr
                                                                                 <p class="inline-p"></p>
                                                                                 <strong>Mittagessen</strong><br />11:30-13:30
-                                                                                Uhr</div>
+                                                                                Uhr
+                                                                        </div>
                                                                 </div>
                                                         </div>
                                                 </div>

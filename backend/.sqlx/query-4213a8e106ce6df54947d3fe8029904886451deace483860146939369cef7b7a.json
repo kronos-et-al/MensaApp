@@ -14,7 +14,7 @@
         "Text",
         {
           "Custom": {
-            "name": "food_type",
+            "name": "meal_type",
             "kind": {
               "Enum": [
                 "VEGAN",

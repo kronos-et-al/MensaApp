@@ -811,8 +811,8 @@ https://codepoetry.de
 
 
                 <div class="col-4 col-medium-4 col-small-12">
-                  <div><select id="food_type" name="food_type" class="p-dd"
-                      onChange="filterMeals();createCookie('canteen', 'selected_price:::'+$('#selected_price').val()+'&&&'+'food_type:::'+$('#food_type').val(), 180);">
+                  <div><select id="meal_type" name="meal_type" class="p-dd"
+                      onChange="filterMeals();createCookie('canteen', 'selected_price:::'+$('#selected_price').val()+'&&&'+'meal_type:::'+$('#meal_type').val(), 180);">
                       <option value="0">Show all meals</option>
                       <option value="1">Without pork</option>
                       <option value="2">Without beef</option>
@@ -827,7 +827,7 @@ https://codepoetry.de
                 <div class="col-4 col-medium-4 col-small-12">
 
                   <div><select id="selected_price" name="selected_price" class="p-dd"
-                      onChange="$('span[class*=price]').hide(); $('.price_'+$('#selected_price').val()).show();createCookie('canteen', 'selected_price:::'+$('#selected_price').val()+'&&&'+'food_type:::'+$('#food_type').val(), 180);createCookie('canteen', 'selected_price:::'+$('#selected_price').val(), 180);">
+                      onChange="$('span[class*=price]').hide(); $('.price_'+$('#selected_price').val()).show();createCookie('canteen', 'selected_price:::'+$('#selected_price').val()+'&&&'+'meal_type:::'+$('#meal_type').val(), 180);createCookie('canteen', 'selected_price:::'+$('#selected_price').val(), 180);">
                       <option value="1">Prices students</option>
                       <option value="2">Prices guests</option>
                       <option value="3">Prices staff</option>
@@ -7103,7 +7103,7 @@ https://codepoetry.de
                 $("#meal_interval").val(28);
 
                 $('#selected_price').val();
-                $('#food_type').val();
+                $('#meal_type').val();
 
                 $('span[class*=price]').hide();
                 $('.price_' + $('#selected_price').val()).show();

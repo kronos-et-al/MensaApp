@@ -18,7 +18,7 @@
         "name": "food_type: FoodType",
         "type_info": {
           "Custom": {
-            "name": "food_type",
+            "name": "meal_type",
             "kind": {
               "Enum": [
                 "VEGAN",

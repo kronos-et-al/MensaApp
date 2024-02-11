@@ -1161,8 +1161,8 @@ https://codepoetry.de
 
 
                 <div class="col-4 col-medium-4 col-small-12">
-                  <div><select id="food_type" name="food_type" class="p-dd"
-                      onchange="filterMeals();createCookie('canteen', 'selected_price:::'+$('#selected_price').val()+'&amp;&amp;&amp;'+'food_type:::'+$('#food_type').val(), 180);">
+                  <div><select id="meal_type" name="meal_type" class="p-dd"
+                      onchange="filterMeals();createCookie('canteen', 'selected_price:::'+$('#selected_price').val()+'&amp;&amp;&amp;'+'meal_type:::'+$('#meal_type').val(), 180);">
                       <option value="0">Alle Gerichte zeigen</option>
                       <option value="1">Ohne Schwein</option>
                       <option value="2">Ohne Rind</option>
@@ -1177,7 +1177,7 @@ https://codepoetry.de
                 <div class="col-4 col-medium-4 col-small-12">
 
                   <div><select id="selected_price" name="selected_price" class="p-dd"
-                      onchange="$('span[class*=price]').hide(); $('.price_'+$('#selected_price').val()).show();createCookie('canteen', 'selected_price:::'+$('#selected_price').val()+'&amp;&amp;&amp;'+'food_type:::'+$('#food_type').val(), 180);createCookie('canteen', 'selected_price:::'+$('#selected_price').val(), 180);">
+                      onchange="$('span[class*=price]').hide(); $('.price_'+$('#selected_price').val()).show();createCookie('canteen', 'selected_price:::'+$('#selected_price').val()+'&amp;&amp;&amp;'+'meal_type:::'+$('#meal_type').val(), 180);createCookie('canteen', 'selected_price:::'+$('#selected_price').val(), 180);">
                       <option value="1">Preise Studierende</option>
                       <option value="2">Preise Gäste</option>
                       <option value="3">Preise Bedienstete</option>
@@ -1380,7 +1380,7 @@ https://codepoetry.de
                 $("#meal_interval").val(11);
 
                 $('#selected_price').val();
-                $('#food_type').val();
+                $('#meal_type').val();
 
                 $('span[class*=price]').hide();
                 $('.price_' + $('#selected_price').val()).show();
