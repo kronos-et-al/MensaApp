@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT food_id, name, food_type as \"food_type: MealType\",\n                price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,\n                new, frequency, last_served, next_served, average_rating, rating_count\n            FROM meal_detail JOIN food_plan USING (food_id)\n            WHERE food_id = $1 AND line_id = $2 AND serve_date = $3\n            ",
+  "query": "\n            SELECT food_id, name, food_type as \"food_type: FoodType\",\n                price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,\n                new, frequency, last_served, next_served, average_rating, rating_count\n            FROM meal_detail JOIN food_plan USING (food_id)\n            WHERE line_id = $1 AND serve_date = $2\n            ORDER BY price_student DESC, food_type DESC, food_id\n            ",
   "describe": {
     "columns": [
       {
@@ -15,7 +15,7 @@
       },
       {
         "ordinal": 2,
-        "name": "food_type: MealType",
+        "name": "food_type: FoodType",
         "type_info": {
           "Custom": {
             "name": "food_type",
@@ -98,7 +98,6 @@
     "parameters": {
       "Left": [
         "Uuid",
-        "Uuid",
         "Date"
       ]
     },
@@ -120,5 +119,5 @@
       true
     ]
   },
-  "hash": "717d29b8cc04d245c6eef67d5bc51515be1558aa0bae22ab0a55dc06f4382a77"
+  "hash": "d3ba2ffec90b5cfc33c94c03b474bd6b02cd0ea603ac890a3f46c204810821d3"
 }
