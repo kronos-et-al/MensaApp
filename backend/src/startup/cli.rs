@@ -122,7 +122,7 @@ pub async fn migrate_images(config: &ConfigReader) -> Result<(), SubcommandError
             let image_id = record.image_id;
 
             let response = client
-                .request(Method::GET, record.url.expect("not null by query"))
+                .request(Method::GET, record.url)
                 .send()
                 .await?;
 

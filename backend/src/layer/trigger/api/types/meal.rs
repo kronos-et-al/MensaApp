@@ -19,7 +19,7 @@ pub(in super::super) struct Meal {
     name: String,
     /// Type of this meal.
     /// Here the type of meat which is contained in the meal, or whether it is vegetarian or vegan, is specified.
-    meal_type: MealType,
+    food_type: MealType,
     /// The ratings given by the users to the meal.
     ratings: Ratings,
     /// The prices of the dish each for the four groups of people students, employees, pupils and guests.
@@ -105,7 +105,7 @@ struct Ratings {
     /// The average rating of this meal.
     average_rating: f32,
     /// The total number of ratings for this meal.
-    ratings_count: u32,
+    count: u32,
     #[graphql(skip)]
     meal_id: Uuid,
 }
@@ -144,7 +144,7 @@ impl From<model::Meal> for Meal {
             name: value.name,
             ratings: Ratings {
                 average_rating: value.average_rating,
-                ratings_count: value.rating_count,
+                count: value.rating_count,
                 meal_id: value.id,
             },
             price: Price {
@@ -161,7 +161,7 @@ impl From<model::Meal> for Meal {
             },
             date: value.date,
             line_id: value.line_id,
-            meal_type: value.meal_type,
+            food_type: value.meal_type,
         }
     }
 }
