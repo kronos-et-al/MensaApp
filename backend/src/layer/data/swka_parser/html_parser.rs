@@ -85,11 +85,14 @@
 //! <!-- ... -->
 //! ```
 
-use crate::interface::mensa_parser::{
-    model::{Dish, NutritionData, ParseCanteen, ParseLine},
-    ParseError,
-};
 use crate::util::{Additive, Allergen, Date, FoodType, Price};
+use crate::{
+    interface::mensa_parser::{
+        model::{Dish, NutritionData, ParseCanteen, ParseLine},
+        ParseError,
+    },
+    util::EnvironmentInfo,
+};
 use lazy_static::lazy_static;
 use regex::Regex;
 use scraper::element_ref::Text;
@@ -130,7 +133,6 @@ const DISH_PRICE_NODE_CLASS_SELECTOR_PREFIX: &str = "span.bgp.price_";
 
 const DATE_ATTRIBUTE_NAME: &str = "rel";
 const DISH_TYPE_ATTRIBUTE_NAME: &str = "title";
-const ENV_SCORE_ATTRIBUTE_NAME: &str = "data-rating";
 
 const DATE_FORMAT: &str = "%Y-%m-%d";
 
@@ -301,7 +303,7 @@ impl HTMLParser {
             allergens: Self::get_dish_allergens(dish_node).unwrap_or_default(),
             additives: Self::get_dish_additives(dish_node).unwrap_or_default(),
             food_type: Self::get_dish_type(dish_node).unwrap_or(FoodType::Unknown),
-            env_score: Self::get_dish_env_score(dish_node).unwrap_or_default(),
+            env_score: Self::get_dish_env_score(dish_node),
             nutrition_data: Self::get_dish_nutrition_data(dish_node),
         })
     }
@@ -384,13 +386,78 @@ impl HTMLParser {
             .map(FoodType::parse)
     }
 
-    fn get_dish_env_score(dish_node: &ElementRef) -> Option<u32> {
-        let env_score_node = dish_node.select(&ENV_SCORE_NODE_CLASS_SELECTOR).next()?;
-        env_score_node
-            .value()
-            .attr(ENV_SCORE_ATTRIBUTE_NAME)?
-            .parse::<u32>()
-            .ok()
+    fn get_dish_env_score(dish_node: &ElementRef) -> Option<EnvironmentInfo> {
+        let env_info = EnvironmentInfo {
+            average_rating: Self::get_average_env_score(dish_node)?,
+            co2_rating: Self::get_co2_rating(dish_node)?,
+            co2_value: Self::get_co2_value(dish_node)?,
+            water_rating: Self::get_rating(dish_node, "div.wasser_bewertung")?,
+            water_value: Self::get_value(dish_node, "div.wasser_bewertung")?,
+            animal_welfare_rating: Self::get_rating(dish_node, "div.tierwohl")?,
+            rainforest_rating: Self::get_rating(dish_node, "div.regenwald")?,
+            max_rating: Self::get_max_rating(dish_node, "div.regenwald")?,
+        };
+        Some(env_info)
+    }
+
+    fn get_average_env_score(dish_node: &ElementRef) -> Option<u32> {
+        Some(
+            (Self::get_co2_rating(dish_node)?
+                + Self::get_rating(dish_node, "div.wasser_bewertung")?
+                + Self::get_rating(dish_node, "div.tierwohl")?
+                + Self::get_rating(dish_node, "div.regenwald")?)
+                / 4,
+        )
+    }
+
+    fn get_co2_rating(dish_node: &ElementRef) -> Option<u32> {
+        Self::get_rating(dish_node, "div.co2_bewertung")
+            .or_else(|| Self::get_rating(dish_node, "div.co2_bewertung_wolke"))
+    }
+
+    fn get_co2_value(dish_node: &ElementRef) -> Option<String> {
+        Self::get_value(dish_node, "div.co2_bewertung")
+            .or_else(|| Self::get_value(dish_node, "div.co2_bewertung_wolke"))
+    }
+
+    fn get_rating(dish_node: &ElementRef, information_area_class: &str) -> Option<u32> {
+        Self::get_ratings(dish_node, information_area_class, "data-rating")
+    }
+    fn get_max_rating(dish_node: &ElementRef, information_area_class: &str) -> Option<u32> {
+        Self::get_ratings(dish_node, information_area_class, "data-numstars")
+    }
+
+    fn get_ratings(
+        dish_node: &ElementRef,
+        information_area_class: &str,
+        attribute_name: &str,
+    ) -> Option<u32> {
+        let value_node = Self::get_env_score_value_node(
+            dish_node,
+            information_area_class,
+            "div.enviroment_score.co2-label",
+        )?;
+        value_node.value().attr(attribute_name)?.parse().ok()
+    }
+
+    fn get_value(dish_node: &ElementRef, information_area_class: &str) -> Option<String> {
+        let value_node =
+            Self::get_env_score_value_node(dish_node, information_area_class, "div.value")?;
+        Some(Self::remove_multiple_whitespaces(
+            &value_node.text().collect::<String>(),
+        ))
+    }
+
+    fn get_env_score_value_node<'a>(
+        dish_node: &'a ElementRef<'a>,
+        information_area_class: &'a str,
+        field_class: &'a str,
+    ) -> Option<ElementRef<'a>> {
+        let env_score_node = Self::get_nutrition_node(dish_node)?;
+        let selector = Selector::parse(information_area_class).ok()?;
+        let water_node = env_score_node.select(&selector).next()?;
+        let selector2 = Selector::parse(field_class).ok()?;
+        water_node.select(&selector2).next()
     }
 
     fn get_dish_nutrition_data(dish_node: &ElementRef) -> Option<NutritionData> {

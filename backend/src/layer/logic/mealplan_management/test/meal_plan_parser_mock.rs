@@ -29,7 +29,7 @@ fn get_dish(dish_number: u32) -> Dish {
         allergens: vec![Pe, Er],
         additives: vec![Alcohol],
         food_type: Vegan,
-        env_score: 0,
+        env_score: None,
         nutrition_data: None,
     }
 }

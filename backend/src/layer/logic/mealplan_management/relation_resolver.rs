@@ -169,7 +169,7 @@ mod test {
             allergens: vec![],
             additives: vec![],
             food_type: FoodType::Vegan,
-            env_score: 0,
+            env_score: None,
             nutrition_data: None,
         }
     }
@@ -186,7 +186,7 @@ mod test {
             allergens: vec![],
             additives: vec![],
             food_type: FoodType::Vegan,
-            env_score: 0,
+            env_score: None,
             nutrition_data: None,
         }
     }

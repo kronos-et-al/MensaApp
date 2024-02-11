@@ -20,7 +20,18 @@
                             ],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 1,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "1492 g",
+                                    water_rating: 3,
+                                    water_value: "18,28 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 797,
@@ -44,7 +55,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -62,7 +73,18 @@
                             ],
                             additives: [],
                             food_type: Vegetarian,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 2,
+                                    co2_value: "845 g",
+                                    water_rating: 3,
+                                    water_value: "19,55 l",
+                                    animal_welfare_rating: 2,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 716,
@@ -92,7 +114,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -110,7 +132,18 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "564 g",
+                                    water_rating: 2,
+                                    water_value: "45,88 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 742,
@@ -148,7 +181,7 @@
                                 PreservingAgents,
                             ],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -162,7 +195,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -176,7 +209,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -196,7 +229,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -210,7 +243,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -224,7 +257,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -244,7 +277,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -258,7 +291,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -272,7 +305,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -293,7 +326,18 @@
                                 AntioxidantAgents,
                             ],
                             food_type: Pork,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 2,
+                                    co2_value: "2069 g",
+                                    water_rating: 2,
+                                    water_value: "60,79 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 681,
@@ -322,7 +366,18 @@
                                 FlavourEnhancer,
                             ],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 3,
+                                    co2_rating: 3,
+                                    co2_value: "160 g",
+                                    water_rating: 3,
+                                    water_value: "3,11 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 583,
@@ -350,7 +405,18 @@
                                 Colorant,
                             ],
                             food_type: Vegan,
-                            env_score: 1,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "194 g",
+                                    water_rating: 1,
+                                    water_value: "17,22 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 87,
@@ -380,7 +446,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -400,7 +466,18 @@
                                 Colorant,
                             ],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 2,
+                                    co2_value: "259 g",
+                                    water_rating: 3,
+                                    water_value: "5,90 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 123,
@@ -435,7 +512,18 @@
                                 Phosphate,
                             ],
                             food_type: Pork,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "2435 g",
+                                    water_rating: 2,
+                                    water_value: "62,83 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 837,
@@ -465,7 +553,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -490,7 +578,18 @@
                                 AntioxidantAgents,
                             ],
                             food_type: Beef,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "4112 g",
+                                    water_rating: 3,
+                                    water_value: "5,44 l",
+                                    animal_welfare_rating: 2,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 597,
@@ -517,7 +616,7 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -537,7 +636,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -560,7 +659,18 @@
                             ],
                             additives: [],
                             food_type: Beef,
-                            env_score: 1,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "1491 g",
+                                    water_rating: 3,
+                                    water_value: "9,62 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 527,
@@ -590,7 +700,7 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -604,7 +714,18 @@
                             allergens: [],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 1,
+                                    co2_value: "1805 g",
+                                    water_rating: 3,
+                                    water_value: "3,86 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 737,
@@ -630,7 +751,18 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "71 g",
+                                    water_rating: 3,
+                                    water_value: "0,78 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 144,
@@ -664,7 +796,7 @@
                             ],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -685,7 +817,7 @@
                                 Colorant,
                             ],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -712,7 +844,7 @@
                                 PreservingAgents,
                             ],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -729,7 +861,7 @@
                             ],
                             additives: [],
                             food_type: BeefAw,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -748,7 +880,7 @@
                                 ArtificiallyBlackenedOlives,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -766,7 +898,7 @@
                                 Colorant,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -785,7 +917,7 @@
                                 ArtificiallyBlackenedOlives,
                             ],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -812,7 +944,7 @@
                             ],
                             additives: [],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -847,7 +979,18 @@
                                 PreservingAgents,
                             ],
                             food_type: PorkAw,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 2,
+                                    co2_value: "857 g",
+                                    water_rating: 3,
+                                    water_value: "21,61 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 943,
@@ -873,7 +1016,7 @@
                                 SurfaceWaxed,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -893,7 +1036,18 @@
                                 Colorant,
                             ],
                             food_type: Vegetarian,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "728 g",
+                                    water_rating: 3,
+                                    water_value: "13,73 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 856,
@@ -929,7 +1083,18 @@
                                 Colorant,
                             ],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 3,
+                                    co2_rating: 3,
+                                    co2_value: "136 g",
+                                    water_rating: 3,
+                                    water_value: "1,30 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 330,
@@ -955,7 +1120,7 @@
                                 SurfaceWaxed,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -975,7 +1140,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -989,7 +1154,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1005,7 +1170,18 @@
                             ],
                             additives: [],
                             food_type: BeefAw,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 1,
+                                    co2_value: "4627 g",
+                                    water_rating: 3,
+                                    water_value: "7,02 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 721,
@@ -1035,7 +1211,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1049,7 +1225,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1063,7 +1239,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -1083,7 +1259,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1097,7 +1273,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1111,7 +1287,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1131,7 +1307,18 @@
                             ],
                             additives: [],
                             food_type: Beef,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 2,
+                                    co2_value: "1369 g",
+                                    water_rating: 3,
+                                    water_value: "18,15 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 1312,
@@ -1155,7 +1342,18 @@
                             allergens: [],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 3,
+                                    co2_rating: 3,
+                                    co2_value: "143 g",
+                                    water_rating: 3,
+                                    water_value: "2,89 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 572,
@@ -1183,7 +1381,18 @@
                                 Colorant,
                             ],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 3,
+                                    co2_rating: 3,
+                                    co2_value: "57 g",
+                                    water_rating: 3,
+                                    water_value: "0,80 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 91,
@@ -1213,7 +1422,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1233,7 +1442,18 @@
                                 Colorant,
                             ],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 2,
+                                    co2_value: "259 g",
+                                    water_rating: 3,
+                                    water_value: "5,90 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 123,
@@ -1268,7 +1488,18 @@
                                 Phosphate,
                             ],
                             food_type: Pork,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "2435 g",
+                                    water_rating: 2,
+                                    water_value: "62,83 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 837,
@@ -1298,7 +1529,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1323,7 +1554,18 @@
                                 AntioxidantAgents,
                             ],
                             food_type: Beef,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "4112 g",
+                                    water_rating: 3,
+                                    water_value: "5,44 l",
+                                    animal_welfare_rating: 2,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 597,
@@ -1350,7 +1592,7 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -1370,7 +1612,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -1393,7 +1635,18 @@
                             ],
                             additives: [],
                             food_type: Beef,
-                            env_score: 1,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "1491 g",
+                                    water_rating: 3,
+                                    water_value: "9,62 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 527,
@@ -1423,7 +1676,18 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "298 g",
+                                    water_rating: 3,
+                                    water_value: "5,84 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 556,
@@ -1447,7 +1711,18 @@
                             allergens: [],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 1,
+                                    co2_value: "1805 g",
+                                    water_rating: 3,
+                                    water_value: "3,86 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 737,
@@ -1473,7 +1748,18 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "71 g",
+                                    water_rating: 3,
+                                    water_value: "0,78 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 144,
@@ -1507,7 +1793,7 @@
                             ],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1528,7 +1814,7 @@
                                 Phosphate,
                             ],
                             food_type: Pork,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -1555,7 +1841,7 @@
                                 PreservingAgents,
                             ],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1572,7 +1858,7 @@
                             ],
                             additives: [],
                             food_type: BeefAw,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1591,7 +1877,7 @@
                                 ArtificiallyBlackenedOlives,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1609,7 +1895,7 @@
                                 Colorant,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1628,7 +1914,7 @@
                                 ArtificiallyBlackenedOlives,
                             ],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -1655,7 +1941,7 @@
                             ],
                             additives: [],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -1684,7 +1970,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1705,7 +1991,18 @@
                                 AntioxidantAgents,
                             ],
                             food_type: PorkAw,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 2,
+                                    co2_value: "813 g",
+                                    water_rating: 2,
+                                    water_value: "65,52 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 951,
@@ -1734,7 +2031,18 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "387 g",
+                                    water_rating: 2,
+                                    water_value: "49,85 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 849,
@@ -1764,7 +2072,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1783,7 +2091,18 @@
                                 ArtificiallyBlackenedOlives,
                             ],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "448 g",
+                                    water_rating: 2,
+                                    water_value: "43,16 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 551,
@@ -1813,7 +2132,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1831,7 +2150,18 @@
                             ],
                             additives: [],
                             food_type: Vegetarian,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "686 g",
+                                    water_rating: 3,
+                                    water_value: "20,62 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 860,
@@ -1859,7 +2189,18 @@
                                 Colorant,
                             ],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 2,
+                                    co2_value: "211 g",
+                                    water_rating: 3,
+                                    water_value: "6,00 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 91,
@@ -1889,7 +2230,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1903,7 +2244,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1921,7 +2262,18 @@
                                 Colorant,
                             ],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 2,
+                                    co2_value: "211 g",
+                                    water_rating: 3,
+                                    water_value: "6,00 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 91,
@@ -1951,7 +2303,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1965,7 +2317,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -1987,7 +2339,18 @@
                                 Colorant,
                             ],
                             food_type: Pork,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 2,
+                                    co2_value: "765 g",
+                                    water_rating: 2,
+                                    water_value: "33,51 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 284,
@@ -2013,7 +2376,18 @@
                                 Colorant,
                             ],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 3,
+                                    co2_rating: 3,
+                                    co2_value: "115 g",
+                                    water_rating: 3,
+                                    water_value: "5,85 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 59,
@@ -2037,7 +2411,18 @@
                             allergens: [],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 2,
+                                    co2_value: "311 g",
+                                    water_rating: 3,
+                                    water_value: "1,92 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 351,
@@ -2065,7 +2450,18 @@
                                 Colorant,
                             ],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 2,
+                                    co2_value: "211 g",
+                                    water_rating: 3,
+                                    water_value: "6,00 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 91,
@@ -2101,7 +2497,18 @@
                                 Colorant,
                             ],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 2,
+                                    co2_value: "259 g",
+                                    water_rating: 3,
+                                    water_value: "5,90 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 123,
@@ -2136,7 +2543,18 @@
                                 Phosphate,
                             ],
                             food_type: Pork,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "2435 g",
+                                    water_rating: 2,
+                                    water_value: "62,83 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 837,
@@ -2164,7 +2582,18 @@
                                 Colorant,
                             ],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 2,
+                                    co2_value: "211 g",
+                                    water_rating: 3,
+                                    water_value: "6,00 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 91,
@@ -2205,7 +2634,18 @@
                                 AntioxidantAgents,
                             ],
                             food_type: Beef,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "4112 g",
+                                    water_rating: 3,
+                                    water_value: "5,44 l",
+                                    animal_welfare_rating: 2,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 597,
@@ -2232,7 +2672,7 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -2250,7 +2690,18 @@
                                 Colorant,
                             ],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 2,
+                                    co2_value: "211 g",
+                                    water_rating: 3,
+                                    water_value: "6,00 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 91,
@@ -2280,7 +2731,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -2303,7 +2754,18 @@
                             ],
                             additives: [],
                             food_type: Beef,
-                            env_score: 1,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "1491 g",
+                                    water_rating: 3,
+                                    water_value: "9,62 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 527,
@@ -2333,7 +2795,18 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "298 g",
+                                    water_rating: 3,
+                                    water_value: "5,84 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 556,
@@ -2357,7 +2830,18 @@
                             allergens: [],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 1,
+                                    co2_value: "1805 g",
+                                    water_rating: 3,
+                                    water_value: "3,86 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 737,
@@ -2383,7 +2867,18 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "71 g",
+                                    water_rating: 3,
+                                    water_value: "0,78 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 144,
@@ -2422,7 +2917,7 @@
                                 Phosphate,
                             ],
                             food_type: Pork,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -2440,7 +2935,7 @@
                             ],
                             additives: [],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -2467,7 +2962,7 @@
                                 PreservingAgents,
                             ],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -2484,7 +2979,7 @@
                             ],
                             additives: [],
                             food_type: BeefAw,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -2503,7 +2998,7 @@
                                 ArtificiallyBlackenedOlives,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -2521,7 +3016,7 @@
                                 Colorant,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -2540,7 +3035,7 @@
                                 ArtificiallyBlackenedOlives,
                             ],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -2567,7 +3062,7 @@
                             ],
                             additives: [],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -2604,7 +3099,18 @@
                                 AntioxidantAgents,
                             ],
                             food_type: Pork,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 2,
+                                    co2_value: "1237 g",
+                                    water_rating: 3,
+                                    water_value: "17,32 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 743,
@@ -2630,7 +3136,7 @@
                                 SurfaceWaxed,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -2648,7 +3154,18 @@
                             ],
                             additives: [],
                             food_type: Vegetarian,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 3,
+                                    co2_value: "1020 g",
+                                    water_rating: 2,
+                                    water_value: "79,12 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 1173,
@@ -2680,7 +3197,18 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "806 g",
+                                    water_rating: 2,
+                                    water_value: "65,41 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 796,
@@ -2706,7 +3234,7 @@
                                 SurfaceWaxed,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -2726,7 +3254,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -2740,7 +3268,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -2759,7 +3287,18 @@
                                 ArtificiallyBlackenedOlives,
                             ],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 2,
+                                    co2_value: "628 g",
+                                    water_rating: 3,
+                                    water_value: "21,77 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 690,
@@ -2789,7 +3328,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -2803,7 +3342,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -2817,7 +3356,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -2837,7 +3376,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -2851,7 +3390,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -2865,7 +3404,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -2885,7 +3424,18 @@
                                 AntioxidantAgents,
                             ],
                             food_type: Beef,
-                            env_score: 1,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "4205 g",
+                                    water_rating: 2,
+                                    water_value: "30,09 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 429,
@@ -2909,7 +3459,18 @@
                             allergens: [],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 3,
+                                    co2_rating: 3,
+                                    co2_value: "84 g",
+                                    water_rating: 3,
+                                    water_value: "0,30 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 295,
@@ -2937,7 +3498,18 @@
                                 Colorant,
                             ],
                             food_type: Vegan,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 2,
+                                    co2_value: "164 g",
+                                    water_rating: 3,
+                                    water_value: "5,96 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 154,
@@ -2967,7 +3539,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -2987,7 +3559,18 @@
                                 Colorant,
                             ],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 2,
+                                    co2_value: "259 g",
+                                    water_rating: 3,
+                                    water_value: "5,90 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 123,
@@ -3022,7 +3605,18 @@
                                 Phosphate,
                             ],
                             food_type: Pork,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "2435 g",
+                                    water_rating: 2,
+                                    water_value: "62,83 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 837,
@@ -3052,7 +3646,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3077,7 +3671,18 @@
                                 AntioxidantAgents,
                             ],
                             food_type: Beef,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "4112 g",
+                                    water_rating: 3,
+                                    water_value: "5,44 l",
+                                    animal_welfare_rating: 2,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 597,
@@ -3104,7 +3709,7 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -3124,7 +3729,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -3147,7 +3752,18 @@
                             ],
                             additives: [],
                             food_type: Beef,
-                            env_score: 1,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "1491 g",
+                                    water_rating: 3,
+                                    water_value: "9,62 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 527,
@@ -3177,7 +3793,18 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "298 g",
+                                    water_rating: 3,
+                                    water_value: "5,84 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 556,
@@ -3201,7 +3828,18 @@
                             allergens: [],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 1,
+                                    co2_value: "1805 g",
+                                    water_rating: 3,
+                                    water_value: "3,86 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 737,
@@ -3227,7 +3865,18 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "71 g",
+                                    water_rating: 3,
+                                    water_value: "0,78 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 144,
@@ -3261,7 +3910,7 @@
                             ],
                             additives: [],
                             food_type: Pork,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3279,7 +3928,7 @@
                             ],
                             additives: [],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -3306,7 +3955,7 @@
                                 PreservingAgents,
                             ],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3323,7 +3972,7 @@
                             ],
                             additives: [],
                             food_type: BeefAw,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3342,7 +3991,7 @@
                                 ArtificiallyBlackenedOlives,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3360,7 +4009,7 @@
                                 Colorant,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3379,7 +4028,7 @@
                                 ArtificiallyBlackenedOlives,
                             ],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -3406,7 +4055,7 @@
                             ],
                             additives: [],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -3435,7 +4084,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3452,7 +4101,18 @@
                             ],
                             additives: [],
                             food_type: BeefAw,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 1,
+                                    co2_value: "4021 g",
+                                    water_rating: 3,
+                                    water_value: "8,78 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 737,
@@ -3481,7 +4141,18 @@
                             ],
                             additives: [],
                             food_type: Vegetarian,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 2,
+                                    co2_value: "666 g",
+                                    water_rating: 3,
+                                    water_value: "13,70 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 851,
@@ -3514,7 +4185,18 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "777 g",
+                                    water_rating: 3,
+                                    water_value: "11,79 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 2,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 716,
@@ -3538,7 +4220,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3554,7 +4236,7 @@
                                 SurfaceWaxed,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -3574,7 +4256,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3588,7 +4270,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3608,7 +4290,18 @@
                                 Colorant,
                             ],
                             food_type: Vegetarian,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "462 g",
+                                    water_rating: 3,
+                                    water_value: "4,54 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 510,
@@ -3638,7 +4331,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3652,7 +4345,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3666,7 +4359,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -3686,7 +4379,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3700,7 +4393,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3714,7 +4407,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3733,7 +4426,18 @@
                             ],
                             additives: [],
                             food_type: Fish,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 2,
+                                    co2_value: "919 g",
+                                    water_rating: 3,
+                                    water_value: "11,62 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 791,
@@ -3761,7 +4465,18 @@
                                 Colorant,
                             ],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 2,
+                                    co2_value: "136 g",
+                                    water_rating: 3,
+                                    water_value: "1,44 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 91,
@@ -3788,7 +4503,18 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 3,
+                                    co2_rating: 3,
+                                    co2_value: "104 g",
+                                    water_rating: 3,
+                                    water_value: "1,09 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 290,
@@ -3818,7 +4544,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -3838,7 +4564,18 @@
                                 Colorant,
                             ],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 2,
+                                    co2_value: "259 g",
+                                    water_rating: 3,
+                                    water_value: "5,90 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 123,
@@ -3873,7 +4610,18 @@
                                 Phosphate,
                             ],
                             food_type: Pork,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "2435 g",
+                                    water_rating: 2,
+                                    water_value: "62,83 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 837,
@@ -3914,7 +4662,18 @@
                                 AntioxidantAgents,
                             ],
                             food_type: Beef,
-                            env_score: 0,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "4112 g",
+                                    water_rating: 3,
+                                    water_value: "5,44 l",
+                                    animal_welfare_rating: 2,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 597,
@@ -3941,7 +4700,7 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -3961,7 +4720,7 @@
                             allergens: [],
                             additives: [],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -3984,7 +4743,18 @@
                             ],
                             additives: [],
                             food_type: Beef,
-                            env_score: 1,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 1,
+                                    co2_rating: 1,
+                                    co2_value: "1491 g",
+                                    water_rating: 3,
+                                    water_value: "9,62 l",
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 527,
@@ -4014,7 +4784,18 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "298 g",
+                                    water_rating: 3,
+                                    water_value: "5,84 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 556,
@@ -4038,7 +4819,18 @@
                             allergens: [],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 2,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 1,
+                                    co2_value: "1805 g",
+                                    water_rating: 3,
+                                    water_value: "3,86 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 737,
@@ -4064,7 +4856,18 @@
                             ],
                             additives: [],
                             food_type: Vegan,
-                            env_score: 3,
+                            env_score: Some(
+                                EnvironmentInfo {
+                                    average_rating: 2,
+                                    co2_rating: 3,
+                                    co2_value: "71 g",
+                                    water_rating: 3,
+                                    water_value: "0,78 l",
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
                             nutrition_data: Some(
                                 NutritionData {
                                     energy: 144,
@@ -4100,7 +4903,7 @@
                                 AntioxidantAgents,
                             ],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -4122,7 +4925,7 @@
                                 FlavourEnhancer,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -4149,7 +4952,7 @@
                                 PreservingAgents,
                             ],
                             food_type: Unknown,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -4166,7 +4969,7 @@
                             ],
                             additives: [],
                             food_type: BeefAw,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -4185,7 +4988,7 @@
                                 ArtificiallyBlackenedOlives,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -4203,7 +5006,7 @@
                                 Colorant,
                             ],
                             food_type: Vegan,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                         Dish {
@@ -4222,7 +5025,7 @@
                                 ArtificiallyBlackenedOlives,
                             ],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
@@ -4249,7 +5052,7 @@
                             ],
                             additives: [],
                             food_type: Vegetarian,
-                            env_score: 0,
+                            env_score: None,
                             nutrition_data: None,
                         },
                     ],
