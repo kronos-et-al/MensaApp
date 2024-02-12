@@ -12,6 +12,7 @@ use super::{image::Image, price::Price, side::Side};
 
 #[derive(SimpleObject, Debug)]
 #[graphql(complex)]
+#[allow(clippy::struct_field_names)]
 pub(in super::super) struct Meal {
     /// The identifier of the main course.
     id: Uuid,
@@ -101,6 +102,7 @@ impl Meal {
 
 #[derive(SimpleObject, Debug)]
 #[graphql(complex)]
+#[allow(clippy::struct_field_names)]
 struct Ratings {
     /// The average rating of this meal.
     average_rating: f32,
