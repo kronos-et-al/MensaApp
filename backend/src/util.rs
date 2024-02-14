@@ -188,11 +188,11 @@ pub struct EnvironmentInfo {
     /// The number of stars the food has for co2 emmissions. Out of `max_rating`
     pub co2_rating: u32,
     /// The amount of co2 emitted by the production of the food
-    pub co2_value: String,
+    pub co2_value: u32,
     /// The number of stars the food has for water consumption. Out of `max_rating`
     pub water_rating: u32,
     /// The amount of water used for the production of the food
-    pub water_value: String,
+    pub water_value: u32,
     /// The number of stars the food has for animal welfare. Out of `max_rating`
     pub animal_welfare_rating: u32,
     /// The number of stars the food has for rainforest preservation. Out of `max_rating`

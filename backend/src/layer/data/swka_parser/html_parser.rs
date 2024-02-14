@@ -115,7 +115,7 @@ lazy_static! {
     static ref ENV_SCORE_NODE_CLASS_SELECTOR: Selector = Selector::parse("div.enviroment_score.average").expect(SELECTOR_PARSE_E_MSG);
 
     /// A Regex for getting prices in euros. A price consists of 1 or more digits, followed by a comma and then exactly two digits.
-    static ref PRICE_REGEX: Regex = Regex::new(r"([0-9]*),([0-9]{2})").expect(REGEX_PARSE_E_MSG);
+    static ref DECIMAL_REGEX: Regex = Regex::new(r"([0-9]*),([0-9]{2})").expect(REGEX_PARSE_E_MSG);
     /// A Regex for getting allergens. An allergen consists of a single Uppercase letter followed by one or more upper- or lowercase letters (indicated by \w+).
     static ref ALLERGEN_REGEX: Regex = Regex::new(r"[A-Z]\w+").expect(REGEX_PARSE_E_MSG);
     /// A regex for getting additives. An additive consists of one or two digits.
@@ -334,7 +334,9 @@ impl HTMLParser {
                 Selector::parse(&format!("{DISH_PRICE_NODE_CLASS_SELECTOR_PREFIX}{i}")).ok()
             })
             .filter_map(|selector| dish_node.select(&selector).next())
-            .filter_map(|price_node| Self::get_price_through_regex(&price_node.inner_html()));
+            .filter_map(|price_node| {
+                Self::convert_decimal_to_whole_number(&price_node.inner_html())
+            });
         Price {
             price_student: prices.next().unwrap_or_default(),
             price_guest: prices.next().unwrap_or_default(),
@@ -343,8 +345,8 @@ impl HTMLParser {
         }
     }
 
-    fn get_price_through_regex(string: &str) -> Option<u32> {
-        let capture = PRICE_REGEX.captures(string)?;
+    fn convert_decimal_to_whole_number(string: &str) -> Option<u32> {
+        let capture = DECIMAL_REGEX.captures(string)?;
         let euros = capture.get(1)?.as_str();
         let cents = capture.get(2)?.as_str();
         format!("{euros}{cents}").parse().ok()
@@ -392,7 +394,7 @@ impl HTMLParser {
             co2_rating: Self::get_co2_rating(dish_node)?,
             co2_value: Self::get_co2_value(dish_node)?,
             water_rating: Self::get_rating(dish_node, "div.wasser_bewertung")?,
-            water_value: Self::get_value(dish_node, "div.wasser_bewertung")?,
+            water_value: Self::get_water_value(dish_node)?,
             animal_welfare_rating: Self::get_rating(dish_node, "div.tierwohl")?,
             rainforest_rating: Self::get_rating(dish_node, "div.regenwald")?,
             max_rating: Self::get_max_rating(dish_node, "div.regenwald")?,
@@ -415,9 +417,20 @@ impl HTMLParser {
             .or_else(|| Self::get_rating(dish_node, "div.co2_bewertung_wolke"))
     }
 
-    fn get_co2_value(dish_node: &ElementRef) -> Option<String> {
-        Self::get_value(dish_node, "div.co2_bewertung")
-            .or_else(|| Self::get_value(dish_node, "div.co2_bewertung_wolke"))
+    fn get_co2_value(dish_node: &ElementRef) -> Option<u32> {
+        let raw_value = Self::get_value(dish_node, "div.co2_bewertung")
+            .or_else(|| Self::get_value(dish_node, "div.co2_bewertung_wolke"))?;
+        WEIGHT_REGEX
+            .captures(&raw_value)?
+            .get(1)?
+            .as_str()
+            .parse()
+            .ok()
+    }
+
+    fn get_water_value(dish_node: &ElementRef) -> Option<u32> {
+        let raw_value = Self::get_value(dish_node, "div.wasser_bewertung")?;
+        Self::convert_decimal_to_whole_number(&raw_value)
     }
 
     fn get_rating(dish_node: &ElementRef, information_area_class: &str) -> Option<u32> {
@@ -568,7 +581,7 @@ mod tests {
         let file_contents = read_from_file(path).unwrap();
         let canteen_data = HTMLParser::new().transform(&file_contents, 42_u32).unwrap();
 
-        //let _ = write_output_to_file(path, &canteen_data);
+        let _ = write_output_to_file(path, &canteen_data);
         let expected = read_from_file(&path.replace(".html", ".txt"))
             .unwrap()
             .replace("\r\n", "\n");
