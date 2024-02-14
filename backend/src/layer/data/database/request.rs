@@ -9,7 +9,7 @@ use crate::{
         DataError, RequestDataAccess, Result,
     },
     null_error,
-    util::{Additive, Allergen, Date, FoodType, Price, Uuid},
+    util::{Additive, Allergen, Date, EnvironmentInfo, FoodType, NutritionData, Price, Uuid},
 };
 
 /// Class implementing all database requests arising from graphql manipulations.
@@ -285,6 +285,14 @@ impl RequestDataAccess for PersistentRequestData {
         .fetch_all(&self.pool)
         .await?;
         Ok(res)
+    }
+
+    async fn get_nutrition_data(&self, food_id: Uuid) -> Result<Option<NutritionData>> {
+        todo!()
+    }
+
+    async fn get_environment_information(&self, food_id: Uuid) -> Result<Option<EnvironmentInfo>> {
+        todo!()
     }
 }
 

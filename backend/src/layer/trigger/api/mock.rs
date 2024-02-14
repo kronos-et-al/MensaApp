@@ -4,14 +4,17 @@
 use async_trait::async_trait;
 use uuid::Uuid;
 
-use crate::interface::{
-    api_command::{Command, Result as CommandResult},
-    persistent_data::{
-        model::{ApiKey, Canteen, Image, Line, Meal, Side},
-        AuthDataAccess, RequestDataAccess, Result as DataResult,
-    },
-};
 use crate::util::{Additive, Allergen, Date, FoodType, Price, ReportReason};
+use crate::{
+    interface::{
+        api_command::{Command, Result as CommandResult},
+        persistent_data::{
+            model::{ApiKey, Canteen, Image, Line, Meal, Side},
+            AuthDataAccess, RequestDataAccess, Result as DataResult,
+        },
+    },
+    util::{EnvironmentInfo, NutritionData},
+};
 
 const INVALID_UUID: &str = "invalid uuid:";
 
@@ -261,6 +264,17 @@ impl RequestDataAccess for RequestDatabaseMock {
 
     async fn get_allergens(&self, _food_id: crate::util::Uuid) -> DataResult<Vec<Allergen>> {
         Ok(vec![Allergen::Pi, Allergen::Hf, Allergen::Gl])
+    }
+
+    async fn get_nutrition_data(&self, food_id: Uuid) -> DataResult<Option<NutritionData>> {
+        todo!()
+    }
+
+    async fn get_environment_information(
+        &self,
+        food_id: Uuid,
+    ) -> DataResult<Option<EnvironmentInfo>> {
+        todo!()
     }
 }
 

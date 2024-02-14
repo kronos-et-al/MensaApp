@@ -4,7 +4,7 @@ use sqlx::{Pool, Postgres};
 
 use crate::{
     interface::persistent_data::{MealplanManagementDataAccess, Result},
-    util::{Additive, Allergen, Date, FoodType, Price, Uuid},
+    util::{Additive, Allergen, Date, EnvironmentInfo, FoodType, NutritionData, Price, Uuid},
 };
 
 /// Class for performing database operations necessary for meal plan management.
@@ -206,9 +206,19 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<EnvironmentInfo>,
     ) -> Result<Uuid> {
-        self.insert_food(name, food_type, allergens, additives, true)
-            .await
+        self.insert_food(
+            name,
+            food_type,
+            allergens,
+            additives,
+            nutrition_data,
+            environment_information,
+            true,
+        )
+        .await
     }
 
     async fn insert_side(
@@ -217,9 +227,19 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<EnvironmentInfo>,
     ) -> Result<Uuid> {
-        self.insert_food(name, food_type, allergens, additives, false)
-            .await
+        self.insert_food(
+            name,
+            food_type,
+            allergens,
+            additives,
+            nutrition_data,
+            environment_information,
+            false,
+        )
+        .await
     }
 
     async fn add_meal_to_plan(
@@ -282,13 +302,15 @@ impl PersistentMealplanManagementData {
 
         Ok(())
     }
-
+    #[allow(clippy::too_many_arguments)]
     async fn insert_food(
         &self,
         name: &str,
         food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<EnvironmentInfo>,
         is_meal: bool,
     ) -> Result<Uuid> {
         let food_id = sqlx::query_scalar!(
@@ -698,7 +720,15 @@ mod test {
         let allergens = vec![Allergen::Ca, Allergen::Pa];
 
         let res = req
-            .insert_food(name, food_type, &allergens, &additives, true)
+            .insert_food(
+                name,
+                food_type,
+                &allergens,
+                &additives,
+                todo!(),
+                todo!(),
+                true,
+            )
             .await;
         //assert!(res.is_ok());
         let food_id = res.unwrap();
@@ -895,7 +925,7 @@ mod test {
         let allergens = &[Allergen::Ca, Allergen::Di];
         let additives = &[Additive::Alcohol];
         let id = data
-            .insert_meal(name, FoodType::Beef, allergens, additives)
+            .insert_meal(name, FoodType::Beef, allergens, additives, todo!(), todo!())
             .await
             .expect("meal should be successfully inserted");
 
@@ -936,7 +966,7 @@ mod test {
         let allergens = &[Allergen::Ca, Allergen::Di];
         let additives = &[Additive::Alcohol];
         let id = data
-            .insert_side(name, FoodType::Beef, allergens, additives)
+            .insert_side(name, FoodType::Beef, allergens, additives, todo!(), todo!())
             .await
             .expect("meal should be successfully inserted");
 

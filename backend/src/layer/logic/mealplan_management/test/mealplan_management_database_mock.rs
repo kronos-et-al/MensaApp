@@ -1,7 +1,7 @@
 //! This crate contains mocks of [`MealplanManagementDatabaseMock`] for testing.
 use crate::{
     interface::persistent_data::{MealplanManagementDataAccess, Result},
-    util::{Additive, Allergen, Date, FoodType, Price, Uuid},
+    util::{Additive, Allergen, Date, EnvironmentInfo, FoodType, NutritionData, Price, Uuid},
 };
 use async_trait::async_trait;
 
@@ -79,6 +79,8 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         _food_type: FoodType,
         _allergens: &[Allergen],
         _additives: &[Additive],
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<EnvironmentInfo>,
     ) -> Result<Uuid> {
         Ok(gen_random_uuid())
     }
@@ -89,6 +91,8 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         _food_type: FoodType,
         _allergens: &[Allergen],
         _additives: &[Additive],
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<EnvironmentInfo>,
     ) -> Result<Uuid> {
         Ok(gen_random_uuid())
     }

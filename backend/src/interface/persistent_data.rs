@@ -2,7 +2,9 @@
 pub mod model;
 
 use crate::interface::persistent_data::model::{ApiKey, Canteen, Image, Line, Meal, Side};
-use crate::util::{Additive, Allergen, Date, FoodType, Price, ReportReason, Uuid};
+use crate::util::{
+    Additive, Allergen, Date, EnvironmentInfo, FoodType, NutritionData, Price, ReportReason, Uuid,
+};
 use async_trait::async_trait;
 use sqlx::migrate::MigrateError;
 use std::num::TryFromIntError;
@@ -116,6 +118,8 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<EnvironmentInfo>,
     ) -> Result<Uuid>;
 
     /// Adds a new side entity to the database. Returns the UUID of the created meal.
@@ -125,6 +129,8 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<EnvironmentInfo>,
     ) -> Result<Uuid>;
 
     /// Adds a meal into the meal plan for a line at a date by specifying its price.
@@ -217,4 +223,8 @@ pub trait RequestDataAccess: Send + Sync {
     async fn get_additives(&self, food_id: Uuid) -> Result<Vec<Additive>>;
     /// Returns all allergens related to the given food_id (food_id can be a meal_id or side_id).
     async fn get_allergens(&self, food_id: Uuid) -> Result<Vec<Allergen>>;
+    /// Returns the nutritionial data related to the given food_id (food_id can be a meal_id or side_id).
+    async fn get_nutrition_data(&self, food_id: Uuid) -> Result<Option<NutritionData>>;
+    /// Returns the environmental data related to the given food_id (food_id can be a meal_id or side_id).
+    async fn get_environment_information(&self, food_id: Uuid) -> Result<Option<EnvironmentInfo>>;
 }
