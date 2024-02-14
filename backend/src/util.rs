@@ -201,6 +201,25 @@ pub struct EnvironmentInfo {
     pub max_rating: u32,
 }
 
+/// The nutrients of a dish
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NutritionData {
+    /// Energy in Kcal
+    pub energy: u32,
+    /// Protein in grams
+    pub protein: u32,
+    /// Carbs in grams
+    pub carbohydrates: u32,
+    /// Sugar in grams
+    pub sugar: u32,
+    /// Fat in grams
+    pub fat: u32,
+    /// Saturated fat in grams
+    pub saturated_fat: u32,
+    /// Salt in grams
+    pub salt: u32,
+}
+
 lazy_static! {
     static ref BASE_URL: String = std::env::var("BASE_URL").unwrap_or_else(|_| "localhost".into());
 }

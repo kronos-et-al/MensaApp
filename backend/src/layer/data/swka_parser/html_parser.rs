@@ -85,10 +85,10 @@
 //! <!-- ... -->
 //! ```
 
-use crate::util::{Additive, Allergen, Date, FoodType, Price};
+use crate::util::{Additive, Allergen, Date, FoodType, NutritionData, Price};
 use crate::{
     interface::mensa_parser::{
-        model::{Dish, NutritionData, ParseCanteen, ParseLine},
+        model::{Dish, ParseCanteen, ParseLine},
         ParseError,
     },
     util::EnvironmentInfo,

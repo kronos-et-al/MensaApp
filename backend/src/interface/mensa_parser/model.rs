@@ -1,6 +1,6 @@
 //! These structs are used for parse operations.
 
-use crate::util::{Additive, Allergen, EnvironmentInfo, FoodType, Price};
+use crate::util::{Additive, Allergen, EnvironmentInfo, FoodType, NutritionData, Price};
 
 /// Canteen struct containing all meal plan information of a canteen. Contains raw data.
 #[derive(Debug)]
@@ -41,23 +41,4 @@ pub struct Dish {
     pub env_score: Option<EnvironmentInfo>,
     /// The nutritional information of the dish
     pub nutrition_data: Option<NutritionData>,
-}
-
-/// The nutrients of a dish
-#[derive(Debug)]
-pub struct NutritionData {
-    /// Energy in Kcal
-    pub energy: u32,
-    /// Protein in grams
-    pub protein: u32,
-    /// Carbs in grams
-    pub carbohydrates: u32,
-    /// Sugar in grams
-    pub sugar: u32,
-    /// Fat in grams
-    pub fat: u32,
-    /// Saturated fat in grams
-    pub saturated_fat: u32,
-    /// Salt in grams
-    pub salt: u32,
 }
