@@ -3,7 +3,7 @@
 CREATE DOMAIN weight_domain as smallint CHECK (VALUE > 0);
 CREATE DOMAIN energy_domain as smallint CHECK (VALUE > 0);
 
-CREATE TABLE food_env_score (
+CREATE TABLE food_nutrition_data (
     energy energy_domain NOT NULL,
     protein weight_domain NOT NULL,
     carbohydrates weight_domain NOT NULL,
