@@ -116,7 +116,14 @@ where
         } else if Self::is_side(dish.price.price_student, average, &dish.name) {
             let side_id = self
                 .db
-                .insert_side(&dish.name, dish.food_type, &dish.allergens, &dish.additives, todo!(), todo!())
+                .insert_side(
+                    &dish.name,
+                    dish.food_type,
+                    &dish.allergens,
+                    &dish.additives,
+                    dish.nutrition_data,
+                    dish.env_score,
+                )
                 .await?;
             self.db
                 .add_side_to_plan(side_id, line_id, date, dish.price)
@@ -124,7 +131,14 @@ where
         } else {
             let meal_id = self
                 .db
-                .insert_meal(&dish.name, dish.food_type, &dish.allergens, &dish.additives, todo!(), todo!())
+                .insert_meal(
+                    &dish.name,
+                    dish.food_type,
+                    &dish.allergens,
+                    &dish.additives,
+                    dish.nutrition_data,
+                    dish.env_score,
+                )
                 .await?;
             self.db
                 .add_meal_to_plan(meal_id, line_id, date, dish.price)

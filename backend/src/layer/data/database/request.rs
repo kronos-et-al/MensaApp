@@ -288,11 +288,44 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_nutrition_data(&self, food_id: Uuid) -> Result<Option<NutritionData>> {
-        todo!()
+        let res = sqlx::query!(
+            r#"SELECT energy, protein, carbohydrates, sugar, fat, saturated_fat, salt FROM food_nutrition_data WHERE food_id = $1"#,
+            food_id
+        ).fetch_optional(&self.pool)
+        .await?;
+        if res.is_none() {
+            return Ok(None);
+        }
+        let res = res.expect("isdpoiopvü");
+        Ok(Some(NutritionData {
+            energy: u32::try_from(res.energy)?,
+            protein: u32::try_from(res.protein)?,
+            carbohydrates: u32::try_from(res.carbohydrates)?,
+            sugar: u32::try_from(res.sugar)?,
+            fat: u32::try_from(res.fat)?,
+            saturated_fat: u32::try_from(res.saturated_fat)?,
+            salt: u32::try_from(res.salt)?,
+        }))
     }
 
     async fn get_environment_information(&self, food_id: Uuid) -> Result<Option<EnvironmentInfo>> {
-        todo!()
+        let res = sqlx::query!(
+            r#"SELECT co2_rating, co2_value, water_rating, water_value, animal_welfare_rating, rainforest_rating, max_rating FROM food_env_score WHERE food_id = $1"#,
+            food_id
+        ).fetch_optional(&self.pool).await?;
+        if res.is_none() {
+            return Ok(None);
+        }
+        let res = res.expect("isdpoiopvü");
+        Ok(Some(EnvironmentInfo {
+            co2_rating: u32::try_from(res.co2_rating)?,
+            co2_value: u32::try_from(res.co2_value)?,
+            water_rating: u32::try_from(res.water_rating)?,
+            water_value: u32::try_from(res.water_value)?,
+            animal_welfare_rating: u32::try_from(res.animal_welfare_rating)?,
+            rainforest_rating: u32::try_from(res.rainforest_rating)?,
+            max_rating: u32::try_from(res.max_rating)?,
+        }))
     }
 }
 

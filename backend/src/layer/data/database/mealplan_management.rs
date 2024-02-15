@@ -355,6 +355,36 @@ impl PersistentMealplanManagementData {
         .execute(&self.pool)
         .await?;
 
+        if nutrition_data.is_some() {
+            let nut_data = nutrition_data.expect("If you see this, logic broke");
+            sqlx::query!(
+                "INSERT INTO food_nutrition_data(energy, protein, carbohydrates, sugar, fat, saturated_fat, salt, food_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", 
+                i32::try_from(nut_data.energy)? as _,
+                i32::try_from(nut_data.protein)? as _,
+                i32::try_from(nut_data.carbohydrates)? as _,
+                i32::try_from(nut_data.sugar)? as _,
+                i32::try_from(nut_data.fat)? as _,
+                i32::try_from(nut_data.saturated_fat)? as _,
+                i32::try_from(nut_data.salt)? as _,
+                food_id,
+            ).execute(&self.pool).await?;
+        }
+
+        if environment_information.is_some() {
+            let env_info = environment_information.expect("If you see this, logic broke");
+            sqlx::query!(
+                "INSERT INTO food_env_score(co2_rating, co2_value, water_rating, water_value, animal_welfare_rating, rainforest_rating, max_rating, food_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", 
+                i32::try_from(env_info.co2_rating)? as _,
+                i32::try_from(env_info.co2_value)? as _,
+                i32::try_from(env_info.water_rating)? as _,
+                i32::try_from(env_info.water_value)? as _,
+                i32::try_from(env_info.animal_welfare_rating)? as _,
+                i32::try_from(env_info.rainforest_rating)? as _,
+                i32::try_from(env_info.max_rating)? as _,
+                food_id,
+            ).execute(&self.pool).await?;
+        }
+
         Ok(food_id)
     }
 }
@@ -718,6 +748,24 @@ mod test {
         let name = "TEST_FOOD";
         let additives = vec![Additive::Alcohol];
         let allergens = vec![Allergen::Ca, Allergen::Pa];
+        let nutrition_data = Some(NutritionData {
+            energy: 1,
+            protein: 2,
+            carbohydrates: 3,
+            sugar: 4,
+            fat: 5,
+            saturated_fat: 6,
+            salt: 7,
+        });
+        let environment_info = Some(EnvironmentInfo {
+            co2_rating: 1,
+            co2_value: 2,
+            water_rating: 3,
+            water_value: 4,
+            animal_welfare_rating: 5,
+            rainforest_rating: 6,
+            max_rating: 7,
+        });
 
         let res = req
             .insert_food(
@@ -725,8 +773,8 @@ mod test {
                 food_type,
                 &allergens,
                 &additives,
-                todo!(),
-                todo!(),
+                nutrition_data,
+                environment_info,
                 true,
             )
             .await;
@@ -924,8 +972,33 @@ mod test {
 
         let allergens = &[Allergen::Ca, Allergen::Di];
         let additives = &[Additive::Alcohol];
+        let nutrition_data = Some(NutritionData {
+            energy: 1,
+            protein: 2,
+            carbohydrates: 3,
+            sugar: 4,
+            fat: 5,
+            saturated_fat: 6,
+            salt: 7,
+        });
+        let environment_info = Some(EnvironmentInfo {
+            co2_rating: 1,
+            co2_value: 2,
+            water_rating: 3,
+            water_value: 4,
+            animal_welfare_rating: 5,
+            rainforest_rating: 6,
+            max_rating: 7,
+        });
         let id = data
-            .insert_meal(name, FoodType::Beef, allergens, additives, todo!(), todo!())
+            .insert_meal(
+                name,
+                FoodType::Beef,
+                allergens,
+                additives,
+                nutrition_data,
+                environment_info,
+            )
             .await
             .expect("meal should be successfully inserted");
 
@@ -965,8 +1038,34 @@ mod test {
 
         let allergens = &[Allergen::Ca, Allergen::Di];
         let additives = &[Additive::Alcohol];
+        let nutrition_data = Some(NutritionData {
+            energy: 1,
+            protein: 2,
+            carbohydrates: 3,
+            sugar: 4,
+            fat: 5,
+            saturated_fat: 6,
+            salt: 7,
+        });
+        let environment_info = Some(EnvironmentInfo {
+            co2_rating: 1,
+            co2_value: 2,
+            water_rating: 3,
+            water_value: 4,
+            animal_welfare_rating: 5,
+            rainforest_rating: 6,
+            max_rating: 7,
+        });
+
         let id = data
-            .insert_side(name, FoodType::Beef, allergens, additives, todo!(), todo!())
+            .insert_side(
+                name,
+                FoodType::Beef,
+                allergens,
+                additives,
+                nutrition_data,
+                environment_info,
+            )
             .await
             .expect("meal should be successfully inserted");
 
