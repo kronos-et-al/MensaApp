@@ -79,8 +79,8 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         _food_type: FoodType,
         _allergens: &[Allergen],
         _additives: &[Additive],
-        nutrition_data: Option<NutritionData>,
-        environment_information: Option<EnvironmentInfo>,
+        _nutrition_data: Option<NutritionData>,
+        _environment_information: Option<EnvironmentInfo>,
     ) -> Result<Uuid> {
         Ok(gen_random_uuid())
     }
@@ -91,8 +91,8 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         _food_type: FoodType,
         _allergens: &[Allergen],
         _additives: &[Additive],
-        nutrition_data: Option<NutritionData>,
-        environment_information: Option<EnvironmentInfo>,
+        _nutrition_data: Option<NutritionData>,
+        _environment_information: Option<EnvironmentInfo>,
     ) -> Result<Uuid> {
         Ok(gen_random_uuid())
     }

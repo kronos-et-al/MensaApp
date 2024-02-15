@@ -266,15 +266,31 @@ impl RequestDataAccess for RequestDatabaseMock {
         Ok(vec![Allergen::Pi, Allergen::Hf, Allergen::Gl])
     }
 
-    async fn get_nutrition_data(&self, food_id: Uuid) -> DataResult<Option<NutritionData>> {
-        todo!()
+    async fn get_nutrition_data(&self, _food_id: Uuid) -> DataResult<Option<NutritionData>> {
+        Ok(Some(NutritionData {
+            energy: 1,
+            protein: 2,
+            carbohydrates: 3,
+            sugar: 4,
+            fat: 5,
+            saturated_fat: 6,
+            salt: 7,
+        }))
     }
 
     async fn get_environment_information(
         &self,
-        food_id: Uuid,
+        _food_id: Uuid,
     ) -> DataResult<Option<EnvironmentInfo>> {
-        todo!()
+        Ok(Some(EnvironmentInfo {
+            co2_rating: 1,
+            co2_value: 2,
+            water_rating: 3,
+            water_value: 4,
+            animal_welfare_rating: 5,
+            rainforest_rating: 6,
+            max_rating: 7,
+        }))
     }
 }
 
