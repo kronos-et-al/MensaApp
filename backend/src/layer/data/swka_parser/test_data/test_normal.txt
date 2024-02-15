@@ -22,11 +22,10 @@
                             food_type: Unknown,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 1492,
                                     water_rating: 3,
-                                    water_value: 1828,
+                                    water_value: 18280,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -75,11 +74,10 @@
                             food_type: Vegetarian,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 2,
                                     co2_value: 845,
                                     water_rating: 3,
-                                    water_value: 1955,
+                                    water_value: 19550,
                                     animal_welfare_rating: 2,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -134,11 +132,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 564,
                                     water_rating: 2,
-                                    water_value: 4588,
+                                    water_value: 45880,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -328,11 +325,10 @@
                             food_type: Pork,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 2,
                                     co2_value: 2069,
                                     water_rating: 2,
-                                    water_value: 6079,
+                                    water_value: 60790,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -368,11 +364,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 3,
                                     co2_rating: 3,
                                     co2_value: 160,
                                     water_rating: 3,
-                                    water_value: 311,
+                                    water_value: 3110,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -407,11 +402,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 194,
                                     water_rating: 1,
-                                    water_value: 1722,
+                                    water_value: 17220,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -468,11 +462,10 @@
                             food_type: Unknown,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 2,
                                     co2_value: 259,
                                     water_rating: 3,
-                                    water_value: 590,
+                                    water_value: 5900,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -514,11 +507,10 @@
                             food_type: Pork,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 2435,
                                     water_rating: 2,
-                                    water_value: 6283,
+                                    water_value: 62830,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -580,11 +572,10 @@
                             food_type: Beef,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 4112,
                                     water_rating: 3,
-                                    water_value: 544,
+                                    water_value: 5440,
                                     animal_welfare_rating: 2,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -661,11 +652,10 @@
                             food_type: Beef,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 1491,
                                     water_rating: 3,
-                                    water_value: 962,
+                                    water_value: 9620,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -716,11 +706,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 1,
                                     co2_value: 1805,
                                     water_rating: 3,
-                                    water_value: 386,
+                                    water_value: 3860,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -753,11 +742,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 71,
                                     water_rating: 3,
-                                    water_value: 78,
+                                    water_value: 780,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -981,11 +969,10 @@
                             food_type: PorkAw,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 2,
                                     co2_value: 857,
                                     water_rating: 3,
-                                    water_value: 2161,
+                                    water_value: 21610,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -1038,11 +1025,10 @@
                             food_type: Vegetarian,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 728,
                                     water_rating: 3,
-                                    water_value: 1373,
+                                    water_value: 13730,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -1085,11 +1071,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 3,
                                     co2_rating: 3,
                                     co2_value: 136,
                                     water_rating: 3,
-                                    water_value: 130,
+                                    water_value: 1300,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -1172,11 +1157,10 @@
                             food_type: BeefAw,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 1,
                                     co2_value: 4627,
                                     water_rating: 3,
-                                    water_value: 702,
+                                    water_value: 7020,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -1309,11 +1293,10 @@
                             food_type: Beef,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 2,
                                     co2_value: 1369,
                                     water_rating: 3,
-                                    water_value: 1815,
+                                    water_value: 18150,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -1344,11 +1327,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 3,
                                     co2_rating: 3,
                                     co2_value: 143,
                                     water_rating: 3,
-                                    water_value: 289,
+                                    water_value: 2890,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -1383,11 +1365,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 3,
                                     co2_rating: 3,
                                     co2_value: 57,
                                     water_rating: 3,
-                                    water_value: 80,
+                                    water_value: 800,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -1444,11 +1425,10 @@
                             food_type: Unknown,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 2,
                                     co2_value: 259,
                                     water_rating: 3,
-                                    water_value: 590,
+                                    water_value: 5900,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -1490,11 +1470,10 @@
                             food_type: Pork,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 2435,
                                     water_rating: 2,
-                                    water_value: 6283,
+                                    water_value: 62830,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -1556,11 +1535,10 @@
                             food_type: Beef,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 4112,
                                     water_rating: 3,
-                                    water_value: 544,
+                                    water_value: 5440,
                                     animal_welfare_rating: 2,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -1637,11 +1615,10 @@
                             food_type: Beef,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 1491,
                                     water_rating: 3,
-                                    water_value: 962,
+                                    water_value: 9620,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -1678,11 +1655,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 298,
                                     water_rating: 3,
-                                    water_value: 584,
+                                    water_value: 5840,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -1713,11 +1689,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 1,
                                     co2_value: 1805,
                                     water_rating: 3,
-                                    water_value: 386,
+                                    water_value: 3860,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -1750,11 +1725,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 71,
                                     water_rating: 3,
-                                    water_value: 78,
+                                    water_value: 780,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -1993,11 +1967,10 @@
                             food_type: PorkAw,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 2,
                                     co2_value: 813,
                                     water_rating: 2,
-                                    water_value: 6552,
+                                    water_value: 65520,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -2033,11 +2006,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 387,
                                     water_rating: 2,
-                                    water_value: 4985,
+                                    water_value: 49850,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -2093,11 +2065,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 448,
                                     water_rating: 2,
-                                    water_value: 4316,
+                                    water_value: 43160,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -2152,11 +2123,10 @@
                             food_type: Vegetarian,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 686,
                                     water_rating: 3,
-                                    water_value: 2062,
+                                    water_value: 20620,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -2191,11 +2161,10 @@
                             food_type: Vegetarian,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 2,
                                     co2_value: 211,
                                     water_rating: 3,
-                                    water_value: 600,
+                                    water_value: 6000,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -2264,11 +2233,10 @@
                             food_type: Vegetarian,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 2,
                                     co2_value: 211,
                                     water_rating: 3,
-                                    water_value: 600,
+                                    water_value: 6000,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -2341,11 +2309,10 @@
                             food_type: Pork,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 2,
                                     co2_value: 765,
                                     water_rating: 2,
-                                    water_value: 3351,
+                                    water_value: 33510,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -2378,11 +2345,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 3,
                                     co2_rating: 3,
                                     co2_value: 115,
                                     water_rating: 3,
-                                    water_value: 585,
+                                    water_value: 5850,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -2413,11 +2379,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 2,
                                     co2_value: 311,
                                     water_rating: 3,
-                                    water_value: 192,
+                                    water_value: 1920,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -2452,11 +2417,10 @@
                             food_type: Vegetarian,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 2,
                                     co2_value: 211,
                                     water_rating: 3,
-                                    water_value: 600,
+                                    water_value: 6000,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -2499,11 +2463,10 @@
                             food_type: Unknown,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 2,
                                     co2_value: 259,
                                     water_rating: 3,
-                                    water_value: 590,
+                                    water_value: 5900,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -2545,11 +2508,10 @@
                             food_type: Pork,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 2435,
                                     water_rating: 2,
-                                    water_value: 6283,
+                                    water_value: 62830,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -2584,11 +2546,10 @@
                             food_type: Vegetarian,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 2,
                                     co2_value: 211,
                                     water_rating: 3,
-                                    water_value: 600,
+                                    water_value: 6000,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -2636,11 +2597,10 @@
                             food_type: Beef,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 4112,
                                     water_rating: 3,
-                                    water_value: 544,
+                                    water_value: 5440,
                                     animal_welfare_rating: 2,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -2692,11 +2652,10 @@
                             food_type: Vegetarian,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 2,
                                     co2_value: 211,
                                     water_rating: 3,
-                                    water_value: 600,
+                                    water_value: 6000,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -2756,11 +2715,10 @@
                             food_type: Beef,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 1491,
                                     water_rating: 3,
-                                    water_value: 962,
+                                    water_value: 9620,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -2797,11 +2755,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 298,
                                     water_rating: 3,
-                                    water_value: 584,
+                                    water_value: 5840,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -2832,11 +2789,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 1,
                                     co2_value: 1805,
                                     water_rating: 3,
-                                    water_value: 386,
+                                    water_value: 3860,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -2869,11 +2825,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 71,
                                     water_rating: 3,
-                                    water_value: 78,
+                                    water_value: 780,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -3101,11 +3056,10 @@
                             food_type: Pork,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 2,
                                     co2_value: 1237,
                                     water_rating: 3,
-                                    water_value: 1732,
+                                    water_value: 17320,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -3156,11 +3110,10 @@
                             food_type: Vegetarian,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 3,
                                     co2_value: 1020,
                                     water_rating: 2,
-                                    water_value: 7912,
+                                    water_value: 79120,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -3199,11 +3152,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 806,
                                     water_rating: 2,
-                                    water_value: 6541,
+                                    water_value: 65410,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -3289,11 +3241,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 2,
                                     co2_value: 628,
                                     water_rating: 3,
-                                    water_value: 2177,
+                                    water_value: 21770,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -3426,11 +3377,10 @@
                             food_type: Beef,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 4205,
                                     water_rating: 2,
-                                    water_value: 3009,
+                                    water_value: 30090,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -3461,11 +3411,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 3,
                                     co2_rating: 3,
                                     co2_value: 84,
                                     water_rating: 3,
-                                    water_value: 30,
+                                    water_value: 300,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -3500,11 +3449,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 2,
                                     co2_value: 164,
                                     water_rating: 3,
-                                    water_value: 596,
+                                    water_value: 5960,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -3561,11 +3509,10 @@
                             food_type: Unknown,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 2,
                                     co2_value: 259,
                                     water_rating: 3,
-                                    water_value: 590,
+                                    water_value: 5900,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -3607,11 +3554,10 @@
                             food_type: Pork,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 2435,
                                     water_rating: 2,
-                                    water_value: 6283,
+                                    water_value: 62830,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -3673,11 +3619,10 @@
                             food_type: Beef,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 4112,
                                     water_rating: 3,
-                                    water_value: 544,
+                                    water_value: 5440,
                                     animal_welfare_rating: 2,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -3754,11 +3699,10 @@
                             food_type: Beef,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 1491,
                                     water_rating: 3,
-                                    water_value: 962,
+                                    water_value: 9620,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -3795,11 +3739,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 298,
                                     water_rating: 3,
-                                    water_value: 584,
+                                    water_value: 5840,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -3830,11 +3773,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 1,
                                     co2_value: 1805,
                                     water_rating: 3,
-                                    water_value: 386,
+                                    water_value: 3860,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -3867,11 +3809,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 71,
                                     water_rating: 3,
-                                    water_value: 78,
+                                    water_value: 780,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -4103,11 +4044,10 @@
                             food_type: BeefAw,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 1,
                                     co2_value: 4021,
                                     water_rating: 3,
-                                    water_value: 878,
+                                    water_value: 8780,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -4143,11 +4083,10 @@
                             food_type: Vegetarian,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 2,
                                     co2_value: 666,
                                     water_rating: 3,
-                                    water_value: 1370,
+                                    water_value: 13700,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -4187,11 +4126,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 777,
                                     water_rating: 3,
-                                    water_value: 1179,
+                                    water_value: 11790,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 2,
                                     max_rating: 3,
@@ -4292,11 +4230,10 @@
                             food_type: Vegetarian,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 462,
                                     water_rating: 3,
-                                    water_value: 454,
+                                    water_value: 4540,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -4428,11 +4365,10 @@
                             food_type: Fish,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 2,
                                     co2_value: 919,
                                     water_rating: 3,
-                                    water_value: 1162,
+                                    water_value: 11620,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -4467,11 +4403,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 2,
                                     co2_value: 136,
                                     water_rating: 3,
-                                    water_value: 144,
+                                    water_value: 1440,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -4505,11 +4440,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 3,
                                     co2_rating: 3,
                                     co2_value: 104,
                                     water_rating: 3,
-                                    water_value: 109,
+                                    water_value: 1090,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -4566,11 +4500,10 @@
                             food_type: Unknown,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 2,
                                     co2_value: 259,
                                     water_rating: 3,
-                                    water_value: 590,
+                                    water_value: 5900,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -4612,11 +4545,10 @@
                             food_type: Pork,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 2435,
                                     water_rating: 2,
-                                    water_value: 6283,
+                                    water_value: 62830,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -4664,11 +4596,10 @@
                             food_type: Beef,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 4112,
                                     water_rating: 3,
-                                    water_value: 544,
+                                    water_value: 5440,
                                     animal_welfare_rating: 2,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -4745,11 +4676,10 @@
                             food_type: Beef,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 1,
                                     co2_rating: 1,
                                     co2_value: 1491,
                                     water_rating: 3,
-                                    water_value: 962,
+                                    water_value: 9620,
                                     animal_welfare_rating: 1,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -4786,11 +4716,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 298,
                                     water_rating: 3,
-                                    water_value: 584,
+                                    water_value: 5840,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
@@ -4821,11 +4750,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 1,
                                     co2_value: 1805,
                                     water_rating: 3,
-                                    water_value: 386,
+                                    water_value: 3860,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 3,
                                     max_rating: 3,
@@ -4858,11 +4786,10 @@
                             food_type: Vegan,
                             env_score: Some(
                                 EnvironmentInfo {
-                                    average_rating: 2,
                                     co2_rating: 3,
                                     co2_value: 71,
                                     water_rating: 3,
-                                    water_value: 78,
+                                    water_value: 780,
                                     animal_welfare_rating: 3,
                                     rainforest_rating: 1,
                                     max_rating: 3,
