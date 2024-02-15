@@ -114,8 +114,16 @@ lazy_static! {
     static ref DISH_INFO_NODE_CLASS_SELECTOR: Selector = Selector::parse("sup").expect(SELECTOR_PARSE_E_MSG);
     static ref ENV_SCORE_NODE_CLASS_SELECTOR: Selector = Selector::parse("div.enviroment_score.average").expect(SELECTOR_PARSE_E_MSG);
 
+    static ref CO2_RATING_SELECTOR: Selector = Selector::parse("div.co2_bewertung").expect(SELECTOR_PARSE_E_MSG);
+    static ref CO2_ALTERNATIVE_RATING_SELECTOR: Selector = Selector::parse("div.co2_bewertung_wolke").expect(SELECTOR_PARSE_E_MSG);
+    static ref WATER_RATING_SELECTOR: Selector = Selector::parse("div.wasser_bewertung").expect(SELECTOR_PARSE_E_MSG);
+    static ref ANIMAL_WELFARE_RATING_SELECTOR: Selector = Selector::parse("div.tierwohl").expect(SELECTOR_PARSE_E_MSG);
+    static ref RAINFOREST_RATING_SELECTOR: Selector = Selector::parse("div.regenwald").expect(SELECTOR_PARSE_E_MSG);
+    static ref VALUE_SELECTOR: Selector = Selector::parse("div.value").expect(SELECTOR_PARSE_E_MSG);
+    static ref RATING_SELECTOR: Selector = Selector::parse("div.enviroment_score.co2-label").expect(SELECTOR_PARSE_E_MSG);
+
     /// A Regex for getting prices in euros. A price consists of 1 or more digits, followed by a comma and then exactly two digits.
-    static ref DECIMAL_REGEX: Regex = Regex::new(r"([0-9]*),([0-9]{2})").expect(REGEX_PARSE_E_MSG);
+    static ref PRICE_REGEX: Regex = Regex::new(r"([0-9]*),([0-9]{2})").expect(REGEX_PARSE_E_MSG);
     /// A Regex for getting allergens. An allergen consists of a single Uppercase letter followed by one or more upper- or lowercase letters (indicated by \w+).
     static ref ALLERGEN_REGEX: Regex = Regex::new(r"[A-Z]\w+").expect(REGEX_PARSE_E_MSG);
     /// A regex for getting additives. An additive consists of one or two digits.
@@ -124,6 +132,8 @@ lazy_static! {
     static ref ENERGY_REGEX: Regex = Regex::new(r"([0-9]+) kcal").expect(REGEX_PARSE_E_MSG);
 
     static ref WEIGHT_REGEX: Regex = Regex::new(r"([0-9]+) g").expect(REGEX_PARSE_E_MSG);
+
+    static ref VOLUME_REGEX: Regex = Regex::new(r"([0-9]*),([0-9]{2}) l").expect(REGEX_PARSE_E_MSG);
 
     static ref ID_REGEX: Regex = Regex::new(r"[0-9]{18,}").expect(REGEX_PARSE_E_MSG);
 }
@@ -138,8 +148,20 @@ const DATE_FORMAT: &str = "%Y-%m-%d";
 
 const NUMBER_OF_FOOD_TYPES: usize = 8;
 const PRICE_TYPE_COUNT: usize = 4;
+const NUMBER_OF_MILLILITRES_PER_LITRE: u32 = 1000;
 
 const LINE_CLOSED_MEAL_NAME: &str = "GESCHLOSSEN";
+
+const RATING_NAME: &str = "data-rating";
+const MAX_RATING_NAME: &str = "data-numstars";
+
+const ENERGY_NAME: &str = "energie";
+const PROTEIN_NAME: &str = "proteine";
+const CARBOHYDRATE_NAME: &str = "kohlenhydrate";
+const SUGAR_NAME: &str = "zucker";
+const FAT_NAME: &str = "fett";
+const SATURATED_FAT_NAME: &str = "gesaettigt";
+const SALT_NAME: &str = "salz";
 
 const SELECTOR_PARSE_E_MSG: &str = "Error while parsing Selector string";
 const REGEX_PARSE_E_MSG: &str = "Error while parsing regex string";
@@ -334,9 +356,7 @@ impl HTMLParser {
                 Selector::parse(&format!("{DISH_PRICE_NODE_CLASS_SELECTOR_PREFIX}{i}")).ok()
             })
             .filter_map(|selector| dish_node.select(&selector).next())
-            .filter_map(|price_node| {
-                Self::convert_decimal_to_whole_number(&price_node.inner_html())
-            });
+            .filter_map(|price_node| Self::get_price_through_regex(&price_node.inner_html()));
         Price {
             price_student: prices.next().unwrap_or_default(),
             price_guest: prices.next().unwrap_or_default(),
@@ -345,8 +365,8 @@ impl HTMLParser {
         }
     }
 
-    fn convert_decimal_to_whole_number(string: &str) -> Option<u32> {
-        let capture = DECIMAL_REGEX.captures(string)?;
+    fn get_price_through_regex(string: &str) -> Option<u32> {
+        let capture = PRICE_REGEX.captures(string)?;
         let euros = capture.get(1)?.as_str();
         let cents = capture.get(2)?.as_str();
         format!("{euros}{cents}").parse().ok()
@@ -390,36 +410,25 @@ impl HTMLParser {
 
     fn get_dish_env_score(dish_node: &ElementRef) -> Option<EnvironmentInfo> {
         let env_info = EnvironmentInfo {
-            average_rating: Self::get_average_env_score(dish_node)?,
             co2_rating: Self::get_co2_rating(dish_node)?,
             co2_value: Self::get_co2_value(dish_node)?,
-            water_rating: Self::get_rating(dish_node, "div.wasser_bewertung")?,
+            water_rating: Self::get_rating(dish_node, &WATER_RATING_SELECTOR)?,
             water_value: Self::get_water_value(dish_node)?,
-            animal_welfare_rating: Self::get_rating(dish_node, "div.tierwohl")?,
-            rainforest_rating: Self::get_rating(dish_node, "div.regenwald")?,
-            max_rating: Self::get_max_rating(dish_node, "div.regenwald")?,
+            animal_welfare_rating: Self::get_rating(dish_node, &ANIMAL_WELFARE_RATING_SELECTOR)?,
+            rainforest_rating: Self::get_rating(dish_node, &RAINFOREST_RATING_SELECTOR)?,
+            max_rating: Self::get_max_rating(dish_node, &RAINFOREST_RATING_SELECTOR)?,
         };
         Some(env_info)
     }
 
-    fn get_average_env_score(dish_node: &ElementRef) -> Option<u32> {
-        Some(
-            (Self::get_co2_rating(dish_node)?
-                + Self::get_rating(dish_node, "div.wasser_bewertung")?
-                + Self::get_rating(dish_node, "div.tierwohl")?
-                + Self::get_rating(dish_node, "div.regenwald")?)
-                / 4,
-        )
-    }
-
     fn get_co2_rating(dish_node: &ElementRef) -> Option<u32> {
-        Self::get_rating(dish_node, "div.co2_bewertung")
-            .or_else(|| Self::get_rating(dish_node, "div.co2_bewertung_wolke"))
+        Self::get_rating(dish_node, &CO2_RATING_SELECTOR)
+            .or_else(|| Self::get_rating(dish_node, &CO2_ALTERNATIVE_RATING_SELECTOR))
     }
 
     fn get_co2_value(dish_node: &ElementRef) -> Option<u32> {
-        let raw_value = Self::get_value(dish_node, "div.co2_bewertung")
-            .or_else(|| Self::get_value(dish_node, "div.co2_bewertung_wolke"))?;
+        let raw_value = Self::get_value(dish_node, &CO2_RATING_SELECTOR)
+            .or_else(|| Self::get_value(dish_node, &CO2_ALTERNATIVE_RATING_SELECTOR))?;
         WEIGHT_REGEX
             .captures(&raw_value)?
             .get(1)?
@@ -429,33 +438,37 @@ impl HTMLParser {
     }
 
     fn get_water_value(dish_node: &ElementRef) -> Option<u32> {
-        let raw_value = Self::get_value(dish_node, "div.wasser_bewertung")?;
-        Self::convert_decimal_to_whole_number(&raw_value)
+        let raw_value = Self::get_value(dish_node, &WATER_RATING_SELECTOR)?;
+        Self::get_water_value_through_regex(&raw_value)
     }
 
-    fn get_rating(dish_node: &ElementRef, information_area_class: &str) -> Option<u32> {
-        Self::get_ratings(dish_node, information_area_class, "data-rating")
+    fn get_water_value_through_regex(string: &str) -> Option<u32> {
+        let capture = VOLUME_REGEX.captures(string)?;
+        let litres = capture.get(1)?.as_str().parse::<u32>().ok()?;
+        let millilitres = capture.get(2)?.as_str().parse::<u32>().ok()? * 10;
+        Some(litres * NUMBER_OF_MILLILITRES_PER_LITRE + millilitres)
     }
-    fn get_max_rating(dish_node: &ElementRef, information_area_class: &str) -> Option<u32> {
-        Self::get_ratings(dish_node, information_area_class, "data-numstars")
+
+    fn get_rating(dish_node: &ElementRef, information_area_selector: &Selector) -> Option<u32> {
+        Self::get_ratings(dish_node, information_area_selector, RATING_NAME)
+    }
+    fn get_max_rating(dish_node: &ElementRef, information_area_selector: &Selector) -> Option<u32> {
+        Self::get_ratings(dish_node, information_area_selector, MAX_RATING_NAME)
     }
 
     fn get_ratings(
         dish_node: &ElementRef,
-        information_area_class: &str,
+        information_area_selector: &Selector,
         attribute_name: &str,
     ) -> Option<u32> {
-        let value_node = Self::get_env_score_value_node(
-            dish_node,
-            information_area_class,
-            "div.enviroment_score.co2-label",
-        )?;
+        let value_node =
+            Self::get_env_score_value_node(dish_node, information_area_selector, &RATING_SELECTOR)?;
         value_node.value().attr(attribute_name)?.parse().ok()
     }
 
-    fn get_value(dish_node: &ElementRef, information_area_class: &str) -> Option<String> {
+    fn get_value(dish_node: &ElementRef, information_area_selector: &Selector) -> Option<String> {
         let value_node =
-            Self::get_env_score_value_node(dish_node, information_area_class, "div.value")?;
+            Self::get_env_score_value_node(dish_node, information_area_selector, &VALUE_SELECTOR)?;
         Some(Self::remove_multiple_whitespaces(
             &value_node.text().collect::<String>(),
         ))
@@ -463,26 +476,24 @@ impl HTMLParser {
 
     fn get_env_score_value_node<'a>(
         dish_node: &'a ElementRef<'a>,
-        information_area_class: &'a str,
-        field_class: &'a str,
+        information_area_selector: &Selector,
+        field_selector: &Selector,
     ) -> Option<ElementRef<'a>> {
         let env_score_node = Self::get_nutrition_node(dish_node)?;
-        let selector = Selector::parse(information_area_class).ok()?;
-        let water_node = env_score_node.select(&selector).next()?;
-        let selector2 = Selector::parse(field_class).ok()?;
-        water_node.select(&selector2).next()
+        let value_node = env_score_node.select(information_area_selector).next()?;
+        value_node.select(field_selector).next()
     }
 
     fn get_dish_nutrition_data(dish_node: &ElementRef) -> Option<NutritionData> {
         let nutrition_node = Self::get_nutrition_node(dish_node)?;
         Some(NutritionData {
-            energy: Self::get_nutrients(&nutrition_node, "energie", &ENERGY_REGEX)?,
-            protein: Self::get_nutrients(&nutrition_node, "proteine", &WEIGHT_REGEX)?,
-            carbohydrates: Self::get_nutrients(&nutrition_node, "kohlenhydrate", &WEIGHT_REGEX)?,
-            sugar: Self::get_nutrients(&nutrition_node, "zucker", &WEIGHT_REGEX)?,
-            fat: Self::get_nutrients(&nutrition_node, "fett", &WEIGHT_REGEX)?,
-            saturated_fat: Self::get_nutrients(&nutrition_node, "gesaettigt", &WEIGHT_REGEX)?,
-            salt: Self::get_nutrients(&nutrition_node, "salz", &WEIGHT_REGEX)?,
+            energy: Self::get_nutrients(&nutrition_node, ENERGY_NAME, &ENERGY_REGEX)?,
+            protein: Self::get_nutrients(&nutrition_node, PROTEIN_NAME, &WEIGHT_REGEX)?,
+            carbohydrates: Self::get_nutrients(&nutrition_node, CARBOHYDRATE_NAME, &WEIGHT_REGEX)?,
+            sugar: Self::get_nutrients(&nutrition_node, SUGAR_NAME, &WEIGHT_REGEX)?,
+            fat: Self::get_nutrients(&nutrition_node, FAT_NAME, &WEIGHT_REGEX)?,
+            saturated_fat: Self::get_nutrients(&nutrition_node, SATURATED_FAT_NAME, &WEIGHT_REGEX)?,
+            salt: Self::get_nutrients(&nutrition_node, SALT_NAME, &WEIGHT_REGEX)?,
         })
     }
 

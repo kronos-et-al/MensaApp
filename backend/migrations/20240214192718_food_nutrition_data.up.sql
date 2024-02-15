@@ -1,7 +1,7 @@
 -- Add up migration script here
 
-CREATE DOMAIN weight_domain as smallint CHECK (VALUE > 0);
-CREATE DOMAIN energy_domain as smallint CHECK (VALUE > 0);
+CREATE DOMAIN weight_domain as INT CHECK (VALUE > 0);
+CREATE DOMAIN energy_domain as INT CHECK (VALUE > 0);
 
 CREATE TABLE food_nutrition_data (
     energy energy_domain NOT NULL,

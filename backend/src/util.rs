@@ -183,15 +183,13 @@ pub struct Price {
 /// This struct contains all environmental information. co2 in gramms, water in litres
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct EnvironmentInfo {
-    /// The number of stars the food has on average. Out of `max_rating`
-    pub average_rating: u32,
     /// The number of stars the food has for co2 emmissions. Out of `max_rating`
     pub co2_rating: u32,
-    /// The amount of co2 emitted by the production of the food
+    /// The amount of co2 emitted by the production of the food. In gramms
     pub co2_value: u32,
     /// The number of stars the food has for water consumption. Out of `max_rating`
     pub water_rating: u32,
-    /// The amount of water used for the production of the food
+    /// The amount of water used for the production of the food. In Millilitres
     pub water_value: u32,
     /// The number of stars the food has for animal welfare. Out of `max_rating`
     pub animal_welfare_rating: u32,
@@ -206,17 +204,17 @@ pub struct EnvironmentInfo {
 pub struct NutritionData {
     /// Energy in Kcal
     pub energy: u32,
-    /// Protein in grams
+    /// Protein in gramms
     pub protein: u32,
-    /// Carbs in grams
+    /// Carbs in gramms
     pub carbohydrates: u32,
-    /// Sugar in grams
+    /// Sugar in gramms
     pub sugar: u32,
-    /// Fat in grams
+    /// Fat in gramms
     pub fat: u32,
-    /// Saturated fat in grams
+    /// Saturated fat in gramms
     pub saturated_fat: u32,
-    /// Salt in grams
+    /// Salt in gramms
     pub salt: u32,
 }
 
