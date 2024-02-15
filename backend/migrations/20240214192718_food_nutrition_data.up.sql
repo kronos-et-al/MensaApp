@@ -11,6 +11,6 @@ CREATE TABLE food_nutrition_data (
     fat weight_domain NOT NULL,
     saturated_fat weight_domain NOT NULL,
     salt weight_domain NOT NULL,
-    food_id uuid NOT NULL REFERENCES meal(food_id),
+    food_id uuid NOT NULL REFERENCES food(food_id),
     PRIMARY KEY (food_id)
 );

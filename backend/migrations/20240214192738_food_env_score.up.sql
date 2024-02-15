@@ -11,6 +11,6 @@ CREATE TABLE food_env_score (
     animal_welfare_rating env_rating NOT NULL,
     rainforest_rating env_rating NOT NULL,
     max_rating env_rating NOT NULL,
-    food_id uuid NOT NULL REFERENCES meal(food_id),
+    food_id uuid NOT NULL REFERENCES food(food_id),
     PRIMARY KEY (food_id)
 );
