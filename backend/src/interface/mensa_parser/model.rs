@@ -37,7 +37,7 @@ pub struct Dish {
     pub additives: Vec<Additive>,
     /// Meal-Type of the dish. See [FoodType]
     pub food_type: FoodType,
-    /// The environmental score of the dish. See [EnvironmentInfo]
+    /// The environmental score of the dish. See [ParseEnvironmentInfo]
     pub env_score: Option<ParseEnvironmentInfo>,
     /// The nutritional information of the dish
     pub nutrition_data: Option<NutritionData>,
