@@ -2,13 +2,15 @@
 pub mod model;
 
 use crate::interface::persistent_data::model::{ApiKey, Canteen, Image, Line, Meal, Side};
-use crate::util::{
-    Additive, Allergen, Date, EnvironmentInfo, FoodType, NutritionData, Price, ReportReason, Uuid,
-};
+use crate::util::{Additive, Allergen, Date, FoodType, NutritionData, Price, ReportReason, Uuid};
 use async_trait::async_trait;
 use sqlx::migrate::MigrateError;
 use std::num::TryFromIntError;
 use thiserror::Error;
+
+use self::model::EnvironmentInfo;
+
+use super::mensa_parser::model::ParseEnvironmentInfo;
 
 /// Result returned from data access operations, potentially containing a [`DataError`].
 pub type Result<T> = std::result::Result<T, DataError>;
@@ -119,7 +121,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         allergens: &[Allergen],
         additives: &[Additive],
         nutrition_data: Option<NutritionData>,
-        environment_information: Option<EnvironmentInfo>,
+        environment_information: Option<ParseEnvironmentInfo>,
     ) -> Result<Uuid>;
 
     /// Adds a new side entity to the database. Returns the UUID of the created meal.
@@ -130,7 +132,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
         allergens: &[Allergen],
         additives: &[Additive],
         nutrition_data: Option<NutritionData>,
-        environment_information: Option<EnvironmentInfo>,
+        environment_information: Option<ParseEnvironmentInfo>,
     ) -> Result<Uuid>;
 
     /// Adds a meal into the meal plan for a line at a date by specifying its price.

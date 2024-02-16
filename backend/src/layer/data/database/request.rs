@@ -5,11 +5,11 @@ use sqlx::{Pool, Postgres};
 
 use crate::{
     interface::persistent_data::{
-        model::{Canteen, Image, Line, Meal, Side},
+        model::{Canteen, EnvironmentInfo, Image, Line, Meal, Side},
         DataError, RequestDataAccess, Result,
     },
     null_error,
-    util::{Additive, Allergen, Date, EnvironmentInfo, FoodType, NutritionData, Price, Uuid},
+    util::{Additive, Allergen, Date, FoodType, NutritionData, Price, Uuid},
 };
 
 /// Class implementing all database requests arising from graphql manipulations.
@@ -293,19 +293,19 @@ impl RequestDataAccess for PersistentRequestData {
             food_id
         ).fetch_optional(&self.pool)
         .await?;
-        if res.is_none() {
-            return Ok(None);
-        }
-        let res = res.expect("isdpoiopvü");
-        Ok(Some(NutritionData {
-            energy: u32::try_from(res.energy)?,
-            protein: u32::try_from(res.protein)?,
-            carbohydrates: u32::try_from(res.carbohydrates)?,
-            sugar: u32::try_from(res.sugar)?,
-            fat: u32::try_from(res.fat)?,
-            saturated_fat: u32::try_from(res.saturated_fat)?,
-            salt: u32::try_from(res.salt)?,
-        }))
+        let result = match res {
+            Some(res) => Some(NutritionData {
+                energy: u32::try_from(res.energy)?,
+                protein: u32::try_from(res.protein)?,
+                carbohydrates: u32::try_from(res.carbohydrates)?,
+                sugar: u32::try_from(res.sugar)?,
+                fat: u32::try_from(res.fat)?,
+                saturated_fat: u32::try_from(res.saturated_fat)?,
+                salt: u32::try_from(res.salt)?,
+            }),
+            None => None,
+        };
+        Ok(result)
     }
 
     async fn get_environment_information(&self, food_id: Uuid) -> Result<Option<EnvironmentInfo>> {
@@ -313,19 +313,26 @@ impl RequestDataAccess for PersistentRequestData {
             r#"SELECT co2_rating, co2_value, water_rating, water_value, animal_welfare_rating, rainforest_rating, max_rating FROM food_env_score WHERE food_id = $1"#,
             food_id
         ).fetch_optional(&self.pool).await?;
-        if res.is_none() {
-            return Ok(None);
+        if let Some(res) = res {
+            let co2_rating = u32::try_from(res.co2_rating)?;
+            let water_rating = u32::try_from(res.water_rating)?;
+            let animal_welfare_rating = u32::try_from(res.animal_welfare_rating)?;
+            let rainforest_rating = u32::try_from(res.rainforest_rating)?;
+            let average_rating =
+                (co2_rating + water_rating + animal_welfare_rating + rainforest_rating) / 4;
+            Ok(Some(EnvironmentInfo {
+                average_rating,
+                co2_rating,
+                co2_value: u32::try_from(res.co2_value)?,
+                water_rating,
+                water_value: u32::try_from(res.water_value)?,
+                animal_welfare_rating,
+                rainforest_rating,
+                max_rating: u32::try_from(res.max_rating)?,
+            }))
+        } else {
+            Ok(None)
         }
-        let res = res.expect("isdpoiopvü");
-        Ok(Some(EnvironmentInfo {
-            co2_rating: u32::try_from(res.co2_rating)?,
-            co2_value: u32::try_from(res.co2_value)?,
-            water_rating: u32::try_from(res.water_rating)?,
-            water_value: u32::try_from(res.water_value)?,
-            animal_welfare_rating: u32::try_from(res.animal_welfare_rating)?,
-            rainforest_rating: u32::try_from(res.rainforest_rating)?,
-            max_rating: u32::try_from(res.max_rating)?,
-        }))
     }
 }
 

@@ -4,6 +4,7 @@
 use async_trait::async_trait;
 use uuid::Uuid;
 
+use crate::interface::persistent_data::model::EnvironmentInfo;
 use crate::util::{Additive, Allergen, Date, FoodType, Price, ReportReason};
 use crate::{
     interface::{
@@ -13,7 +14,7 @@ use crate::{
             AuthDataAccess, RequestDataAccess, Result as DataResult,
         },
     },
-    util::{EnvironmentInfo, NutritionData},
+    util::NutritionData,
 };
 
 const INVALID_UUID: &str = "invalid uuid:";
@@ -283,6 +284,7 @@ impl RequestDataAccess for RequestDatabaseMock {
         _food_id: Uuid,
     ) -> DataResult<Option<EnvironmentInfo>> {
         Ok(Some(EnvironmentInfo {
+            average_rating: 0,
             co2_rating: 1,
             co2_value: 2,
             water_rating: 3,

@@ -21,7 +21,7 @@
                             additives: [],
                             food_type: Unknown,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 1492,
                                     water_rating: 3,
@@ -73,7 +73,7 @@
                             additives: [],
                             food_type: Vegetarian,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 845,
                                     water_rating: 3,
@@ -131,7 +131,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 564,
                                     water_rating: 2,
@@ -324,7 +324,7 @@
                             ],
                             food_type: Pork,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 2069,
                                     water_rating: 2,
@@ -363,7 +363,7 @@
                             ],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 160,
                                     water_rating: 3,
@@ -401,7 +401,7 @@
                             ],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 194,
                                     water_rating: 1,
@@ -461,7 +461,7 @@
                             ],
                             food_type: Unknown,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 259,
                                     water_rating: 3,
@@ -506,7 +506,7 @@
                             ],
                             food_type: Pork,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 2435,
                                     water_rating: 2,
@@ -571,7 +571,7 @@
                             ],
                             food_type: Beef,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 4112,
                                     water_rating: 3,
@@ -651,7 +651,7 @@
                             additives: [],
                             food_type: Beef,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 1491,
                                     water_rating: 3,
@@ -705,7 +705,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 1805,
                                     water_rating: 3,
@@ -741,7 +741,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 71,
                                     water_rating: 3,
@@ -968,7 +968,7 @@
                             ],
                             food_type: PorkAw,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 857,
                                     water_rating: 3,
@@ -1024,7 +1024,7 @@
                             ],
                             food_type: Vegetarian,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 728,
                                     water_rating: 3,
@@ -1070,7 +1070,7 @@
                             ],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 136,
                                     water_rating: 3,
@@ -1156,7 +1156,7 @@
                             additives: [],
                             food_type: BeefAw,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 4627,
                                     water_rating: 3,
@@ -1292,7 +1292,7 @@
                             additives: [],
                             food_type: Beef,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 1369,
                                     water_rating: 3,
@@ -1326,7 +1326,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 143,
                                     water_rating: 3,
@@ -1364,7 +1364,7 @@
                             ],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 57,
                                     water_rating: 3,
@@ -1424,7 +1424,7 @@
                             ],
                             food_type: Unknown,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 259,
                                     water_rating: 3,
@@ -1469,7 +1469,7 @@
                             ],
                             food_type: Pork,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 2435,
                                     water_rating: 2,
@@ -1534,7 +1534,7 @@
                             ],
                             food_type: Beef,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 4112,
                                     water_rating: 3,
@@ -1614,7 +1614,7 @@
                             additives: [],
                             food_type: Beef,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 1491,
                                     water_rating: 3,
@@ -1654,7 +1654,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 298,
                                     water_rating: 3,
@@ -1688,7 +1688,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 1805,
                                     water_rating: 3,
@@ -1724,7 +1724,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 71,
                                     water_rating: 3,
@@ -1966,7 +1966,7 @@
                             ],
                             food_type: PorkAw,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 813,
                                     water_rating: 2,
@@ -2005,7 +2005,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 387,
                                     water_rating: 2,
@@ -2064,7 +2064,7 @@
                             ],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 448,
                                     water_rating: 2,
@@ -2122,7 +2122,7 @@
                             additives: [],
                             food_type: Vegetarian,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 686,
                                     water_rating: 3,
@@ -2160,7 +2160,7 @@
                             ],
                             food_type: Vegetarian,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 211,
                                     water_rating: 3,
@@ -2232,7 +2232,7 @@
                             ],
                             food_type: Vegetarian,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 211,
                                     water_rating: 3,
@@ -2308,7 +2308,7 @@
                             ],
                             food_type: Pork,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 765,
                                     water_rating: 2,
@@ -2344,7 +2344,7 @@
                             ],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 115,
                                     water_rating: 3,
@@ -2378,7 +2378,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 311,
                                     water_rating: 3,
@@ -2416,7 +2416,7 @@
                             ],
                             food_type: Vegetarian,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 211,
                                     water_rating: 3,
@@ -2462,7 +2462,7 @@
                             ],
                             food_type: Unknown,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 259,
                                     water_rating: 3,
@@ -2507,7 +2507,7 @@
                             ],
                             food_type: Pork,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 2435,
                                     water_rating: 2,
@@ -2545,7 +2545,7 @@
                             ],
                             food_type: Vegetarian,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 211,
                                     water_rating: 3,
@@ -2596,7 +2596,7 @@
                             ],
                             food_type: Beef,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 4112,
                                     water_rating: 3,
@@ -2651,7 +2651,7 @@
                             ],
                             food_type: Vegetarian,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 211,
                                     water_rating: 3,
@@ -2714,7 +2714,7 @@
                             additives: [],
                             food_type: Beef,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 1491,
                                     water_rating: 3,
@@ -2754,7 +2754,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 298,
                                     water_rating: 3,
@@ -2788,7 +2788,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 1805,
                                     water_rating: 3,
@@ -2824,7 +2824,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 71,
                                     water_rating: 3,
@@ -3055,7 +3055,7 @@
                             ],
                             food_type: Pork,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 1237,
                                     water_rating: 3,
@@ -3109,7 +3109,7 @@
                             additives: [],
                             food_type: Vegetarian,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 1020,
                                     water_rating: 2,
@@ -3151,7 +3151,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 806,
                                     water_rating: 2,
@@ -3240,7 +3240,7 @@
                             ],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 628,
                                     water_rating: 3,
@@ -3376,7 +3376,7 @@
                             ],
                             food_type: Beef,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 4205,
                                     water_rating: 2,
@@ -3410,7 +3410,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 84,
                                     water_rating: 3,
@@ -3448,7 +3448,7 @@
                             ],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 164,
                                     water_rating: 3,
@@ -3508,7 +3508,7 @@
                             ],
                             food_type: Unknown,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 259,
                                     water_rating: 3,
@@ -3553,7 +3553,7 @@
                             ],
                             food_type: Pork,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 2435,
                                     water_rating: 2,
@@ -3618,7 +3618,7 @@
                             ],
                             food_type: Beef,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 4112,
                                     water_rating: 3,
@@ -3698,7 +3698,7 @@
                             additives: [],
                             food_type: Beef,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 1491,
                                     water_rating: 3,
@@ -3738,7 +3738,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 298,
                                     water_rating: 3,
@@ -3772,7 +3772,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 1805,
                                     water_rating: 3,
@@ -3808,7 +3808,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 71,
                                     water_rating: 3,
@@ -4043,7 +4043,7 @@
                             additives: [],
                             food_type: BeefAw,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 4021,
                                     water_rating: 3,
@@ -4082,7 +4082,7 @@
                             additives: [],
                             food_type: Vegetarian,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 666,
                                     water_rating: 3,
@@ -4125,7 +4125,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 777,
                                     water_rating: 3,
@@ -4229,7 +4229,7 @@
                             ],
                             food_type: Vegetarian,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 462,
                                     water_rating: 3,
@@ -4364,7 +4364,7 @@
                             additives: [],
                             food_type: Fish,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 919,
                                     water_rating: 3,
@@ -4402,7 +4402,7 @@
                             ],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 136,
                                     water_rating: 3,
@@ -4439,7 +4439,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 104,
                                     water_rating: 3,
@@ -4499,7 +4499,7 @@
                             ],
                             food_type: Unknown,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 2,
                                     co2_value: 259,
                                     water_rating: 3,
@@ -4544,7 +4544,7 @@
                             ],
                             food_type: Pork,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 2435,
                                     water_rating: 2,
@@ -4595,7 +4595,7 @@
                             ],
                             food_type: Beef,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 4112,
                                     water_rating: 3,
@@ -4675,7 +4675,7 @@
                             additives: [],
                             food_type: Beef,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 1491,
                                     water_rating: 3,
@@ -4715,7 +4715,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 298,
                                     water_rating: 3,
@@ -4749,7 +4749,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 1,
                                     co2_value: 1805,
                                     water_rating: 3,
@@ -4785,7 +4785,7 @@
                             additives: [],
                             food_type: Vegan,
                             env_score: Some(
-                                EnvironmentInfo {
+                                ParseEnvironmentInfo {
                                     co2_rating: 3,
                                     co2_value: 71,
                                     water_rating: 3,

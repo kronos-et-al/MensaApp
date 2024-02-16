@@ -85,14 +85,11 @@
 //! <!-- ... -->
 //! ```
 
-use crate::util::{Additive, Allergen, Date, FoodType, NutritionData, Price};
-use crate::{
-    interface::mensa_parser::{
-        model::{Dish, ParseCanteen, ParseLine},
-        ParseError,
-    },
-    util::EnvironmentInfo,
+use crate::interface::mensa_parser::{
+    model::{Dish, ParseCanteen, ParseEnvironmentInfo, ParseLine},
+    ParseError,
 };
+use crate::util::{Additive, Allergen, Date, FoodType, NutritionData, Price};
 use lazy_static::lazy_static;
 use regex::Regex;
 use scraper::element_ref::Text;
@@ -408,8 +405,8 @@ impl HTMLParser {
             .map(FoodType::parse)
     }
 
-    fn get_dish_env_score(dish_node: &ElementRef) -> Option<EnvironmentInfo> {
-        let env_info = EnvironmentInfo {
+    fn get_dish_env_score(dish_node: &ElementRef) -> Option<ParseEnvironmentInfo> {
+        let env_info = ParseEnvironmentInfo {
             co2_rating: Self::get_co2_rating(dish_node)?,
             co2_value: Self::get_co2_value(dish_node)?,
             water_rating: Self::get_rating(dish_node, &WATER_RATING_SELECTOR)?,

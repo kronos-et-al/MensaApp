@@ -3,8 +3,11 @@ use async_trait::async_trait;
 use sqlx::{Pool, Postgres};
 
 use crate::{
-    interface::persistent_data::{MealplanManagementDataAccess, Result},
-    util::{Additive, Allergen, Date, EnvironmentInfo, FoodType, NutritionData, Price, Uuid},
+    interface::{
+        mensa_parser::model::ParseEnvironmentInfo,
+        persistent_data::{MealplanManagementDataAccess, Result},
+    },
+    util::{Additive, Allergen, Date, FoodType, NutritionData, Price, Uuid},
 };
 
 /// Class for performing database operations necessary for meal plan management.
@@ -207,7 +210,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         allergens: &[Allergen],
         additives: &[Additive],
         nutrition_data: Option<NutritionData>,
-        environment_information: Option<EnvironmentInfo>,
+        environment_information: Option<ParseEnvironmentInfo>,
     ) -> Result<Uuid> {
         self.insert_food(
             name,
@@ -228,7 +231,7 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         allergens: &[Allergen],
         additives: &[Additive],
         nutrition_data: Option<NutritionData>,
-        environment_information: Option<EnvironmentInfo>,
+        environment_information: Option<ParseEnvironmentInfo>,
     ) -> Result<Uuid> {
         self.insert_food(
             name,
@@ -310,7 +313,7 @@ impl PersistentMealplanManagementData {
         allergens: &[Allergen],
         additives: &[Additive],
         nutrition_data: Option<NutritionData>,
-        environment_information: Option<EnvironmentInfo>,
+        environment_information: Option<ParseEnvironmentInfo>,
         is_meal: bool,
     ) -> Result<Uuid> {
         let food_id = sqlx::query_scalar!(
@@ -355,32 +358,30 @@ impl PersistentMealplanManagementData {
         .execute(&self.pool)
         .await?;
 
-        if nutrition_data.is_some() {
-            let nut_data = nutrition_data.expect("If you see this, logic broke");
+        if let Some(nutrition_data) = nutrition_data {
             sqlx::query!(
                 "INSERT INTO food_nutrition_data(energy, protein, carbohydrates, sugar, fat, saturated_fat, salt, food_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", 
-                i32::try_from(nut_data.energy)? as _,
-                i32::try_from(nut_data.protein)? as _,
-                i32::try_from(nut_data.carbohydrates)? as _,
-                i32::try_from(nut_data.sugar)? as _,
-                i32::try_from(nut_data.fat)? as _,
-                i32::try_from(nut_data.saturated_fat)? as _,
-                i32::try_from(nut_data.salt)? as _,
+                i32::try_from(nutrition_data.energy)? as _,
+                i32::try_from(nutrition_data.protein)? as _,
+                i32::try_from(nutrition_data.carbohydrates)? as _,
+                i32::try_from(nutrition_data.sugar)? as _,
+                i32::try_from(nutrition_data.fat)? as _,
+                i32::try_from(nutrition_data.saturated_fat)? as _,
+                i32::try_from(nutrition_data.salt)? as _,
                 food_id,
             ).execute(&self.pool).await?;
         }
 
-        if environment_information.is_some() {
-            let env_info = environment_information.expect("If you see this, logic broke");
+        if let Some(environment_information) = environment_information {
             sqlx::query!(
                 "INSERT INTO food_env_score(co2_rating, co2_value, water_rating, water_value, animal_welfare_rating, rainforest_rating, max_rating, food_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", 
-                i32::try_from(env_info.co2_rating)? as _,
-                i32::try_from(env_info.co2_value)? as _,
-                i32::try_from(env_info.water_rating)? as _,
-                i32::try_from(env_info.water_value)? as _,
-                i32::try_from(env_info.animal_welfare_rating)? as _,
-                i32::try_from(env_info.rainforest_rating)? as _,
-                i32::try_from(env_info.max_rating)? as _,
+                i32::try_from(environment_information.co2_rating)? as _,
+                i32::try_from(environment_information.co2_value)? as _,
+                i32::try_from(environment_information.water_rating)? as _,
+                i32::try_from(environment_information.water_value)? as _,
+                i32::try_from(environment_information.animal_welfare_rating)? as _,
+                i32::try_from(environment_information.rainforest_rating)? as _,
+                i32::try_from(environment_information.max_rating)? as _,
                 food_id,
             ).execute(&self.pool).await?;
         }
@@ -757,7 +758,7 @@ mod test {
             saturated_fat: 6,
             salt: 7,
         });
-        let environment_info = Some(EnvironmentInfo {
+        let environment_info = Some(ParseEnvironmentInfo {
             co2_rating: 1,
             co2_value: 2,
             water_rating: 3,
@@ -981,7 +982,7 @@ mod test {
             saturated_fat: 6,
             salt: 7,
         });
-        let environment_info = Some(EnvironmentInfo {
+        let environment_info = Some(ParseEnvironmentInfo {
             co2_rating: 1,
             co2_value: 2,
             water_rating: 3,
@@ -1047,7 +1048,7 @@ mod test {
             saturated_fat: 6,
             salt: 7,
         });
-        let environment_info = Some(EnvironmentInfo {
+        let environment_info = Some(ParseEnvironmentInfo {
             co2_rating: 1,
             co2_value: 2,
             water_rating: 3,
