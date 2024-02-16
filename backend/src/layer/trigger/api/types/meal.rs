@@ -7,8 +7,9 @@ use crate::{
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 use tracing::instrument;
 
+use super::additional_data::NutritionData;
 use super::line::Line;
-use super::{image::Image, price::Price, side::Side};
+use super::{additional_data::EnvironmentInfo, image::Image, price::Price, side::Side};
 
 #[derive(SimpleObject, Debug)]
 #[graphql(complex)]
@@ -97,6 +98,28 @@ impl Meal {
             .await?
             .map(Into::into)
             .ok_or_else(|| "internal error: each meal must belong to a line".into())
+    }
+
+    /// Provides the environment information of this meal.
+    #[instrument(skip(ctx))]
+    async fn environment_info(&self, ctx: &Context<'_>) -> Result<Option<EnvironmentInfo>> {
+        let data_access = ctx.get_data_access();
+        let environement_info = data_access
+            .get_environment_information(self.id)
+            .await?
+            .map(Into::into);
+        Ok(environement_info)
+    }
+
+    /// Provides the nutrition data of this meal.
+    #[instrument(skip(ctx))]
+    async fn nutrition_data(&self, ctx: &Context<'_>) -> Result<Option<NutritionData>> {
+        let data_access = ctx.get_data_access();
+        let nutrition_data = data_access
+            .get_nutrition_data(self.id)
+            .await?
+            .map(Into::into);
+        Ok(nutrition_data)
     }
 }
 
