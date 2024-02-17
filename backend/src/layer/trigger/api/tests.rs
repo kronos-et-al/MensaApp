@@ -17,6 +17,110 @@ use tokio::io::AsyncWriteExt;
 use super::mock::{CommandMock, RequestDatabaseMock};
 use base64::engine::Engine;
 
+const FULL_REQUEST_STRING: &str = r#"
+    {
+        getCanteens {
+          id
+          name
+          lines {
+            id
+            name
+            canteen {
+              name
+            }
+            meals(date: "2000-01-01") {
+              id
+              name
+              mealType
+              ratings {
+                averageRating
+                ratingsCount
+                personalRating
+              }
+              price {
+                student
+                employee
+                guest
+                pupil
+              }
+              statistics {
+                lastServed
+                nextServed
+                frequency
+                new
+              }
+              allergens
+              additives
+              environmentInfo {
+                averageRating
+                co2Rating
+                co2Value
+                waterRating
+                waterValue
+                animalWelfareRating
+                rainforestRating
+                maxRating
+              }
+              nutritionData {
+                energy
+                protein
+                carbohydrates
+                sugar
+                fat
+                saturatedFat
+                salt
+              }
+              images {
+                id
+                url
+                rank
+                upvotes
+                downvotes
+                personalUpvote
+                personalDownvote
+              }
+              sides{
+                id
+                name
+                price {
+                    student
+                    employee
+                    guest
+                    pupil
+                  }
+                allergens
+                additives
+                mealType
+                environmentInfo {
+                  averageRating
+                  co2Rating
+                  co2Value
+                  waterRating
+                  waterValue
+                  animalWelfareRating
+                  rainforestRating
+                  maxRating
+                }
+                nutritionData {
+                  energy
+                  protein
+                  carbohydrates
+                  sugar
+                  fat
+                  saturatedFat
+                  salt
+                }
+              }
+              line {
+                id
+              }
+            }
+          }
+        }
+      }
+      
+    "#;
+
 async fn test_gql_request(request: &'static str) {
     let request = Request::from(request).data(AuthInfo {
         client_id: Some(Uuid::default()),
@@ -126,71 +230,7 @@ async fn test_api_version() {
 #[tokio::test]
 async fn test_complete_request() {
     let request = {
-        r#"
-    {
-        getCanteens {
-          id
-          name
-          lines {
-            id
-            name
-            canteen {
-              name
-            }
-            meals(date: "2000-01-01") {
-              id
-              name
-              mealType
-              ratings {
-                averageRating
-                ratingsCount
-                personalRating
-              }
-              price {
-                student
-                employee
-                guest
-                pupil
-              }
-              statistics {
-                lastServed
-                nextServed
-                frequency
-                new
-              }
-              allergens
-              additives
-              images {
-                id
-                url
-                rank
-                upvotes
-                downvotes
-                personalUpvote
-                personalDownvote
-              }
-              sides{
-                id
-                name
-                price {
-                    student
-                    employee
-                    guest
-                    pupil
-                  }
-                allergens
-                additives
-                mealType
-              }
-              line {
-                id
-              }
-            }
-          }
-        }
-      }
-      
-    "#
+        FULL_REQUEST_STRING
     };
     test_gql_request(request).await;
 }
@@ -233,6 +273,12 @@ fragment mealInfo on Meal {
     }
     allergens
     additives
+    environmentInfo {
+      averageRating
+    }
+    nutritionData {
+      energy
+    }
     statistics {
         lastServed
         nextServed
@@ -258,6 +304,12 @@ fragment mealInfo on Meal {
         name
         additives
         allergens
+        environmentInfo {
+          averageRating
+        }
+        nutritionData {
+          energy
+        }
         price {
             ...price
         }

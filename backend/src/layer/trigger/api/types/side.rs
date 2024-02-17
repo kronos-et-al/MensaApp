@@ -7,6 +7,7 @@ use crate::{
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 use tracing::instrument;
 
+use super::additional_data::{EnvironmentInfo, NutritionData};
 use super::price::Price;
 
 #[derive(SimpleObject, Debug)]
@@ -48,6 +49,28 @@ impl Side {
             .map(Into::into)
             .collect();
         Ok(additives)
+    }
+
+    /// Provides the environment information of this meal.
+    #[instrument(skip(ctx))]
+    async fn environment_info(&self, ctx: &Context<'_>) -> Result<Option<EnvironmentInfo>> {
+        let data_access = ctx.get_data_access();
+        let environment_info = data_access
+            .get_environment_information(self.id)
+            .await?
+            .map(Into::into);
+        Ok(environment_info)
+    }
+
+    /// Provides the nutrition data of this meal.
+    #[instrument(skip(ctx))]
+    async fn nutrition_data(&self, ctx: &Context<'_>) -> Result<Option<NutritionData>> {
+        let data_access = ctx.get_data_access();
+        let nutrition_data = data_access
+            .get_nutrition_data(self.id)
+            .await?
+            .map(Into::into);
+        Ok(nutrition_data)
     }
 }
 

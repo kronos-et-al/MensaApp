@@ -104,11 +104,11 @@ impl Meal {
     #[instrument(skip(ctx))]
     async fn environment_info(&self, ctx: &Context<'_>) -> Result<Option<EnvironmentInfo>> {
         let data_access = ctx.get_data_access();
-        let environement_info = data_access
+        let environment_info = data_access
             .get_environment_information(self.id)
             .await?
             .map(Into::into);
-        Ok(environement_info)
+        Ok(environment_info)
     }
 
     /// Provides the nutrition data of this meal.
