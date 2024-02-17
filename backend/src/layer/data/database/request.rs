@@ -720,6 +720,123 @@ mod tests {
         ]
     }
 
+    #[sqlx::test(fixtures("meal", "environment_info"))]
+    async fn test_get_environment_info(pool: PgPool) {
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
+        let food_ids = [
+            "f7337122-b018-48ad-b420-6202dc3cb4ff",
+            "73cf367b-a536-4b49-ad0c-cb984caa9a08",
+            "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
+            "0a850476-eda4-4fd8-9f93-579eb85b8c25",
+        ];
+        let food_ids: Vec<Uuid> = food_ids
+            .into_iter()
+            .filter_map(|id| Uuid::parse_str(id).ok())
+            .collect();
+        assert_eq!(food_ids.len(), 4);
+        let mut environment_infos = Vec::new();
+        for food_id in food_ids {
+            environment_infos.push(request.get_environment_information(food_id).await.unwrap());
+        }
+        assert_eq!(environment_infos, provide_dummy_environment_infos());
+    }
+
+    fn provide_dummy_environment_infos() -> Vec<Option<EnvironmentInfo>> {
+        vec![
+            Some(EnvironmentInfo {
+                average_rating: 2,
+                co2_rating: 2,
+                co2_value: 200,
+                water_rating: 3,
+                water_value: 10,
+                animal_welfare_rating: 1,
+                rainforest_rating: 2,
+                max_rating: 3,
+            }),
+            None,
+            Some(EnvironmentInfo {
+                average_rating: 3,
+                co2_rating: 1,
+                co2_value: 2,
+                water_rating: 3,
+                water_value: 4,
+                animal_welfare_rating: 5,
+                rainforest_rating: 6,
+                max_rating: 7,
+            }),
+            Some(EnvironmentInfo {
+                average_rating: 1,
+                co2_rating: 1,
+                co2_value: 1,
+                water_rating: 1,
+                water_value: 1,
+                animal_welfare_rating: 1,
+                rainforest_rating: 1,
+                max_rating: 1,
+            }),
+        ]
+    }
+
+    #[sqlx::test(fixtures("meal", "nutrition_data"))]
+    async fn test_get_nutrition_data(pool: PgPool) {
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
+        let food_ids = [
+            "f7337122-b018-48ad-b420-6202dc3cb4ff",
+            "73cf367b-a536-4b49-ad0c-cb984caa9a08",
+            "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
+            "0a850476-eda4-4fd8-9f93-579eb85b8c25",
+        ];
+        let food_ids: Vec<Uuid> = food_ids
+            .into_iter()
+            .filter_map(|id| Uuid::parse_str(id).ok())
+            .collect();
+        assert_eq!(food_ids.len(), 4);
+        let mut nutrition_data = Vec::new();
+        for food_id in food_ids {
+            nutrition_data.push(request.get_nutrition_data(food_id).await.unwrap());
+        }
+        assert_eq!(nutrition_data, provide_dummy_nutrition_data());
+    }
+
+    fn provide_dummy_nutrition_data() -> Vec<Option<NutritionData>> {
+        vec![
+            Some(NutritionData {
+                energy: 2,
+                protein: 200,
+                carbohydrates: 3,
+                sugar: 10,
+                fat: 1,
+                saturated_fat: 2,
+                salt: 3,
+            }),
+            None,
+            Some(NutritionData {
+                energy: 1,
+                protein: 2,
+                carbohydrates: 3,
+                sugar: 4,
+                fat: 5,
+                saturated_fat: 6,
+                salt: 7,
+            }),
+            Some(NutritionData {
+                energy: 1,
+                protein: 1,
+                carbohydrates: 1,
+                sugar: 1,
+                fat: 1,
+                saturated_fat: 1,
+                salt: 1,
+            }),
+        ]
+    }
+
     fn provide_dummy_sides() -> Vec<Side> {
         vec![Side {
             id: Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
