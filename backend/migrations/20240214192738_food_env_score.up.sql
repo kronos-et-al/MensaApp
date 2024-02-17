@@ -1,7 +1,7 @@
 -- Add up migration script here
 
-CREATE DOMAIN env_rating as int CHECK (VALUE > 0);
-CREATE DOMAIN env_value as int CHECK (VALUE > 0);
+CREATE DOMAIN env_rating as integer CHECK (VALUE > 0);
+CREATE DOMAIN env_value as integer CHECK (VALUE > 0);
 
 CREATE TABLE food_env_score (
     co2_rating env_rating NOT NULL,
