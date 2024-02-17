@@ -229,9 +229,7 @@ async fn test_api_version() {
 
 #[tokio::test]
 async fn test_complete_request() {
-    let request = {
-        FULL_REQUEST_STRING
-    };
+    let request = { FULL_REQUEST_STRING };
     test_gql_request(request).await;
 }
 
