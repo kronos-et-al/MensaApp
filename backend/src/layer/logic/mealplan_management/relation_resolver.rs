@@ -27,7 +27,7 @@ where
 
     /// This method resolves relation problems with canteen data and the corresponding database.<br>
     /// After each resolve the object gets injected into the database.<br>
-    /// If an similar object already exists, the existing object will be updated with the new object data.<br>
+    /// If a similar object already exists, the existing object will be updated with the new object data.<br>
     /// `canteen: ParseCanteen`<br>This struct contains all canteen data e.g. lines and dishes.<br>
     /// `date: Date`<br>This date decides when the meal will be served next.<br>
     /// # Errors
