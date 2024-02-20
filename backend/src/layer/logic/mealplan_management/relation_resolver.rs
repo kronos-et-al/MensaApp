@@ -102,13 +102,27 @@ where
         // Case 1.1: A similar side and meal could be found. Uncommon case.
         // Case 1.2: Or just a meal could be found.
         if let Some(similar_meal) = similar_meal_result {
-            self.db.update_meal(similar_meal, &dish.name).await?;
+            self.db
+                .update_meal(
+                    similar_meal,
+                    &dish.name,
+                    dish.nutrition_data,
+                    dish.env_score,
+                )
+                .await?;
             self.db
                 .add_meal_to_plan(similar_meal, line_id, date, dish.price)
                 .await?;
         // Case 2: A similar side could be found.
         } else if let Some(similar_side) = similar_side_result {
-            self.db.update_side(similar_side, &dish.name).await?;
+            self.db
+                .update_side(
+                    similar_side,
+                    &dish.name,
+                    dish.nutrition_data,
+                    dish.env_score,
+                )
+                .await?;
             self.db
                 .add_side_to_plan(similar_side, line_id, date, dish.price)
                 .await?;
