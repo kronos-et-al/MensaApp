@@ -164,12 +164,26 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         Ok(())
     }
 
-    async fn update_meal(&self, uuid: Uuid, name: &str) -> Result<()> {
-        self.update_food(uuid, name).await
+    async fn update_meal(
+        &self,
+        uuid: Uuid,
+        name: &str,
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<ParseEnvironmentInfo>,
+    ) -> Result<()> {
+        self.update_food(uuid, name, nutrition_data, environment_information)
+            .await
     }
 
-    async fn update_side(&self, uuid: Uuid, name: &str) -> Result<()> {
-        self.update_food(uuid, name).await
+    async fn update_side(
+        &self,
+        uuid: Uuid,
+        name: &str,
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<ParseEnvironmentInfo>,
+    ) -> Result<()> {
+        self.update_food(uuid, name, nutrition_data, environment_information)
+            .await
     }
 
     async fn insert_canteen(&self, name: &str, position: u32) -> Result<Uuid> {
@@ -267,18 +281,96 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
 }
 
 impl PersistentMealplanManagementData {
-    async fn update_food(&self, food_id: Uuid, food_name: &str) -> Result<()> {
+    async fn update_food(
+        &self,
+        food_id: Uuid,
+        food_name: &str,
+        nutrition_data: Option<NutritionData>,
+        environment_info: Option<ParseEnvironmentInfo>,
+    ) -> Result<()> {
         sqlx::query!(
-            "UPDATE food SET name = $2 WHERE food_id = $1",
+            "
+            UPDATE food 
+            SET name = $2 
+            WHERE food_id = $1
+            ",
             food_id,
             food_name
         )
         .execute(&self.pool)
         .await?;
+        self.update_nutrition_data(&food_id, nutrition_data).await?;
+        self.update_environment_data(&food_id, environment_info)
+            .await?;
 
         Ok(())
     }
 
+    async fn update_nutrition_data(
+        &self,
+        food_id: &Uuid,
+        nutrition_data: Option<NutritionData>,
+    ) -> Result<()> {
+        if let Some(data) = nutrition_data {
+            sqlx::query!(
+                "
+            UPDATE food_nutrition_data 
+            SET energy = $2, 
+                protein = $3, 
+                carbohydrates = $4,
+                sugar = $5,
+                fat = $6,
+                saturated_fat = $7,
+                salt = $8
+            WHERE food_id = $1
+            ",
+                food_id,
+                i32::try_from(data.energy)? as _,
+                i32::try_from(data.protein)? as _,
+                i32::try_from(data.carbohydrates)? as _,
+                i32::try_from(data.sugar)? as _,
+                i32::try_from(data.fat)? as _,
+                i32::try_from(data.saturated_fat)? as _,
+                i32::try_from(data.salt)? as _,
+            )
+            .execute(&self.pool)
+            .await?;
+        }
+        Ok(())
+    }
+
+    async fn update_environment_data(
+        &self,
+        food_id: &Uuid,
+        parse_environment_info: Option<ParseEnvironmentInfo>,
+    ) -> Result<()> {
+        if let Some(info) = parse_environment_info {
+            sqlx::query!(
+                "
+            UPDATE food_env_score 
+            SET co2_rating = $2, 
+                co2_value = $3, 
+                water_rating = $4,
+                water_value = $5,
+                animal_welfare_rating = $6,
+                rainforest_rating = $7,
+                max_rating = $8
+            WHERE food_id = $1
+            ",
+                food_id,
+                i32::try_from(info.co2_rating)? as _,
+                i32::try_from(info.co2_value)? as _,
+                i32::try_from(info.water_rating)? as _,
+                i32::try_from(info.water_value)? as _,
+                i32::try_from(info.animal_welfare_rating)? as _,
+                i32::try_from(info.rainforest_rating)? as _,
+                i32::try_from(info.max_rating)? as _,
+            )
+            .execute(&self.pool)
+            .await?;
+        }
+        Ok(())
+    }
     async fn add_to_plan(
         &self,
         food_id: Uuid,
@@ -868,6 +960,7 @@ mod test {
 
         let food_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         let name = "TEST_FOOD";
+        let 
 
         let res = req.update_food(food_id, name).await;
         assert!(res.is_ok());
