@@ -485,6 +485,7 @@ impl PersistentMealplanManagementData {
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
+    #![allow(clippy::cast_possible_wrap)]
     #![allow(clippy::cast_sign_loss)]
 
     use super::*;
@@ -954,24 +955,68 @@ mod test {
         assert_eq!(selection.position as u32, pos);
     }
 
-    #[sqlx::test(fixtures("meal", "allergen", "additive"))]
+    #[sqlx::test(fixtures("meal", "allergen", "additive", "nutrition_data", "environment_info"))]
     async fn test_update_food(pool: PgPool) {
         let req = PersistentMealplanManagementData { pool: pool.clone() };
 
         let food_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         let name = "TEST_FOOD";
-        let 
+        let nutrition_data = NutritionData {
+            energy: 1,
+            protein: 2,
+            carbohydrates: 3,
+            sugar: 4,
+            fat: 5,
+            saturated_fat: 6,
+            salt: 7,
+        };
+        let environment_info = ParseEnvironmentInfo {
+            co2_rating: 1,
+            co2_value: 2,
+            water_rating: 3,
+            water_value: 4,
+            animal_welfare_rating: 5,
+            rainforest_rating: 6,
+            max_rating: 7,
+        };
 
-        let res = req.update_food(food_id, name).await;
+        let res = req
+            .update_food(
+                food_id,
+                name,
+                Some(nutrition_data.clone()),
+                Some(environment_info.clone()),
+            )
+            .await;
         assert!(res.is_ok());
 
         let selections = sqlx::query!(r#"SELECT name FROM food WHERE food_id = $1"#, food_id)
             .fetch_all(&pool)
             .await
             .unwrap();
-        let selection = selections.first().unwrap();
+        let db_res_name = &selections.first().unwrap().name;
+        let selections = sqlx::query!(
+            r#"SELECT * FROM food_nutrition_data WHERE food_id = $1"#,
+            food_id
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
+        let db_res_salt = selections.first().unwrap().salt;
+        let selections = sqlx::query!(
+            r#"SELECT * FROM food_env_score WHERE food_id = $1"#,
+            food_id
+        )
+        .fetch_all(&pool)
+        .await
+        .unwrap();
+        let db_res_rating = selections.first().unwrap().rainforest_rating;
 
-        assert_eq!(selection.name, name);
+        assert_eq!(db_res_name, name);
+        assert_eq!(db_res_rating, environment_info.rainforest_rating as i32);
+        assert_eq!(db_res_salt, nutrition_data.salt as i32);
+        // tbd: checking env and nutrition data
+        // This could be done better as it is now.
     }
 
     #[sqlx::test(fixtures("canteen"))]
@@ -1030,7 +1075,7 @@ mod test {
         let food_uuid = Uuid::try_from("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         let name = "mealy";
 
-        let ok = data.update_meal(food_uuid, name).await.is_ok();
+        let ok = data.update_meal(food_uuid, name, None, None).await.is_ok();
         assert!(ok);
 
         let actual_name =
@@ -1039,6 +1084,7 @@ mod test {
                 .await
                 .unwrap();
         assert_eq!(&actual_name, name);
+        // tbd: checking env and nutrition data
     }
 
     #[sqlx::test(fixtures("meal"))]
@@ -1048,7 +1094,7 @@ mod test {
 
         // test side changed
         let side_uuid = Uuid::try_from("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap();
-        let ok = data.update_side(side_uuid, name).await.is_ok();
+        let ok = data.update_side(side_uuid, name, None, None).await.is_ok();
         assert!(ok);
 
         let actual_name =
@@ -1057,6 +1103,7 @@ mod test {
                 .await
                 .unwrap();
         assert_eq!(&actual_name, name);
+        // tbd: checking env and nutrition data
     }
 
     #[sqlx::test()]
@@ -1123,6 +1170,7 @@ mod test {
         .await
         .unwrap();
         assert_eq!(&actual_additives, additives);
+        // tbd: checking env and nutrition data
     }
 
     #[sqlx::test]
@@ -1197,6 +1245,7 @@ mod test {
         .await
         .unwrap();
         assert_eq!(&actual_additives, additives);
+        // tbd: checking env and nutrition data
     }
 
     #[sqlx::test(fixtures("canteen", "line", "meal"))]
