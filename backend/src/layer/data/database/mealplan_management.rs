@@ -299,21 +299,18 @@ impl PersistentMealplanManagementData {
         )
         .execute(&self.pool)
         .await?;
-        self.update_nutrition_data(&food_id, nutrition_data).await?;
-        self.update_environment_data(&food_id, environment_info)
-            .await?;
-
+        if let Some(data) = nutrition_data {
+            self.update_nutrition_data(&food_id, data).await?;
+        }
+        if let Some(info) = environment_info {
+            self.update_environment_data(&food_id, info).await?;
+        }
         Ok(())
     }
 
-    async fn update_nutrition_data(
-        &self,
-        food_id: &Uuid,
-        nutrition_data: Option<NutritionData>,
-    ) -> Result<()> {
-        if let Some(data) = nutrition_data {
-            sqlx::query!(
-                "
+    async fn update_nutrition_data(&self, food_id: &Uuid, data: NutritionData) -> Result<()> {
+        sqlx::query!(
+            "
             UPDATE food_nutrition_data 
             SET energy = $2, 
                 protein = $3, 
@@ -324,29 +321,27 @@ impl PersistentMealplanManagementData {
                 salt = $8
             WHERE food_id = $1
             ",
-                food_id,
-                i32::try_from(data.energy)? as _,
-                i32::try_from(data.protein)? as _,
-                i32::try_from(data.carbohydrates)? as _,
-                i32::try_from(data.sugar)? as _,
-                i32::try_from(data.fat)? as _,
-                i32::try_from(data.saturated_fat)? as _,
-                i32::try_from(data.salt)? as _,
-            )
-            .execute(&self.pool)
-            .await?;
-        }
+            food_id,
+            i32::try_from(data.energy)? as _,
+            i32::try_from(data.protein)? as _,
+            i32::try_from(data.carbohydrates)? as _,
+            i32::try_from(data.sugar)? as _,
+            i32::try_from(data.fat)? as _,
+            i32::try_from(data.saturated_fat)? as _,
+            i32::try_from(data.salt)? as _,
+        )
+        .execute(&self.pool)
+        .await?;
         Ok(())
     }
 
     async fn update_environment_data(
         &self,
         food_id: &Uuid,
-        parse_environment_info: Option<ParseEnvironmentInfo>,
+        info: ParseEnvironmentInfo,
     ) -> Result<()> {
-        if let Some(info) = parse_environment_info {
-            sqlx::query!(
-                "
+        sqlx::query!(
+            "
             UPDATE food_env_score 
             SET co2_rating = $2, 
                 co2_value = $3, 
@@ -357,20 +352,21 @@ impl PersistentMealplanManagementData {
                 max_rating = $8
             WHERE food_id = $1
             ",
-                food_id,
-                i32::try_from(info.co2_rating)? as _,
-                i32::try_from(info.co2_value)? as _,
-                i32::try_from(info.water_rating)? as _,
-                i32::try_from(info.water_value)? as _,
-                i32::try_from(info.animal_welfare_rating)? as _,
-                i32::try_from(info.rainforest_rating)? as _,
-                i32::try_from(info.max_rating)? as _,
-            )
-            .execute(&self.pool)
-            .await?;
-        }
+            food_id,
+            i32::try_from(info.co2_rating)? as _,
+            i32::try_from(info.co2_value)? as _,
+            i32::try_from(info.water_rating)? as _,
+            i32::try_from(info.water_value)? as _,
+            i32::try_from(info.animal_welfare_rating)? as _,
+            i32::try_from(info.rainforest_rating)? as _,
+            i32::try_from(info.max_rating)? as _,
+        )
+        .execute(&self.pool)
+        .await?;
+
         Ok(())
     }
+    
     async fn add_to_plan(
         &self,
         food_id: Uuid,
