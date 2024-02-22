@@ -366,7 +366,7 @@ impl PersistentMealplanManagementData {
 
         Ok(())
     }
-    
+
     async fn add_to_plan(
         &self,
         food_id: Uuid,
@@ -489,10 +489,10 @@ mod test {
     use crate::util::Allergen::{Ei, Se, So, We, ML};
     use crate::util::Date;
     use chrono::Local;
-    use sqlx::{Error, FromRow, PgPool, postgres, Row};
+    use sqlx::{postgres, Error, FromRow, PgPool, Row};
     use std::collections::HashMap;
     use std::str::FromStr;
-    
+
     #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_dissolve_relations(pool: PgPool) {
         let req = PersistentMealplanManagementData { pool: pool.clone() };
@@ -830,7 +830,7 @@ mod test {
         assert_eq!(selection.price_pupil as u32, price.price_pupil);
     }
 
-    #[sqlx::test(fixtures("meal", "allergen", "additive"))]
+    #[sqlx::test(fixtures("meal", "allergen", "additive", "nutrition_data", "environment_info"))]
     async fn test_insert_food(pool: PgPool) {
         let req = PersistentMealplanManagementData { pool: pool.clone() };
 
@@ -868,40 +868,18 @@ mod test {
                 true,
             )
             .await;
-        
-        // Check additives
+
         let food_id = res.unwrap();
-        let db_additives = sqlx::query_scalar!(
-            r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1"#,
-            food_id
-        )
-        .fetch_all(&pool)
-        .await
-        .unwrap();
-        assert_eq!(db_additives, additives);
 
+        // Check additives
+        assert_eq!(get_additives(&pool, food_id).await, additives);
         // Check allergens
-        let db_allergens = sqlx::query_scalar!(
-            r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1"#,
-            food_id
-        )
-        .fetch_all(&pool)
-        .await
-        .unwrap();
-        assert_eq!(db_allergens, allergens);
-
+        assert_eq!(get_allergens(&pool, food_id).await, allergens);
         // Check nutrition data
-        let db_nutrition = NutritionData::from_row(&sqlx::query(
-            &format!(r#"SELECT * FROM food_nutrition_data WHERE food_id = {food_id}"#)
-        ).fetch_one(&pool).await.unwrap()).unwrap();
-        assert_eq!(db_nutrition, nutrition_data);
-
+        assert_eq!(get_nutrition_data(&pool, food_id).await, nutrition_data);
         // Check environmental data
-        let db_env_info = ParseEnvironmentInfo::from_row(&sqlx::query(
-            &format!(r#"SELECT * FROM food_env_score WHERE food_id = {food_id}"#)
-        ).fetch_one(&pool).await.unwrap()).unwrap();
-        assert_eq!(db_env_info, environment_info);
-        
+        assert_eq!(get_env_info(&pool, food_id).await, environment_info);
+
         // Check name and food_type
         let selections = sqlx::query!(
             r#"SELECT name, food_type as "food_type: FoodType" FROM food WHERE food_id = $1"#,
@@ -971,22 +949,22 @@ mod test {
         let food_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         let name = "TEST_FOOD";
         let nutrition_data = NutritionData {
-            energy: 1,
-            protein: 2,
-            carbohydrates: 3,
-            sugar: 4,
-            fat: 5,
-            saturated_fat: 6,
-            salt: 7,
+            energy: 12,
+            protein: 32,
+            carbohydrates: 33,
+            sugar: 45,
+            fat: 521,
+            saturated_fat: 600,
+            salt: 721,
         };
         let environment_info = ParseEnvironmentInfo {
-            co2_rating: 1,
-            co2_value: 2,
-            water_rating: 3,
-            water_value: 4,
-            animal_welfare_rating: 5,
-            rainforest_rating: 6,
-            max_rating: 7,
+            co2_rating: 0,
+            co2_value: 25,
+            water_rating: 300,
+            water_value: 475,
+            animal_welfare_rating: 500,
+            rainforest_rating: 4560,
+            max_rating: 3,
         };
 
         let res = req
@@ -999,33 +977,16 @@ mod test {
             .await;
         assert!(res.is_ok());
 
+        // Check name
         let selections = sqlx::query!(r#"SELECT name FROM food WHERE food_id = $1"#, food_id)
             .fetch_all(&pool)
             .await
             .unwrap();
-        let db_res_name = &selections.first().unwrap().name;
-        let selections = sqlx::query!(
-            r#"SELECT * FROM food_nutrition_data WHERE food_id = $1"#,
-            food_id
-        )
-        .fetch_all(&pool)
-        .await
-        .unwrap();
-        let db_res_salt = selections.first().unwrap().salt;
-        let selections = sqlx::query!(
-            r#"SELECT * FROM food_env_score WHERE food_id = $1"#,
-            food_id
-        )
-        .fetch_all(&pool)
-        .await
-        .unwrap();
-        let db_res_rating = selections.first().unwrap().rainforest_rating;
-
-        assert_eq!(db_res_name, name);
-        assert_eq!(db_res_rating, environment_info.rainforest_rating as i32);
-        assert_eq!(db_res_salt, nutrition_data.salt as i32);
-        // tbd: checking env and nutrition data
-        // This could be done better as it is now.
+        assert_eq!(&selections.first().unwrap().name, name);
+        // Check nutrition data
+        assert_eq!(get_nutrition_data(&pool, food_id).await, nutrition_data);
+        // Check environment data
+        assert_eq!(get_env_info(&pool, food_id).await, environment_info);
     }
 
     #[sqlx::test(fixtures("canteen"))]
@@ -1080,7 +1041,6 @@ mod test {
     async fn test_update_meal(pool: PgPool) {
         let data = PersistentMealplanManagementData { pool: pool.clone() };
 
-        // test meal updated
         let food_uuid = Uuid::try_from("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         let name = "mealy";
 
@@ -1093,7 +1053,6 @@ mod test {
                 .await
                 .unwrap();
         assert_eq!(&actual_name, name);
-        // tbd: checking env and nutrition data
     }
 
     #[sqlx::test(fixtures("meal"))]
@@ -1101,7 +1060,6 @@ mod test {
         let data = PersistentMealplanManagementData { pool: pool.clone() };
         let name = "side";
 
-        // test side changed
         let side_uuid = Uuid::try_from("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap();
         let ok = data.update_side(side_uuid, name, None, None).await.is_ok();
         assert!(ok);
@@ -1112,43 +1070,17 @@ mod test {
                 .await
                 .unwrap();
         assert_eq!(&actual_name, name);
-        // tbd: checking env and nutrition data
     }
 
-    #[sqlx::test()]
+    #[sqlx::test(fixtures("meal", "allergen", "additive"))]
     async fn test_insert_meal(pool: PgPool) {
         let data = PersistentMealplanManagementData { pool: pool.clone() };
         let name = "mealy";
 
         let allergens = &[Allergen::Ca, Allergen::Di];
         let additives = &[Additive::Alcohol];
-        let nutrition_data = Some(NutritionData {
-            energy: 1,
-            protein: 2,
-            carbohydrates: 3,
-            sugar: 4,
-            fat: 5,
-            saturated_fat: 6,
-            salt: 7,
-        });
-        let environment_info = Some(ParseEnvironmentInfo {
-            co2_rating: 1,
-            co2_value: 2,
-            water_rating: 3,
-            water_value: 4,
-            animal_welfare_rating: 5,
-            rainforest_rating: 6,
-            max_rating: 7,
-        });
         let id = data
-            .insert_meal(
-                name,
-                FoodType::Beef,
-                allergens,
-                additives,
-                nutrition_data,
-                environment_info,
-            )
+            .insert_meal(name, FoodType::Beef, allergens, additives, None, None)
             .await
             .expect("meal should be successfully inserted");
 
@@ -1159,67 +1091,36 @@ mod test {
         .fetch_one(&pool)
         .await
         .unwrap();
+
+        // Check name and food_type
         assert_eq!(&food.name, name);
         assert_eq!(food.food_type, FoodType::Beef);
-
-        let actual_allergens = sqlx::query_scalar!(
-            r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1"#,
-            id
-        )
-        .fetch_all(&pool)
-        .await
-        .unwrap();
-        assert_eq!(&actual_allergens, allergens);
-
-        let actual_additives = sqlx::query_scalar!(
-            r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1"#,
-            id
-        )
-        .fetch_all(&pool)
-        .await
-        .unwrap();
-        assert_eq!(&actual_additives, additives);
-        // tbd: checking env and nutrition data
+        // Check allergens
+        assert_eq!(get_allergens(&pool, id).await, allergens);
+        // Check additives
+        assert_eq!(get_additives(&pool, id).await, additives);
     }
 
-    #[sqlx::test]
+    #[sqlx::test(fixtures("meal", "allergen", "additive"))]
     async fn test_insert_side(pool: PgPool) {
         let data = PersistentMealplanManagementData { pool: pool.clone() };
         let name = "side";
 
         let allergens = &[Allergen::Ca, Allergen::Di];
         let additives = &[Additive::Alcohol];
-        let nutrition_data = Some(NutritionData {
-            energy: 1,
-            protein: 2,
-            carbohydrates: 3,
-            sugar: 4,
-            fat: 5,
-            saturated_fat: 6,
-            salt: 7,
-        });
-        let environment_info = Some(ParseEnvironmentInfo {
-            co2_rating: 1,
-            co2_value: 2,
-            water_rating: 3,
-            water_value: 4,
-            animal_welfare_rating: 5,
-            rainforest_rating: 6,
-            max_rating: 7,
-        });
-
         let id = data
-            .insert_side(
-                name,
-                FoodType::Beef,
-                allergens,
-                additives,
-                nutrition_data,
-                environment_info,
-            )
+            .insert_side(name, FoodType::Beef, allergens, additives, None, None)
             .await
             .expect("meal should be successfully inserted");
 
+        // not a main dish => side
+        let result = sqlx::query!("SELECT * from meal WHERE food_id = $1", id)
+            .fetch_all(&pool)
+            .await
+            .unwrap();
+        assert!(result.is_empty());
+
+        // Check name and food_type
         let food = sqlx::query!(
             r#"SELECT name, food_type as "food_type: FoodType" FROM food where food_id = $1"#,
             id
@@ -1229,32 +1130,10 @@ mod test {
         .unwrap();
         assert_eq!(&food.name, name);
         assert_eq!(food.food_type, FoodType::Beef);
-
-        // not a main dish => side
-        let result = sqlx::query!("SELECT * from meal WHERE food_id = $1", id)
-            .fetch_all(&pool)
-            .await
-            .unwrap();
-        assert!(result.is_empty());
-
-        let actual_allergens = sqlx::query_scalar!(
-            r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1"#,
-            id
-        )
-        .fetch_all(&pool)
-        .await
-        .unwrap();
-        assert_eq!(&actual_allergens, allergens);
-
-        let actual_additives = sqlx::query_scalar!(
-            r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1"#,
-            id
-        )
-        .fetch_all(&pool)
-        .await
-        .unwrap();
-        assert_eq!(&actual_additives, additives);
-        // tbd: checking env and nutrition data
+        // Check allergens
+        assert_eq!(get_allergens(&pool, id).await, allergens);
+        // Check additives
+        assert_eq!(get_additives(&pool, id).await, additives);
     }
 
     #[sqlx::test(fixtures("canteen", "line", "meal"))]
@@ -1323,17 +1202,67 @@ mod test {
         assert_eq!(price.price_pupil, record.price_pupil as u32);
     }
 
+    async fn get_env_info(pool: &PgPool, food_id: Uuid) -> ParseEnvironmentInfo {
+        ParseEnvironmentInfo::from_row(
+            &sqlx::query(&format!(
+                r#"SELECT * FROM food_env_score WHERE food_id = {food_id}"#
+            ))
+            .fetch_one(pool)
+            .await
+            .unwrap(),
+        )
+        .unwrap()
+    }
+
+    async fn get_nutrition_data(pool: &PgPool, food_id: Uuid) -> NutritionData {
+        NutritionData::from_row(
+            &sqlx::query(&format!(
+                r#"SELECT * FROM food_nutrition_data WHERE food_id = {food_id}"#
+            ))
+            .fetch_one(pool)
+            .await
+            .unwrap(),
+        )
+        .unwrap()
+    }
+    async fn get_additives(pool: &PgPool, food_id: Uuid) -> Vec<Additive> {
+        sqlx::query_scalar!(
+            r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1"#,
+            food_id
+        )
+        .fetch_all(pool)
+        .await
+        .unwrap()
+    }
+
+    async fn get_allergens(pool: &PgPool, food_id: Uuid) -> Vec<Allergen> {
+        sqlx::query_scalar!(
+            r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1"#,
+            food_id
+        )
+        .fetch_all(pool)
+        .await
+        .unwrap()
+    }
+
     impl FromRow<'_, postgres::PgRow> for NutritionData {
         /// Converts a nutrition database row (record) into a nutrition data struct
         fn from_row(row: &postgres::PgRow) -> std::result::Result<Self, Error> {
             Ok(Self {
-                energy: u32::try_from(row.try_get::<i32, &str>("energy")?).expect("Negative nutrition data: energy"),
-                protein: u32::try_from(row.try_get::<i32, &str>("protein")?).expect("Negative nutrition data: protein"),
-                carbohydrates: u32::try_from(row.try_get::<i32, &str>("carbohydrates")?).expect("Negative nutrition data: carbohydrates"),
-                sugar: u32::try_from(row.try_get::<i32, &str>("sugar")?).expect("Negative nutrition data: sugar"),
-                fat: u32::try_from(row.try_get::<i32, &str>("fat")?).expect("Negative nutrition data: fat"),
-                saturated_fat: u32::try_from(row.try_get::<i32, &str>("saturated_fat")?).expect("Negative nutrition data: saturated_fat"),
-                salt: u32::try_from(row.try_get::<i32, &str>("salt")?).expect("Negative nutrition data: salt"),
+                energy: u32::try_from(row.try_get::<i32, &str>("energy")?)
+                    .expect("Negative nutrition data: energy"),
+                protein: u32::try_from(row.try_get::<i32, &str>("protein")?)
+                    .expect("Negative nutrition data: protein"),
+                carbohydrates: u32::try_from(row.try_get::<i32, &str>("carbohydrates")?)
+                    .expect("Negative nutrition data: carbohydrates"),
+                sugar: u32::try_from(row.try_get::<i32, &str>("sugar")?)
+                    .expect("Negative nutrition data: sugar"),
+                fat: u32::try_from(row.try_get::<i32, &str>("fat")?)
+                    .expect("Negative nutrition data: fat"),
+                saturated_fat: u32::try_from(row.try_get::<i32, &str>("saturated_fat")?)
+                    .expect("Negative nutrition data: saturated_fat"),
+                salt: u32::try_from(row.try_get::<i32, &str>("salt")?)
+                    .expect("Negative nutrition data: salt"),
             })
         }
     }
@@ -1342,13 +1271,22 @@ mod test {
         /// Converts a environment database row (record) into a environment data struct
         fn from_row(row: &postgres::PgRow) -> std::result::Result<Self, Error> {
             Ok(Self {
-                co2_rating: u32::try_from(row.try_get::<i32, &str>("co2_rating")?).expect("Negative environment info: co2_rating"),
-                co2_value: u32::try_from(row.try_get::<i32, &str>("co2_value")?).expect("Negative environment info: co2_value"),
-                water_rating: u32::try_from(row.try_get::<i32, &str>("water_rating")?).expect("Negative environment info: water_rating"),
-                water_value: u32::try_from(row.try_get::<i32, &str>("water_value")?).expect("Negative environment info: water_value"),
-                animal_welfare_rating: u32::try_from(row.try_get::<i32, &str>("animal_welfare_rating")?).expect("Negative environment info: animal_welfare_rating"),
-                rainforest_rating: u32::try_from(row.try_get::<i32, &str>("saturated_fat")?).expect("Negative environment info: rainforest_rating"),
-                max_rating: u32::try_from(row.try_get::<i32, &str>("max_rating")?).expect("Negative environment info: max_rating"),
+                co2_rating: u32::try_from(row.try_get::<i32, &str>("co2_rating")?)
+                    .expect("Negative environment info: co2_rating"),
+                co2_value: u32::try_from(row.try_get::<i32, &str>("co2_value")?)
+                    .expect("Negative environment info: co2_value"),
+                water_rating: u32::try_from(row.try_get::<i32, &str>("water_rating")?)
+                    .expect("Negative environment info: water_rating"),
+                water_value: u32::try_from(row.try_get::<i32, &str>("water_value")?)
+                    .expect("Negative environment info: water_value"),
+                animal_welfare_rating: u32::try_from(
+                    row.try_get::<i32, &str>("animal_welfare_rating")?,
+                )
+                .expect("Negative environment info: animal_welfare_rating"),
+                rainforest_rating: u32::try_from(row.try_get::<i32, &str>("saturated_fat")?)
+                    .expect("Negative environment info: rainforest_rating"),
+                max_rating: u32::try_from(row.try_get::<i32, &str>("max_rating")?)
+                    .expect("Negative environment info: max_rating"),
             })
         }
     }
