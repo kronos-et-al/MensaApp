@@ -958,7 +958,7 @@ mod test {
             salt: 721,
         };
         let environment_info = ParseEnvironmentInfo {
-            co2_rating: 0,
+            co2_rating: 1,
             co2_value: 25,
             water_rating: 300,
             water_value: 475,
@@ -1205,7 +1205,7 @@ mod test {
     async fn get_env_info(pool: &PgPool, food_id: Uuid) -> ParseEnvironmentInfo {
         ParseEnvironmentInfo::from_row(
             &sqlx::query(&format!(
-                r#"SELECT * FROM food_env_score WHERE food_id = {food_id}"#
+                r#"SELECT * FROM food_env_score WHERE food_id = '{food_id}'"#
             ))
             .fetch_one(pool)
             .await
@@ -1217,7 +1217,7 @@ mod test {
     async fn get_nutrition_data(pool: &PgPool, food_id: Uuid) -> NutritionData {
         NutritionData::from_row(
             &sqlx::query(&format!(
-                r#"SELECT * FROM food_nutrition_data WHERE food_id = {food_id}"#
+                r#"SELECT * FROM food_nutrition_data WHERE food_id = '{food_id}'"#
             ))
             .fetch_one(pool)
             .await
@@ -1225,6 +1225,7 @@ mod test {
         )
         .unwrap()
     }
+
     async fn get_additives(pool: &PgPool, food_id: Uuid) -> Vec<Additive> {
         sqlx::query_scalar!(
             r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1"#,
@@ -1283,7 +1284,7 @@ mod test {
                     row.try_get::<i32, &str>("animal_welfare_rating")?,
                 )
                 .expect("Negative environment info: animal_welfare_rating"),
-                rainforest_rating: u32::try_from(row.try_get::<i32, &str>("saturated_fat")?)
+                rainforest_rating: u32::try_from(row.try_get::<i32, &str>("rainforest_rating")?)
                     .expect("Negative environment info: rainforest_rating"),
                 max_rating: u32::try_from(row.try_get::<i32, &str>("max_rating")?)
                     .expect("Negative environment info: max_rating"),
