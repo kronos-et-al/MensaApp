@@ -489,10 +489,10 @@ mod test {
     use crate::util::Allergen::{Ei, Se, So, We, ML};
     use crate::util::Date;
     use chrono::Local;
-    use sqlx::PgPool;
+    use sqlx::{Error, FromRow, PgPool, postgres, Row};
     use std::collections::HashMap;
     use std::str::FromStr;
-
+    
     #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_dissolve_relations(pool: PgPool) {
         let req = PersistentMealplanManagementData { pool: pool.clone() };
@@ -838,7 +838,7 @@ mod test {
         let name = "TEST_FOOD";
         let additives = vec![Additive::Alcohol];
         let allergens = vec![Allergen::Ca, Allergen::Pa];
-        let nutrition_data = Some(NutritionData {
+        let nutrition_data = NutritionData {
             energy: 1,
             protein: 2,
             carbohydrates: 3,
@@ -846,8 +846,8 @@ mod test {
             fat: 5,
             saturated_fat: 6,
             salt: 7,
-        });
-        let environment_info = Some(ParseEnvironmentInfo {
+        };
+        let environment_info = ParseEnvironmentInfo {
             co2_rating: 1,
             co2_value: 2,
             water_rating: 3,
@@ -855,7 +855,7 @@ mod test {
             animal_welfare_rating: 5,
             rainforest_rating: 6,
             max_rating: 7,
-        });
+        };
 
         let res = req
             .insert_food(
@@ -863,14 +863,14 @@ mod test {
                 food_type,
                 &allergens,
                 &additives,
-                nutrition_data,
-                environment_info,
+                Some(nutrition_data.clone()),
+                Some(environment_info.clone()),
                 true,
             )
             .await;
-        //assert!(res.is_ok());
+        
+        // Check additives
         let food_id = res.unwrap();
-
         let db_additives = sqlx::query_scalar!(
             r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1"#,
             food_id
@@ -880,6 +880,7 @@ mod test {
         .unwrap();
         assert_eq!(db_additives, additives);
 
+        // Check allergens
         let db_allergens = sqlx::query_scalar!(
             r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1"#,
             food_id
@@ -889,6 +890,19 @@ mod test {
         .unwrap();
         assert_eq!(db_allergens, allergens);
 
+        // Check nutrition data
+        let db_nutrition = NutritionData::from_row(&sqlx::query(
+            &format!(r#"SELECT * FROM food_nutrition_data WHERE food_id = {food_id}"#)
+        ).fetch_one(&pool).await.unwrap()).unwrap();
+        assert_eq!(db_nutrition, nutrition_data);
+
+        // Check environmental data
+        let db_env_info = ParseEnvironmentInfo::from_row(&sqlx::query(
+            &format!(r#"SELECT * FROM food_env_score WHERE food_id = {food_id}"#)
+        ).fetch_one(&pool).await.unwrap()).unwrap();
+        assert_eq!(db_env_info, environment_info);
+        
+        // Check name and food_type
         let selections = sqlx::query!(
             r#"SELECT name, food_type as "food_type: FoodType" FROM food WHERE food_id = $1"#,
             food_id
@@ -897,7 +911,6 @@ mod test {
         .await
         .unwrap();
         let selection = selections.first().unwrap();
-
         assert_eq!(selection.name, name);
         assert_eq!(selection.food_type, food_type);
     }
@@ -1308,5 +1321,35 @@ mod test {
         assert_eq!(price.price_employee, record.price_employee as u32);
         assert_eq!(price.price_guest, record.price_guest as u32);
         assert_eq!(price.price_pupil, record.price_pupil as u32);
+    }
+
+    impl FromRow<'_, postgres::PgRow> for NutritionData {
+        /// Converts a nutrition database row (record) into a nutrition data struct
+        fn from_row(row: &postgres::PgRow) -> std::result::Result<Self, Error> {
+            Ok(Self {
+                energy: u32::try_from(row.try_get::<i32, &str>("energy")?).expect("Negative nutrition data: energy"),
+                protein: u32::try_from(row.try_get::<i32, &str>("protein")?).expect("Negative nutrition data: protein"),
+                carbohydrates: u32::try_from(row.try_get::<i32, &str>("carbohydrates")?).expect("Negative nutrition data: carbohydrates"),
+                sugar: u32::try_from(row.try_get::<i32, &str>("sugar")?).expect("Negative nutrition data: sugar"),
+                fat: u32::try_from(row.try_get::<i32, &str>("fat")?).expect("Negative nutrition data: fat"),
+                saturated_fat: u32::try_from(row.try_get::<i32, &str>("saturated_fat")?).expect("Negative nutrition data: saturated_fat"),
+                salt: u32::try_from(row.try_get::<i32, &str>("salt")?).expect("Negative nutrition data: salt"),
+            })
+        }
+    }
+
+    impl FromRow<'_, postgres::PgRow> for ParseEnvironmentInfo {
+        /// Converts a environment database row (record) into a environment data struct
+        fn from_row(row: &postgres::PgRow) -> std::result::Result<Self, Error> {
+            Ok(Self {
+                co2_rating: u32::try_from(row.try_get::<i32, &str>("co2_rating")?).expect("Negative environment info: co2_rating"),
+                co2_value: u32::try_from(row.try_get::<i32, &str>("co2_value")?).expect("Negative environment info: co2_value"),
+                water_rating: u32::try_from(row.try_get::<i32, &str>("water_rating")?).expect("Negative environment info: water_rating"),
+                water_value: u32::try_from(row.try_get::<i32, &str>("water_value")?).expect("Negative environment info: water_value"),
+                animal_welfare_rating: u32::try_from(row.try_get::<i32, &str>("animal_welfare_rating")?).expect("Negative environment info: animal_welfare_rating"),
+                rainforest_rating: u32::try_from(row.try_get::<i32, &str>("saturated_fat")?).expect("Negative environment info: rainforest_rating"),
+                max_rating: u32::try_from(row.try_get::<i32, &str>("max_rating")?).expect("Negative environment info: max_rating"),
+            })
+        }
     }
 }
