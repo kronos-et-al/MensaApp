@@ -1,0 +1,70 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE food_nutrition_data \n            SET energy = $2, \n                protein = $3, \n                carbohydrates = $4,\n                sugar = $5,\n                fat = $6,\n                saturated_fat = $7,\n                salt = $8\n            WHERE food_id = $1\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        {
+          "Custom": {
+            "name": "energy_domain",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "weight_domain",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "weight_domain",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "weight_domain",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "weight_domain",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "weight_domain",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "weight_domain",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        }
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "0b7637abde5c5651205aeea8b17b9ebb6e6aacace079158943ec150c44236115"
+}
