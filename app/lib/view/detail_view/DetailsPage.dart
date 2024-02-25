@@ -241,8 +241,8 @@ class DetailsPageState extends State<DetailsPage> {
                                                 frequency:
                                                     meal.numberOfOccurance,
                                                 additives: meal.additives ?? [],
-                                                allergens:
-                                                    meal.allergens ?? []),
+                                                allergens: meal.allergens ?? [],
+                                                nutritionData: meal.nutritionData),
                                             isExpanded:
                                                 expandedAccordionIndex == 0,
                                             onTap: () => setState(() =>

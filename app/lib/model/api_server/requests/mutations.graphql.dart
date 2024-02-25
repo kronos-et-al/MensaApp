@@ -1,10 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
-
 import 'schema.graphql.dart';
 
 class Variables$Mutation$RemoveDownvote {
@@ -87,7 +85,6 @@ class _CopyWithImpl$Variables$Mutation$RemoveDownvote<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  @override
   TRes call({Object? imageId = _undefined}) =>
       _then(Variables$Mutation$RemoveDownvote._({
         ..._instance._$data,
@@ -102,7 +99,6 @@ class _CopyWithStubImpl$Variables$Mutation$RemoveDownvote<TRes>
 
   TRes _res;
 
-  @override
   call({String? imageId}) => _res;
 }
 
@@ -1882,11 +1878,13 @@ class Mutation$AddUpvote$Widget
 class Variables$Mutation$LinkImage {
   factory Variables$Mutation$LinkImage({
     required String mealId,
-    required String imageUrl,
+    required String image,
+    required String hash,
   }) =>
       Variables$Mutation$LinkImage._({
         r'mealId': mealId,
-        r'imageUrl': imageUrl,
+        r'image': image,
+        r'hash': hash,
       });
 
   Variables$Mutation$LinkImage._(this._$data);
@@ -1895,21 +1893,26 @@ class Variables$Mutation$LinkImage {
     final result$data = <String, dynamic>{};
     final l$mealId = data['mealId'];
     result$data['mealId'] = (l$mealId as String);
-    final l$imageUrl = data['imageUrl'];
-    result$data['imageUrl'] = (l$imageUrl as String);
+    final l$image = data['image'];
+    result$data['image'] = (l$image as String);
+    final l$hash = data['hash'];
+    result$data['hash'] = (l$hash as String);
     return Variables$Mutation$LinkImage._(result$data);
   }
 
   Map<String, dynamic> _$data;
 
   String get mealId => (_$data['mealId'] as String);
-  String get imageUrl => (_$data['imageUrl'] as String);
+  String get image => (_$data['image'] as String);
+  String get hash => (_$data['hash'] as String);
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$mealId = mealId;
     result$data['mealId'] = l$mealId;
-    final l$imageUrl = imageUrl;
-    result$data['imageUrl'] = l$imageUrl;
+    final l$image = image;
+    result$data['image'] = l$image;
+    final l$hash = hash;
+    result$data['hash'] = l$hash;
     return result$data;
   }
 
@@ -1932,9 +1935,14 @@ class Variables$Mutation$LinkImage {
     if (l$mealId != lOther$mealId) {
       return false;
     }
-    final l$imageUrl = imageUrl;
-    final lOther$imageUrl = other.imageUrl;
-    if (l$imageUrl != lOther$imageUrl) {
+    final l$image = image;
+    final lOther$image = other.image;
+    if (l$image != lOther$image) {
+      return false;
+    }
+    final l$hash = hash;
+    final lOther$hash = other.hash;
+    if (l$hash != lOther$hash) {
       return false;
     }
     return true;
@@ -1943,10 +1951,12 @@ class Variables$Mutation$LinkImage {
   @override
   int get hashCode {
     final l$mealId = mealId;
-    final l$imageUrl = imageUrl;
+    final l$image = image;
+    final l$hash = hash;
     return Object.hashAll([
       l$mealId,
-      l$imageUrl,
+      l$image,
+      l$hash,
     ]);
   }
 }
@@ -1962,7 +1972,8 @@ abstract class CopyWith$Variables$Mutation$LinkImage<TRes> {
 
   TRes call({
     String? mealId,
-    String? imageUrl,
+    String? image,
+    String? hash,
   });
 }
 
@@ -1981,14 +1992,15 @@ class _CopyWithImpl$Variables$Mutation$LinkImage<TRes>
 
   TRes call({
     Object? mealId = _undefined,
-    Object? imageUrl = _undefined,
+    Object? image = _undefined,
+    Object? hash = _undefined,
   }) =>
       _then(Variables$Mutation$LinkImage._({
         ..._instance._$data,
         if (mealId != _undefined && mealId != null)
           'mealId': (mealId as String),
-        if (imageUrl != _undefined && imageUrl != null)
-          'imageUrl': (imageUrl as String),
+        if (image != _undefined && image != null) 'image': (image as String),
+        if (hash != _undefined && hash != null) 'hash': (hash as String),
       }));
 }
 
@@ -2000,7 +2012,8 @@ class _CopyWithStubImpl$Variables$Mutation$LinkImage<TRes>
 
   call({
     String? mealId,
-    String? imageUrl,
+    String? image,
+    String? hash,
   }) =>
       _res;
 }
@@ -2143,7 +2156,16 @@ const documentNodeMutationLinkImage = DocumentNode(definitions: [
         directives: [],
       ),
       VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'imageUrl')),
+        variable: VariableNode(name: NameNode(value: 'image')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'Upload'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      ),
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'hash')),
         type: NamedTypeNode(
           name: NameNode(value: 'String'),
           isNonNull: true,
@@ -2163,8 +2185,12 @@ const documentNodeMutationLinkImage = DocumentNode(definitions: [
             value: VariableNode(name: NameNode(value: 'mealId')),
           ),
           ArgumentNode(
-            name: NameNode(value: 'imageUrl'),
-            value: VariableNode(name: NameNode(value: 'imageUrl')),
+            name: NameNode(value: 'image'),
+            value: VariableNode(name: NameNode(value: 'image')),
+          ),
+          ArgumentNode(
+            name: NameNode(value: 'hash'),
+            value: VariableNode(name: NameNode(value: 'hash')),
           ),
         ],
         directives: [],

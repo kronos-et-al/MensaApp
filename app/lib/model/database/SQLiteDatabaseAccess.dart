@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:app/model/database/migration/migrations.dart';
 import 'package:app/model/database/model/database_model.dart';
 import 'package:app/model/database/model/db_mealplan_side.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
@@ -8,6 +9,7 @@ import 'package:app/view_model/repository/data_classes/meal/Additive.dart';
 import 'package:app/view_model/repository/data_classes/meal/FavoriteMeal.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
+import 'package:app/view_model/repository/data_classes/meal/NutritionData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Price.dart';
 import 'package:app/view_model/repository/data_classes/meal/Side.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
@@ -31,6 +33,7 @@ import 'model/db_line.dart';
 import 'model/db_meal.dart';
 import 'model/db_meal_additive.dart';
 import 'model/db_meal_allergen.dart';
+import 'model/db_meal_nutrition_data.dart';
 import 'model/db_meal_plan.dart';
 import 'model/db_mealplan_meal.dart';
 import 'model/db_side.dart';
@@ -53,6 +56,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
       DBImage.initTable(),
       DBMealAdditive.initTable(),
       DBMealAllergen.initTable(),
+      DBMealNutritionData.initTable(),
       DBSideAdditive.initTable(),
       DBSideAllergen.initTable(),
       DBFavorite.initTable()
@@ -87,7 +91,10 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
           db.execute(sql);
         }
       },
-      version: 1,
+      onUpgrade: (db, oldVersion, newVersion) {
+        if (dbMigrations.containsKey((oldVersion, newVersion))) db.execute(dbMigrations[(oldVersion, newVersion)]!);
+      },
+      version: 2,
     );
   }
 
@@ -136,6 +143,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
                 guest: dbFavorite.priceGuest),
             await _getMealAllergens(dbMeal.mealID),
             await _getMealAdditives(dbMeal.mealID),
+            await _getDBNutritionData(dbMeal.mealID),
             [],
             {},
             {},
@@ -173,6 +181,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
                 guest: dbFavorite.priceGuest),
             await _getMealAllergens(dbMeal.mealID),
             await _getMealAdditives(dbMeal.mealID),
+            await _getDBNutritionData(dbMeal.mealID),
             [],
             {},
             {},
@@ -236,6 +245,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
           relativeFrequency: dbMealPlanMeal.relativeFrequency,
           additives: await _getMealAdditives(dbMeal.mealID),
           allergens: await _getMealAllergens(dbMeal.mealID),
+          nutritionData: await _getMealNutritionData(dbMeal.mealID),
           averageRating: dbMeal.averageRating,
           individualRating: dbMeal.individualRating,
           numberOfRatings: dbMeal.numberOfRatings,
@@ -371,6 +381,8 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         where: '${DBMealAdditive.columnMealID} = ?', whereArgs: [meal.id]);
     await db.delete(DBImage.tableName,
         where: '${DBImage.columnMealID} = ?', whereArgs: [meal.id]);
+    await db.delete(DBMealNutritionData.tableName,
+        where: '${DBMealNutritionData.columnMealID} = ?', whereArgs: [meal.id]);
 
     DBMeal dbMeal = DBMeal(meal.id, meal.name, meal.foodType,
         meal.individualRating, meal.numberOfRatings, meal.averageRating);
@@ -384,8 +396,12 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     await Future.wait(
         meal.images?.map((e) => _insertImage(e, dbMeal)).toList() ?? []);
 
+    if (meal.nutritionData != null) {
+      await _insertMealNutritionData(meal.nutritionData!, dbMeal);
+    }
+
     return await db.insert(DBMeal.tableName, dbMeal.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+          conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<int> _insertMealPlanMeal(Meal meal, DBMealPlan mealPlan) async {
@@ -422,6 +438,9 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         .toList());
     await Future.wait(
         meal.images?.map((e) => _insertImage(e, dbMeal)).toList() ?? []);
+    if (meal.nutritionData != null) {
+      await _insertMealNutritionData(meal.nutritionData!, dbMeal);
+    }
     await db.insert(DBMeal.tableName, dbMeal.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
     return await db.insert(DBMealPlanMeal.tableName, mealPlanMeal.toMap(),
@@ -464,6 +483,22 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     var db = await database;
     var dbMealAdditive = DBMealAdditive(meal.mealID, additive);
     return await db.insert(DBMealAdditive.tableName, dbMealAdditive.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<int> _insertMealNutritionData(NutritionData nutritionData, DBMeal meal) async {
+    var db = await database;
+    var dbMealNutritionData = DBMealNutritionData(
+        meal.mealID,
+        nutritionData.energy,
+        nutritionData.protein,
+        nutritionData.carbohydrates,
+        nutritionData.sugar,
+        nutritionData.fat,
+        nutritionData.saturatedFat,
+        nutritionData.salt,
+    );
+    return await db.insert(DBMealNutritionData.tableName, dbMealNutritionData.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
@@ -592,6 +627,13 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     }
   }
 
+  Future<DBMealNutritionData?> _getDBNutritionData(String id) async {
+    var db = await database;
+    var result = await db.query(DBMealNutritionData.tableName,
+        where: '${DBMealNutritionData.columnMealID} = ?', whereArgs: [id]);
+    return result.isNotEmpty ? DBMealNutritionData.fromMap(result.first) : null;
+  }
+
   Future<List<Allergen>?> _getMealAllergens(String id) async {
     var db = await database;
     var result = await db.query(DBMealAllergen.tableName,
@@ -617,6 +659,19 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     return result
         .map((allergenMap) => DBMealAdditive.fromMap(allergenMap).additive)
         .toList();
+  }
+
+  Future<NutritionData?> _getMealNutritionData(String id) async {
+      final DBMealNutritionData? dbNutritionData = await _getDBNutritionData(id);
+      return dbNutritionData != null ? NutritionData(
+          energy: dbNutritionData.energy,
+          protein: dbNutritionData.protein,
+          carbohydrates: dbNutritionData.carbohydrates,
+          sugar: dbNutritionData.sugar,
+          fat: dbNutritionData.fat,
+          saturatedFat: dbNutritionData.saturatedFat,
+          salt: dbNutritionData.salt
+      ) : null;
   }
 
   Future<List<Additive>?> _getSideAdditive(String id) async {

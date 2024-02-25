@@ -11,7 +11,7 @@ enum Enum$Additive {
   LAXATIVE_IF_OVERUSED,
   PHENYLALANINE,
   ALCOHOL,
-  PRESSED_MEET,
+  PRESSED_MEAT,
   GLAZING_WITH_CACAO,
   PRESSED_FISH,
   $unknown
@@ -43,8 +43,8 @@ String toJson$Enum$Additive(Enum$Additive e) {
       return r'PHENYLALANINE';
     case Enum$Additive.ALCOHOL:
       return r'ALCOHOL';
-    case Enum$Additive.PRESSED_MEET:
-      return r'PRESSED_MEET';
+    case Enum$Additive.PRESSED_MEAT:
+      return r'PRESSED_MEAT';
     case Enum$Additive.GLAZING_WITH_CACAO:
       return r'GLAZING_WITH_CACAO';
     case Enum$Additive.PRESSED_FISH:
@@ -80,8 +80,8 @@ Enum$Additive fromJson$Enum$Additive(String value) {
       return Enum$Additive.PHENYLALANINE;
     case r'ALCOHOL':
       return Enum$Additive.ALCOHOL;
-    case r'PRESSED_MEET':
-      return Enum$Additive.PRESSED_MEET;
+    case r'PRESSED_MEAT':
+      return Enum$Additive.PRESSED_MEAT;
     case r'GLAZING_WITH_CACAO':
       return Enum$Additive.GLAZING_WITH_CACAO;
     case r'PRESSED_FISH':
@@ -249,7 +249,7 @@ Enum$Allergen fromJson$Enum$Allergen(String value) {
   }
 }
 
-enum Enum$MealType {
+enum Enum$FoodType {
   VEGAN,
   VEGETARIAN,
   BEEF,
@@ -261,49 +261,49 @@ enum Enum$MealType {
   $unknown
 }
 
-String toJson$Enum$MealType(Enum$MealType e) {
+String toJson$Enum$FoodType(Enum$FoodType e) {
   switch (e) {
-    case Enum$MealType.VEGAN:
+    case Enum$FoodType.VEGAN:
       return r'VEGAN';
-    case Enum$MealType.VEGETARIAN:
+    case Enum$FoodType.VEGETARIAN:
       return r'VEGETARIAN';
-    case Enum$MealType.BEEF:
+    case Enum$FoodType.BEEF:
       return r'BEEF';
-    case Enum$MealType.BEEF_AW:
+    case Enum$FoodType.BEEF_AW:
       return r'BEEF_AW';
-    case Enum$MealType.PORK:
+    case Enum$FoodType.PORK:
       return r'PORK';
-    case Enum$MealType.PORK_AW:
+    case Enum$FoodType.PORK_AW:
       return r'PORK_AW';
-    case Enum$MealType.FISH:
+    case Enum$FoodType.FISH:
       return r'FISH';
-    case Enum$MealType.UNKNOWN:
+    case Enum$FoodType.UNKNOWN:
       return r'UNKNOWN';
-    case Enum$MealType.$unknown:
+    case Enum$FoodType.$unknown:
       return r'$unknown';
   }
 }
 
-Enum$MealType fromJson$Enum$MealType(String value) {
+Enum$FoodType fromJson$Enum$FoodType(String value) {
   switch (value) {
     case r'VEGAN':
-      return Enum$MealType.VEGAN;
+      return Enum$FoodType.VEGAN;
     case r'VEGETARIAN':
-      return Enum$MealType.VEGETARIAN;
+      return Enum$FoodType.VEGETARIAN;
     case r'BEEF':
-      return Enum$MealType.BEEF;
+      return Enum$FoodType.BEEF;
     case r'BEEF_AW':
-      return Enum$MealType.BEEF_AW;
+      return Enum$FoodType.BEEF_AW;
     case r'PORK':
-      return Enum$MealType.PORK;
+      return Enum$FoodType.PORK;
     case r'PORK_AW':
-      return Enum$MealType.PORK_AW;
+      return Enum$FoodType.PORK_AW;
     case r'FISH':
-      return Enum$MealType.FISH;
+      return Enum$FoodType.FISH;
     case r'UNKNOWN':
-      return Enum$MealType.UNKNOWN;
+      return Enum$FoodType.UNKNOWN;
     default:
-      return Enum$MealType.$unknown;
+      return Enum$FoodType.$unknown;
   }
 }
 

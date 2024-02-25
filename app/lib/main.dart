@@ -41,6 +41,7 @@ void main() async {
       "reportReason",
       "additive",
       "allergen",
+      "nutritionData",
       "mealplanException",
       "semantics",
       "mealDetails"

@@ -1,8 +1,10 @@
 import 'package:app/model/database/model/db_canteen.dart';
+import 'package:app/model/database/model/db_meal_nutrition_data.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
+import 'package:app/view_model/repository/data_classes/meal/NutritionData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Price.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
@@ -30,6 +32,7 @@ class DatabaseTransformer {
       Price price,
       List<Allergen>? allergens,
       List<Additive>? additives,
+      DBMealNutritionData? nutritionData,
       List<DBSide> sides,
       Map<DBSide, List<Allergen>> sideAllergens,
       Map<DBSide, List<Additive>> sideAdditives,
@@ -45,6 +48,7 @@ class DatabaseTransformer {
         name: dbMeal.name,
         foodType: dbMeal.foodType,
         price: price,
+        nutritionData: nutritionData != null ? fromDBNutritionData(nutritionData) : null,
         additives: additives,
         allergens: allergens,
         sides: sides
@@ -107,5 +111,17 @@ class DatabaseTransformer {
         line: DatabaseTransformer.fromDBLine(line, canteen),
         isClosed: plan.isClosed,
         meals: meals);
+  }
+
+  /// This method transforms a nutrition data object from the database to a data class.
+  static NutritionData fromDBNutritionData(DBMealNutritionData nutritionData) {
+    return NutritionData(
+        energy: nutritionData.energy,
+        protein: nutritionData.protein,
+        carbohydrates: nutritionData.carbohydrates,
+        sugar: nutritionData.sugar,
+        fat: nutritionData.fat,
+        saturatedFat: nutritionData.saturatedFat,
+        salt: nutritionData.salt);
   }
 }

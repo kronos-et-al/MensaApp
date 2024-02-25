@@ -10,6 +10,7 @@ import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
+import 'package:app/view_model/repository/data_classes/meal/NutritionData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Price.dart';
 import 'package:app/view_model/repository/data_classes/meal/Side.dart';
 
@@ -125,7 +126,7 @@ class GraphQlServerAccess implements IServerAccess {
 
     final result = await _client.mutate$LinkImage(Options$Mutation$LinkImage(
         variables:
-            Variables$Mutation$LinkImage(imageUrl: url, mealId: meal.id)));
+            Variables$Mutation$LinkImage(image: url, mealId: meal.id, hash: hash)));
     if (result.hasException) {
       if (result.exception!.linkException != null) {
         return Failure(ImageUploadException("Verbindungsfehler"));
@@ -372,10 +373,11 @@ Meal _convertMeal(Fragment$mealInfo meal) {
   return Meal(
     id: meal.id,
     name: meal.name,
-    foodType: _convertMealType(meal.mealType),
+    foodType: _convertFoodType(meal.mealType),
     price: _convertPrice(meal.price),
     additives: meal.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
     allergens: meal.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
+    nutritionData: meal.nutritionData != null ? _convertNutritionData(meal.nutritionData!) : null,
     averageRating: meal.ratings.averageRating,
     individualRating: meal.ratings.personalRating,
     numberOfRatings: meal.ratings.ratingsCount,
@@ -413,7 +415,7 @@ Side _convertSide(Fragment$mealInfo$sides e) {
   return Side(
       id: e.id,
       name: e.name,
-      foodType: _convertMealType(e.mealType),
+      foodType: _convertFoodType(e.mealType),
       price: _convertPrice(e.price),
       allergens: e.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
       additives: e.additives.map((e) => _convertAdditive(e)).nonNulls.toList());
@@ -482,34 +484,46 @@ Additive? _convertAdditive(Enum$Additive e) {
     Enum$Additive.LAXATIVE_IF_OVERUSED => Additive.laxativeIfOverused,
     Enum$Additive.PHENYLALANINE => Additive.phenylalanine,
     Enum$Additive.ALCOHOL => Additive.alcohol,
-    Enum$Additive.PRESSED_MEET => Additive.pressedMeat,
+    Enum$Additive.PRESSED_MEAT => Additive.pressedMeat,
     Enum$Additive.GLAZING_WITH_CACAO => Additive.glazingWithCacao,
     Enum$Additive.PRESSED_FISH => Additive.pressedFish,
     Enum$Additive.$unknown => null,
   };
 }
 
-FoodType _convertMealType(Enum$MealType mealType) {
+FoodType _convertFoodType(Enum$FoodType mealType) {
   switch (mealType) {
-    case Enum$MealType.BEEF:
+    case Enum$FoodType.BEEF:
       return FoodType.beef;
-    case Enum$MealType.BEEF_AW:
+    case Enum$FoodType.BEEF_AW:
       return FoodType.beefAw;
-    case Enum$MealType.FISH:
+    case Enum$FoodType.FISH:
       return FoodType.fish;
-    case Enum$MealType.PORK:
+    case Enum$FoodType.PORK:
       return FoodType.pork;
-    case Enum$MealType.PORK_AW:
+    case Enum$FoodType.PORK_AW:
       return FoodType.porkAw;
-    case Enum$MealType.VEGAN:
+    case Enum$FoodType.VEGAN:
       return FoodType.vegan;
-    case Enum$MealType.VEGETARIAN:
+    case Enum$FoodType.VEGETARIAN:
       return FoodType.vegetarian;
-    case Enum$MealType.UNKNOWN:
+    case Enum$FoodType.UNKNOWN:
       return FoodType.unknown;
-    case Enum$MealType.$unknown:
+    case Enum$FoodType.$unknown:
       return FoodType.unknown;
   }
+}
+
+NutritionData _convertNutritionData(Fragment$mealInfo$nutritionData nutritionData) {
+  return NutritionData(
+      energy: nutritionData.energy,
+      protein: nutritionData.protein,
+      carbohydrates: nutritionData.carbohydrates,
+      sugar: nutritionData.sugar,
+      fat: nutritionData.fat,
+      saturatedFat: nutritionData.saturatedFat,
+      salt: nutritionData.salt,
+  );
 }
 
 Price _convertPrice(Fragment$price price) {

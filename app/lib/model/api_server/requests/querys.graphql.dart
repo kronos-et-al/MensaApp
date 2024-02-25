@@ -199,7 +199,6 @@ extension ClientExtension$Fragment$canteen on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Fragment$canteen? readFragment$canteen({
     required Map<String, dynamic> idFields,
     bool optimistic = true,
@@ -236,7 +235,6 @@ class Variables$Fragment$mealPlan {
   Map<String, dynamic> _$data;
 
   String get date => (_$data['date'] as String);
-
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$date = date;
@@ -249,7 +247,6 @@ class Variables$Fragment$mealPlan {
             this,
             (i) => i,
           );
-
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -406,7 +403,6 @@ abstract class CopyWith$Fragment$mealPlan<TRes> {
     List<Fragment$mealPlan$lines>? lines,
     String? $__typename,
   });
-
   TRes lines(
       Iterable<Fragment$mealPlan$lines> Function(
               Iterable<
@@ -439,7 +435,6 @@ class _CopyWithImpl$Fragment$mealPlan<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
-
   TRes lines(
           Iterable<Fragment$mealPlan$lines> Function(
                   Iterable<
@@ -465,7 +460,6 @@ class _CopyWithStubImpl$Fragment$mealPlan<TRes>
     String? $__typename,
   }) =>
       _res;
-
   lines(_fn) => _res;
 }
 
@@ -585,7 +579,6 @@ extension ClientExtension$Fragment$mealPlan on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Fragment$mealPlan? readFragment$mealPlan({
     required Map<String, dynamic> idFields,
     required Variables$Fragment$mealPlan variables,
@@ -746,9 +739,7 @@ abstract class CopyWith$Fragment$mealPlan$lines<TRes> {
     List<Fragment$mealInfo>? meals,
     String? $__typename,
   });
-
   CopyWith$Fragment$canteen<TRes> get canteen;
-
   TRes meals(
       Iterable<Fragment$mealInfo>? Function(
               Iterable<CopyWith$Fragment$mealInfo<Fragment$mealInfo>>?)
@@ -790,7 +781,6 @@ class _CopyWithImpl$Fragment$mealPlan$lines<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
-
   CopyWith$Fragment$canteen<TRes> get canteen {
     final local$canteen = _instance.canteen;
     return CopyWith$Fragment$canteen(local$canteen, (e) => call(canteen: e));
@@ -821,10 +811,8 @@ class _CopyWithStubImpl$Fragment$mealPlan$lines<TRes>
     String? $__typename,
   }) =>
       _res;
-
   CopyWith$Fragment$canteen<TRes> get canteen =>
       CopyWith$Fragment$canteen.stub(_res);
-
   meals(_fn) => _res;
 }
 
@@ -836,6 +824,7 @@ class Fragment$mealInfo {
     required this.price,
     required this.allergens,
     required this.additives,
+    this.nutritionData,
     required this.statistics,
     required this.ratings,
     required this.images,
@@ -850,6 +839,7 @@ class Fragment$mealInfo {
     final l$price = json['price'];
     final l$allergens = json['allergens'];
     final l$additives = json['additives'];
+    final l$nutritionData = json['nutritionData'];
     final l$statistics = json['statistics'];
     final l$ratings = json['ratings'];
     final l$images = json['images'];
@@ -858,7 +848,7 @@ class Fragment$mealInfo {
     return Fragment$mealInfo(
       id: (l$id as String),
       name: (l$name as String),
-      mealType: fromJson$Enum$MealType((l$mealType as String)),
+      mealType: fromJson$Enum$FoodType((l$mealType as String)),
       price: Fragment$price.fromJson((l$price as Map<String, dynamic>)),
       allergens: (l$allergens as List<dynamic>)
           .map((e) => fromJson$Enum$Allergen((e as String)))
@@ -866,6 +856,10 @@ class Fragment$mealInfo {
       additives: (l$additives as List<dynamic>)
           .map((e) => fromJson$Enum$Additive((e as String)))
           .toList(),
+      nutritionData: l$nutritionData == null
+          ? null
+          : Fragment$mealInfo$nutritionData.fromJson(
+              (l$nutritionData as Map<String, dynamic>)),
       statistics: Fragment$mealInfo$statistics.fromJson(
           (l$statistics as Map<String, dynamic>)),
       ratings: Fragment$mealInfo$ratings.fromJson(
@@ -886,13 +880,15 @@ class Fragment$mealInfo {
 
   final String name;
 
-  final Enum$MealType mealType;
+  final Enum$FoodType mealType;
 
   final Fragment$price price;
 
   final List<Enum$Allergen> allergens;
 
   final List<Enum$Additive> additives;
+
+  final Fragment$mealInfo$nutritionData? nutritionData;
 
   final Fragment$mealInfo$statistics statistics;
 
@@ -911,7 +907,7 @@ class Fragment$mealInfo {
     final l$name = name;
     _resultData['name'] = l$name;
     final l$mealType = mealType;
-    _resultData['mealType'] = toJson$Enum$MealType(l$mealType);
+    _resultData['mealType'] = toJson$Enum$FoodType(l$mealType);
     final l$price = price;
     _resultData['price'] = l$price.toJson();
     final l$allergens = allergens;
@@ -920,6 +916,8 @@ class Fragment$mealInfo {
     final l$additives = additives;
     _resultData['additives'] =
         l$additives.map((e) => toJson$Enum$Additive(e)).toList();
+    final l$nutritionData = nutritionData;
+    _resultData['nutritionData'] = l$nutritionData?.toJson();
     final l$statistics = statistics;
     _resultData['statistics'] = l$statistics.toJson();
     final l$ratings = ratings;
@@ -941,6 +939,7 @@ class Fragment$mealInfo {
     final l$price = price;
     final l$allergens = allergens;
     final l$additives = additives;
+    final l$nutritionData = nutritionData;
     final l$statistics = statistics;
     final l$ratings = ratings;
     final l$images = images;
@@ -953,6 +952,7 @@ class Fragment$mealInfo {
       l$price,
       Object.hashAll(l$allergens.map((v) => v)),
       Object.hashAll(l$additives.map((v) => v)),
+      l$nutritionData,
       l$statistics,
       l$ratings,
       Object.hashAll(l$images.map((v) => v)),
@@ -1012,6 +1012,11 @@ class Fragment$mealInfo {
       if (l$additives$entry != lOther$additives$entry) {
         return false;
       }
+    }
+    final l$nutritionData = nutritionData;
+    final lOther$nutritionData = other.nutritionData;
+    if (l$nutritionData != lOther$nutritionData) {
+      return false;
     }
     final l$statistics = statistics;
     final lOther$statistics = other.statistics;
@@ -1076,29 +1081,26 @@ abstract class CopyWith$Fragment$mealInfo<TRes> {
   TRes call({
     String? id,
     String? name,
-    Enum$MealType? mealType,
+    Enum$FoodType? mealType,
     Fragment$price? price,
     List<Enum$Allergen>? allergens,
     List<Enum$Additive>? additives,
+    Fragment$mealInfo$nutritionData? nutritionData,
     Fragment$mealInfo$statistics? statistics,
     Fragment$mealInfo$ratings? ratings,
     List<Fragment$mealInfo$images>? images,
     List<Fragment$mealInfo$sides>? sides,
     String? $__typename,
   });
-
   CopyWith$Fragment$price<TRes> get price;
-
+  CopyWith$Fragment$mealInfo$nutritionData<TRes> get nutritionData;
   CopyWith$Fragment$mealInfo$statistics<TRes> get statistics;
-
   CopyWith$Fragment$mealInfo$ratings<TRes> get ratings;
-
   TRes images(
       Iterable<Fragment$mealInfo$images> Function(
               Iterable<
                   CopyWith$Fragment$mealInfo$images<Fragment$mealInfo$images>>)
           _fn);
-
   TRes sides(
       Iterable<Fragment$mealInfo$sides> Function(
               Iterable<
@@ -1126,6 +1128,7 @@ class _CopyWithImpl$Fragment$mealInfo<TRes>
     Object? price = _undefined,
     Object? allergens = _undefined,
     Object? additives = _undefined,
+    Object? nutritionData = _undefined,
     Object? statistics = _undefined,
     Object? ratings = _undefined,
     Object? images = _undefined,
@@ -1139,7 +1142,7 @@ class _CopyWithImpl$Fragment$mealInfo<TRes>
             : (name as String),
         mealType: mealType == _undefined || mealType == null
             ? _instance.mealType
-            : (mealType as Enum$MealType),
+            : (mealType as Enum$FoodType),
         price: price == _undefined || price == null
             ? _instance.price
             : (price as Fragment$price),
@@ -1149,6 +1152,9 @@ class _CopyWithImpl$Fragment$mealInfo<TRes>
         additives: additives == _undefined || additives == null
             ? _instance.additives
             : (additives as List<Enum$Additive>),
+        nutritionData: nutritionData == _undefined
+            ? _instance.nutritionData
+            : (nutritionData as Fragment$mealInfo$nutritionData?),
         statistics: statistics == _undefined || statistics == null
             ? _instance.statistics
             : (statistics as Fragment$mealInfo$statistics),
@@ -1165,10 +1171,17 @@ class _CopyWithImpl$Fragment$mealInfo<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
-
   CopyWith$Fragment$price<TRes> get price {
     final local$price = _instance.price;
     return CopyWith$Fragment$price(local$price, (e) => call(price: e));
+  }
+
+  CopyWith$Fragment$mealInfo$nutritionData<TRes> get nutritionData {
+    final local$nutritionData = _instance.nutritionData;
+    return local$nutritionData == null
+        ? CopyWith$Fragment$mealInfo$nutritionData.stub(_then(_instance))
+        : CopyWith$Fragment$mealInfo$nutritionData(
+            local$nutritionData, (e) => call(nutritionData: e));
   }
 
   CopyWith$Fragment$mealInfo$statistics<TRes> get statistics {
@@ -1195,7 +1208,6 @@ class _CopyWithImpl$Fragment$mealInfo<TRes>
                     e,
                     (i) => i,
                   ))).toList());
-
   TRes sides(
           Iterable<Fragment$mealInfo$sides> Function(
                   Iterable<
@@ -1219,10 +1231,11 @@ class _CopyWithStubImpl$Fragment$mealInfo<TRes>
   call({
     String? id,
     String? name,
-    Enum$MealType? mealType,
+    Enum$FoodType? mealType,
     Fragment$price? price,
     List<Enum$Allergen>? allergens,
     List<Enum$Additive>? additives,
+    Fragment$mealInfo$nutritionData? nutritionData,
     Fragment$mealInfo$statistics? statistics,
     Fragment$mealInfo$ratings? ratings,
     List<Fragment$mealInfo$images>? images,
@@ -1230,17 +1243,14 @@ class _CopyWithStubImpl$Fragment$mealInfo<TRes>
     String? $__typename,
   }) =>
       _res;
-
   CopyWith$Fragment$price<TRes> get price => CopyWith$Fragment$price.stub(_res);
-
+  CopyWith$Fragment$mealInfo$nutritionData<TRes> get nutritionData =>
+      CopyWith$Fragment$mealInfo$nutritionData.stub(_res);
   CopyWith$Fragment$mealInfo$statistics<TRes> get statistics =>
       CopyWith$Fragment$mealInfo$statistics.stub(_res);
-
   CopyWith$Fragment$mealInfo$ratings<TRes> get ratings =>
       CopyWith$Fragment$mealInfo$ratings.stub(_res);
-
   images(_fn) => _res;
-
   sides(_fn) => _res;
 }
 
@@ -1306,6 +1316,70 @@ const fragmentDefinitionmealInfo = FragmentDefinitionNode(
       arguments: [],
       directives: [],
       selectionSet: null,
+    ),
+    FieldNode(
+      name: NameNode(value: 'nutritionData'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: SelectionSetNode(selections: [
+        FieldNode(
+          name: NameNode(value: 'energy'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'protein'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'carbohydrates'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'sugar'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'fat'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'saturatedFat'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'salt'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: '__typename'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+      ]),
     ),
     FieldNode(
       name: NameNode(value: 'statistics'),
@@ -1550,7 +1624,6 @@ extension ClientExtension$Fragment$mealInfo on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Fragment$mealInfo? readFragment$mealInfo({
     required Map<String, dynamic> idFields,
     bool optimistic = true,
@@ -1567,6 +1640,248 @@ extension ClientExtension$Fragment$mealInfo on graphql.GraphQLClient {
     );
     return result == null ? null : Fragment$mealInfo.fromJson(result);
   }
+}
+
+class Fragment$mealInfo$nutritionData {
+  Fragment$mealInfo$nutritionData({
+    required this.energy,
+    required this.protein,
+    required this.carbohydrates,
+    required this.sugar,
+    required this.fat,
+    required this.saturatedFat,
+    required this.salt,
+    this.$__typename = 'NutritionData',
+  });
+
+  factory Fragment$mealInfo$nutritionData.fromJson(Map<String, dynamic> json) {
+    final l$energy = json['energy'];
+    final l$protein = json['protein'];
+    final l$carbohydrates = json['carbohydrates'];
+    final l$sugar = json['sugar'];
+    final l$fat = json['fat'];
+    final l$saturatedFat = json['saturatedFat'];
+    final l$salt = json['salt'];
+    final l$$__typename = json['__typename'];
+    return Fragment$mealInfo$nutritionData(
+      energy: (l$energy as int),
+      protein: (l$protein as int),
+      carbohydrates: (l$carbohydrates as int),
+      sugar: (l$sugar as int),
+      fat: (l$fat as int),
+      saturatedFat: (l$saturatedFat as int),
+      salt: (l$salt as int),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final int energy;
+
+  final int protein;
+
+  final int carbohydrates;
+
+  final int sugar;
+
+  final int fat;
+
+  final int saturatedFat;
+
+  final int salt;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$energy = energy;
+    _resultData['energy'] = l$energy;
+    final l$protein = protein;
+    _resultData['protein'] = l$protein;
+    final l$carbohydrates = carbohydrates;
+    _resultData['carbohydrates'] = l$carbohydrates;
+    final l$sugar = sugar;
+    _resultData['sugar'] = l$sugar;
+    final l$fat = fat;
+    _resultData['fat'] = l$fat;
+    final l$saturatedFat = saturatedFat;
+    _resultData['saturatedFat'] = l$saturatedFat;
+    final l$salt = salt;
+    _resultData['salt'] = l$salt;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$energy = energy;
+    final l$protein = protein;
+    final l$carbohydrates = carbohydrates;
+    final l$sugar = sugar;
+    final l$fat = fat;
+    final l$saturatedFat = saturatedFat;
+    final l$salt = salt;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$energy,
+      l$protein,
+      l$carbohydrates,
+      l$sugar,
+      l$fat,
+      l$saturatedFat,
+      l$salt,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (!(other is Fragment$mealInfo$nutritionData) ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$energy = energy;
+    final lOther$energy = other.energy;
+    if (l$energy != lOther$energy) {
+      return false;
+    }
+    final l$protein = protein;
+    final lOther$protein = other.protein;
+    if (l$protein != lOther$protein) {
+      return false;
+    }
+    final l$carbohydrates = carbohydrates;
+    final lOther$carbohydrates = other.carbohydrates;
+    if (l$carbohydrates != lOther$carbohydrates) {
+      return false;
+    }
+    final l$sugar = sugar;
+    final lOther$sugar = other.sugar;
+    if (l$sugar != lOther$sugar) {
+      return false;
+    }
+    final l$fat = fat;
+    final lOther$fat = other.fat;
+    if (l$fat != lOther$fat) {
+      return false;
+    }
+    final l$saturatedFat = saturatedFat;
+    final lOther$saturatedFat = other.saturatedFat;
+    if (l$saturatedFat != lOther$saturatedFat) {
+      return false;
+    }
+    final l$salt = salt;
+    final lOther$salt = other.salt;
+    if (l$salt != lOther$salt) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$mealInfo$nutritionData
+    on Fragment$mealInfo$nutritionData {
+  CopyWith$Fragment$mealInfo$nutritionData<Fragment$mealInfo$nutritionData>
+      get copyWith => CopyWith$Fragment$mealInfo$nutritionData(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Fragment$mealInfo$nutritionData<TRes> {
+  factory CopyWith$Fragment$mealInfo$nutritionData(
+    Fragment$mealInfo$nutritionData instance,
+    TRes Function(Fragment$mealInfo$nutritionData) then,
+  ) = _CopyWithImpl$Fragment$mealInfo$nutritionData;
+
+  factory CopyWith$Fragment$mealInfo$nutritionData.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$mealInfo$nutritionData;
+
+  TRes call({
+    int? energy,
+    int? protein,
+    int? carbohydrates,
+    int? sugar,
+    int? fat,
+    int? saturatedFat,
+    int? salt,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Fragment$mealInfo$nutritionData<TRes>
+    implements CopyWith$Fragment$mealInfo$nutritionData<TRes> {
+  _CopyWithImpl$Fragment$mealInfo$nutritionData(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$mealInfo$nutritionData _instance;
+
+  final TRes Function(Fragment$mealInfo$nutritionData) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? energy = _undefined,
+    Object? protein = _undefined,
+    Object? carbohydrates = _undefined,
+    Object? sugar = _undefined,
+    Object? fat = _undefined,
+    Object? saturatedFat = _undefined,
+    Object? salt = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$mealInfo$nutritionData(
+        energy: energy == _undefined || energy == null
+            ? _instance.energy
+            : (energy as int),
+        protein: protein == _undefined || protein == null
+            ? _instance.protein
+            : (protein as int),
+        carbohydrates: carbohydrates == _undefined || carbohydrates == null
+            ? _instance.carbohydrates
+            : (carbohydrates as int),
+        sugar: sugar == _undefined || sugar == null
+            ? _instance.sugar
+            : (sugar as int),
+        fat: fat == _undefined || fat == null ? _instance.fat : (fat as int),
+        saturatedFat: saturatedFat == _undefined || saturatedFat == null
+            ? _instance.saturatedFat
+            : (saturatedFat as int),
+        salt:
+            salt == _undefined || salt == null ? _instance.salt : (salt as int),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Fragment$mealInfo$nutritionData<TRes>
+    implements CopyWith$Fragment$mealInfo$nutritionData<TRes> {
+  _CopyWithStubImpl$Fragment$mealInfo$nutritionData(this._res);
+
+  TRes _res;
+
+  call({
+    int? energy,
+    int? protein,
+    int? carbohydrates,
+    int? sugar,
+    int? fat,
+    int? saturatedFat,
+    int? salt,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Fragment$mealInfo$statistics {
@@ -2190,7 +2505,7 @@ class Fragment$mealInfo$sides {
           .map((e) => fromJson$Enum$Allergen((e as String)))
           .toList(),
       price: Fragment$price.fromJson((l$price as Map<String, dynamic>)),
-      mealType: fromJson$Enum$MealType((l$mealType as String)),
+      mealType: fromJson$Enum$FoodType((l$mealType as String)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -2205,7 +2520,7 @@ class Fragment$mealInfo$sides {
 
   final Fragment$price price;
 
-  final Enum$MealType mealType;
+  final Enum$FoodType mealType;
 
   final String $__typename;
 
@@ -2224,7 +2539,7 @@ class Fragment$mealInfo$sides {
     final l$price = price;
     _resultData['price'] = l$price.toJson();
     final l$mealType = mealType;
-    _resultData['mealType'] = toJson$Enum$MealType(l$mealType);
+    _resultData['mealType'] = toJson$Enum$FoodType(l$mealType);
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -2335,10 +2650,9 @@ abstract class CopyWith$Fragment$mealInfo$sides<TRes> {
     List<Enum$Additive>? additives,
     List<Enum$Allergen>? allergens,
     Fragment$price? price,
-    Enum$MealType? mealType,
+    Enum$FoodType? mealType,
     String? $__typename,
   });
-
   CopyWith$Fragment$price<TRes> get price;
 }
 
@@ -2380,12 +2694,11 @@ class _CopyWithImpl$Fragment$mealInfo$sides<TRes>
             : (price as Fragment$price),
         mealType: mealType == _undefined || mealType == null
             ? _instance.mealType
-            : (mealType as Enum$MealType),
+            : (mealType as Enum$FoodType),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
-
   CopyWith$Fragment$price<TRes> get price {
     final local$price = _instance.price;
     return CopyWith$Fragment$price(local$price, (e) => call(price: e));
@@ -2404,11 +2717,10 @@ class _CopyWithStubImpl$Fragment$mealInfo$sides<TRes>
     List<Enum$Additive>? additives,
     List<Enum$Allergen>? allergens,
     Fragment$price? price,
-    Enum$MealType? mealType,
+    Enum$FoodType? mealType,
     String? $__typename,
   }) =>
       _res;
-
   CopyWith$Fragment$price<TRes> get price => CopyWith$Fragment$price.stub(_res);
 }
 
@@ -2662,7 +2974,6 @@ extension ClientExtension$Fragment$price on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Fragment$price? readFragment$price({
     required Map<String, dynamic> idFields,
     bool optimistic = true,
@@ -2700,7 +3011,6 @@ class Variables$Query$GetMealPlanForDay {
   Map<String, dynamic> _$data;
 
   String get date => (_$data['date'] as String);
-
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$date = date;
@@ -2713,7 +3023,6 @@ class Variables$Query$GetMealPlanForDay {
             this,
             (i) => i,
           );
-
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -2870,7 +3179,6 @@ abstract class CopyWith$Query$GetMealPlanForDay<TRes> {
     List<Fragment$mealPlan>? getCanteens,
     String? $__typename,
   });
-
   TRes getCanteens(
       Iterable<Fragment$mealPlan> Function(
               Iterable<CopyWith$Fragment$mealPlan<Fragment$mealPlan>>)
@@ -2902,7 +3210,6 @@ class _CopyWithImpl$Query$GetMealPlanForDay<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
-
   TRes getCanteens(
           Iterable<Fragment$mealPlan> Function(
                   Iterable<CopyWith$Fragment$mealPlan<Fragment$mealPlan>>)
@@ -2926,7 +3233,6 @@ class _CopyWithStubImpl$Query$GetMealPlanForDay<TRes>
     String? $__typename,
   }) =>
       _res;
-
   getCanteens(_fn) => _res;
 }
 
@@ -2980,11 +3286,9 @@ const documentNodeQueryGetMealPlanForDay = DocumentNode(definitions: [
   fragmentDefinitionmealInfo,
   fragmentDefinitionprice,
 ]);
-
 Query$GetMealPlanForDay _parserFn$Query$GetMealPlanForDay(
         Map<String, dynamic> data) =>
     Query$GetMealPlanForDay.fromJson(data);
-
 typedef OnQueryComplete$Query$GetMealPlanForDay = FutureOr<void> Function(
   Map<String, dynamic>?,
   Query$GetMealPlanForDay?,
@@ -3086,11 +3390,9 @@ extension ClientExtension$Query$GetMealPlanForDay on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetMealPlanForDay>> query$GetMealPlanForDay(
           Options$Query$GetMealPlanForDay options) async =>
       await this.query(options);
-
   graphql.ObservableQuery<Query$GetMealPlanForDay> watchQuery$GetMealPlanForDay(
           WatchOptions$Query$GetMealPlanForDay options) =>
       this.watchQuery(options);
-
   void writeQuery$GetMealPlanForDay({
     required Query$GetMealPlanForDay data,
     required Variables$Query$GetMealPlanForDay variables,
@@ -3105,7 +3407,6 @@ extension ClientExtension$Query$GetMealPlanForDay on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Query$GetMealPlanForDay? readQuery$GetMealPlanForDay({
     required Variables$Query$GetMealPlanForDay variables,
     bool optimistic = true,
@@ -3125,7 +3426,6 @@ extension ClientExtension$Query$GetMealPlanForDay on graphql.GraphQLClient {
 graphql_flutter.QueryHookResult<Query$GetMealPlanForDay>
     useQuery$GetMealPlanForDay(Options$Query$GetMealPlanForDay options) =>
         graphql_flutter.useQuery(options);
-
 graphql.ObservableQuery<Query$GetMealPlanForDay>
     useWatchQuery$GetMealPlanForDay(
             WatchOptions$Query$GetMealPlanForDay options) =>
@@ -3168,9 +3468,7 @@ class Variables$Query$GetCanteenDate {
   Map<String, dynamic> _$data;
 
   String get canteenId => (_$data['canteenId'] as String);
-
   String get date => (_$data['date'] as String);
-
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$canteenId = canteenId;
@@ -3185,7 +3483,6 @@ class Variables$Query$GetCanteenDate {
             this,
             (i) => i,
           );
-
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -3355,7 +3652,6 @@ abstract class CopyWith$Query$GetCanteenDate<TRes> {
     Fragment$mealPlan? getCanteen,
     String? $__typename,
   });
-
   CopyWith$Fragment$mealPlan<TRes> get getCanteen;
 }
 
@@ -3384,7 +3680,6 @@ class _CopyWithImpl$Query$GetCanteenDate<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
-
   CopyWith$Fragment$mealPlan<TRes> get getCanteen {
     final local$getCanteen = _instance.getCanteen;
     return local$getCanteen == null
@@ -3405,7 +3700,6 @@ class _CopyWithStubImpl$Query$GetCanteenDate<TRes>
     String? $__typename,
   }) =>
       _res;
-
   CopyWith$Fragment$mealPlan<TRes> get getCanteen =>
       CopyWith$Fragment$mealPlan.stub(_res);
 }
@@ -3474,11 +3768,9 @@ const documentNodeQueryGetCanteenDate = DocumentNode(definitions: [
   fragmentDefinitionmealInfo,
   fragmentDefinitionprice,
 ]);
-
 Query$GetCanteenDate _parserFn$Query$GetCanteenDate(
         Map<String, dynamic> data) =>
     Query$GetCanteenDate.fromJson(data);
-
 typedef OnQueryComplete$Query$GetCanteenDate = FutureOr<void> Function(
   Map<String, dynamic>?,
   Query$GetCanteenDate?,
@@ -3577,11 +3869,9 @@ extension ClientExtension$Query$GetCanteenDate on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetCanteenDate>> query$GetCanteenDate(
           Options$Query$GetCanteenDate options) async =>
       await this.query(options);
-
   graphql.ObservableQuery<Query$GetCanteenDate> watchQuery$GetCanteenDate(
           WatchOptions$Query$GetCanteenDate options) =>
       this.watchQuery(options);
-
   void writeQuery$GetCanteenDate({
     required Query$GetCanteenDate data,
     required Variables$Query$GetCanteenDate variables,
@@ -3596,7 +3886,6 @@ extension ClientExtension$Query$GetCanteenDate on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Query$GetCanteenDate? readQuery$GetCanteenDate({
     required Variables$Query$GetCanteenDate variables,
     bool optimistic = true,
@@ -3615,7 +3904,6 @@ extension ClientExtension$Query$GetCanteenDate on graphql.GraphQLClient {
 graphql_flutter.QueryHookResult<Query$GetCanteenDate> useQuery$GetCanteenDate(
         Options$Query$GetCanteenDate options) =>
     graphql_flutter.useQuery(options);
-
 graphql.ObservableQuery<Query$GetCanteenDate> useWatchQuery$GetCanteenDate(
         WatchOptions$Query$GetCanteenDate options) =>
     graphql_flutter.useWatchQuery(options);
@@ -3661,11 +3949,8 @@ class Variables$Query$GetMeal {
   Map<String, dynamic> _$data;
 
   String get date => (_$data['date'] as String);
-
   String get mealId => (_$data['mealId'] as String);
-
   String get lineId => (_$data['lineId'] as String);
-
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$date = date;
@@ -3682,7 +3967,6 @@ class Variables$Query$GetMeal {
         this,
         (i) => i,
       );
-
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -3863,7 +4147,6 @@ abstract class CopyWith$Query$GetMeal<TRes> {
     Fragment$mealInfo? getMeal,
     String? $__typename,
   });
-
   CopyWith$Fragment$mealInfo<TRes> get getMeal;
 }
 
@@ -3892,7 +4175,6 @@ class _CopyWithImpl$Query$GetMeal<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
-
   CopyWith$Fragment$mealInfo<TRes> get getMeal {
     final local$getMeal = _instance.getMeal;
     return local$getMeal == null
@@ -3912,7 +4194,6 @@ class _CopyWithStubImpl$Query$GetMeal<TRes>
     String? $__typename,
   }) =>
       _res;
-
   CopyWith$Fragment$mealInfo<TRes> get getMeal =>
       CopyWith$Fragment$mealInfo.stub(_res);
 }
@@ -3996,10 +4277,8 @@ const documentNodeQueryGetMeal = DocumentNode(definitions: [
   fragmentDefinitionmealInfo,
   fragmentDefinitionprice,
 ]);
-
 Query$GetMeal _parserFn$Query$GetMeal(Map<String, dynamic> data) =>
     Query$GetMeal.fromJson(data);
-
 typedef OnQueryComplete$Query$GetMeal = FutureOr<void> Function(
   Map<String, dynamic>?,
   Query$GetMeal?,
@@ -4097,11 +4376,9 @@ extension ClientExtension$Query$GetMeal on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetMeal>> query$GetMeal(
           Options$Query$GetMeal options) async =>
       await this.query(options);
-
   graphql.ObservableQuery<Query$GetMeal> watchQuery$GetMeal(
           WatchOptions$Query$GetMeal options) =>
       this.watchQuery(options);
-
   void writeQuery$GetMeal({
     required Query$GetMeal data,
     required Variables$Query$GetMeal variables,
@@ -4115,7 +4392,6 @@ extension ClientExtension$Query$GetMeal on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Query$GetMeal? readQuery$GetMeal({
     required Variables$Query$GetMeal variables,
     bool optimistic = true,
@@ -4134,7 +4410,6 @@ extension ClientExtension$Query$GetMeal on graphql.GraphQLClient {
 graphql_flutter.QueryHookResult<Query$GetMeal> useQuery$GetMeal(
         Options$Query$GetMeal options) =>
     graphql_flutter.useQuery(options);
-
 graphql.ObservableQuery<Query$GetMeal> useWatchQuery$GetMeal(
         WatchOptions$Query$GetMeal options) =>
     graphql_flutter.useWatchQuery(options);
@@ -4242,7 +4517,6 @@ abstract class CopyWith$Query$GetDefaultCanteen<TRes> {
     List<Fragment$canteen>? getCanteens,
     String? $__typename,
   });
-
   TRes getCanteens(
       Iterable<Fragment$canteen> Function(
               Iterable<CopyWith$Fragment$canteen<Fragment$canteen>>)
@@ -4274,7 +4548,6 @@ class _CopyWithImpl$Query$GetDefaultCanteen<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
-
   TRes getCanteens(
           Iterable<Fragment$canteen> Function(
                   Iterable<CopyWith$Fragment$canteen<Fragment$canteen>>)
@@ -4298,7 +4571,6 @@ class _CopyWithStubImpl$Query$GetDefaultCanteen<TRes>
     String? $__typename,
   }) =>
       _res;
-
   getCanteens(_fn) => _res;
 }
 
@@ -4339,11 +4611,9 @@ const documentNodeQueryGetDefaultCanteen = DocumentNode(definitions: [
   ),
   fragmentDefinitioncanteen,
 ]);
-
 Query$GetDefaultCanteen _parserFn$Query$GetDefaultCanteen(
         Map<String, dynamic> data) =>
     Query$GetDefaultCanteen.fromJson(data);
-
 typedef OnQueryComplete$Query$GetDefaultCanteen = FutureOr<void> Function(
   Map<String, dynamic>?,
   Query$GetDefaultCanteen?,
@@ -4439,11 +4709,9 @@ extension ClientExtension$Query$GetDefaultCanteen on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetDefaultCanteen>> query$GetDefaultCanteen(
           [Options$Query$GetDefaultCanteen? options]) async =>
       await this.query(options ?? Options$Query$GetDefaultCanteen());
-
   graphql.ObservableQuery<Query$GetDefaultCanteen> watchQuery$GetDefaultCanteen(
           [WatchOptions$Query$GetDefaultCanteen? options]) =>
       this.watchQuery(options ?? WatchOptions$Query$GetDefaultCanteen());
-
   void writeQuery$GetDefaultCanteen({
     required Query$GetDefaultCanteen data,
     bool broadcast = true,
@@ -4455,7 +4723,6 @@ extension ClientExtension$Query$GetDefaultCanteen on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Query$GetDefaultCanteen? readQuery$GetDefaultCanteen(
       {bool optimistic = true}) {
     final result = this.readQuery(
@@ -4471,7 +4738,6 @@ extension ClientExtension$Query$GetDefaultCanteen on graphql.GraphQLClient {
 graphql_flutter.QueryHookResult<Query$GetDefaultCanteen>
     useQuery$GetDefaultCanteen([Options$Query$GetDefaultCanteen? options]) =>
         graphql_flutter.useQuery(options ?? Options$Query$GetDefaultCanteen());
-
 graphql.ObservableQuery<Query$GetDefaultCanteen>
     useWatchQuery$GetDefaultCanteen(
             [WatchOptions$Query$GetDefaultCanteen? options]) =>

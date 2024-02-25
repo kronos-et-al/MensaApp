@@ -49,6 +49,15 @@ fragment mealInfo on Meal {
     }
     allergens
     additives
+    nutritionData {
+        energy
+        protein
+        carbohydrates
+        sugar
+        fat
+        saturatedFat
+        salt
+    }
     statistics {
         lastServed
         nextServed
