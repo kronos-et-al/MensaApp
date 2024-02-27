@@ -2,29 +2,36 @@ services:
   mensa-app:
     image: ghcr.io/kronos-et-al/mensa-app
     #command: --migrate # only run for the first time to create initial database structure
+    #command: --migrate-images # run once when migrating from flickr to local image solution
     ports:
       - 80:80
     environment: # please configure accordingly <------------------------------------------------------------
-      - DATABASE_URL=postgres://postgres:secret_password@database/mensa_app # only change password if wanted
+      - DATABASE_URL=postgres://postgres:secret_password@database/mensa_app # (a) only change password if wanted
       - SMTP_SERVER=<domain of mail server>
       - SMTP_PORT=<port of mail server>
       - SMTP_USERNAME=<username of mail server>
       - SMTP_PASSWORD=<password of mail server>
       - ADMIN_EMAIL=<email address admin notofocations should be send to>
-      - FLICKR_API_KEY=<flickr public api key>
+      - GOOGLE_PROJECT_ID=<google project id for service account>
+      - BASE_URL=<url where api is available>
       - TZ=Europe/Berlin
+    volumes: # please configure accordingly <-----------------------------------------------------------
+      - <image_path>:/data/images:rw
+      - <service_account json>:/data/service_account.json:ro
+
     restart: unless-stopped
     depends_on:
       - database
   database:
-    image: postgres
+    image: postgres:16
     volumes:
-      - dbdata:/var/lib/postgresql/data
+      - dbdata:/var/lib/postgresql/data # or specify path where your database should be stored
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=secret_password # change here and above <------------------------------------------
+      - POSTGRES_PASSWORD=secret_password # (a) change here and above <------------------------------------------
       - POSTGRES_DB=mensa_app
       - TZ=Europe/Berlin
+      - PGTZ=Europe/Berlin
     restart: unless-stopped
   admin:
     image: dpage/pgadmin4
@@ -33,7 +40,7 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=
       - TZ=Europe/Berlin
     ports:
-      - 8888:80
+      - 8080:80
     volumes:
       - pgadmin:/var/lib/pgadmin
     restart: unless-stopped

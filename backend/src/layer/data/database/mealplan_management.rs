@@ -1,3 +1,4 @@
+//! Module responsible for handling database requests for meal plan management operations.
 use async_trait::async_trait;
 use sqlx::{Pool, Postgres};
 
@@ -6,6 +7,8 @@ use crate::{
     util::{Additive, Allergen, Date, MealType, Price, Uuid},
 };
 
+/// Class for performing database operations necessary for meal plan management.
+#[derive(Debug)]
 pub struct PersistentMealplanManagementData {
     pub(super) pool: Pool<Postgres>,
 }
@@ -57,14 +60,14 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         similar_name: &str,
         meal_type: MealType,
         allergens: &[Allergen],
-        additives: &[Additive],
+        _additives: &[Additive],
     ) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
             // the `<@` operator checks whether each element in the left array is also present in the right
             r#"
             SELECT food_id 
             FROM food JOIN meal USING (food_id)
-            WHERE similarity(name, $1) >= $5 AND food_type = $2
+            WHERE similarity(name, $1) >= $4 AND food_type = $2
             AND food_id IN (
                 -- all food_id's with same allergens
                 SELECT food_id 
@@ -72,14 +75,6 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
                 GROUP BY food_id 
 				HAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $3::allergen[]
 				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $3::allergen[]
-            )
-            AND food_id IN (
-                -- all food_id's with same additives
-                SELECT food_id
-				FROM food_additive FULL JOIN food USING (food_id)
-				GROUP BY food_id 
-				HAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $4::additive[]
-				AND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $4::additive[]
             )
             ORDER BY similarity(name, $1) DESC
             "#,
@@ -89,11 +84,6 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
                 .iter()
                 .copied()
                 .map(Allergen::to_db_string)
-                .collect::<Vec<_>>() as _,
-            additives
-                .iter()
-                .copied()
-                .map(Additive::to_db_string)
                 .collect::<Vec<_>>() as _,
             THRESHOLD_MEAL
         )
@@ -107,14 +97,14 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
         similar_name: &str,
         meal_type: MealType,
         allergens: &[Allergen],
-        additives: &[Additive],
+        _additives: &[Additive],
     ) -> Result<Option<Uuid>> {
         sqlx::query_scalar!(
             // the `<@` operator checks whether each element in the left array is also present in the right
             r#"
             SELECT food_id 
             FROM food
-            WHERE similarity(name, $1) >= $5 AND food_type = $2 AND food_id NOT IN (SELECT food_id FROM meal)
+            WHERE similarity(name, $1) >= $4 AND food_type = $2 AND food_id NOT IN (SELECT food_id FROM meal)
             AND food_id IN (
                 -- all food_id's with same allergens
                 SELECT food_id 
@@ -122,14 +112,6 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
                 GROUP BY food_id 
 				HAVING COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) <@ $3::allergen[]
 				AND COALESCE(array_agg(allergen) FILTER (WHERE allergen IS NOT NULL), ARRAY[]::allergen[]) @> $3::allergen[]
-            )
-            AND food_id IN (
-                -- all food_id's with same additives
-                SELECT food_id
-				FROM food_additive FULL JOIN food USING (food_id)
-				GROUP BY food_id 
-				HAVING COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) <@ $4::additive[]
-				AND COALESCE(array_agg(additive) FILTER (WHERE additive IS NOT NULL), ARRAY[]::additive[]) @> $4::additive[]
             )
             ORDER BY similarity(name, $1) DESC
             "#,
@@ -139,11 +121,6 @@ impl MealplanManagementDataAccess for PersistentMealplanManagementData {
                 .iter()
                 .copied()
                 .map(Allergen::to_db_string)
-                .collect::<Vec<_>>() as _,
-            additives
-                .iter()
-                .copied()
-                .map(Additive::to_db_string)
                 .collect::<Vec<_>>() as _,
             THRESHOLD_MEAL
         )
@@ -366,6 +343,7 @@ mod test {
     #![allow(clippy::cast_sign_loss)]
 
     use super::*;
+    use crate::util::Additive::Sulphur;
     use crate::util::Allergen::{Ei, Se, So, We, ML};
     use crate::util::Date;
     use chrono::Local;
@@ -522,7 +500,7 @@ mod test {
             ("f7337122-b018-48ad-b420-6202dc3cb4ff", (vec![], vec![We])),
             (
                 "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
-                (vec![], vec![Ei, ML, We]),
+                (vec![Sulphur], vec![Ei, ML, We]),
             ),
             (
                 "0a850476-eda4-4fd8-9f93-579eb85b8c25",

@@ -1,2 +1,2 @@
 #[cfg(test)]
-pub mod const_test_data;
+pub(super) mod const_test_data;

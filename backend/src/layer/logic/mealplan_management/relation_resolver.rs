@@ -1,9 +1,11 @@
+//! See [`RelationResolver`].
 use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
 use crate::interface::persistent_data::{DataError, MealplanManagementDataAccess};
 use crate::util::{Date, Uuid};
 use std::slice::Iter;
 use tracing::warn;
 
+/// Class responsible for resolving relations of existing and new meals by avoiding duplications of those inside the data store.
 pub struct RelationResolver<DataAccess>
 where
     DataAccess: MealplanManagementDataAccess,
@@ -15,6 +17,7 @@ impl<DataAccess> RelationResolver<DataAccess>
 where
     DataAccess: MealplanManagementDataAccess,
 {
+    /// Create a new instance with the given data store.
     pub const fn new(db: DataAccess) -> Self {
         Self { db }
     }
@@ -43,7 +46,7 @@ where
         for line in canteen.lines {
             let name = &line.name.clone();
             if let Err(e) = self.resolve_line(date, line, db_canteen).await {
-                warn!("Skipped line '{name}' as it could not be resolved: {e}");
+                warn!(canteen.name, canteen.id = %db_canteen, %date, "Skipped line '{name}' as it could not be resolved: {e}");
             }
         }
         Ok(())
@@ -74,7 +77,7 @@ where
         for dish in line.dishes {
             let name = &dish.name.clone();
             if let Err(e) = self.resolve_dish(line_id, date, dish, average).await {
-                warn!("Skipped dish '{name}' as it could not be resolved: {e}");
+                warn!(canteen.id = %canteen_id, line.id = %line_id, %date, "Skipped dish '{name}' as it could not be resolved: {e}");
             }
         }
         Ok(())
