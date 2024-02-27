@@ -1204,24 +1204,22 @@ mod test {
 
     async fn get_env_info(pool: &PgPool, food_id: Uuid) -> ParseEnvironmentInfo {
         ParseEnvironmentInfo::from_row(
-            &sqlx::query(&format!(
-                r#"SELECT * FROM food_env_score WHERE food_id = '{food_id}'"#
-            ))
-            .fetch_one(pool)
-            .await
-            .unwrap(),
+            &sqlx::query("SELECT * FROM food_env_score WHERE food_id = $1")
+                .bind(food_id)
+                .fetch_one(pool)
+                .await
+                .unwrap(),
         )
         .unwrap()
     }
 
     async fn get_nutrition_data(pool: &PgPool, food_id: Uuid) -> NutritionData {
         NutritionData::from_row(
-            &sqlx::query(&format!(
-                r#"SELECT * FROM food_nutrition_data WHERE food_id = '{food_id}'"#
-            ))
-            .fetch_one(pool)
-            .await
-            .unwrap(),
+            &sqlx::query("SELECT * FROM food_nutrition_data WHERE food_id = $1")
+                .bind(food_id)
+                .fetch_one(pool)
+                .await
+                .unwrap(),
         )
         .unwrap()
     }
