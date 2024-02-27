@@ -1,10 +1,10 @@
 use crate::interface::image_validation::ImageValidationError::InvalidResponse;
 use crate::interface::image_validation::Result;
 use crate::layer::data::image_validation::json_structs::{SafeSearchJson, SafeSearchResponseJson};
+use google_jwt_auth::usage::Usage::CloudVision;
 use google_jwt_auth::AuthConfig;
 
 const API_REST_URL: &str = "https://vision.googleapis.com/v1/images:annotate";
-const API_USAGE: &str = "https://www.googleapis.com/auth/cloud-vision";
 const PROJECT_ID_HEADER: &str = "x-goog-user-project";
 const REQUEST_TYPE: &str = "SAFE_SEARCH_DETECTION";
 const CONTENT_TYPE: &str = "application/json";
@@ -32,10 +32,10 @@ impl ApiRequest {
     /// See [`crate::interface::image_validation::ImageValidationError`] for more info about the errors.
     /// # Return
     /// The mentioned [`ApiRequest`] struct.
-    pub fn new(service_account_info: String, google_project_id: String) -> Result<Self> {
+    pub fn new(service_account_info: &str, google_project_id: String) -> Result<Self> {
         Ok(Self {
             google_project_id,
-            auth_config: AuthConfig::build(service_account_info, String::from(API_USAGE))?,
+            auth_config: AuthConfig::build(service_account_info, &CloudVision)?,
         })
     }
 
@@ -104,7 +104,7 @@ mod tests {
         let path = env::var("SERVICE_ACCOUNT_JSON").unwrap();
         let id = env::var("GOOGLE_PROJECT_ID").unwrap();
         let json = fs::read_to_string(path).unwrap();
-        let api_req = ApiRequest::new(json, id).unwrap();
+        let api_req = ApiRequest::new(&json, id).unwrap();
         let resp = api_req
             .encoded_image_validation(String::from(B64_IMAGE))
             .await;
