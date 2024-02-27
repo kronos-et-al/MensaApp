@@ -60,11 +60,23 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         Ok(())
     }
 
-    async fn update_meal(&self, _uuid: Uuid, _name: &str) -> Result<()> {
+    async fn update_meal(
+        &self,
+        _uuid: Uuid,
+        _name: &str,
+        _nutrition_data: Option<NutritionData>,
+        _parse_environment_info: Option<ParseEnvironmentInfo>,
+    ) -> Result<()> {
         Ok(())
     }
 
-    async fn update_side(&self, _uuid: Uuid, _name: &str) -> Result<()> {
+    async fn update_side(
+        &self,
+        _uuid: Uuid,
+        _name: &str,
+        _nutrition_data: Option<NutritionData>,
+        _parse_environment_info: Option<ParseEnvironmentInfo>,
+    ) -> Result<()> {
         Ok(())
     }
 

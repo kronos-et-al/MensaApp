@@ -99,11 +99,25 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 
     /// Updates an existing meal entity in the database.
     /// Behavior is undefined, if the specified UUID is a side.
-    async fn update_meal(&self, uuid: Uuid, name: &str) -> Result<()>;
+    /// Nutrition and environmental data will be updated as well, as they can change over time.
+    async fn update_meal(
+        &self,
+        uuid: Uuid,
+        name: &str,
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<ParseEnvironmentInfo>,
+    ) -> Result<()>;
 
     /// Updates an existing side entity in the database.
     /// Behavior is undefined, if the specified UUID is a meal.
-    async fn update_side(&self, uuid: Uuid, name: &str) -> Result<()>;
+    /// Nutrition and environmental data will be updated as well, as they can change over time.
+    async fn update_side(
+        &self,
+        uuid: Uuid,
+        name: &str,
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<ParseEnvironmentInfo>,
+    ) -> Result<()>;
 
     /// Adds a new canteen entity to the database.
     /// Returns UUID of the new canteen.
