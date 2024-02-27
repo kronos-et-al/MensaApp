@@ -1151,9 +1151,9 @@ checksum = "4271d37baee1b8c7e4b708028c57d816cf9d2434acb33a549475f78c181f6253"
 
 [[package]]
 name = "google-jwt-auth"
-version = "0.0.2"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1d84bf87325cf8c95ab4760bf2d6e127febfe0e173a39dcb8d2ed8efea6841ae"
+checksum = "f0359c228d1ffcb566bc51bdec93ef3cf43de4bd1ef2f22ed8cf1bb9ae8b9e66"
 dependencies = [
  "chrono",
  "jsonwebtoken",
@@ -3337,9 +3337,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-cron-scheduler"
-version = "0.9.4"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "de2c1fd54a857b29c6cd1846f31903d0ae8e28175615c14a277aed45c58d8e27"
+checksum = "d1215c91d6f74868e18a65bda99853e012cfb2a0e42f3438382e318277da76a0"
 dependencies = [
  "chrono",
  "cron",
