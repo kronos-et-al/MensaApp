@@ -608,7 +608,7 @@ mod tests {
         let file_contents = read_from_file(path).unwrap();
         let canteen_data = HTMLParser::new().transform(&file_contents, 42_u32).unwrap();
 
-        let _ = write_output_to_file(path, &canteen_data);
+        //let _ = write_output_to_file(path, &canteen_data);
         let expected = read_from_file(&path.replace(".html", ".txt"))
             .unwrap()
             .replace("\r\n", "\n");
