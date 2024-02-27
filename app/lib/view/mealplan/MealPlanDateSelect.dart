@@ -33,6 +33,7 @@ class MealPlanDateSelect extends StatelessWidget {
         },
       ),
       MensaTapable(
+          onLongPress: () => _onDateChanged(DateTime.now()),
           semanticLabel: FlutterI18n.translate(context, 'semantics.mealPlanDatePicker'),
           child: Padding(
             padding: const EdgeInsets.all(12),

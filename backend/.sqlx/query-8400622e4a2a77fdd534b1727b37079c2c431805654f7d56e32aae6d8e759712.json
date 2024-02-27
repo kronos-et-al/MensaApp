@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE food \n            SET name = $2 \n            WHERE food_id = $1\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "8400622e4a2a77fdd534b1727b37079c2c431805654f7d56e32aae6d8e759712"
+}

@@ -2,11 +2,15 @@
 pub mod model;
 
 use crate::interface::persistent_data::model::{ApiKey, Canteen, Image, Line, Meal, Side};
-use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason, Uuid};
+use crate::util::{Additive, Allergen, Date, FoodType, NutritionData, Price, ReportReason, Uuid};
 use async_trait::async_trait;
 use sqlx::migrate::MigrateError;
 use std::num::TryFromIntError;
 use thiserror::Error;
+
+use self::model::EnvironmentInfo;
+
+use super::mensa_parser::model::ParseEnvironmentInfo;
 
 /// Result returned from data access operations, potentially containing a [`DataError`].
 pub type Result<T> = std::result::Result<T, DataError>;
@@ -70,7 +74,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     async fn get_similar_meal(
         &self,
         similar_name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>>;
@@ -80,7 +84,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     async fn get_similar_side(
         &self,
         similar_name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>>;
@@ -95,11 +99,25 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 
     /// Updates an existing meal entity in the database.
     /// Behavior is undefined, if the specified UUID is a side.
-    async fn update_meal(&self, uuid: Uuid, name: &str) -> Result<()>;
+    /// Nutrition and environmental data will be updated as well, as they can change over time.
+    async fn update_meal(
+        &self,
+        uuid: Uuid,
+        name: &str,
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<ParseEnvironmentInfo>,
+    ) -> Result<()>;
 
     /// Updates an existing side entity in the database.
     /// Behavior is undefined, if the specified UUID is a meal.
-    async fn update_side(&self, uuid: Uuid, name: &str) -> Result<()>;
+    /// Nutrition and environmental data will be updated as well, as they can change over time.
+    async fn update_side(
+        &self,
+        uuid: Uuid,
+        name: &str,
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<ParseEnvironmentInfo>,
+    ) -> Result<()>;
 
     /// Adds a new canteen entity to the database.
     /// Returns UUID of the new canteen.
@@ -113,18 +131,22 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     async fn insert_meal(
         &self,
         name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<ParseEnvironmentInfo>,
     ) -> Result<Uuid>;
 
     /// Adds a new side entity to the database. Returns the UUID of the created meal.
     async fn insert_side(
         &self,
         name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<ParseEnvironmentInfo>,
     ) -> Result<Uuid>;
 
     /// Adds a meal into the meal plan for a line at a date by specifying its price.
@@ -217,4 +239,8 @@ pub trait RequestDataAccess: Send + Sync {
     async fn get_additives(&self, food_id: Uuid) -> Result<Vec<Additive>>;
     /// Returns all allergens related to the given food_id (food_id can be a meal_id or side_id).
     async fn get_allergens(&self, food_id: Uuid) -> Result<Vec<Allergen>>;
+    /// Returns the nutritionial data related to the given food_id (food_id can be a meal_id or side_id).
+    async fn get_nutrition_data(&self, food_id: Uuid) -> Result<Option<NutritionData>>;
+    /// Returns the environmental data related to the given food_id (food_id can be a meal_id or side_id).
+    async fn get_environment_information(&self, food_id: Uuid) -> Result<Option<EnvironmentInfo>>;
 }

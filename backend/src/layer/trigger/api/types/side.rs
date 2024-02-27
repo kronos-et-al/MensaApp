@@ -1,4 +1,4 @@
-use crate::util::MealType;
+use crate::util::FoodType;
 use crate::{
     interface::persistent_data::model,
     layer::trigger::api::util::ApiUtil,
@@ -7,6 +7,7 @@ use crate::{
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 use tracing::instrument;
 
+use super::additional_data::{EnvironmentInfo, NutritionData};
 use super::price::Price;
 
 #[derive(SimpleObject, Debug)]
@@ -17,7 +18,7 @@ pub(in super::super) struct Side {
     /// The name of the side
     name: String,
     /// Here the type of meat which is contained in the side, or whether it is vegetarian or vegan, is specified.
-    meal_type: MealType,
+    meal_type: FoodType,
     /// The price of the side
     price: Price,
 }
@@ -49,6 +50,28 @@ impl Side {
             .collect();
         Ok(additives)
     }
+
+    /// Provides the environment information of this meal.
+    #[instrument(skip(ctx))]
+    async fn environment_info(&self, ctx: &Context<'_>) -> Result<Option<EnvironmentInfo>> {
+        let data_access = ctx.get_data_access();
+        let environment_info = data_access
+            .get_environment_information(self.id)
+            .await?
+            .map(Into::into);
+        Ok(environment_info)
+    }
+
+    /// Provides the nutrition data of this meal.
+    #[instrument(skip(ctx))]
+    async fn nutrition_data(&self, ctx: &Context<'_>) -> Result<Option<NutritionData>> {
+        let data_access = ctx.get_data_access();
+        let nutrition_data = data_access
+            .get_nutrition_data(self.id)
+            .await?
+            .map(Into::into);
+        Ok(nutrition_data)
+    }
 }
 
 impl From<model::Side> for Side {
@@ -56,7 +79,7 @@ impl From<model::Side> for Side {
         Self {
             id: value.id,
             name: value.name,
-            meal_type: value.meal_type,
+            meal_type: value.food_type,
             price: Price {
                 student: value.price.price_student,
                 employee: value.price.price_employee,

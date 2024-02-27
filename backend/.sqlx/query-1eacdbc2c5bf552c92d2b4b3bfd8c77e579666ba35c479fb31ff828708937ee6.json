@@ -1,0 +1,70 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE food_env_score \n            SET co2_rating = $2, \n                co2_value = $3, \n                water_rating = $4,\n                water_value = $5,\n                animal_welfare_rating = $6,\n                rainforest_rating = $7,\n                max_rating = $8\n            WHERE food_id = $1\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        {
+          "Custom": {
+            "name": "env_rating",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "env_value",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "env_rating",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "env_value",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "env_rating",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "env_rating",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "env_rating",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        }
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "1eacdbc2c5bf552c92d2b4b3bfd8c77e579666ba35c479fb31ff828708937ee6"
+}

@@ -2,5 +2,8 @@
   "settings": "Einstellungen",
   "favorites": "Favoriten",
   "mealPlan": "Speiseplan",
-  "noFavorites": "Es sind keine Favoriten vorhanden."
+  "noFavorites": "Es sind keine Favoriten vorhanden.",
+  "appTitle": "Mensa KA",
+  "welcomeTitle": "Herzlich Wilkommen",
+  "welcomeLabel": "Bitte habe einen Augenblick Geduld, während wir die aktuellsten Daten abrufen."
 }

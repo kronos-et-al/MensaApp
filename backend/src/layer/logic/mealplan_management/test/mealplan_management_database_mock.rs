@@ -1,7 +1,10 @@
 //! This crate contains mocks of [`MealplanManagementDatabaseMock`] for testing.
 use crate::{
-    interface::persistent_data::{MealplanManagementDataAccess, Result},
-    util::{Additive, Allergen, Date, MealType, Price, Uuid},
+    interface::{
+        mensa_parser::model::ParseEnvironmentInfo,
+        persistent_data::{MealplanManagementDataAccess, Result},
+    },
+    util::{Additive, Allergen, Date, FoodType, NutritionData, Price, Uuid},
 };
 use async_trait::async_trait;
 
@@ -32,7 +35,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     async fn get_similar_meal(
         &self,
         _similar_name: &str,
-        _meal_type: MealType,
+        _food_type: FoodType,
         _allergens: &[Allergen],
         _additives: &[Additive],
     ) -> Result<Option<Uuid>> {
@@ -42,7 +45,7 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     async fn get_similar_side(
         &self,
         _similar_name: &str,
-        _meal_type: MealType,
+        _food_type: FoodType,
         _allergens: &[Allergen],
         _additives: &[Additive],
     ) -> Result<Option<Uuid>> {
@@ -57,11 +60,23 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
         Ok(())
     }
 
-    async fn update_meal(&self, _uuid: Uuid, _name: &str) -> Result<()> {
+    async fn update_meal(
+        &self,
+        _uuid: Uuid,
+        _name: &str,
+        _nutrition_data: Option<NutritionData>,
+        _parse_environment_info: Option<ParseEnvironmentInfo>,
+    ) -> Result<()> {
         Ok(())
     }
 
-    async fn update_side(&self, _uuid: Uuid, _name: &str) -> Result<()> {
+    async fn update_side(
+        &self,
+        _uuid: Uuid,
+        _name: &str,
+        _nutrition_data: Option<NutritionData>,
+        _parse_environment_info: Option<ParseEnvironmentInfo>,
+    ) -> Result<()> {
         Ok(())
     }
 
@@ -76,9 +91,11 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     async fn insert_meal(
         &self,
         _name: &str,
-        _meal_type: MealType,
+        _food_type: FoodType,
         _allergens: &[Allergen],
         _additives: &[Additive],
+        _nutrition_data: Option<NutritionData>,
+        _environment_information: Option<ParseEnvironmentInfo>,
     ) -> Result<Uuid> {
         Ok(gen_random_uuid())
     }
@@ -86,9 +103,11 @@ impl MealplanManagementDataAccess for MealplanManagementDatabaseMock {
     async fn insert_side(
         &self,
         _name: &str,
-        _meal_type: MealType,
+        _food_type: FoodType,
         _allergens: &[Allergen],
         _additives: &[Additive],
+        _nutrition_data: Option<NutritionData>,
+        _environment_information: Option<ParseEnvironmentInfo>,
     ) -> Result<Uuid> {
         Ok(gen_random_uuid())
     }

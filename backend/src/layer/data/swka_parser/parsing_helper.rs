@@ -1,5 +1,5 @@
 //! This module contains some helper functions for parsing parts of the meal plan.
-use crate::util::{Additive, Allergen, MealType};
+use crate::util::{Additive, Allergen, FoodType};
 
 impl Allergen {
     /// Parses an allergen from its representation in the meal plan.
@@ -64,7 +64,7 @@ impl Additive {
     }
 }
 
-impl MealType {
+impl FoodType {
     /// Parses a meal's type from its representation in the meal plan.
     #[must_use]
     pub fn parse(s: &str) -> Self {
