@@ -11,7 +11,7 @@ enum Enum$Additive {
   LAXATIVE_IF_OVERUSED,
   PHENYLALANINE,
   ALCOHOL,
-  PRESSED_MEET,
+  PRESSED_MEAT,
   GLAZING_WITH_CACAO,
   PRESSED_FISH,
   $unknown
@@ -43,8 +43,8 @@ String toJson$Enum$Additive(Enum$Additive e) {
       return r'PHENYLALANINE';
     case Enum$Additive.ALCOHOL:
       return r'ALCOHOL';
-    case Enum$Additive.PRESSED_MEET:
-      return r'PRESSED_MEET';
+    case Enum$Additive.PRESSED_MEAT:
+      return r'PRESSED_MEAT';
     case Enum$Additive.GLAZING_WITH_CACAO:
       return r'GLAZING_WITH_CACAO';
     case Enum$Additive.PRESSED_FISH:
@@ -80,8 +80,8 @@ Enum$Additive fromJson$Enum$Additive(String value) {
       return Enum$Additive.PHENYLALANINE;
     case r'ALCOHOL':
       return Enum$Additive.ALCOHOL;
-    case r'PRESSED_MEET':
-      return Enum$Additive.PRESSED_MEET;
+    case r'PRESSED_MEAT':
+      return Enum$Additive.PRESSED_MEAT;
     case r'GLAZING_WITH_CACAO':
       return Enum$Additive.GLAZING_WITH_CACAO;
     case r'PRESSED_FISH':

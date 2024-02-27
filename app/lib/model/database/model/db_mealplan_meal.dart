@@ -11,8 +11,8 @@ class DBMealPlanMeal implements DatabaseModel {
   final int _priceEmployee;
   final int _pricePupil;
   final int _priceGuest;
-  final String _lastServed;
-  final String _nextServed;
+  final String? _lastServed;
+  final String? _nextServed;
   final int? _frequency;
   final Frequency _relativeFrequency;
 
@@ -131,10 +131,10 @@ class DBMealPlanMeal implements DatabaseModel {
   int get priceGuest => _priceGuest;
 
   /// Returns the date when the meal was last served.
-  String get lastServed => _lastServed;
+  String? get lastServed => _lastServed;
 
   /// Returns the data when the meal will be served next.
-  String get nextServed => _nextServed;
+  String? get nextServed => _nextServed;
 
   /// Returns the frequency of the meal.
   int? get frequency => _frequency;

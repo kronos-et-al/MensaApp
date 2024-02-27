@@ -10,6 +10,11 @@ import '../../repository/error_handling/Result.dart';
 
 /// This class is the interface for the access to the meal data. The access can be done via the database or the server.
 abstract class IMealAccess with ChangeNotifier {
+
+  bool failedInitializing = false;
+
+  Future<void> reInit();
+
   /// This method requests the mealplan of the stored canteen for the stored day from the database.
   /// If the requested data is not stored there, the data is requested from the server.
   ///

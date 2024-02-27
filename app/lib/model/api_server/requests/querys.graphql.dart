@@ -199,7 +199,6 @@ extension ClientExtension$Fragment$canteen on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Fragment$canteen? readFragment$canteen({
     required Map<String, dynamic> idFields,
     bool optimistic = true,
@@ -406,7 +405,6 @@ abstract class CopyWith$Fragment$mealPlan<TRes> {
     List<Fragment$mealPlan$lines>? lines,
     String? $__typename,
   });
-
   TRes lines(
       Iterable<Fragment$mealPlan$lines> Function(
               Iterable<
@@ -585,7 +583,6 @@ extension ClientExtension$Fragment$mealPlan on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Fragment$mealPlan? readFragment$mealPlan({
     required Map<String, dynamic> idFields,
     required Variables$Fragment$mealPlan variables,
@@ -746,9 +743,7 @@ abstract class CopyWith$Fragment$mealPlan$lines<TRes> {
     List<Fragment$mealInfo>? meals,
     String? $__typename,
   });
-
   CopyWith$Fragment$canteen<TRes> get canteen;
-
   TRes meals(
       Iterable<Fragment$mealInfo>? Function(
               Iterable<CopyWith$Fragment$mealInfo<Fragment$mealInfo>>?)
@@ -1086,19 +1081,14 @@ abstract class CopyWith$Fragment$mealInfo<TRes> {
     List<Fragment$mealInfo$sides>? sides,
     String? $__typename,
   });
-
   CopyWith$Fragment$price<TRes> get price;
-
   CopyWith$Fragment$mealInfo$statistics<TRes> get statistics;
-
   CopyWith$Fragment$mealInfo$ratings<TRes> get ratings;
-
   TRes images(
       Iterable<Fragment$mealInfo$images> Function(
               Iterable<
                   CopyWith$Fragment$mealInfo$images<Fragment$mealInfo$images>>)
           _fn);
-
   TRes sides(
       Iterable<Fragment$mealInfo$sides> Function(
               Iterable<
@@ -1550,7 +1540,6 @@ extension ClientExtension$Fragment$mealInfo on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Fragment$mealInfo? readFragment$mealInfo({
     required Map<String, dynamic> idFields,
     bool optimistic = true,
@@ -2338,7 +2327,6 @@ abstract class CopyWith$Fragment$mealInfo$sides<TRes> {
     Enum$MealType? mealType,
     String? $__typename,
   });
-
   CopyWith$Fragment$price<TRes> get price;
 }
 
@@ -2662,7 +2650,6 @@ extension ClientExtension$Fragment$price on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Fragment$price? readFragment$price({
     required Map<String, dynamic> idFields,
     bool optimistic = true,
@@ -2870,7 +2857,6 @@ abstract class CopyWith$Query$GetMealPlanForDay<TRes> {
     List<Fragment$mealPlan>? getCanteens,
     String? $__typename,
   });
-
   TRes getCanteens(
       Iterable<Fragment$mealPlan> Function(
               Iterable<CopyWith$Fragment$mealPlan<Fragment$mealPlan>>)
@@ -2980,11 +2966,9 @@ const documentNodeQueryGetMealPlanForDay = DocumentNode(definitions: [
   fragmentDefinitionmealInfo,
   fragmentDefinitionprice,
 ]);
-
 Query$GetMealPlanForDay _parserFn$Query$GetMealPlanForDay(
         Map<String, dynamic> data) =>
     Query$GetMealPlanForDay.fromJson(data);
-
 typedef OnQueryComplete$Query$GetMealPlanForDay = FutureOr<void> Function(
   Map<String, dynamic>?,
   Query$GetMealPlanForDay?,
@@ -3086,11 +3070,9 @@ extension ClientExtension$Query$GetMealPlanForDay on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetMealPlanForDay>> query$GetMealPlanForDay(
           Options$Query$GetMealPlanForDay options) async =>
       await this.query(options);
-
   graphql.ObservableQuery<Query$GetMealPlanForDay> watchQuery$GetMealPlanForDay(
           WatchOptions$Query$GetMealPlanForDay options) =>
       this.watchQuery(options);
-
   void writeQuery$GetMealPlanForDay({
     required Query$GetMealPlanForDay data,
     required Variables$Query$GetMealPlanForDay variables,
@@ -3105,7 +3087,6 @@ extension ClientExtension$Query$GetMealPlanForDay on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Query$GetMealPlanForDay? readQuery$GetMealPlanForDay({
     required Variables$Query$GetMealPlanForDay variables,
     bool optimistic = true,
@@ -3125,7 +3106,6 @@ extension ClientExtension$Query$GetMealPlanForDay on graphql.GraphQLClient {
 graphql_flutter.QueryHookResult<Query$GetMealPlanForDay>
     useQuery$GetMealPlanForDay(Options$Query$GetMealPlanForDay options) =>
         graphql_flutter.useQuery(options);
-
 graphql.ObservableQuery<Query$GetMealPlanForDay>
     useWatchQuery$GetMealPlanForDay(
             WatchOptions$Query$GetMealPlanForDay options) =>
@@ -3355,7 +3335,6 @@ abstract class CopyWith$Query$GetCanteenDate<TRes> {
     Fragment$mealPlan? getCanteen,
     String? $__typename,
   });
-
   CopyWith$Fragment$mealPlan<TRes> get getCanteen;
 }
 
@@ -3474,11 +3453,9 @@ const documentNodeQueryGetCanteenDate = DocumentNode(definitions: [
   fragmentDefinitionmealInfo,
   fragmentDefinitionprice,
 ]);
-
 Query$GetCanteenDate _parserFn$Query$GetCanteenDate(
         Map<String, dynamic> data) =>
     Query$GetCanteenDate.fromJson(data);
-
 typedef OnQueryComplete$Query$GetCanteenDate = FutureOr<void> Function(
   Map<String, dynamic>?,
   Query$GetCanteenDate?,
@@ -3577,11 +3554,9 @@ extension ClientExtension$Query$GetCanteenDate on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetCanteenDate>> query$GetCanteenDate(
           Options$Query$GetCanteenDate options) async =>
       await this.query(options);
-
   graphql.ObservableQuery<Query$GetCanteenDate> watchQuery$GetCanteenDate(
           WatchOptions$Query$GetCanteenDate options) =>
       this.watchQuery(options);
-
   void writeQuery$GetCanteenDate({
     required Query$GetCanteenDate data,
     required Variables$Query$GetCanteenDate variables,
@@ -3596,7 +3571,6 @@ extension ClientExtension$Query$GetCanteenDate on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Query$GetCanteenDate? readQuery$GetCanteenDate({
     required Variables$Query$GetCanteenDate variables,
     bool optimistic = true,
@@ -3615,7 +3589,6 @@ extension ClientExtension$Query$GetCanteenDate on graphql.GraphQLClient {
 graphql_flutter.QueryHookResult<Query$GetCanteenDate> useQuery$GetCanteenDate(
         Options$Query$GetCanteenDate options) =>
     graphql_flutter.useQuery(options);
-
 graphql.ObservableQuery<Query$GetCanteenDate> useWatchQuery$GetCanteenDate(
         WatchOptions$Query$GetCanteenDate options) =>
     graphql_flutter.useWatchQuery(options);
@@ -3863,7 +3836,6 @@ abstract class CopyWith$Query$GetMeal<TRes> {
     Fragment$mealInfo? getMeal,
     String? $__typename,
   });
-
   CopyWith$Fragment$mealInfo<TRes> get getMeal;
 }
 
@@ -3996,10 +3968,8 @@ const documentNodeQueryGetMeal = DocumentNode(definitions: [
   fragmentDefinitionmealInfo,
   fragmentDefinitionprice,
 ]);
-
 Query$GetMeal _parserFn$Query$GetMeal(Map<String, dynamic> data) =>
     Query$GetMeal.fromJson(data);
-
 typedef OnQueryComplete$Query$GetMeal = FutureOr<void> Function(
   Map<String, dynamic>?,
   Query$GetMeal?,
@@ -4097,11 +4067,9 @@ extension ClientExtension$Query$GetMeal on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetMeal>> query$GetMeal(
           Options$Query$GetMeal options) async =>
       await this.query(options);
-
   graphql.ObservableQuery<Query$GetMeal> watchQuery$GetMeal(
           WatchOptions$Query$GetMeal options) =>
       this.watchQuery(options);
-
   void writeQuery$GetMeal({
     required Query$GetMeal data,
     required Variables$Query$GetMeal variables,
@@ -4115,7 +4083,6 @@ extension ClientExtension$Query$GetMeal on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Query$GetMeal? readQuery$GetMeal({
     required Variables$Query$GetMeal variables,
     bool optimistic = true,
@@ -4134,7 +4101,6 @@ extension ClientExtension$Query$GetMeal on graphql.GraphQLClient {
 graphql_flutter.QueryHookResult<Query$GetMeal> useQuery$GetMeal(
         Options$Query$GetMeal options) =>
     graphql_flutter.useQuery(options);
-
 graphql.ObservableQuery<Query$GetMeal> useWatchQuery$GetMeal(
         WatchOptions$Query$GetMeal options) =>
     graphql_flutter.useWatchQuery(options);
@@ -4242,7 +4208,6 @@ abstract class CopyWith$Query$GetDefaultCanteen<TRes> {
     List<Fragment$canteen>? getCanteens,
     String? $__typename,
   });
-
   TRes getCanteens(
       Iterable<Fragment$canteen> Function(
               Iterable<CopyWith$Fragment$canteen<Fragment$canteen>>)
@@ -4339,11 +4304,9 @@ const documentNodeQueryGetDefaultCanteen = DocumentNode(definitions: [
   ),
   fragmentDefinitioncanteen,
 ]);
-
 Query$GetDefaultCanteen _parserFn$Query$GetDefaultCanteen(
         Map<String, dynamic> data) =>
     Query$GetDefaultCanteen.fromJson(data);
-
 typedef OnQueryComplete$Query$GetDefaultCanteen = FutureOr<void> Function(
   Map<String, dynamic>?,
   Query$GetDefaultCanteen?,
@@ -4439,11 +4402,9 @@ extension ClientExtension$Query$GetDefaultCanteen on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetDefaultCanteen>> query$GetDefaultCanteen(
           [Options$Query$GetDefaultCanteen? options]) async =>
       await this.query(options ?? Options$Query$GetDefaultCanteen());
-
   graphql.ObservableQuery<Query$GetDefaultCanteen> watchQuery$GetDefaultCanteen(
           [WatchOptions$Query$GetDefaultCanteen? options]) =>
       this.watchQuery(options ?? WatchOptions$Query$GetDefaultCanteen());
-
   void writeQuery$GetDefaultCanteen({
     required Query$GetDefaultCanteen data,
     bool broadcast = true,
@@ -4455,7 +4416,6 @@ extension ClientExtension$Query$GetDefaultCanteen on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Query$GetDefaultCanteen? readQuery$GetDefaultCanteen(
       {bool optimistic = true}) {
     final result = this.readQuery(
@@ -4471,7 +4431,6 @@ extension ClientExtension$Query$GetDefaultCanteen on graphql.GraphQLClient {
 graphql_flutter.QueryHookResult<Query$GetDefaultCanteen>
     useQuery$GetDefaultCanteen([Options$Query$GetDefaultCanteen? options]) =>
         graphql_flutter.useQuery(options ?? Options$Query$GetDefaultCanteen());
-
 graphql.ObservableQuery<Query$GetDefaultCanteen>
     useWatchQuery$GetDefaultCanteen(
             [WatchOptions$Query$GetDefaultCanteen? options]) =>

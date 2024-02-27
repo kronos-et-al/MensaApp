@@ -133,6 +133,8 @@ If you work on database parts, you need to setup a local dev database first:
 
 3. If you want to reset the database (because you changed the migrations) run `sqlx database reset`
 
+
+If you want to create a new migration (never change an existing one that has been deployed!) run `cargo sqlx migrate add -r <name>` where `<name>` describes what you add. 
 ### Pre-submission checklist
 
 Before submitting changes to the code, you should run
