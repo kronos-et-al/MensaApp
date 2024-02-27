@@ -152,7 +152,7 @@ class DetailsPageState extends State<DetailsPage> {
                                                         }
                                                     },
                                                 icon: meal.isFavorite
-                                                    ? const FavoriteFilledIcon()
+                                                    ? FavoriteFilledIcon(color: themeData.colorScheme.primary,)
                                                     : const FavoriteOutlinedIcon())),
                                     MensaIconButton(
                                         semanticLabel: FlutterI18n.translate(
