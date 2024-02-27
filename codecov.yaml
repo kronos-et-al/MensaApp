@@ -6,3 +6,5 @@ coverage:
     patch:
       default:
         target: 80%
+ignore:
+  - "backend/src/startup"

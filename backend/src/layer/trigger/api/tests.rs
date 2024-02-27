@@ -17,6 +17,110 @@ use tokio::io::AsyncWriteExt;
 use super::mock::{CommandMock, RequestDatabaseMock};
 use base64::engine::Engine;
 
+const FULL_REQUEST_STRING: &str = r#"
+    {
+        getCanteens {
+          id
+          name
+          lines {
+            id
+            name
+            canteen {
+              name
+            }
+            meals(date: "2000-01-01") {
+              id
+              name
+              mealType
+              ratings {
+                averageRating
+                ratingsCount
+                personalRating
+              }
+              price {
+                student
+                employee
+                guest
+                pupil
+              }
+              statistics {
+                lastServed
+                nextServed
+                frequency
+                new
+              }
+              allergens
+              additives
+              environmentInfo {
+                averageRating
+                co2Rating
+                co2Value
+                waterRating
+                waterValue
+                animalWelfareRating
+                rainforestRating
+                maxRating
+              }
+              nutritionData {
+                energy
+                protein
+                carbohydrates
+                sugar
+                fat
+                saturatedFat
+                salt
+              }
+              images {
+                id
+                url
+                rank
+                upvotes
+                downvotes
+                personalUpvote
+                personalDownvote
+              }
+              sides{
+                id
+                name
+                price {
+                    student
+                    employee
+                    guest
+                    pupil
+                  }
+                allergens
+                additives
+                mealType
+                environmentInfo {
+                  averageRating
+                  co2Rating
+                  co2Value
+                  waterRating
+                  waterValue
+                  animalWelfareRating
+                  rainforestRating
+                  maxRating
+                }
+                nutritionData {
+                  energy
+                  protein
+                  carbohydrates
+                  sugar
+                  fat
+                  saturatedFat
+                  salt
+                }
+              }
+              line {
+                id
+              }
+            }
+          }
+        }
+      }
+      
+    "#;
+
 async fn test_gql_request(request: &'static str) {
     let request = Request::from(request).data(AuthInfo {
         client_id: Some(Uuid::default()),
@@ -115,83 +219,17 @@ async fn test_report_image() {
 
 #[tokio::test]
 async fn test_api_version() {
-    let request = r#"
+    let request = r"
         {
             apiVersion
         } 
-    "#;
+    ";
     test_gql_request(request).await;
 }
 
 #[tokio::test]
 async fn test_complete_request() {
-    let request = {
-        r#"
-    {
-        getCanteens {
-          id
-          name
-          lines {
-            id
-            name
-            canteen {
-              name
-            }
-            meals(date: "2000-01-01") {
-              id
-              name
-              mealType
-              ratings {
-                averageRating
-                ratingsCount
-                personalRating
-              }
-              price {
-                student
-                employee
-                guest
-                pupil
-              }
-              statistics {
-                lastServed
-                nextServed
-                frequency
-                new
-              }
-              allergens
-              additives
-              images {
-                id
-                url
-                rank
-                upvotes
-                downvotes
-                personalUpvote
-                personalDownvote
-              }
-              sides{
-                id
-                name
-                price {
-                    student
-                    employee
-                    guest
-                    pupil
-                  }
-                allergens
-                additives
-                mealType
-              }
-              line {
-                id
-              }
-            }
-          }
-        }
-      }
-      
-    "#
-    };
+    let request = { FULL_REQUEST_STRING };
     test_gql_request(request).await;
 }
 
@@ -233,6 +271,12 @@ fragment mealInfo on Meal {
     }
     allergens
     additives
+    environmentInfo {
+      averageRating
+    }
+    nutritionData {
+      energy
+    }
     statistics {
         lastServed
         nextServed
@@ -258,6 +302,12 @@ fragment mealInfo on Meal {
         name
         additives
         allergens
+        environmentInfo {
+          averageRating
+        }
+        nutritionData {
+          energy
+        }
         price {
             ...price
         }
@@ -310,7 +360,7 @@ async fn test_get_specific_meal() {
 
 #[tokio::test]
 async fn test_get_auth_info_empty() {
-    let request = r#"
+    let request = r"
     {
         getMyAuth {
           clientId
@@ -321,7 +371,7 @@ async fn test_get_auth_info_empty() {
       
       
       
-    "#;
+    ";
     let request = Request::from(request).data(AuthInfo {
         client_id: None,
         api_ident: String::new(),
@@ -336,7 +386,7 @@ async fn test_get_auth_info_empty() {
 
 #[tokio::test]
 async fn test_recursive_line_canteen_ok() {
-    let request = r#"
+    let request = r"
     {
       getCanteens {
         lines {
@@ -348,7 +398,7 @@ async fn test_recursive_line_canteen_ok() {
         }
       }
     }
-    "#;
+    ";
     test_gql_request(request).await;
 }
 
@@ -375,7 +425,7 @@ async fn test_recursive_meal_line_ok() {
 
 #[tokio::test]
 async fn test_get_auth_info() {
-    let request = r#"
+    let request = r"
     {
         getMyAuth {
           clientId
@@ -385,7 +435,7 @@ async fn test_get_auth_info() {
           authError
         }
       }
-    "#;
+    ";
 
     let auth_info: AuthInfo = AuthInfo {
         client_id: Some(Uuid::try_from("1d75d380-cf07-4edb-9046-a2d981bc219d").unwrap()),

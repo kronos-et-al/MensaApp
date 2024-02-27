@@ -124,7 +124,7 @@ pub enum Additive {
 /// This enum lists all the types a meal can be of.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type)]
 #[sqlx(type_name = "meal_type", rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum MealType {
+pub enum FoodType {
     /// This meal is vegan.
     Vegan,
     /// This meal is vegetarian.
@@ -178,6 +178,25 @@ pub struct Price {
     pub price_guest: u32,
     /// Price of the dish for pupils.
     pub price_pupil: u32,
+}
+
+/// The nutrients of a dish
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NutritionData {
+    /// Energy in Kcal
+    pub energy: u32,
+    /// Protein in grams
+    pub protein: u32,
+    /// Carbs in grams
+    pub carbohydrates: u32,
+    /// Sugar in grams
+    pub sugar: u32,
+    /// Fat in grams
+    pub fat: u32,
+    /// Saturated fat in grams
+    pub saturated_fat: u32,
+    /// Salt in grams
+    pub salt: u32,
 }
 
 lazy_static! {

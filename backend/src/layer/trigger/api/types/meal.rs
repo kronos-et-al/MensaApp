@@ -1,5 +1,5 @@
 use crate::layer::trigger::api::util::ApiUtil;
-use crate::util::MealType;
+use crate::util::FoodType;
 use crate::{
     interface::persistent_data::model,
     util::{Additive, Allergen, Date, Uuid},
@@ -7,11 +7,13 @@ use crate::{
 use async_graphql::{ComplexObject, Context, Result, SimpleObject};
 use tracing::instrument;
 
+use super::additional_data::NutritionData;
 use super::line::Line;
-use super::{image::Image, price::Price, side::Side};
+use super::{additional_data::EnvironmentInfo, image::Image, price::Price, side::Side};
 
 #[derive(SimpleObject, Debug)]
 #[graphql(complex)]
+#[allow(clippy::struct_field_names)]
 pub(in super::super) struct Meal {
     /// The identifier of the main course.
     id: Uuid,
@@ -19,7 +21,7 @@ pub(in super::super) struct Meal {
     name: String,
     /// Type of this meal.
     /// Here the type of meat which is contained in the meal, or whether it is vegetarian or vegan, is specified.
-    meal_type: MealType,
+    meal_type: FoodType,
     /// The ratings given by the users to the meal.
     ratings: Ratings,
     /// The prices of the dish each for the four groups of people students, employees, pupils and guests.
@@ -97,10 +99,33 @@ impl Meal {
             .map(Into::into)
             .ok_or_else(|| "internal error: each meal must belong to a line".into())
     }
+
+    /// Provides the environment information of this meal.
+    #[instrument(skip(ctx))]
+    async fn environment_info(&self, ctx: &Context<'_>) -> Result<Option<EnvironmentInfo>> {
+        let data_access = ctx.get_data_access();
+        let environment_info = data_access
+            .get_environment_information(self.id)
+            .await?
+            .map(Into::into);
+        Ok(environment_info)
+    }
+
+    /// Provides the nutrition data of this meal.
+    #[instrument(skip(ctx))]
+    async fn nutrition_data(&self, ctx: &Context<'_>) -> Result<Option<NutritionData>> {
+        let data_access = ctx.get_data_access();
+        let nutrition_data = data_access
+            .get_nutrition_data(self.id)
+            .await?
+            .map(Into::into);
+        Ok(nutrition_data)
+    }
 }
 
 #[derive(SimpleObject, Debug)]
 #[graphql(complex)]
+#[allow(clippy::struct_field_names)]
 struct Ratings {
     /// The average rating of this meal.
     average_rating: f32,
@@ -161,7 +186,7 @@ impl From<model::Meal> for Meal {
             },
             date: value.date,
             line_id: value.line_id,
-            meal_type: value.meal_type,
+            meal_type: value.food_type,
         }
     }
 }

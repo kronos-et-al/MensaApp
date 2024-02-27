@@ -27,7 +27,7 @@ where
 
     /// This method resolves relation problems with canteen data and the corresponding database.<br>
     /// After each resolve the object gets injected into the database.<br>
-    /// If an similar object already exists, the existing object will be updated with the new object data.<br>
+    /// If a similar object already exists, the existing object will be updated with the new object data.<br>
     /// `canteen: ParseCanteen`<br>This struct contains all canteen data e.g. lines and dishes.<br>
     /// `date: Date`<br>This date decides when the meal will be served next.<br>
     /// # Errors
@@ -92,23 +92,37 @@ where
     ) -> Result<(), DataError> {
         let similar_meal_result = self
             .db
-            .get_similar_meal(&dish.name, dish.meal_type, &dish.allergens, &dish.additives)
+            .get_similar_meal(&dish.name, dish.food_type, &dish.allergens, &dish.additives)
             .await?;
         let similar_side_result = self
             .db
-            .get_similar_side(&dish.name, dish.meal_type, &dish.allergens, &dish.additives)
+            .get_similar_side(&dish.name, dish.food_type, &dish.allergens, &dish.additives)
             .await?;
 
         // Case 1.1: A similar side and meal could be found. Uncommon case.
         // Case 1.2: Or just a meal could be found.
         if let Some(similar_meal) = similar_meal_result {
-            self.db.update_meal(similar_meal, &dish.name).await?;
+            self.db
+                .update_meal(
+                    similar_meal,
+                    &dish.name,
+                    dish.nutrition_data,
+                    dish.env_score,
+                )
+                .await?;
             self.db
                 .add_meal_to_plan(similar_meal, line_id, date, dish.price)
                 .await?;
         // Case 2: A similar side could be found.
         } else if let Some(similar_side) = similar_side_result {
-            self.db.update_side(similar_side, &dish.name).await?;
+            self.db
+                .update_side(
+                    similar_side,
+                    &dish.name,
+                    dish.nutrition_data,
+                    dish.env_score,
+                )
+                .await?;
             self.db
                 .add_side_to_plan(similar_side, line_id, date, dish.price)
                 .await?;
@@ -116,7 +130,14 @@ where
         } else if Self::is_side(dish.price.price_student, average, &dish.name) {
             let side_id = self
                 .db
-                .insert_side(&dish.name, dish.meal_type, &dish.allergens, &dish.additives)
+                .insert_side(
+                    &dish.name,
+                    dish.food_type,
+                    &dish.allergens,
+                    &dish.additives,
+                    dish.nutrition_data,
+                    dish.env_score,
+                )
                 .await?;
             self.db
                 .add_side_to_plan(side_id, line_id, date, dish.price)
@@ -124,7 +145,14 @@ where
         } else {
             let meal_id = self
                 .db
-                .insert_meal(&dish.name, dish.meal_type, &dish.allergens, &dish.additives)
+                .insert_meal(
+                    &dish.name,
+                    dish.food_type,
+                    &dish.allergens,
+                    &dish.additives,
+                    dish.nutrition_data,
+                    dish.env_score,
+                )
                 .await?;
             self.db
                 .add_meal_to_plan(meal_id, line_id, date, dish.price)
@@ -152,7 +180,7 @@ mod test {
     use crate::interface::mensa_parser::model::{Dish, ParseCanteen, ParseLine};
     use crate::layer::logic::mealplan_management::relation_resolver::RelationResolver;
     use crate::layer::logic::mealplan_management::test::mealplan_management_database_mock::MealplanManagementDatabaseMock;
-    use crate::util::{MealType, Price};
+    use crate::util::{FoodType, Price};
     use chrono::Local;
     use rand::{self, Rng};
     use uuid::Uuid;
@@ -168,8 +196,9 @@ mod test {
             },
             allergens: vec![],
             additives: vec![],
-            meal_type: MealType::Vegan,
-            env_score: 0,
+            food_type: FoodType::Vegan,
+            env_score: None,
+            nutrition_data: None,
         }
     }
 
@@ -184,8 +213,9 @@ mod test {
             },
             allergens: vec![],
             additives: vec![],
-            meal_type: MealType::Vegan,
-            env_score: 0,
+            food_type: FoodType::Vegan,
+            env_score: None,
+            nutrition_data: None,
         }
     }
 

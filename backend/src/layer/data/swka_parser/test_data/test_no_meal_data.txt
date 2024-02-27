@@ -74,8 +74,9 @@
                             additives: [
                                 PreservingAgents,
                             ],
-                            meal_type: Unknown,
-                            env_score: 0,
+                            food_type: Unknown,
+                            env_score: None,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
@@ -91,8 +92,9 @@
                             additives: [
                                 Colorant,
                             ],
-                            meal_type: Vegan,
-                            env_score: 0,
+                            food_type: Vegan,
+                            env_score: None,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 10,
@@ -186,8 +188,9 @@
                             additives: [
                                 PreservingAgents,
                             ],
-                            meal_type: Unknown,
-                            env_score: 0,
+                            food_type: Unknown,
+                            env_score: None,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
@@ -203,8 +206,9 @@
                             additives: [
                                 Colorant,
                             ],
-                            meal_type: Vegan,
-                            env_score: 0,
+                            food_type: Vegan,
+                            env_score: None,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 10,
@@ -298,8 +302,9 @@
                             additives: [
                                 PreservingAgents,
                             ],
-                            meal_type: Unknown,
-                            env_score: 0,
+                            food_type: Unknown,
+                            env_score: None,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
@@ -315,8 +320,9 @@
                             additives: [
                                 Colorant,
                             ],
-                            meal_type: Vegan,
-                            env_score: 0,
+                            food_type: Vegan,
+                            env_score: None,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 10,
@@ -410,8 +416,9 @@
                             additives: [
                                 PreservingAgents,
                             ],
-                            meal_type: Unknown,
-                            env_score: 0,
+                            food_type: Unknown,
+                            env_score: None,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
@@ -427,8 +434,9 @@
                             additives: [
                                 Colorant,
                             ],
-                            meal_type: Vegan,
-                            env_score: 0,
+                            food_type: Vegan,
+                            env_score: None,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 10,
@@ -522,8 +530,9 @@
                             additives: [
                                 PreservingAgents,
                             ],
-                            meal_type: Unknown,
-                            env_score: 0,
+                            food_type: Unknown,
+                            env_score: None,
+                            nutrition_data: None,
                         },
                         Dish {
                             name: "Pizza Margherita vegan - frische Tomaten, vegane Käsealternative, Basilikumpesto",
@@ -539,8 +548,9 @@
                             additives: [
                                 Colorant,
                             ],
-                            meal_type: Vegan,
-                            env_score: 0,
+                            food_type: Vegan,
+                            env_score: None,
+                            nutrition_data: None,
                         },
                     ],
                     pos: 10,
