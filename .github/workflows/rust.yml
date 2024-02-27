@@ -52,7 +52,7 @@ jobs:
           --health-retries 5
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - run: rustup toolchain install stable --profile minimal
     - uses: Swatinem/rust-cache@v2
       with:
@@ -96,7 +96,7 @@ jobs:
           --health-retries 5
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - run: rustup toolchain install stable --profile minimal
     - uses: Swatinem/rust-cache@v2
       with:
@@ -133,7 +133,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - uses:                   actions/checkout@v2
+      - uses:                   actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal
       - uses: Swatinem/rust-cache@v2
         with:
@@ -151,7 +151,7 @@ jobs:
         run: |
           cargo tarpaulin --all-targets --skip-clean --workspace --timeout 120 --out xml
       - name:                   Upload to codecov.io
-        uses:                   codecov/codecov-action@v2
+        uses:                   codecov/codecov-action@v4
         with:
           token:                ${{secrets.CODECOV_TOKEN}}
           fail_ci_if_error:     true
