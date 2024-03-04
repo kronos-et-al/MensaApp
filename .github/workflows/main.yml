@@ -2,11 +2,11 @@ name: Build-Android
 
 on:
   push:
-    branches: [ "main", "frontend" ]
+    branches: [ "main"]
     paths: 
       - "app/**"
   pull_request:
-    branches: [ "main", "frontend" ]
+    branches: [ "main"]
     paths: 
       - "app/**"
   workflow_dispatch:
