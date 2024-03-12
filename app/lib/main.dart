@@ -144,6 +144,7 @@ class MensaApp extends StatelessWidget {
                           background: Color(0xFFFFFFFF),
                           onBackground: Color(0xFF000000),
                           surface: Color(0xFFF6F6F6),
+                          surfaceTint: Color(0xFFD2D2D2),
                           onSurface: Color(0xFF000000)),
                     ),
                     darkTheme: ThemeData(
