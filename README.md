@@ -37,7 +37,7 @@ For now, you can only use graphql queries (and no mutations) because they requir
 ![architecture](doc/img/architecture.svg)
 This application consists of a [Flutter](https://flutter.dev/) app (see [app](app/README.md)) and a [Rust](https://www.rust-lang.org/) server (see [backend](backend/README.md)).
 They communicate using a [GraphQL](https://graphql.org/) API and the backend stores its data in a [PostgreSQL](https://www.postgresql.org/) database.
-For more details on these parts, see their readmes in the sub-folders.
+For more details on these parts, please see their readmes in the sub-folders.
 
 ## Background
 We developed this project as part of the "Praxis der Softwareentwicklung" course, part of the [KIT](https://www.kit.edu/english) bachelor's degree program in computer science.
