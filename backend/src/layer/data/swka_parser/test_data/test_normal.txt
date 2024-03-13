@@ -19,7 +19,7 @@
                                 We,
                             ],
                             additives: [],
-                            food_type: Unknown,
+                            food_type: Poultry,
                             env_score: Some(
                                 ParseEnvironmentInfo {
                                     co2_rating: 1,
@@ -783,7 +783,7 @@
                                 We,
                             ],
                             additives: [],
-                            food_type: Unknown,
+                            food_type: Poultry,
                             env_score: None,
                             nutrition_data: None,
                         },
@@ -4829,7 +4829,7 @@
                                 Colorant,
                                 AntioxidantAgents,
                             ],
-                            food_type: Unknown,
+                            food_type: Poultry,
                             env_score: None,
                             nutrition_data: None,
                         },

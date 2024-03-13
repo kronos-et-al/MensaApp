@@ -297,7 +297,7 @@
                                 We,
                             ],
                             additives: [],
-                            food_type: Unknown,
+                            food_type: Poultry,
                             env_score: Some(
                                 ParseEnvironmentInfo {
                                     co2_rating: 1,

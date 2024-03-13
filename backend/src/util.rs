@@ -139,6 +139,8 @@ pub enum FoodType {
     PorkAw,
     /// This meal contains fish.
     Fish,
+    /// This meal contains poultry, such as chicken, turkey, or similar
+    Poultry,
     /// It is unknown whether this meal contains any meat or not.
     Unknown,
 }
