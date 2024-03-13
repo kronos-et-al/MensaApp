@@ -134,7 +134,7 @@ lazy_static! {
 
     static ref ID_REGEX: Regex = Regex::new(r"[0-9]{18,}").expect(REGEX_PARSE_E_MSG);
 
-    static ref POULTRY_REGEX: Regex = Regex::new(r"(?i:ente|chicken|pute|geflügel|h(ü|ä|u|a)hn)").expect(REGEX_PARSE_E_MSG);
+    static ref POULTRY_REGEX: Regex = Regex::new(r"(?i)ente|chicken|pute|gefl[üÜ]gel|h[üäÜÄua]hn").expect(REGEX_PARSE_E_MSG);
 }
 
 const DISH_NODE_CLASS_SELECTOR_PREFIX: &str = "tr.mt-";
