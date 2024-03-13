@@ -7,8 +7,6 @@ on:
       - "app/**"
   pull_request:
     branches: [ "main"]
-    paths: 
-      - "app/**"
   workflow_dispatch:
   
 jobs:
