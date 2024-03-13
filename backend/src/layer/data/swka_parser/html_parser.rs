@@ -134,7 +134,7 @@ lazy_static! {
 
     static ref ID_REGEX: Regex = Regex::new(r"[0-9]{18,}").expect(REGEX_PARSE_E_MSG);
 
-    static ref POULTRY_REGEX: Regex = Regex::new(r"(Pute|(G|g)eflügel|H(ü|ä|u|a)hn)").expect(REGEX_PARSE_E_MSG);
+    static ref POULTRY_REGEX: Regex = Regex::new(r"(?i:ente|chicken|pute|geflügel|h(ü|ä|u|a)hn)").expect(REGEX_PARSE_E_MSG);
 }
 
 const DISH_NODE_CLASS_SELECTOR_PREFIX: &str = "tr.mt-";
@@ -320,11 +320,11 @@ impl HTMLParser {
     fn get_dish(dish_node: &ElementRef) -> Option<Dish> {
         let name = Self::get_dish_name(dish_node)?;
         Some(Dish {
-            name: name.clone(),
+            food_type: Self::get_food_type(dish_node, &name).unwrap_or(FoodType::Unknown),
+            name,
             price: Self::get_dish_price(dish_node),
             allergens: Self::get_dish_allergens(dish_node).unwrap_or_default(),
             additives: Self::get_dish_additives(dish_node).unwrap_or_default(),
-            food_type: Self::get_dish_type(dish_node, &name).unwrap_or(FoodType::Unknown),
             env_score: Self::get_dish_env_score(dish_node),
             nutrition_data: Self::get_dish_nutrition_data(dish_node),
         })
@@ -400,28 +400,26 @@ impl HTMLParser {
             .collect()
     }
 
-    fn get_dish_type(dish_node: &ElementRef, name: &str) -> Option<FoodType> {
-        let dish_type_node = dish_node.select(&DISH_TYPE_NODE_CLASS_SELECTOR).next();
-        if let Some(dish_type_node) = dish_type_node {
-            let preliminary_dish_type = dish_type_node
-                .value()
-                .attr(DISH_TYPE_ATTRIBUTE_NAME)
-                .map(FoodType::parse);
-            if preliminary_dish_type.is_none() || Some(FoodType::Unknown) == preliminary_dish_type {
-                return Self::check_for_poultry(name);
-            }
-            preliminary_dish_type
-        } else {
-            Self::check_for_poultry(name)
+    fn get_food_type(dish_node: &ElementRef, name: &str) -> Option<FoodType> {
+        let preliminary_dish_type = Self::get_preliminary_food_type(dish_node);
+        if (preliminary_dish_type.is_none() || Some(FoodType::Unknown) == preliminary_dish_type)
+            && Self::is_poultry(name)
+        {
+            return Some(FoodType::Poultry);
         }
+        preliminary_dish_type
     }
 
-    fn check_for_poultry(name: &str) -> Option<FoodType> {
-        if POULTRY_REGEX.captures(name).is_some() {
-            Some(FoodType::Poultry)
-        } else {
-            None
-        }
+    fn get_preliminary_food_type(dish_node: &ElementRef) -> Option<FoodType> {
+        let dish_type_node = dish_node.select(&DISH_TYPE_NODE_CLASS_SELECTOR).next()?;
+        dish_type_node
+            .value()
+            .attr(DISH_TYPE_ATTRIBUTE_NAME)
+            .map(FoodType::parse)
+    }
+
+    fn is_poultry(name: &str) -> bool {
+        POULTRY_REGEX.captures(name).is_some()
     }
 
     fn get_dish_env_score(dish_node: &ElementRef) -> Option<ParseEnvironmentInfo> {
