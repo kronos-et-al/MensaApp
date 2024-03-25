@@ -275,7 +275,8 @@ class DetailsPageState extends State<DetailsPage> {
                                                         MealSideEntry(side: e),
                                                     info: MealAccordionInfo(
                                                         additives: e.additives,
-                                                        allergens: e.allergens),
+                                                        allergens: e.allergens,
+                                                        nutritionData: e.nutritionData),
                                                     isExpanded:
                                                         expandedAccordionIndex ==
                                                             meal.sides!.indexOf(

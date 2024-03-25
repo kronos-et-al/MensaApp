@@ -514,7 +514,7 @@ FoodType _convertFoodType(Enum$FoodType mealType) {
   }
 }
 
-NutritionData _convertNutritionData(Fragment$mealInfo$nutritionData nutritionData) {
+NutritionData _convertNutritionData(Fragment$nutritionData nutritionData) {
   return NutritionData(
       energy: nutritionData.energy,
       protein: nutritionData.protein,
