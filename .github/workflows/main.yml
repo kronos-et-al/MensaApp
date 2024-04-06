@@ -24,8 +24,8 @@ jobs:
         java-version: '11'
     - uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.13.8'
-        channel: 'stable'
+        channel: stable
+        flutter-version-file: app/pubspec.yaml
         cache: true
     - run: touch .env
     - run: flutter pub get
