@@ -84,6 +84,7 @@ class Favorites extends StatelessWidget {
                       itemCount: mealPlan.length,
                       itemBuilder: (context, index) {
                         return MealListEntry(
+                            enableFavoriteHighlight: false,
                             meal: mealPlan[index].meal,
                             line: mealPlan[index].servedLine,
                             date: mealPlan[index].servedDate);

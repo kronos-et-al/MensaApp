@@ -2,10 +2,10 @@
 use crate::util::Price;
 use crate::util::{self, Date};
 
-use util::{MealType, Uuid};
+use util::{FoodType, Uuid};
 
 /// Struct to storage related data. Contains all api-key related information.
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ApiKey {
     /// The api-key
     pub key: String,
@@ -41,7 +41,7 @@ pub struct Meal {
     /// Name of the meal.
     pub name: String,
     /// Type of the meal.
-    pub meal_type: MealType,
+    pub food_type: FoodType,
     /// Price of the meal for students, employees, guests and pupils.
     pub price: Price,
     /// The date the meal was last served.
@@ -70,7 +70,7 @@ pub struct Side {
     /// Name of the side.
     pub name: String,
     /// Type of the side.
-    pub meal_type: MealType,
+    pub food_type: FoodType,
     /// Price of the side for students, employees, guests and pupils.
     pub price: Price,
 }
@@ -80,10 +80,6 @@ pub struct Side {
 pub struct Image {
     /// Database-identification of the image.
     pub id: Uuid,
-    /// Image-identification of the image hoster.
-    pub image_hoster_id: String,
-    /// Direct link to the image on the image-hoster website.
-    pub url: String,
     /// Rank of the image. Used for sorting und prioritizing an image.
     pub rank: f32,
     /// Amount of upvotes for the image.
@@ -96,4 +92,25 @@ pub struct Image {
     pub upload_date: Date,
     /// Amount of open report request related to that image.
     pub report_count: u32,
+}
+
+/// This struct contains all environmental information. co2 in grams, water in litres
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct EnvironmentInfo {
+    /// The average environmental rating. Out of `max_rating`
+    pub average_rating: u32,
+    /// The number of stars the food has for CO2 emmissions. Out of `max_rating`
+    pub co2_rating: u32,
+    /// The amount of CO2 emitted by the production of the food. In grams
+    pub co2_value: u32,
+    /// The number of stars the food has for water consumption. Out of `max_rating`
+    pub water_rating: u32,
+    /// The amount of water used for the production of the food. In Millilitres
+    pub water_value: u32,
+    /// The number of stars the food has for animal welfare. Out of `max_rating`
+    pub animal_welfare_rating: u32,
+    /// The number of stars the food has for rainforest preservation. Out of `max_rating`
+    pub rainforest_rating: u32,
+    /// The maximum amount of stars for each category
+    pub max_rating: u32,
 }

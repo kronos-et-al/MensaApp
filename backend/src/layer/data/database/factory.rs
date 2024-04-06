@@ -1,14 +1,16 @@
+//! Module containing a factory pattern to construct instances to access the database for all components needing it.
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use tracing::info;
 
 use crate::interface::persistent_data::Result;
 
 use super::{
-    command::PersistentCommandData, image_review::PersistentImageReviewData,
+    auth::PersistentAuthData, command::PersistentCommandData,
     mealplan_management::PersistentMealplanManagementData, request::PersistentRequestData,
 };
 
 /// Structure containing all information necessary to connect to a database.
+#[derive(Debug)]
 pub struct DatabaseInfo {
     /// Connection string to database of format `postgres://<username>:<password>@<host>:<port>/<database>`.
     pub connection: String,
@@ -17,8 +19,10 @@ pub struct DatabaseInfo {
 }
 
 /// This class is responsible for instantiating the database access implementations classes.
+#[derive(Debug)]
 pub struct DataAccessFactory {
     pool: Pool<Postgres>,
+    /// Number of weeks meal plan data will be available in the database.
     pub max_weeks_data: u32,
 }
 
@@ -56,14 +60,6 @@ impl DataAccessFactory {
         }
     }
 
-    /// Returns a object for accessing database requests for the image reviewing process.
-    #[must_use]
-    pub fn get_image_review_data_access(&self) -> PersistentImageReviewData {
-        PersistentImageReviewData {
-            pool: self.pool.clone(),
-        }
-    }
-
     /// Returns a object for accessing database requests for the meal plan management.
     #[must_use]
     pub fn get_mealplan_management_data_access(&self) -> PersistentMealplanManagementData {
@@ -78,6 +74,14 @@ impl DataAccessFactory {
         PersistentRequestData {
             pool: self.pool.clone(),
             max_weeks_data: self.max_weeks_data,
+        }
+    }
+
+    /// Returns a object for accessing database requests for authentication.
+    #[must_use]
+    pub fn get_auth_data_access(&self) -> PersistentAuthData {
+        PersistentAuthData {
+            pool: self.pool.clone(),
         }
     }
 }
@@ -108,9 +112,9 @@ mod tests {
             .await
             .expect("failed to access test database");
         let _ = factory.get_command_data_access();
-        let _ = factory.get_image_review_data_access();
         let _ = factory.get_mealplan_management_data_access();
         let _ = factory.get_request_data_access();
+        let _ = factory.get_auth_data_access();
 
         std::mem::drop(factory); // drop database connection
 

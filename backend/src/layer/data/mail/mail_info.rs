@@ -1,3 +1,7 @@
+//! See [`MailInfo`].
+
+/// Information necessary to send email notifications to an administrator.
+#[derive(Debug)]
 pub struct MailInfo {
     /// Name of the domain of the connection to the mail server over SMTP
     pub smtp_server: String,

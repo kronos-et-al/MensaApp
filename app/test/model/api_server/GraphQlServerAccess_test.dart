@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
@@ -8,6 +10,7 @@ import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:intl/intl.dart';
 
 import 'config.dart';
@@ -15,6 +18,9 @@ import 'config.dart';
 void main() async {
   final GraphQlServerAccess serverAccess = GraphQlServerAccess(
       testServer, testApiKey, "1f16dcca-963e-4ceb-a8ca-843a7c9277a5");
+
+  final image = File("test/test.jpg").readAsBytesSync();
+  final mediaType = MediaType("image", "jpeg");
 
   test('remove downvote', () async {
     var deleted = await serverAccess.deleteDownvote(ImageData(
@@ -58,7 +64,8 @@ void main() async {
 
   test('link image', () async {
     var deleted = await serverAccess.linkImage(
-        "https://image_url.de",
+        image,
+        mediaType,
         Meal(
             id: "bd3c88f9-5dc8-4773-85dc-53305930e7b6",
             name: "Best meal",

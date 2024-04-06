@@ -5,12 +5,23 @@
 use std::fmt::Display;
 
 use async_graphql::Enum;
+use image::DynamicImage;
+use lazy_static::lazy_static;
 
 /// Date type used in multiple places.
 pub type Date = chrono::NaiveDate;
 
-// Uuid type used in multiple places.
+/// Uuid type used in multiple places.
 pub type Uuid = uuid::Uuid;
+
+/// An in memory representation of an image containing pixels.
+pub type ImageResource = DynamicImage;
+
+/// File extension used for images
+pub const IMAGE_EXTENSION: &str = "jpg";
+
+/// Base path under which images can be accessed.
+pub const IMAGE_BASE_PATH: &str = "/image";
 
 /// This enum lists every possible allergen a meal can have.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type)]
@@ -113,7 +124,7 @@ pub enum Additive {
 /// This enum lists all the types a meal can be of.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type)]
 #[sqlx(type_name = "meal_type", rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum MealType {
+pub enum FoodType {
     /// This meal is vegan.
     Vegan,
     /// This meal is vegetarian.
@@ -167,4 +178,66 @@ pub struct Price {
     pub price_guest: u32,
     /// Price of the dish for pupils.
     pub price_pupil: u32,
+}
+
+/// The nutrients of a dish
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NutritionData {
+    /// Energy in Kcal
+    pub energy: u32,
+    /// Protein in grams
+    pub protein: u32,
+    /// Carbs in grams
+    pub carbohydrates: u32,
+    /// Sugar in grams
+    pub sugar: u32,
+    /// Fat in grams
+    pub fat: u32,
+    /// Saturated fat in grams
+    pub saturated_fat: u32,
+    /// Salt in grams
+    pub salt: u32,
+}
+
+lazy_static! {
+    static ref BASE_URL: String = std::env::var("BASE_URL").unwrap_or_else(|_| "localhost".into());
+}
+
+/// Prepends the servers domain to get a global url. Slug should start with a `/`.
+#[must_use]
+pub fn local_to_global_url(slug: &str) -> String {
+    format!("{}{slug}", BASE_URL.as_str())
+}
+
+/// Returns the url an image will be accessible given its id.
+#[must_use]
+pub fn image_id_to_url(id: Uuid) -> String {
+    local_to_global_url(&format!("{IMAGE_BASE_PATH}/{id}.{IMAGE_EXTENSION}"))
+}
+
+#[cfg(test)]
+mod tests {
+    use std::str::FromStr;
+
+    use super::*;
+
+    #[test]
+    fn test_global_url() {
+        assert_eq!(
+            format!("{}/myslug", BASE_URL.as_str()),
+            local_to_global_url("/myslug")
+        );
+    }
+
+    #[test]
+    fn test_image_to_url() {
+        let uuid = Uuid::from_str("3945b556-2f02-427e-83be-46c0aa1a5cc9").expect("valid uuid");
+        assert_eq!(
+            format!(
+                "{}{IMAGE_BASE_PATH}/{uuid}.{IMAGE_EXTENSION}",
+                BASE_URL.as_str()
+            ),
+            image_id_to_url(uuid)
+        );
+    }
 }

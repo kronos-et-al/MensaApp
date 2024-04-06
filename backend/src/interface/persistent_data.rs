@@ -2,12 +2,17 @@
 pub mod model;
 
 use crate::interface::persistent_data::model::{ApiKey, Canteen, Image, Line, Meal, Side};
-use crate::util::{Additive, Allergen, Date, MealType, Price, ReportReason, Uuid};
+use crate::util::{Additive, Allergen, Date, FoodType, NutritionData, Price, ReportReason, Uuid};
 use async_trait::async_trait;
 use sqlx::migrate::MigrateError;
 use std::num::TryFromIntError;
 use thiserror::Error;
 
+use self::model::EnvironmentInfo;
+
+use super::mensa_parser::model::ParseEnvironmentInfo;
+
+/// Result returned from data access operations, potentially containing a [`DataError`].
 pub type Result<T> = std::result::Result<T, DataError>;
 
 /// Enumerations for possible data request faults
@@ -69,7 +74,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     async fn get_similar_meal(
         &self,
         similar_name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>>;
@@ -79,7 +84,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     async fn get_similar_side(
         &self,
         similar_name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
     ) -> Result<Option<Uuid>>;
@@ -94,11 +99,25 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 
     /// Updates an existing meal entity in the database.
     /// Behavior is undefined, if the specified UUID is a side.
-    async fn update_meal(&self, uuid: Uuid, name: &str) -> Result<()>;
+    /// Nutrition and environmental data will be updated as well, as they can change over time.
+    async fn update_meal(
+        &self,
+        uuid: Uuid,
+        name: &str,
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<ParseEnvironmentInfo>,
+    ) -> Result<()>;
 
     /// Updates an existing side entity in the database.
     /// Behavior is undefined, if the specified UUID is a meal.
-    async fn update_side(&self, uuid: Uuid, name: &str) -> Result<()>;
+    /// Nutrition and environmental data will be updated as well, as they can change over time.
+    async fn update_side(
+        &self,
+        uuid: Uuid,
+        name: &str,
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<ParseEnvironmentInfo>,
+    ) -> Result<()>;
 
     /// Adds a new canteen entity to the database.
     /// Returns UUID of the new canteen.
@@ -112,18 +131,22 @@ pub trait MealplanManagementDataAccess: Send + Sync {
     async fn insert_meal(
         &self,
         name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<ParseEnvironmentInfo>,
     ) -> Result<Uuid>;
 
     /// Adds a new side entity to the database. Returns the UUID of the created meal.
     async fn insert_side(
         &self,
         name: &str,
-        meal_type: MealType,
+        food_type: FoodType,
         allergens: &[Allergen],
         additives: &[Additive],
+        nutrition_data: Option<NutritionData>,
+        environment_information: Option<ParseEnvironmentInfo>,
     ) -> Result<Uuid>;
 
     /// Adds a meal into the meal plan for a line at a date by specifying its price.
@@ -148,25 +171,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 }
 
 #[async_trait]
-/// An interface for image related data. The ImageReview component uses this interface for database access.
-pub trait ImageReviewDataAccess: Send + Sync {
-    /// Returns the first n images sorted by rank which are related to an meal served at the given day.
-    async fn get_images_for_date(&self, number_of_images: u32, date: Date) -> Result<Vec<Image>>;
-    /// Returns the first n images sorted by rank which are related to an meal served in the next week and which were not validated last week.
-    async fn get_unvalidated_images_for_next_week(
-        &self,
-        number_of_images: u32,
-    ) -> Result<Vec<Image>>;
-    /// Returns the first n images sorted by the date of the last validation (asc) which were not validated in the last week.
-    async fn get_old_images(&self, number_of_images: u32) -> Result<Vec<Image>>;
-    /// Removes an image with all relations from the database.
-    async fn delete_image(&self, id: Uuid) -> Result<()>;
-    /// Marks all images identified by the given uuids as checked.
-    async fn mark_as_checked(&self, id: Uuid) -> Result<()>;
-}
-
-#[async_trait]
-/// An interface for graphql mutation data manipulation. The Command component uses this interface for database access.
+/// An interface for api actions. The Command component uses this interface for database access.
 pub trait CommandDataAccess: Sync + Send {
     /// Returns the ImageInfo struct of image.
     async fn get_image_info(&self, image_id: Uuid) -> Result<Image>;
@@ -184,22 +189,26 @@ pub trait CommandDataAccess: Sync + Send {
     /// Removes a downvote from the given image.
     async fn remove_downvote(&self, image_id: Uuid, user_id: Uuid) -> Result<()>;
     /// Adds an image link to the database. The image will be related to the given meal.
-    async fn link_image(
-        &self,
-        meal_id: Uuid,
-        user_id: Uuid,
-        image_hoster_id: String,
-        url: String,
-    ) -> Result<()>;
+    async fn link_image(&self, meal_id: Uuid, user_id: Uuid) -> Result<Uuid>;
+
+    /// Reverts the linking of the given image by deleting the link.
+    /// Useful if an error ocurred with the image itself.
+    async fn revert_link_image(&self, image_id: Uuid) -> Result<()>;
+
     /// Adds or updates a rating to the database. The rating will be related to the given meal and the given user.
     async fn add_rating(&self, meal_id: Uuid, user_id: Uuid, rating: u32) -> Result<()>;
+}
+
+/// An interface for database access necessary for the authentication process.
+#[async_trait]
+pub trait AuthDataAccess: Sync + Send {
     /// Loads all api_keys from the database.
     async fn get_api_keys(&self) -> Result<Vec<ApiKey>>;
 }
 
 #[async_trait]
 /// An interface for graphql query data. The GraphQL component uses this interface for database access.
-pub trait RequestDataAccess {
+pub trait RequestDataAccess: Send + Sync {
     /// Returns the canteen from the database.
     async fn get_canteen(&self, id: Uuid) -> Result<Option<Canteen>>;
     /// Returns all canteens from the database.
@@ -230,4 +239,8 @@ pub trait RequestDataAccess {
     async fn get_additives(&self, food_id: Uuid) -> Result<Vec<Additive>>;
     /// Returns all allergens related to the given food_id (food_id can be a meal_id or side_id).
     async fn get_allergens(&self, food_id: Uuid) -> Result<Vec<Allergen>>;
+    /// Returns the nutritionial data related to the given food_id (food_id can be a meal_id or side_id).
+    async fn get_nutrition_data(&self, food_id: Uuid) -> Result<Option<NutritionData>>;
+    /// Returns the environmental data related to the given food_id (food_id can be a meal_id or side_id).
+    async fn get_environment_information(&self, food_id: Uuid) -> Result<Option<EnvironmentInfo>>;
 }

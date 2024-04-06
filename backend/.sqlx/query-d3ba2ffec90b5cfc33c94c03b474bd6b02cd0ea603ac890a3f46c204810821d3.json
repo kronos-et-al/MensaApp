@@ -1,0 +1,123 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT food_id, name, food_type as \"food_type: FoodType\",\n                price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,\n                new, frequency, last_served, next_served, average_rating, rating_count\n            FROM meal_detail JOIN food_plan USING (food_id)\n            WHERE line_id = $1 AND serve_date = $2\n            ORDER BY price_student DESC, food_type DESC, food_id\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "food_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "food_type: FoodType",
+        "type_info": {
+          "Custom": {
+            "name": "meal_type",
+            "kind": {
+              "Enum": [
+                "VEGAN",
+                "VEGETARIAN",
+                "BEEF",
+                "BEEF_AW",
+                "PORK",
+                "PORK_AW",
+                "FISH",
+                "UNKNOWN"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "price_student",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "price_employee",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "price_guest",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "price_pupil",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 8,
+        "name": "line_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 9,
+        "name": "new",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 10,
+        "name": "frequency",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 11,
+        "name": "last_served",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 12,
+        "name": "next_served",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 13,
+        "name": "average_rating",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 14,
+        "name": "rating_count",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Date"
+      ]
+    },
+    "nullable": [
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "d3ba2ffec90b5cfc33c94c03b474bd6b02cd0ea603ac890a3f46c204810821d3"
+}

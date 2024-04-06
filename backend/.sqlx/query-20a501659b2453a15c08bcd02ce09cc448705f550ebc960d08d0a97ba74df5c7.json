@@ -1,0 +1,70 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO food_env_score(co2_rating, co2_value, water_rating, water_value, animal_welfare_rating, rainforest_rating, max_rating, food_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        {
+          "Custom": {
+            "name": "env_rating",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "env_value",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "env_rating",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "env_value",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "env_rating",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "env_rating",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "env_rating",
+            "kind": {
+              "Domain": "Int4"
+            }
+          }
+        },
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "20a501659b2453a15c08bcd02ce09cc448705f550ebc960d08d0a97ba74df5c7"
+}

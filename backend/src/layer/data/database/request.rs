@@ -1,14 +1,15 @@
+//! Module responsible for handling database requests for api requests.
 use async_trait::async_trait;
 use chrono::{Duration, Local};
 use sqlx::{Pool, Postgres};
 
 use crate::{
     interface::persistent_data::{
-        model::{Canteen, Image, Line, Meal, Side},
+        model::{Canteen, EnvironmentInfo, Image, Line, Meal, Side},
         DataError, RequestDataAccess, Result,
     },
     null_error,
-    util::{Additive, Allergen, Date, MealType, Price, Uuid},
+    util::{Additive, Allergen, Date, FoodType, NutritionData, Price, Uuid},
 };
 
 /// Class implementing all database requests arising from graphql manipulations.
@@ -68,7 +69,7 @@ impl RequestDataAccess for PersistentRequestData {
     async fn get_meal(&self, id: Uuid, line_id: Uuid, date: Date) -> Result<Option<Meal>> {
         sqlx::query!(
             r#"
-            SELECT food_id, name, food_type as "meal_type: MealType",
+            SELECT food_id, name, food_type as "food_type: FoodType",
                 price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,
                 new, frequency, last_served, next_served, average_rating, rating_count
             FROM meal_detail JOIN food_plan USING (food_id)
@@ -86,7 +87,7 @@ impl RequestDataAccess for PersistentRequestData {
                 line_id: m.line_id,
                 date: m.date,
                 name: null_error!(m.name),
-                meal_type: null_error!(m.meal_type),
+                food_type: null_error!(m.food_type),
                 price: Price {
                     price_student: u32::try_from(m.price_student)?,
                     price_employee: u32::try_from(m.price_employee)?,
@@ -123,7 +124,7 @@ impl RequestDataAccess for PersistentRequestData {
 
         sqlx::query!(
             r#"
-            SELECT food_id, name, food_type as "meal_type: MealType",
+            SELECT food_id, name, food_type as "food_type: FoodType",
                 price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,
                 new, frequency, last_served, next_served, average_rating, rating_count
             FROM meal_detail JOIN food_plan USING (food_id)
@@ -142,7 +143,7 @@ impl RequestDataAccess for PersistentRequestData {
                 line_id: m.line_id,
                 date: m.date,
                 name: null_error!(m.name),
-                meal_type: null_error!(m.meal_type),
+                food_type: null_error!(m.food_type),
                 price: Price {
                     price_student: u32::try_from(m.price_student)?,
                     price_employee: u32::try_from(m.price_employee)?,
@@ -163,7 +164,7 @@ impl RequestDataAccess for PersistentRequestData {
     async fn get_sides(&self, line_id: Uuid, date: Date) -> Result<Vec<Side>> {
         sqlx::query!(
             r#"
-            SELECT food_id, name, food_type as "meal_type: MealType", 
+            SELECT food_id, name, food_type as "food_type: FoodType", 
             price_student, price_employee, price_guest, price_pupil
             FROM food JOIN food_plan USING (food_id)
             WHERE line_id = $1 AND serve_date = $2 AND food_id NOT IN (SELECT food_id FROM meal)
@@ -178,7 +179,7 @@ impl RequestDataAccess for PersistentRequestData {
         .map(|side| {
             Ok(Side {
                 id: side.food_id,
-                meal_type: side.meal_type,
+                food_type: side.food_type,
                 name: side.name,
                 price: Price {
                     price_student: u32::try_from(side.price_student)?,
@@ -219,9 +220,7 @@ impl RequestDataAccess for PersistentRequestData {
         .map(|r| {
             Ok(Image {
                 id: r.image_id,
-                url: null_error!(r.url),
                 rank: null_error!(r.rank),
-                image_hoster_id: null_error!(r.hoster_id),
                 downvotes: u32::try_from(null_error!(r.downvotes))?,
                 upvotes: u32::try_from(null_error!(r.upvotes))?,
                 approved: null_error!(r.approved),
@@ -286,6 +285,54 @@ impl RequestDataAccess for PersistentRequestData {
         .fetch_all(&self.pool)
         .await?;
         Ok(res)
+    }
+
+    async fn get_nutrition_data(&self, food_id: Uuid) -> Result<Option<NutritionData>> {
+        let res = sqlx::query!(
+            r#"SELECT energy, protein, carbohydrates, sugar, fat, saturated_fat, salt FROM food_nutrition_data WHERE food_id = $1"#,
+            food_id
+        ).fetch_optional(&self.pool)
+        .await?;
+        let result = match res {
+            Some(res) => Some(NutritionData {
+                energy: u32::try_from(res.energy)?,
+                protein: u32::try_from(res.protein)?,
+                carbohydrates: u32::try_from(res.carbohydrates)?,
+                sugar: u32::try_from(res.sugar)?,
+                fat: u32::try_from(res.fat)?,
+                saturated_fat: u32::try_from(res.saturated_fat)?,
+                salt: u32::try_from(res.salt)?,
+            }),
+            None => None,
+        };
+        Ok(result)
+    }
+
+    async fn get_environment_information(&self, food_id: Uuid) -> Result<Option<EnvironmentInfo>> {
+        let res = sqlx::query!(
+            r#"SELECT co2_rating, co2_value, water_rating, water_value, animal_welfare_rating, rainforest_rating, max_rating FROM food_env_score WHERE food_id = $1"#,
+            food_id
+        ).fetch_optional(&self.pool).await?;
+        if let Some(res) = res {
+            let co2_rating = u32::try_from(res.co2_rating)?;
+            let water_rating = u32::try_from(res.water_rating)?;
+            let animal_welfare_rating = u32::try_from(res.animal_welfare_rating)?;
+            let rainforest_rating = u32::try_from(res.rainforest_rating)?;
+            let average_rating =
+                (co2_rating + water_rating + animal_welfare_rating + rainforest_rating) / 4;
+            Ok(Some(EnvironmentInfo {
+                average_rating,
+                co2_rating,
+                co2_value: u32::try_from(res.co2_value)?,
+                water_rating,
+                water_value: u32::try_from(res.water_value)?,
+                animal_welfare_rating,
+                rainforest_rating,
+                max_rating: u32::try_from(res.max_rating)?,
+            }))
+        } else {
+            Ok(None)
+        }
     }
 }
 
@@ -515,8 +562,6 @@ mod tests {
     fn provide_dummy_images() -> Vec<Image> {
         let image1 = Image {
             id: Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap(),
-            image_hoster_id: "test2".to_string(),
-            url: "www.test.com".to_string(),
             approved: true,
             rank: 0.5,
             downvotes: 0,
@@ -526,8 +571,6 @@ mod tests {
         };
         let image2 = Image {
             id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
-            image_hoster_id: "test".to_string(),
-            url: "www.test.com".to_string(),
             approved: false,
             ..image1
         };
@@ -677,11 +720,128 @@ mod tests {
         ]
     }
 
+    #[sqlx::test(fixtures("meal", "environment_info"))]
+    async fn test_get_environment_info(pool: PgPool) {
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
+        let food_ids = [
+            "f7337122-b018-48ad-b420-6202dc3cb4ff",
+            "73cf367b-a536-4b49-ad0c-cb984caa9a08",
+            "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
+            "0a850476-eda4-4fd8-9f93-579eb85b8c25",
+        ];
+        let food_ids: Vec<Uuid> = food_ids
+            .into_iter()
+            .filter_map(|id| Uuid::parse_str(id).ok())
+            .collect();
+        assert_eq!(food_ids.len(), 4);
+        let mut environment_infos = Vec::new();
+        for food_id in food_ids {
+            environment_infos.push(request.get_environment_information(food_id).await.unwrap());
+        }
+        assert_eq!(environment_infos, provide_dummy_environment_infos());
+    }
+
+    fn provide_dummy_environment_infos() -> Vec<Option<EnvironmentInfo>> {
+        vec![
+            Some(EnvironmentInfo {
+                average_rating: 2,
+                co2_rating: 2,
+                co2_value: 200,
+                water_rating: 3,
+                water_value: 10,
+                animal_welfare_rating: 1,
+                rainforest_rating: 2,
+                max_rating: 3,
+            }),
+            None,
+            Some(EnvironmentInfo {
+                average_rating: 3,
+                co2_rating: 1,
+                co2_value: 2,
+                water_rating: 3,
+                water_value: 4,
+                animal_welfare_rating: 5,
+                rainforest_rating: 6,
+                max_rating: 7,
+            }),
+            Some(EnvironmentInfo {
+                average_rating: 1,
+                co2_rating: 1,
+                co2_value: 1,
+                water_rating: 1,
+                water_value: 1,
+                animal_welfare_rating: 1,
+                rainforest_rating: 1,
+                max_rating: 1,
+            }),
+        ]
+    }
+
+    #[sqlx::test(fixtures("meal", "nutrition_data"))]
+    async fn test_get_nutrition_data(pool: PgPool) {
+        let request = PersistentRequestData {
+            pool,
+            max_weeks_data: MAX_WEEKS_DATA,
+        };
+        let food_ids = [
+            "f7337122-b018-48ad-b420-6202dc3cb4ff",
+            "73cf367b-a536-4b49-ad0c-cb984caa9a08",
+            "25cb8c50-75a4-48a2-b4cf-8ab2566d8bec",
+            "0a850476-eda4-4fd8-9f93-579eb85b8c25",
+        ];
+        let food_ids: Vec<Uuid> = food_ids
+            .into_iter()
+            .filter_map(|id| Uuid::parse_str(id).ok())
+            .collect();
+        assert_eq!(food_ids.len(), 4);
+        let mut nutrition_data = Vec::new();
+        for food_id in food_ids {
+            nutrition_data.push(request.get_nutrition_data(food_id).await.unwrap());
+        }
+        assert_eq!(nutrition_data, provide_dummy_nutrition_data());
+    }
+
+    fn provide_dummy_nutrition_data() -> Vec<Option<NutritionData>> {
+        vec![
+            Some(NutritionData {
+                energy: 2,
+                protein: 200,
+                carbohydrates: 3,
+                sugar: 10,
+                fat: 1,
+                saturated_fat: 2,
+                salt: 3,
+            }),
+            None,
+            Some(NutritionData {
+                energy: 1,
+                protein: 2,
+                carbohydrates: 3,
+                sugar: 4,
+                fat: 5,
+                saturated_fat: 6,
+                salt: 7,
+            }),
+            Some(NutritionData {
+                energy: 1,
+                protein: 1,
+                carbohydrates: 1,
+                sugar: 1,
+                fat: 1,
+                saturated_fat: 1,
+                salt: 1,
+            }),
+        ]
+    }
+
     fn provide_dummy_sides() -> Vec<Side> {
         vec![Side {
             id: Uuid::parse_str("73cf367b-a536-4b49-ad0c-cb984caa9a08").unwrap(),
             name: "zu jedem Gericht reichen wir ein Dessert oder Salat".to_string(),
-            meal_type: MealType::Unknown,
+            food_type: FoodType::Unknown,
             price: Price {
                 price_student: 0,
                 price_employee: 0,
@@ -695,7 +855,7 @@ mod tests {
         let meal1 = Meal {
             id: Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap(),
             name: "2 Dampfnudeln mit Vanillesoße".to_string(),
-            meal_type: MealType::Vegetarian,
+            food_type: FoodType::Vegetarian,
             price: Price {
                 price_student: 320,
                 price_employee: 420,
@@ -714,7 +874,7 @@ mod tests {
         let meal2 = Meal {
             id: Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
             name: "Geflügel - Cevapcici, Ajvar, Djuvec Reis".to_string(),
-            meal_type: MealType::Unknown,
+            food_type: FoodType::Unknown,
             ..meal1
         };
         vec![meal2, meal1]

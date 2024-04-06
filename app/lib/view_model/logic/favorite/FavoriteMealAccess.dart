@@ -39,6 +39,7 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
       };
 
       if (meal != null) {
+        await _database.addFavorite(meal, meal.lastServed ?? favorite.servedDate, favorite.servedLine);
         await _database.updateMeal(meal);
       } else {
         return false;
