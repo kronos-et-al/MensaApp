@@ -8,7 +8,7 @@ class MealNutrientsList extends StatelessWidget {
   final NutritionData _nutritionData;
 
   /// Creates a MealNutrientsList widget.
-  MealNutrientsList({super.key, required NutritionData nutritionData})
+  const MealNutrientsList({super.key, required NutritionData nutritionData})
       : _nutritionData = nutritionData;
 
   @override
@@ -17,14 +17,60 @@ class MealNutrientsList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(children: [Expanded(child: Container(decoration: BoxDecoration(color: theme.colorScheme.surface), child: Padding(padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2), child: Text(FlutterI18n.translate(context, "nutritionData.nutritionTitle"), style: TextStyle(fontWeight: FontWeight.w500),),),))]),
-        MealNutrientsItem(name: FlutterI18n.translate(context, "nutritionData.energy"), value: _nutritionData.energy, unit: FlutterI18n.translate(context, "nutritionData.energyUnit"),),
-        MealNutrientsItem(name: FlutterI18n.translate(context, "nutritionData.protein"), value: _nutritionData.protein, unit: FlutterI18n.translate(context, "nutritionData.proteinUnit"),),
-        MealNutrientsItem(name: FlutterI18n.translate(context, "nutritionData.carbohydrates"), value: _nutritionData.carbohydrates, even: true, unit: FlutterI18n.translate(context, "nutritionData.carbohydratesUnit"),),
-        MealNutrientsItem(name: FlutterI18n.translate(context, "nutritionData.sugar"), value: _nutritionData.sugar, even: true, indent: true, unit: FlutterI18n.translate(context, "nutritionData.sugarUnit"),),
-        MealNutrientsItem(name: FlutterI18n.translate(context, "nutritionData.fat"), value: _nutritionData.fat, unit: FlutterI18n.translate(context, "nutritionData.fatUnit"),),
-        MealNutrientsItem(name: FlutterI18n.translate(context, "nutritionData.saturatedFat"), value: _nutritionData.saturatedFat, indent: true, unit: FlutterI18n.translate(context, "nutritionData.saturatedFatUnit")),
-        MealNutrientsItem(name: FlutterI18n.translate(context, "nutritionData.salt"), value: _nutritionData.salt, even: true, unit: FlutterI18n.translate(context, "nutritionData.saltUnit"),),
+        Row(children: [
+          Expanded(
+              child: Ink(
+            decoration: BoxDecoration(color: theme.brightness == Brightness.dark ?  theme.colorScheme.surface : theme.colorScheme.background),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              child: Text(
+                FlutterI18n.translate(context, "nutritionData.nutritionTitle"),
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
+          ))
+        ]),
+        MealNutrientsItem(
+          name: FlutterI18n.translate(context, "nutritionData.energy"),
+          value: _nutritionData.energy,
+          unit: FlutterI18n.translate(context, "nutritionData.energyUnit"),
+        ),
+        MealNutrientsItem(
+          name: FlutterI18n.translate(context, "nutritionData.protein"),
+          value: _nutritionData.protein,
+          unit: FlutterI18n.translate(context, "nutritionData.proteinUnit"),
+        ),
+        MealNutrientsItem(
+          name: FlutterI18n.translate(context, "nutritionData.carbohydrates"),
+          value: _nutritionData.carbohydrates,
+          even: true,
+          unit:
+              FlutterI18n.translate(context, "nutritionData.carbohydratesUnit"),
+        ),
+        MealNutrientsItem(
+          name: FlutterI18n.translate(context, "nutritionData.sugar"),
+          value: _nutritionData.sugar,
+          even: true,
+          indent: true,
+          unit: FlutterI18n.translate(context, "nutritionData.sugarUnit"),
+        ),
+        MealNutrientsItem(
+          name: FlutterI18n.translate(context, "nutritionData.fat"),
+          value: _nutritionData.fat,
+          unit: FlutterI18n.translate(context, "nutritionData.fatUnit"),
+        ),
+        MealNutrientsItem(
+            name: FlutterI18n.translate(context, "nutritionData.saturatedFat"),
+            value: _nutritionData.saturatedFat,
+            indent: true,
+            unit: FlutterI18n.translate(
+                context, "nutritionData.saturatedFatUnit")),
+        MealNutrientsItem(
+          name: FlutterI18n.translate(context, "nutritionData.salt"),
+          value: _nutritionData.salt,
+          even: true,
+          unit: FlutterI18n.translate(context, "nutritionData.saltUnit"),
+        ),
       ],
     );
   }

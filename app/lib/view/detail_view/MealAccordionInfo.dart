@@ -44,16 +44,16 @@ class MealAccordionInfo extends StatelessWidget {
         if (_nutritionData != null)
           Padding(
               padding: const EdgeInsets.only(right: 8, bottom: 4),
-              child: Container(
+              child: Ink(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
                       border: Border.all(
-                          color: theme.colorScheme.surface, width: 1)),
+                          color: theme.brightness == Brightness.dark ?  theme.colorScheme.surface : theme.colorScheme.background, width: 2)),
                   child: MealNutrientsList(nutritionData: _nutritionData!))),
         Padding(
             padding: const EdgeInsets.only(right: 8),
             child: Text(
-              "${FlutterI18n.translate(context, _allergens.length > 0 ? "allergen.allergenTitle" : "allergen.allergenTitleEmpty")} ${_allergens.map((e) => FlutterI18n.translate(context, "allergen.${e.name}")).join(", ")}",
+              "${FlutterI18n.translate(context, _allergens.isNotEmpty ? "allergen.allergenTitle" : "allergen.allergenTitleEmpty")} ${_allergens.map((e) => FlutterI18n.translate(context, "allergen.${e.name}")).join(", ")}",
             )),
         const SizedBox(height: 8),
         Text(
@@ -70,57 +70,6 @@ class MealAccordionInfo extends StatelessWidget {
                 Expanded(child: I18nText("additive.${e.name}")),
               ],
             )),
-        /*if (_nutritionData != null) Column(
-            children: [
-              const SizedBox(height: 8),
-              Row(children: [Text(
-                FlutterI18n.translate(context, "nutritionData.nutritionTitle"),
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              )]),
-              Row(children: [
-                const Text("• "),
-                Text("${FlutterI18n.translate(context, 'nutritionData.energy')}: ", style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(_nutritionData!.energy.toString()),
-                Text(" ${FlutterI18n.translate(context, 'nutritionData.energyUnit')}"),
-              ]),
-              Row(children: [
-                const Text("• "),
-                Text("${FlutterI18n.translate(context, 'nutritionData.protein')}: ", style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(_nutritionData!.protein.toString()),
-                Text(" ${FlutterI18n.translate(context, 'nutritionData.proteinUnit')}"),
-              ]),
-              Row(children: [
-                const Text("• "),
-                Text("${FlutterI18n.translate(context, 'nutritionData.carbohydrates')}: ", style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(_nutritionData!.carbohydrates.toString()),
-                Text(" ${FlutterI18n.translate(context, 'nutritionData.carbohydratesUnit')}"),
-              ]),
-              Row(children: [
-                const Text("• "),
-                Text("${FlutterI18n.translate(context, 'nutritionData.sugar')}: ", style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(_nutritionData!.sugar.toString()),
-                Text(" ${FlutterI18n.translate(context, 'nutritionData.sugarUnit')}"),
-              ]),
-              Row(children: [
-                const Text("• "),
-                Text("${FlutterI18n.translate(context, 'nutritionData.fat')}: ", style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(_nutritionData!.fat.toString()),
-                Text(" ${FlutterI18n.translate(context, 'nutritionData.fatUnit')}"),
-              ]),
-              Row(children: [
-                const Text("• "),
-                Text("${FlutterI18n.translate(context, 'nutritionData.saturatedFat')}: ", style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(_nutritionData!.saturatedFat.toString()),
-                Text(" ${FlutterI18n.translate(context, 'nutritionData.saturatedFatUnit')}"),
-              ]),
-              Row(children: [
-                const Text("• "),
-                Text("${FlutterI18n.translate(context, 'nutritionData.salt')}: ", style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(_nutritionData!.salt.toString()),
-                Text(" ${FlutterI18n.translate(context, 'nutritionData.saltUnit')}"),
-              ]),
-            ],
-          ),*/
         (_lastServed != null || _nextServed != null || _frequency != null)
             ? const SizedBox(
                 height: 8,
