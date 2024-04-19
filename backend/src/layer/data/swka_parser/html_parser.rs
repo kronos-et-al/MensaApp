@@ -577,6 +577,11 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_new() {
+        test_html("src/layer/data/swka_parser/test_data/test_new.html");
+    }
+
+    #[tokio::test]
     /// Tests an html page, that is not from the Studierendenwerk Karlsruhe. (Source: https://cbracco.github.io/html5-test-page/)
     async fn test_invalid() {
         let path = "src/layer/data/swka_parser/test_data/test_invalid.html";
@@ -589,7 +594,7 @@ mod tests {
         let file_contents = read_from_file(path).unwrap();
         let canteen_data = HTMLParser::new().transform(&file_contents, 42_u32).unwrap();
 
-        //let _ = write_output_to_file(path, &canteen_data);
+        let _ = write_output_to_file(path, &canteen_data);
         let expected = read_from_file(&path.replace(".html", ".txt"))
             .unwrap()
             .replace("\r\n", "\n");

@@ -1,0 +1,1209 @@
+[
+    (
+        2024-04-19,
+        ParseCanteen {
+            name: "Mensa am Adenauerring",
+            lines: [
+                ParseLine {
+                    name: "Linie 1 Gut & Günstig",
+                    dishes: [
+                        Dish {
+                            name: "zu jedem Gericht reichen wir ein Dessert oder Salat",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [],
+                            food_type: Unknown,
+                            env_score: None,
+                            nutrition_data: None,
+                        },
+                        Dish {
+                            name: "Bouillonkartoffeln mit Rauchfleisch",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                Se,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                                AntioxidantAgents,
+                            ],
+                            food_type: Pork,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 2,
+                                    co2_value: 872,
+                                    water_rating: 3,
+                                    water_value: 22010,
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 544,
+                                    protein: 26,
+                                    carbohydrates: 28,
+                                    sugar: 5,
+                                    fat: 34,
+                                    saturated_fat: 13,
+                                    salt: 7,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Bouillonkartoffeln mit Kichererbsen",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [
+                                Se,
+                            ],
+                            additives: [],
+                            food_type: Vegan,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 3,
+                                    co2_value: 425,
+                                    water_rating: 2,
+                                    water_value: 37980,
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 529,
+                                    protein: 27,
+                                    carbohydrates: 82,
+                                    sugar: 6,
+                                    fat: 7,
+                                    saturated_fat: 0,
+                                    salt: 3,
+                                },
+                            ),
+                        },
+                    ],
+                    pos: 0,
+                },
+                ParseLine {
+                    name: "Linie 2 Vegane Linie",
+                    dishes: [
+                        Dish {
+                            name: "zu jedem Gericht reichen wir ein Dessert oder Salat",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [],
+                            additives: [],
+                            food_type: Unknown,
+                            env_score: None,
+                            nutrition_data: None,
+                        },
+                        Dish {
+                            name: "Gersten-Ragout mit mediterranem Gemüse und roter Bete",
+                            price: Price {
+                                price_student: 330,
+                                price_employee: 470,
+                                price_guest: 705,
+                                price_pupil: 370,
+                            },
+                            allergens: [
+                                Ge,
+                                Sf,
+                                So,
+                                We,
+                            ],
+                            additives: [
+                                Sweetener,
+                            ],
+                            food_type: Vegan,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 3,
+                                    co2_value: 364,
+                                    water_rating: 1,
+                                    water_value: 44810,
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 506,
+                                    protein: 11,
+                                    carbohydrates: 54,
+                                    sugar: 13,
+                                    fat: 17,
+                                    saturated_fat: 3,
+                                    salt: 3,
+                                },
+                            ),
+                        },
+                    ],
+                    pos: 1,
+                },
+                ParseLine {
+                    name: "Linie 3",
+                    dishes: [
+                        Dish {
+                            name: "Nudel-Tajine mit Fenchel",
+                            price: Price {
+                                price_student: 295,
+                                price_employee: 435,
+                                price_guest: 650,
+                                price_pupil: 340,
+                            },
+                            allergens: [
+                                Sa,
+                                Se,
+                                We,
+                            ],
+                            additives: [],
+                            food_type: Vegan,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 3,
+                                    co2_value: 626,
+                                    water_rating: 2,
+                                    water_value: 35780,
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 724,
+                                    protein: 25,
+                                    carbohydrates: 115,
+                                    sugar: 24,
+                                    fat: 15,
+                                    saturated_fat: 2,
+                                    salt: 3,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Bunter Krautsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [
+                                Se,
+                            ],
+                            additives: [],
+                            food_type: Vegan,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 2,
+                                    co2_value: 142,
+                                    water_rating: 3,
+                                    water_value: 1620,
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 133,
+                                    protein: 1,
+                                    carbohydrates: 8,
+                                    sugar: 6,
+                                    fat: 9,
+                                    saturated_fat: 0,
+                                    salt: 3,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Kirschquark Creme mit Stracciatellageschmack",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [
+                                ML,
+                            ],
+                            additives: [],
+                            food_type: Vegetarian,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 1,
+                                    co2_value: 795,
+                                    water_rating: 2,
+                                    water_value: 24390,
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 378,
+                                    protein: 23,
+                                    carbohydrates: 54,
+                                    sugar: 48,
+                                    fat: 7,
+                                    saturated_fat: 4,
+                                    salt: 0,
+                                },
+                            ),
+                        },
+                    ],
+                    pos: 2,
+                },
+                ParseLine {
+                    name: "Linie 4",
+                    dishes: [
+                        Dish {
+                            name: "Hausgemachte Bärlauch - Gnocchi Napoli in fruchtiger Tomatensoße",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 470,
+                                price_guest: 705,
+                                price_pupil: 370,
+                            },
+                            allergens: [
+                                Se,
+                                Sf,
+                                We,
+                            ],
+                            additives: [],
+                            food_type: Vegan,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 3,
+                                    co2_value: 324,
+                                    water_rating: 3,
+                                    water_value: 5920,
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 803,
+                                    protein: 18,
+                                    carbohydrates: 120,
+                                    sugar: 5,
+                                    fat: 26,
+                                    saturated_fat: 2,
+                                    salt: 6,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Bunter Krautsalat",
+                            price: Price {
+                                price_student: 90,
+                                price_employee: 90,
+                                price_guest: 115,
+                                price_pupil: 90,
+                            },
+                            allergens: [
+                                Se,
+                            ],
+                            additives: [],
+                            food_type: Vegan,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 2,
+                                    co2_value: 142,
+                                    water_rating: 3,
+                                    water_value: 1620,
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 133,
+                                    protein: 1,
+                                    carbohydrates: 8,
+                                    sugar: 6,
+                                    fat: 9,
+                                    saturated_fat: 0,
+                                    salt: 3,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Hausgemachte Bärlauch - Gnocchi Veloute Supreme mit Pilzen",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 470,
+                                price_guest: 705,
+                                price_pupil: 370,
+                            },
+                            allergens: [
+                                ML,
+                                Se,
+                                Sf,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            food_type: Vegetarian,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 3,
+                                    co2_value: 889,
+                                    water_rating: 3,
+                                    water_value: 16110,
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 1373,
+                                    protein: 27,
+                                    carbohydrates: 150,
+                                    sugar: 12,
+                                    fat: 72,
+                                    saturated_fat: 28,
+                                    salt: 12,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Kirschquark Creme mit Stracciatellageschmack",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [
+                                ML,
+                            ],
+                            additives: [],
+                            food_type: Vegetarian,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 1,
+                                    co2_value: 795,
+                                    water_rating: 2,
+                                    water_value: 24390,
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 378,
+                                    protein: 23,
+                                    carbohydrates: 54,
+                                    sugar: 48,
+                                    fat: 7,
+                                    saturated_fat: 4,
+                                    salt: 0,
+                                },
+                            ),
+                        },
+                    ],
+                    pos: 3,
+                },
+                ParseLine {
+                    name: "Linie 5",
+                    dishes: [],
+                    pos: 4,
+                },
+                ParseLine {
+                    name: "Schnitzel-/ Burgerbar",
+                    dishes: [
+                        Dish {
+                            name: "Verschiedene Desserts im Portionsbecher",
+                            price: Price {
+                                price_student: 65,
+                                price_employee: 65,
+                                price_guest: 65,
+                                price_pupil: 65,
+                            },
+                            allergens: [
+                                Ei,
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                            ],
+                            food_type: Unknown,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 2,
+                                    co2_value: 259,
+                                    water_rating: 3,
+                                    water_value: 5900,
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 123,
+                                    protein: 1,
+                                    carbohydrates: 20,
+                                    sugar: 16,
+                                    fat: 3,
+                                    saturated_fat: 2,
+                                    salt: 0,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Schweine- und Hähnchenschnitzel, vegetarische Leckereien, Salatbuffet und Pommes Salatbuffet und Pommes - alles zur Wahl zu einem Preis je 100 gramm",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Ei,
+                                Hf,
+                                ML,
+                                Se,
+                                Sn,
+                                So,
+                                We,
+                            ],
+                            additives: [
+                                FlavourEnhancer,
+                                Phosphate,
+                            ],
+                            food_type: Pork,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 1,
+                                    co2_value: 2483,
+                                    water_rating: 2,
+                                    water_value: 62830,
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 833,
+                                    protein: 32,
+                                    carbohydrates: 62,
+                                    sugar: 9,
+                                    fat: 49,
+                                    saturated_fat: 5,
+                                    salt: 3,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Kirschquark Creme mit Stracciatellageschmack",
+                            price: Price {
+                                price_student: 85,
+                                price_employee: 85,
+                                price_guest: 105,
+                                price_pupil: 85,
+                            },
+                            allergens: [
+                                ML,
+                            ],
+                            additives: [],
+                            food_type: Vegetarian,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 1,
+                                    co2_value: 795,
+                                    water_rating: 2,
+                                    water_value: 24390,
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 378,
+                                    protein: 23,
+                                    carbohydrates: 54,
+                                    sugar: 48,
+                                    fat: 7,
+                                    saturated_fat: 4,
+                                    salt: 0,
+                                },
+                            ),
+                        },
+                    ],
+                    pos: 5,
+                },
+                ParseLine {
+                    name: "Linie 6",
+                    dishes: [
+                        Dish {
+                            name: "Pasta in Tomatensoße mit Ricotta, Schinkenwürfel und Walnüssen",
+                            price: Price {
+                                price_student: 335,
+                                price_employee: 495,
+                                price_guest: 735,
+                                price_pupil: 385,
+                            },
+                            allergens: [
+                                Di,
+                                ML,
+                                Wa,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                                AntioxidantAgents,
+                            ],
+                            food_type: Pork,
+                            env_score: None,
+                            nutrition_data: None,
+                        },
+                        Dish {
+                            name: "Pasta in Tomatensoße mit Sojastreifen und Walnüssen",
+                            price: Price {
+                                price_student: 325,
+                                price_employee: 480,
+                                price_guest: 715,
+                                price_pupil: 375,
+                            },
+                            allergens: [
+                                Di,
+                                So,
+                                Wa,
+                                We,
+                            ],
+                            additives: [],
+                            food_type: Vegan,
+                            env_score: None,
+                            nutrition_data: None,
+                        },
+                        Dish {
+                            name: "Bunter Salatteller mit marinierten Champignons",
+                            price: Price {
+                                price_student: 300,
+                                price_employee: 300,
+                                price_guest: 300,
+                                price_pupil: 300,
+                            },
+                            allergens: [],
+                            additives: [],
+                            food_type: Vegan,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 1,
+                                    co2_value: 320,
+                                    water_rating: 1,
+                                    water_value: 27180,
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 127,
+                                    protein: 3,
+                                    carbohydrates: 5,
+                                    sugar: 3,
+                                    fat: 9,
+                                    saturated_fat: 1,
+                                    salt: 1,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Salatbuffet mit frischer Rohkost, Blattsalate und ausgemachten Dressings, Preis je 100 g",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            food_type: Vegan,
+                            env_score: None,
+                            nutrition_data: None,
+                        },
+                        Dish {
+                            name: "Buntes Anti Pasti Buffet, Preis je 100g",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 145,
+                                price_guest: 210,
+                                price_pupil: 122,
+                            },
+                            allergens: [
+                                ML,
+                                Sf,
+                            ],
+                            additives: [],
+                            food_type: Vegetarian,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 2,
+                                    co2_value: 831,
+                                    water_rating: 1,
+                                    water_value: 89960,
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 404,
+                                    protein: 9,
+                                    carbohydrates: 13,
+                                    sugar: 10,
+                                    fat: 34,
+                                    saturated_fat: 8,
+                                    salt: 3,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Bananenquark",
+                            price: Price {
+                                price_student: 105,
+                                price_employee: 105,
+                                price_guest: 130,
+                                price_pupil: 105,
+                            },
+                            allergens: [
+                                ML,
+                            ],
+                            additives: [],
+                            food_type: Vegetarian,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 2,
+                                    co2_value: 306,
+                                    water_rating: 2,
+                                    water_value: 10440,
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 145,
+                                    protein: 9,
+                                    carbohydrates: 25,
+                                    sugar: 24,
+                                    fat: 0,
+                                    saturated_fat: 0,
+                                    salt: 0,
+                                },
+                            ),
+                        },
+                    ],
+                    pos: 6,
+                },
+                ParseLine {
+                    name: "Spätausgabe und Abendessen",
+                    dishes: [
+                        Dish {
+                            name: "Spätausgabe 14:00 bis 14:30 an der Linie 2 Info zum Speisenangebot direkt an der Ausgabe",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 420,
+                                price_guest: 460,
+                                price_pupil: 355,
+                            },
+                            allergens: [],
+                            additives: [],
+                            food_type: Unknown,
+                            env_score: None,
+                            nutrition_data: None,
+                        },
+                    ],
+                    pos: 7,
+                },
+                ParseLine {
+                    name: "[kœri]werk 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Reine Kalbsbratwurst mit Currysoße",
+                            price: Price {
+                                price_student: 230,
+                                price_employee: 315,
+                                price_guest: 460,
+                                price_pupil: 265,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            food_type: Beef,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 1,
+                                    co2_value: 1491,
+                                    water_rating: 3,
+                                    water_value: 9620,
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 527,
+                                    protein: 11,
+                                    carbohydrates: 35,
+                                    sugar: 32,
+                                    fat: 37,
+                                    saturated_fat: 13,
+                                    salt: 5,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Vegane Jackfruit-Bratwurst mit Currysoße",
+                            price: Price {
+                                price_student: 230,
+                                price_employee: 315,
+                                price_guest: 460,
+                                price_pupil: 265,
+                            },
+                            allergens: [
+                                Se,
+                                Sn,
+                            ],
+                            additives: [],
+                            food_type: Vegan,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 3,
+                                    co2_value: 219,
+                                    water_rating: 3,
+                                    water_value: 4970,
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 458,
+                                    protein: 5,
+                                    carbohydrates: 38,
+                                    sugar: 34,
+                                    fat: 31,
+                                    saturated_fat: 3,
+                                    salt: 5,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "koerifrites",
+                            price: Price {
+                                price_student: 150,
+                                price_employee: 205,
+                                price_guest: 300,
+                                price_pupil: 175,
+                            },
+                            allergens: [],
+                            additives: [],
+                            food_type: Vegan,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 1,
+                                    co2_value: 1805,
+                                    water_rating: 3,
+                                    water_value: 3860,
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 737,
+                                    protein: 7,
+                                    carbohydrates: 67,
+                                    sugar: 0,
+                                    fat: 47,
+                                    saturated_fat: 8,
+                                    salt: 3,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Zu jeder Currywurst reichen wir frisches Baguette",
+                            price: Price {
+                                price_student: 0,
+                                price_employee: 0,
+                                price_guest: 0,
+                                price_pupil: 0,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [],
+                            food_type: Vegan,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 3,
+                                    co2_value: 71,
+                                    water_rating: 3,
+                                    water_value: 780,
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 144,
+                                    protein: 4,
+                                    carbohydrates: 29,
+                                    sugar: 0,
+                                    fat: 0,
+                                    saturated_fat: 0,
+                                    salt: 0,
+                                },
+                            ),
+                        },
+                    ],
+                    pos: 8,
+                },
+                ParseLine {
+                    name: "Cafeteria 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Hähnchenschnitzel mit Brötchen",
+                            price: Price {
+                                price_student: 320,
+                                price_employee: 320,
+                                price_guest: 320,
+                                price_pupil: 320,
+                            },
+                            allergens: [
+                                Ge,
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                AntioxidantAgents,
+                            ],
+                            food_type: Unknown,
+                            env_score: None,
+                            nutrition_data: None,
+                        },
+                        Dish {
+                            name: "Börek mit Spinatfüllung",
+                            price: Price {
+                                price_student: 220,
+                                price_employee: 220,
+                                price_guest: 220,
+                                price_pupil: 220,
+                            },
+                            allergens: [
+                                Se,
+                                So,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                                AntioxidantAgents,
+                                FlavourEnhancer,
+                            ],
+                            food_type: Vegan,
+                            env_score: None,
+                            nutrition_data: None,
+                        },
+                    ],
+                    pos: 9,
+                },
+                ParseLine {
+                    name: "[pizza]werk Pizza 11-14 Uhr",
+                    dishes: [
+                        Dish {
+                            name: "Pizza Salsiccia - scharfe Salami mit roten Zwiebeln und Mozzarella",
+                            price: Price {
+                                price_student: 455,
+                                price_employee: 625,
+                                price_guest: 910,
+                                price_pupil: 525,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                PreservingAgents,
+                                AntioxidantAgents,
+                            ],
+                            food_type: Pork,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 2,
+                                    co2_value: 2025,
+                                    water_rating: 2,
+                                    water_value: 91520,
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 1647,
+                                    protein: 77,
+                                    carbohydrates: 141,
+                                    sugar: 7,
+                                    fat: 84,
+                                    saturated_fat: 32,
+                                    salt: 10,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Pizza Mykonos vegan - Paprika, Oliven, rote Zwiebeln, vegane Käsealternative und Mais",
+                            price: Price {
+                                price_student: 445,
+                                price_employee: 610,
+                                price_guest: 890,
+                                price_pupil: 515,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                PreservingAgents,
+                                ArtificiallyBlackenedOlives,
+                            ],
+                            food_type: Vegan,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 3,
+                                    co2_value: 487,
+                                    water_rating: 2,
+                                    water_value: 69140,
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 1169,
+                                    protein: 24,
+                                    carbohydrates: 147,
+                                    sugar: 9,
+                                    fat: 52,
+                                    saturated_fat: 13,
+                                    salt: 6,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Pizza Margherita vegan - frische Cocktailtomaten, vegane Käsealternative, Basilikumpesto",
+                            price: Price {
+                                price_student: 415,
+                                price_employee: 570,
+                                price_guest: 830,
+                                price_pupil: 480,
+                            },
+                            allergens: [
+                                We,
+                            ],
+                            additives: [
+                                Colorant,
+                                PreservingAgents,
+                            ],
+                            food_type: Vegan,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 3,
+                                    co2_value: 525,
+                                    water_rating: 1,
+                                    water_value: 98550,
+                                    animal_welfare_rating: 3,
+                                    rainforest_rating: 3,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 1321,
+                                    protein: 26,
+                                    carbohydrates: 146,
+                                    sugar: 8,
+                                    fat: 68,
+                                    saturated_fat: 15,
+                                    salt: 5,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Pizza Mykonos - Hirtenkäse, Paprika, Oliven, rote Zwiebeln und Mais",
+                            price: Price {
+                                price_student: 445,
+                                price_employee: 610,
+                                price_guest: 890,
+                                price_pupil: 515,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [
+                                ArtificiallyBlackenedOlives,
+                            ],
+                            food_type: Vegetarian,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 2,
+                                    co2_value: 1696,
+                                    water_rating: 2,
+                                    water_value: 97520,
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 1509,
+                                    protein: 61,
+                                    carbohydrates: 143,
+                                    sugar: 9,
+                                    fat: 75,
+                                    saturated_fat: 27,
+                                    salt: 8,
+                                },
+                            ),
+                        },
+                        Dish {
+                            name: "Pizza Margherita vegetarisch - frische Cocktailtomaten, Mozzarella, Basilikumpesto",
+                            price: Price {
+                                price_student: 415,
+                                price_employee: 570,
+                                price_guest: 830,
+                                price_pupil: 480,
+                            },
+                            allergens: [
+                                ML,
+                                We,
+                            ],
+                            additives: [],
+                            food_type: Vegetarian,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 2,
+                                    co2_value: 1628,
+                                    water_rating: 2,
+                                    water_value: 109710,
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 1618,
+                                    protein: 63,
+                                    carbohydrates: 142,
+                                    sugar: 8,
+                                    fat: 87,
+                                    saturated_fat: 29,
+                                    salt: 7,
+                                },
+                            ),
+                        },
+                    ],
+                    pos: 10,
+                },
+                ParseLine {
+                    name: "[pizza]werk Pasta",
+                    dishes: [],
+                    pos: 11,
+                },
+                ParseLine {
+                    name: "[pizza]werk Salate / Vorspeisen",
+                    dishes: [
+                        Dish {
+                            name: "Insalata piccola - kleiner Blattsalat mit Tomate, Gurke und Ei",
+                            price: Price {
+                                price_student: 180,
+                                price_employee: 180,
+                                price_guest: 225,
+                                price_pupil: 180,
+                            },
+                            allergens: [
+                                Ei,
+                            ],
+                            additives: [],
+                            food_type: Vegetarian,
+                            env_score: Some(
+                                ParseEnvironmentInfo {
+                                    co2_rating: 1,
+                                    co2_value: 267,
+                                    water_rating: 3,
+                                    water_value: 4580,
+                                    animal_welfare_rating: 1,
+                                    rainforest_rating: 1,
+                                    max_rating: 3,
+                                },
+                            ),
+                            nutrition_data: Some(
+                                NutritionData {
+                                    energy: 117,
+                                    protein: 9,
+                                    carbohydrates: 2,
+                                    sugar: 2,
+                                    fat: 7,
+                                    saturated_fat: 2,
+                                    salt: 0,
+                                },
+                            ),
+                        },
+                    ],
+                    pos: 12,
+                },
+            ],
+            pos: 42,
+        },
+    ),
+]
