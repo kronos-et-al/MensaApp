@@ -134,7 +134,7 @@ lazy_static! {
 
     static ref ID_REGEX: Regex = Regex::new(r"[0-9]{18,}").expect(REGEX_PARSE_E_MSG);
 
-    static ref POULTRY_REGEX: Regex = Regex::new(r"(?i)ente|chicken|pute|gefl[üÜ]gel|h[üäÜÄua]hn").expect(REGEX_PARSE_E_MSG);
+    static ref POULTRY_REGEX: Regex = Regex::new(r"(?i)ente|chicken|pute|geflügel|h[üäua]hn").expect(REGEX_PARSE_E_MSG);
 }
 
 const DISH_NODE_CLASS_SELECTOR_PREFIX: &str = "tr.mt-";
@@ -606,7 +606,7 @@ mod tests {
         let file_contents = read_from_file(path).unwrap();
         let canteen_data = HTMLParser::new().transform(&file_contents, 42_u32).unwrap();
 
-        //let _ = write_output_to_file(path, &canteen_data);
+        //let remove_for_producton = write_output_to_file(path, &canteen_data);
         let expected = read_from_file(&path.replace(".html", ".txt"))
             .unwrap()
             .replace("\r\n", "\n");
