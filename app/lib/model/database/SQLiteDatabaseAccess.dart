@@ -61,7 +61,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
       DBMealAdditive.initTable(),
       DBMealAllergen.initTable(),
       DBMealNutritionData.initTable(),
-      //DBSideAdditive.initTable(),
+      DBSideAdditive.initTable(),
       DBSideAllergen.initTable(),
       DBSideNutritionData.initTable(),
       DBFavorite.initTable()
