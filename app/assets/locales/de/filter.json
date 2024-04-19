@@ -7,6 +7,7 @@
   "foodTypeSelectionUnknown": "Keine Angabe",
   "foodTypeSelectionPork": "Schweinefleisch",
   "foodTypeSelectionBeef": "Rindfleisch",
+  "foodTypeSelectionPoultry": "Geflügelfleisch",
   "foodTypeSelectionFish": "Fisch",
   "allergensTitle": "Allergene",
   "priceTitle": "Preis (maximal)",
