@@ -315,7 +315,7 @@ mod test {
         assert!(450.0 < average);
         assert!(460.0 > average);
 
-        let dishes = [];
+        let dishes = vec![];
         let average = RelationResolver::<MealplanManagementDatabaseMock>::average(dishes.iter());
         assert!((average - 0.0).abs() < f64::EPSILON);
     }
