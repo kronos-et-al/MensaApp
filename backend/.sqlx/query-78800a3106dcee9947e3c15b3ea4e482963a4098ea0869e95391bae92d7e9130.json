@@ -7,7 +7,7 @@
       "Left": [
         {
           "Custom": {
-            "name": "energy_domain",
+            "name": "energy",
             "kind": {
               "Domain": "Int4"
             }
@@ -15,7 +15,7 @@
         },
         {
           "Custom": {
-            "name": "weight_domain",
+            "name": "weight",
             "kind": {
               "Domain": "Int4"
             }
@@ -23,7 +23,7 @@
         },
         {
           "Custom": {
-            "name": "weight_domain",
+            "name": "weight",
             "kind": {
               "Domain": "Int4"
             }
@@ -31,7 +31,7 @@
         },
         {
           "Custom": {
-            "name": "weight_domain",
+            "name": "weight",
             "kind": {
               "Domain": "Int4"
             }
@@ -39,7 +39,7 @@
         },
         {
           "Custom": {
-            "name": "weight_domain",
+            "name": "weight",
             "kind": {
               "Domain": "Int4"
             }
@@ -47,7 +47,7 @@
         },
         {
           "Custom": {
-            "name": "weight_domain",
+            "name": "weight",
             "kind": {
               "Domain": "Int4"
             }
@@ -55,7 +55,7 @@
         },
         {
           "Custom": {
-            "name": "weight_domain",
+            "name": "weight",
             "kind": {
               "Domain": "Int4"
             }

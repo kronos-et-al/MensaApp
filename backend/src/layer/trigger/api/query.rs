@@ -64,7 +64,7 @@ impl QueryRoot {
 
     /// This query returns the version of this API schema. It can also be used for health checks.
     #[instrument(skip(self, _ctx))]
-    #[allow(clippy::no_effect_underscore_binding)]
+    #[allow(clippy::no_effect_underscore_binding)] // clippy does not detect that `_ctx` is required by the object macro.
     async fn api_version(&self, _ctx: &Context<'_>) -> String {
         trace!("Queried `apiVersion`");
         env!("CARGO_PKG_VERSION").into()

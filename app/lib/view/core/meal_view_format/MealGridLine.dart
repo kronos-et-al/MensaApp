@@ -21,7 +21,7 @@ class MealGridLine extends StatelessWidget {
       LayoutBuilder(
           builder: (context, constraints) => SingleChildScrollView(
                 physics: _PageScrollPhysics(
-                    itemDimension: constraints.maxWidth * 0.9),
+                    itemDimension: constraints.maxWidth * 0.9 < 500 ? constraints.maxWidth * 0.9 : 500.toDouble()),
                 scrollDirection: Axis.horizontal,
                 child: IntrinsicHeight(
                     child: Row(
@@ -31,7 +31,7 @@ class MealGridLine extends StatelessWidget {
                             meal: e,
                             line: _mealPlan.line,
                             date: _mealPlan.date,
-                            width: constraints.maxWidth * 0.9,
+                            width: constraints.maxWidth * 0.9 < 500 ? constraints.maxWidth * 0.9 : 500,
                           ))
                       .toList(),
                 )),

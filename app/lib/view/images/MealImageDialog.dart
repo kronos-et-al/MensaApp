@@ -12,6 +12,7 @@ import 'package:app/view/core/icons/image/ThumbUpOutlinedIcon.dart';
 import 'package:app/view/core/icons/navigation/NavigationCloseIcon.dart';
 import 'package:app/view/detail_view/UploadImageDialog.dart';
 import 'package:app/view/images/ImageReportDialog.dart';
+import 'package:app/view/images/MealImageView.dart';
 import 'package:app/view_model/logic/image/IImageAccess.dart';
 import 'package:app/view_model/logic/meal/IMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
@@ -38,6 +39,8 @@ class _MealImageDialogState extends State<MealImageDialog> {
   int currentPage = 0;
   final PageController pageController = PageController();
   bool isClosing = false;
+
+  bool _pagingEnabled = true;
 
   @override
   void initState() {
@@ -92,6 +95,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
                           ),
                         )),
                     content: PageView.builder(
+                      physics: _pagingEnabled ? const PageScrollPhysics() : const NeverScrollableScrollPhysics(),
                       itemCount: (meal.images?.length ?? 0),
                       controller: pageController,
                       itemBuilder: (context, index) {
@@ -111,28 +115,11 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                     context, "image.newImageButton"),
                               ));
                         }
-                        return Center(
-                            child: Image.network(
-                              meal.images![index].url,
-                              fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Text(
-                                      FlutterI18n.translate(
-                                          context, "image.loadingError")),
-                              frameBuilder:
-                                  (context, child, frame,
-                                  wasSynchronouslyLoaded) {
-                                if (wasSynchronouslyLoaded) {
-                                  return child;
-                                }
-                                return AnimatedOpacity(
-                                  opacity: frame == null ? 0 : 1,
-                                  duration: const Duration(milliseconds: 500),
-                                  curve: Curves.easeOut,
-                                  child: child,
-                                );
-                              },
-                            ));
+                        return MealImageView(imageData: meal.images![index], onScaleChanged: (scale) {
+                          setState(() {
+                            _pagingEnabled = scale <= 1.0;
+                          });
+                        });
                       },
                     ),
                     actions: (meal.images!.isEmpty ||

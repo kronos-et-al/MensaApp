@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:app/view/core/buttons/MensaButton.dart';
 import 'package:app/view/core/icons/LogoIcon.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 
@@ -70,13 +71,19 @@ class MealPreviewImage extends StatelessWidget {
                   Align(
                       alignment: const Alignment(1.0, -1.0),
                       child: Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Icon(
-                              _meal.isFavorite
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              size: 24,
-                              color: Theme.of(context).colorScheme.secondary))),
+                        padding: const EdgeInsets.all(4),
+                        child: Stack(
+                          children: [
+                            Icon(Icons.favorite,
+                                size: 28,
+                                color: Theme.of(context).colorScheme.onBackground),
+                            Icon(Icons.favorite_border,
+                                size: 28,
+                                color:
+                                    Theme.of(context).colorScheme.background),
+                          ],
+                        ),
+                      )),
               ])));
     } else {
       return Material(
@@ -84,31 +91,78 @@ class MealPreviewImage extends StatelessWidget {
           child: InkWell(
               borderRadius: _borderRadius,
               onTap: _onImagePressed,
-              child: Container(
-                  width: _width,
-                  height: _height,
-                  decoration: BoxDecoration(
-                    borderRadius: _borderRadius,
-                    image: DecorationImage(
-                      image: NetworkImage(_meal.images!.first.url),
-                      fit: BoxFit.cover,
+              child: CachedNetworkImage(
+                imageUrl: _meal.images!.first.url,
+                placeholder: (context, url) => Container(
+                    width: _width,
+                    height: _height,
+                    decoration: BoxDecoration(
+                        borderRadius: _borderRadius,
+                        color: theme.colorScheme.primary),
+                    child: ClipRRect(
+                        borderRadius: _borderRadius,
+                        child: Stack(children: [
+                          Center(
+                              child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              LogoIcon(size: min(96, _height! - 16)),
+                            ],
+                          )),
+                          if (_enableFavoriteButton && _meal.isFavorite)
+                            Align(
+                                alignment: const Alignment(1.0, -1.0),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4),
+                                  child: Stack(
+                                    children: [
+                                      Icon(Icons.favorite,
+                                          size: 28,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface),
+                                      Icon(Icons.favorite_border,
+                                          size: 28,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .surface),
+                                    ],
+                                  ),
+                                ))
+                        ]))),
+                imageBuilder: (context, imageProvider) => Container(
+                    width: _width,
+                    height: _height,
+                    decoration: BoxDecoration(
+                      borderRadius: _borderRadius,
+                      image: DecorationImage(
+                        image: imageProvider,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ),
-                  child: Stack(children: [
-                    if (_enableFavoriteButton && _meal.isFavorite)
-                      Align(
-                          alignment: const Alignment(1.0, -1.0),
-                          child: Padding(
+                    child: Stack(children: [
+                      if (_enableFavoriteButton && _meal.isFavorite)
+                        Align(
+                            alignment: const Alignment(1.0, -1.0),
+                            child: Padding(
                               padding: const EdgeInsets.all(4),
-                              child: Icon(
-                                  _meal.isFavorite
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                  size: 24,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .secondary))),
-                  ]))));
+                              child: Stack(
+                                children: [
+                                  Icon(Icons.favorite,
+                                      size: 28,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                  Icon(Icons.favorite_border,
+                                      size: 28,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surface),
+                                ],
+                              ),
+                            )),
+                    ])),
+              )));
     }
   }
 }

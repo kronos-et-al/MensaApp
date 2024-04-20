@@ -37,7 +37,7 @@ impl GoogleApiHandler {
     pub fn new(info: ImageValidationInfo) -> Result<Self> {
         Ok(Self {
             evaluation: ImageEvaluation::new(info.acceptance),
-            request: ApiRequest::new(info.service_account_info, info.project_id)?,
+            request: ApiRequest::new(&info.service_account_info, info.project_id)?,
         })
     }
 }
