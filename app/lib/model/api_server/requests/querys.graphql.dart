@@ -235,6 +235,7 @@ class Variables$Fragment$mealPlan {
   Map<String, dynamic> _$data;
 
   String get date => (_$data['date'] as String);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$date = date;
@@ -247,6 +248,7 @@ class Variables$Fragment$mealPlan {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -435,6 +437,7 @@ class _CopyWithImpl$Fragment$mealPlan<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
   TRes lines(
           Iterable<Fragment$mealPlan$lines> Function(
                   Iterable<
@@ -460,6 +463,7 @@ class _CopyWithStubImpl$Fragment$mealPlan<TRes>
     String? $__typename,
   }) =>
       _res;
+
   lines(_fn) => _res;
 }
 
@@ -782,6 +786,7 @@ class _CopyWithImpl$Fragment$mealPlan$lines<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
   CopyWith$Fragment$canteen<TRes> get canteen {
     final local$canteen = _instance.canteen;
     return CopyWith$Fragment$canteen(local$canteen, (e) => call(canteen: e));
@@ -812,8 +817,10 @@ class _CopyWithStubImpl$Fragment$mealPlan$lines<TRes>
     String? $__typename,
   }) =>
       _res;
+
   CopyWith$Fragment$canteen<TRes> get canteen =>
       CopyWith$Fragment$canteen.stub(_res);
+
   meals(_fn) => _res;
 }
 
@@ -1172,6 +1179,7 @@ class _CopyWithImpl$Fragment$mealInfo<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
   CopyWith$Fragment$price<TRes> get price {
     final local$price = _instance.price;
     return CopyWith$Fragment$price(local$price, (e) => call(price: e));
@@ -1209,6 +1217,7 @@ class _CopyWithImpl$Fragment$mealInfo<TRes>
                     e,
                     (i) => i,
                   ))).toList());
+
   TRes sides(
           Iterable<Fragment$mealInfo$sides> Function(
                   Iterable<
@@ -1244,14 +1253,20 @@ class _CopyWithStubImpl$Fragment$mealInfo<TRes>
     String? $__typename,
   }) =>
       _res;
+
   CopyWith$Fragment$price<TRes> get price => CopyWith$Fragment$price.stub(_res);
+
   CopyWith$Fragment$nutritionData<TRes> get nutritionData =>
       CopyWith$Fragment$nutritionData.stub(_res);
+
   CopyWith$Fragment$mealInfo$statistics<TRes> get statistics =>
       CopyWith$Fragment$mealInfo$statistics.stub(_res);
+
   CopyWith$Fragment$mealInfo$ratings<TRes> get ratings =>
       CopyWith$Fragment$mealInfo$ratings.stub(_res);
+
   images(_fn) => _res;
+
   sides(_fn) => _res;
 }
 
@@ -2456,6 +2471,7 @@ class _CopyWithImpl$Fragment$mealInfo$sides<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
   CopyWith$Fragment$price<TRes> get price {
     final local$price = _instance.price;
     return CopyWith$Fragment$price(local$price, (e) => call(price: e));
@@ -2487,7 +2503,9 @@ class _CopyWithStubImpl$Fragment$mealInfo$sides<TRes>
     String? $__typename,
   }) =>
       _res;
+
   CopyWith$Fragment$price<TRes> get price => CopyWith$Fragment$price.stub(_res);
+
   CopyWith$Fragment$nutritionData<TRes> get nutritionData =>
       CopyWith$Fragment$nutritionData.stub(_res);
 }
@@ -3126,6 +3144,7 @@ class Variables$Query$GetMealPlanForDay {
   Map<String, dynamic> _$data;
 
   String get date => (_$data['date'] as String);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$date = date;
@@ -3138,6 +3157,7 @@ class Variables$Query$GetMealPlanForDay {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -3325,6 +3345,7 @@ class _CopyWithImpl$Query$GetMealPlanForDay<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
   TRes getCanteens(
           Iterable<Fragment$mealPlan> Function(
                   Iterable<CopyWith$Fragment$mealPlan<Fragment$mealPlan>>)
@@ -3348,6 +3369,7 @@ class _CopyWithStubImpl$Query$GetMealPlanForDay<TRes>
     String? $__typename,
   }) =>
       _res;
+
   getCanteens(_fn) => _res;
 }
 
@@ -3584,7 +3606,9 @@ class Variables$Query$GetCanteenDate {
   Map<String, dynamic> _$data;
 
   String get canteenId => (_$data['canteenId'] as String);
+
   String get date => (_$data['date'] as String);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$canteenId = canteenId;
@@ -3599,6 +3623,7 @@ class Variables$Query$GetCanteenDate {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -3796,6 +3821,7 @@ class _CopyWithImpl$Query$GetCanteenDate<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
   CopyWith$Fragment$mealPlan<TRes> get getCanteen {
     final local$getCanteen = _instance.getCanteen;
     return local$getCanteen == null
@@ -3816,6 +3842,7 @@ class _CopyWithStubImpl$Query$GetCanteenDate<TRes>
     String? $__typename,
   }) =>
       _res;
+
   CopyWith$Fragment$mealPlan<TRes> get getCanteen =>
       CopyWith$Fragment$mealPlan.stub(_res);
 }
@@ -4066,8 +4093,11 @@ class Variables$Query$GetMeal {
   Map<String, dynamic> _$data;
 
   String get date => (_$data['date'] as String);
+
   String get mealId => (_$data['mealId'] as String);
+
   String get lineId => (_$data['lineId'] as String);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$date = date;
@@ -4084,6 +4114,7 @@ class Variables$Query$GetMeal {
         this,
         (i) => i,
       );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -4292,6 +4323,7 @@ class _CopyWithImpl$Query$GetMeal<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
   CopyWith$Fragment$mealInfo<TRes> get getMeal {
     final local$getMeal = _instance.getMeal;
     return local$getMeal == null
@@ -4311,6 +4343,7 @@ class _CopyWithStubImpl$Query$GetMeal<TRes>
     String? $__typename,
   }) =>
       _res;
+
   CopyWith$Fragment$mealInfo<TRes> get getMeal =>
       CopyWith$Fragment$mealInfo.stub(_res);
 }
@@ -4666,6 +4699,7 @@ class _CopyWithImpl$Query$GetDefaultCanteen<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
   TRes getCanteens(
           Iterable<Fragment$canteen> Function(
                   Iterable<CopyWith$Fragment$canteen<Fragment$canteen>>)
@@ -4689,6 +4723,7 @@ class _CopyWithStubImpl$Query$GetDefaultCanteen<TRes>
     String? $__typename,
   }) =>
       _res;
+
   getCanteens(_fn) => _res;
 }
 
