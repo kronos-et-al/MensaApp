@@ -646,7 +646,8 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
             individualRating: dbMeal.individualRating,
             images: (await _getDBImages(dbMeal.mealID)).map((e) => DatabaseTransformer.fromDBImage(e)).toList(),
             allergens: await _getMealAllergens(dbMeal.mealID),
-            additives: await _getMealAdditives(dbMeal.mealID));
+            additives: await _getMealAdditives(dbMeal.mealID),
+            nutritionData: await _getMealNutritionData(dbMeal.mealID));
         return Success(newMeal);
       } else {
         return Failure(NoMealException("No meal found with id ${meal.id}"));
