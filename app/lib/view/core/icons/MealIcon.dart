@@ -3,6 +3,7 @@ import 'package:app/view/core/icons/MealBeefIcon.dart';
 import 'package:app/view/core/icons/MealFishIcon.dart';
 import 'package:app/view/core/icons/MealPorkAwIcon.dart';
 import 'package:app/view/core/icons/MealPorkIcon.dart';
+import 'package:app/view/core/icons/MealPoultryIcon.dart';
 import 'package:app/view/core/icons/MealVeganIcon.dart';
 import 'package:app/view/core/icons/MealVegetarianIcon.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
@@ -42,6 +43,8 @@ class MealIcon extends StatelessWidget {
         return MealVegetarianIcon(width: _width, height: _height);
       case FoodType.vegan:
         return MealVeganIcon(width: _width, height: _height);
+      case FoodType.poultry:
+        return MealPoultryIcon(width: _width, height: _height);
       default:
         return SizedBox(width: _width, height: _height);
     }
