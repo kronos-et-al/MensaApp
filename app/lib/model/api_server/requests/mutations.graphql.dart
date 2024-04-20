@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
+import 'package:http/http.dart';
 import 'schema.graphql.dart';
 
 class Variables$Mutation$RemoveDownvote {
@@ -1878,7 +1879,7 @@ class Mutation$AddUpvote$Widget
 class Variables$Mutation$LinkImage {
   factory Variables$Mutation$LinkImage({
     required String mealId,
-    required String image,
+    required MultipartFile image,
     required String hash,
   }) =>
       Variables$Mutation$LinkImage._({
@@ -1894,7 +1895,7 @@ class Variables$Mutation$LinkImage {
     final l$mealId = data['mealId'];
     result$data['mealId'] = (l$mealId as String);
     final l$image = data['image'];
-    result$data['image'] = (l$image as String);
+    result$data['image'] = (l$image as MultipartFile);
     final l$hash = data['hash'];
     result$data['hash'] = (l$hash as String);
     return Variables$Mutation$LinkImage._(result$data);
@@ -1903,7 +1904,7 @@ class Variables$Mutation$LinkImage {
   Map<String, dynamic> _$data;
 
   String get mealId => (_$data['mealId'] as String);
-  String get image => (_$data['image'] as String);
+  MultipartFile get image => (_$data['image'] as MultipartFile);
   String get hash => (_$data['hash'] as String);
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -1972,7 +1973,7 @@ abstract class CopyWith$Variables$Mutation$LinkImage<TRes> {
 
   TRes call({
     String? mealId,
-    String? image,
+    MultipartFile? image,
     String? hash,
   });
 }
@@ -1999,7 +2000,8 @@ class _CopyWithImpl$Variables$Mutation$LinkImage<TRes>
         ..._instance._$data,
         if (mealId != _undefined && mealId != null)
           'mealId': (mealId as String),
-        if (image != _undefined && image != null) 'image': (image as String),
+        if (image != _undefined && image != null)
+          'image': (image as MultipartFile),
         if (hash != _undefined && hash != null) 'hash': (hash as String),
       }));
 }
@@ -2012,7 +2014,7 @@ class _CopyWithStubImpl$Variables$Mutation$LinkImage<TRes>
 
   call({
     String? mealId,
-    String? image,
+    MultipartFile? image,
     String? hash,
   }) =>
       _res;
