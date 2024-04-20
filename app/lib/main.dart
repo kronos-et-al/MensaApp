@@ -44,7 +44,8 @@ void main() async {
       "nutritionData",
       "mealplanException",
       "semantics",
-      "mealDetails"
+      "mealDetails",
+      "environmentInfo"
     ], useCountryCode: false, basePath: 'assets/locales', fallbackDir: 'de'),
     missingTranslationHandler: (key, locale) {
       if (kDebugMode) {
