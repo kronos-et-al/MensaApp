@@ -157,6 +157,23 @@ class _FilterDialogState extends State<FilterDialog> {
                                 ),
                                 MensaCheckbox(
                                   label: FlutterI18n.translate(
+                                      context, "filter.foodTypeSelectionPoultry"),
+                                  value: preferences.categories
+                                      .contains(FoodType.poultry),
+                                  onChanged: (value) {
+                                    if (value) {
+                                      preferences.categories.add(FoodType.poultry);
+                                    } else {
+                                      preferences.categories
+                                          .remove(FoodType.poultry);
+                                    }
+                                    setState(() {
+                                      preferences = preferences;
+                                    });
+                                  },
+                                ),
+                                MensaCheckbox(
+                                  label: FlutterI18n.translate(
                                       context, "filter.foodTypeSelectionFish"),
                                   value: preferences.categories
                                       .contains(FoodType.fish),
@@ -486,7 +503,8 @@ class _FilterDialogState extends State<FilterDialog> {
     if (types.contains(FoodType.beef) ||
         types.contains(FoodType.beefAw) ||
         types.contains(FoodType.pork) ||
-        types.contains(FoodType.porkAw)) {
+        types.contains(FoodType.porkAw) ||
+        types.contains(FoodType.poultry)) {
       return 0;
     }
     if (types.contains(FoodType.vegetarian)) {

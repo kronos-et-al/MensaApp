@@ -269,6 +269,9 @@ enum MealType {
   # This meal contains fish.
   FISH
 
+  # This meal contains poultry.
+  POULTRY
+
   # It is unknown whether this meal contains any meat or not.
   UNKNOWN
 }
