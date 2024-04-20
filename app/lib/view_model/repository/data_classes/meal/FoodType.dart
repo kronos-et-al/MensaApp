@@ -15,6 +15,9 @@ enum FoodType {
   /// the food includes fish
   fish,
 
+  /// the food includes poultry
+  poultry,
+
   /// the food is vegetarian
   vegetarian,
 
