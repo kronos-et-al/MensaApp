@@ -58,11 +58,38 @@ class MealAccordionInfo extends StatelessWidget {
                               : theme.colorScheme.background,
                           width: 2)),
                   child: MealNutrientsList(
-                      nutritionData: _nutritionData!, additives: _additives))),
+                      nutritionData: _nutritionData!, additives: _additives)))
+        else if (_additives.isNotEmpty)
+          Row(children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  FlutterI18n.translate(context, "additive.additiveTitle"),
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+                Text(
+                  _additives
+                      .map((e) =>
+                          FlutterI18n.translate(context, "additive.${e.name}"))
+                      .join(", "),
+                  style: const TextStyle(fontWeight: FontWeight.w300),
+                ),
+              ],
+            )
+          ]),
         Padding(
-            padding: const EdgeInsets.only(right: 8, left: 6, top: 2),
+            padding: const EdgeInsets.only(right: 8, top: 2),
             child: Text(
-              "${FlutterI18n.translate(context, _allergens.isNotEmpty ? "allergen.allergenTitle" : "allergen.allergenTitleEmpty")} ${_allergens.map((e) => FlutterI18n.translate(context, "allergen.${e.name}")).join(", ")}",
+              "${FlutterI18n.translate(context, _allergens.isNotEmpty ? "allergen.allergenTitle" : "allergen.allergenTitleEmpty")} ${_allergens.length > 1 ? ([
+                  _allergens
+                      .getRange(0, _allergens.length - 1)
+                      .map((e) =>
+                          FlutterI18n.translate(context, "allergen.${e.name}"))
+                      .join(", "),
+                  FlutterI18n.translate(context,
+                      "allergen.${_allergens[_allergens.length - 1].name}")
+                ].join(FlutterI18n.translate(context, "allergen.allergenSeparator"))) : FlutterI18n.translate(context, "allergen.${_allergens[0].name}")}",
               style: const TextStyle(
                 fontWeight: FontWeight.w300,
               ),
