@@ -7,6 +7,7 @@ import 'package:app/model/api_server/requests/schema.graphql.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
 import 'package:app/view_model/repository/data_classes/meal/Additive.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
+import 'package:app/view_model/repository/data_classes/meal/EnvironmentInfo.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 
@@ -59,12 +60,12 @@ class _MensaClient extends http.BaseClient {
 
     final hmac = Hmac(sha512, utf8.encode(_apiKey));
     final hash = hmac.convert(bytes);
-    final apiIndent = _apiKey.substring(0, min(_apiKeyIdentifierPrefixLength, _apiKey.length));
+    final apiIndent = _apiKey.substring(
+        0, min(_apiKeyIdentifierPrefixLength, _apiKey.length));
 
     final authInfo = "$_clientId:$apiIndent:${base64Encode(hash.bytes)}";
     request.headers["Authorization"] =
-    "$_authenticationScheme ${base64Encode(utf8.encode(authInfo))}";
-
+        "$_authenticationScheme ${base64Encode(utf8.encode(authInfo))}";
 
     return _client.send(request);
   }
@@ -133,18 +134,15 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   @override
-  Future<Result<bool, ImageUploadException>> linkImage(Uint8List imageFile,
-      MediaType mimeType, Meal meal) async {
-    final image = http.MultipartFile.fromBytes(
-        "", imageFile, filename: "image", contentType: mimeType);
-    final hash = base64Encode(sha512
-        .convert(imageFile)
-        .bytes);
+  Future<Result<bool, ImageUploadException>> linkImage(
+      Uint8List imageFile, MediaType mimeType, Meal meal) async {
+    final image = http.MultipartFile.fromBytes("", imageFile,
+        filename: "image", contentType: mimeType);
+    final hash = base64Encode(sha512.convert(imageFile).bytes);
     assert(image.filename != null);
 
     final result = await _client.mutate$LinkImage(Options$Mutation$LinkImage(
-        variables:
-        Variables$Mutation$LinkImage(
+        variables: Variables$Mutation$LinkImage(
             image: image, mealId: meal.id, hash: hash)));
 
     if (result.hasException) {
@@ -207,7 +205,7 @@ class GraphQlServerAccess implements IServerAccess {
       }
 
       final mealPlan =
-      _convertMealPlan(result.parsedData?.getCanteens ?? [], date);
+          _convertMealPlan(result.parsedData?.getCanteens ?? [], date);
 
       switch (mealPlan) {
         case Success(value: final mealPlan):
@@ -222,8 +220,8 @@ class GraphQlServerAccess implements IServerAccess {
   }
 
   @override
-  Future<Result<Meal, Exception>> getMeal(Meal meal, Line line,
-      DateTime date) async {
+  Future<Result<Meal, Exception>> getMeal(
+      Meal meal, Line line, DateTime date) async {
     final result = await _client.query$GetMeal(Options$Query$GetMeal(
         fetchPolicy: FetchPolicy.networkOnly,
         variables: Variables$Query$GetMeal(
@@ -311,27 +309,25 @@ class GraphQlServerAccess implements IServerAccess {
 
     return Success(mealPlans
         .expand(
-          (mealPlan) =>
-          mealPlan.lines
+          (mealPlan) => mealPlan.lines
               .asMap()
-              .map((idx, line) =>
-              MapEntry(
-                idx,
-                MealPlan(
-                  date: date,
-                  line: Line(
-                      id: line.id,
-                      name: line.name,
-                      canteen: _convertCanteen(line.canteen),
-                      position: idx),
-                  // mensa closed when data available but no meals in list
-                  isClosed: line.meals!.isEmpty,
-                  meals: line.meals!.map((e) => _convertMeal(e)).toList(),
-                ),
-              ))
+              .map((idx, line) => MapEntry(
+                    idx,
+                    MealPlan(
+                      date: date,
+                      line: Line(
+                          id: line.id,
+                          name: line.name,
+                          canteen: _convertCanteen(line.canteen),
+                          position: idx),
+                      // mensa closed when data available but no meals in list
+                      isClosed: line.meals!.isEmpty,
+                      meals: line.meals!.map((e) => _convertMeal(e)).toList(),
+                    ),
+                  ))
               .values
               .toList(),
-    )
+        )
         .toList());
   }
 
@@ -341,15 +337,16 @@ class GraphQlServerAccess implements IServerAccess {
       name: meal.name,
       foodType: _convertFoodType(meal.mealType),
       price: _convertPrice(meal.price),
-      additives: meal.additives
-          .map((e) => _convertAdditive(e))
-          .nonNulls
-          .toList(),
-      allergens: meal.allergens
-          .map((e) => _convertAllergen(e))
-          .nonNulls
-          .toList(),
-    nutritionData: meal.nutritionData != null ? _convertNutritionData(meal.nutritionData!) : null,
+      additives:
+          meal.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
+      allergens:
+          meal.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
+      nutritionData: meal.nutritionData != null
+          ? _convertNutritionData(meal.nutritionData!)
+          : null,
+      environmentInfo: meal.environmentInfo != null
+          ? _convertEnvironmentInfo(meal.environmentInfo!)
+          : null,
       averageRating: meal.ratings.averageRating,
       individualRating: meal.ratings.personalRating,
       numberOfRatings: meal.ratings.ratingsCount,
@@ -391,7 +388,10 @@ Side _convertSide(Fragment$mealInfo$sides e) {
       foodType: _convertFoodType(e.mealType),
       price: _convertPrice(e.price),
       allergens: e.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
-      additives: e.additives.map((e) => _convertAdditive(e)).nonNulls.toList());
+      additives: e.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
+      environmentInfo: e.environmentInfo != null
+          ? _convertEnvironmentInfo(e.environmentInfo!)
+          : null);
 }
 
 ImageData _convertImage(Fragment$mealInfo$images e) {
@@ -489,13 +489,27 @@ FoodType _convertFoodType(Enum$FoodType mealType) {
 
 NutritionData _convertNutritionData(Fragment$nutritionData nutritionData) {
   return NutritionData(
-      energy: nutritionData.energy,
-      protein: nutritionData.protein,
-      carbohydrates: nutritionData.carbohydrates,
-      sugar: nutritionData.sugar,
-      fat: nutritionData.fat,
-      saturatedFat: nutritionData.saturatedFat,
-      salt: nutritionData.salt,
+    energy: nutritionData.energy,
+    protein: nutritionData.protein,
+    carbohydrates: nutritionData.carbohydrates,
+    sugar: nutritionData.sugar,
+    fat: nutritionData.fat,
+    saturatedFat: nutritionData.saturatedFat,
+    salt: nutritionData.salt,
+  );
+}
+
+EnvironmentInfo _convertEnvironmentInfo(
+    Fragment$environmentInfo environmentInfo) {
+  return EnvironmentInfo(
+    averageRating: environmentInfo.averageRating,
+    co2Rating: environmentInfo.co2Rating,
+    co2Value: environmentInfo.co2Value,
+    waterRating: environmentInfo.waterRating,
+    waterValue: environmentInfo.waterValue,
+    animalWelfareRating: environmentInfo.animalWelfareRating,
+    rainforestRating: environmentInfo.rainforestRating,
+    maxRating: environmentInfo.maxRating,
   );
 }
 

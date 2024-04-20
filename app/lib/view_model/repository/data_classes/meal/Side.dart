@@ -1,5 +1,6 @@
 import 'Additive.dart';
 import 'Allergen.dart';
+import 'EnvironmentInfo.dart';
 import 'FoodType.dart';
 import 'NutritionData.dart';
 import 'Price.dart';
@@ -13,6 +14,7 @@ class Side {
   final List<Allergen> _allergens;
   final List<Additive> _additives;
   final NutritionData? _nutritionData;
+  final EnvironmentInfo? _environmentInfo;
 
   /// Constructor that creates a new side.
   ///
@@ -25,13 +27,15 @@ class Side {
     required List<Allergen> allergens,
     required List<Additive> additives,
     NutritionData? nutritionData,
+    EnvironmentInfo? environmentInfo,
   })  : _id = id,
         _name = name,
         _foodType = foodType,
         _price = price,
         _allergens = allergens,
         _additives = additives,
-        _nutritionData = nutritionData;
+        _nutritionData = nutritionData,
+        _environmentInfo = environmentInfo;
 
   /// Constructor that creates a new side with the committed values.
   /// If any values are not committed these values are replaced with the values of [side].
@@ -43,14 +47,16 @@ class Side {
     Price? price,
     List<Allergen>? allergens,
     List<Additive>? additives,
-    NutritionData? nutritionData
+    NutritionData? nutritionData,
+    EnvironmentInfo? environmentInfo,
   })  : _id = id ?? side.id,
         _name = name ?? side.name,
         _foodType = foodType ?? side.foodType,
         _price = price ?? side.price,
         _allergens = allergens ?? side.allergens,
         _additives = additives ?? side.additives,
-        _nutritionData = nutritionData ?? side.nutritionData;
+        _nutritionData = nutritionData ?? side.nutritionData,
+        _environmentInfo = environmentInfo ?? side.environmentInfo;
 
   /// Returns the id of the side.
   String get id => _id;
@@ -72,6 +78,9 @@ class Side {
 
   /// Returns nutrition data of the side.
   NutritionData? get nutritionData => _nutritionData;
+
+  /// Returns the environment info of the side.
+  EnvironmentInfo? get environmentInfo => _environmentInfo;
 
   @override
   bool operator ==(Object other) =>
