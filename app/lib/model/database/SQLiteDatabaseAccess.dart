@@ -896,7 +896,8 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
                 .toList(),
             environmentInfo: await _getMealEnvironmentInfo(dbMeal.mealID),
             allergens: await _getMealAllergens(dbMeal.mealID),
-            additives: await _getMealAdditives(dbMeal.mealID));
+            additives: await _getMealAdditives(dbMeal.mealID),
+            nutritionData: await _getMealNutritionData(dbMeal.mealID));
         return Success(newMeal);
       } else {
         return Failure(NoMealException("No meal found with id ${meal.id}"));

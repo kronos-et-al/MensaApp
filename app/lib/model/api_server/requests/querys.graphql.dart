@@ -235,6 +235,7 @@ class Variables$Fragment$mealPlan {
   Map<String, dynamic> _$data;
 
   String get date => (_$data['date'] as String);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$date = date;
@@ -247,6 +248,7 @@ class Variables$Fragment$mealPlan {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -435,6 +437,7 @@ class _CopyWithImpl$Fragment$mealPlan<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
   TRes lines(
           Iterable<Fragment$mealPlan$lines> Function(
                   Iterable<
@@ -460,6 +463,7 @@ class _CopyWithStubImpl$Fragment$mealPlan<TRes>
     String? $__typename,
   }) =>
       _res;
+
   lines(_fn) => _res;
 }
 
@@ -783,6 +787,7 @@ class _CopyWithImpl$Fragment$mealPlan$lines<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
   CopyWith$Fragment$canteen<TRes> get canteen {
     final local$canteen = _instance.canteen;
     return CopyWith$Fragment$canteen(local$canteen, (e) => call(canteen: e));
@@ -813,8 +818,10 @@ class _CopyWithStubImpl$Fragment$mealPlan$lines<TRes>
     String? $__typename,
   }) =>
       _res;
+
   CopyWith$Fragment$canteen<TRes> get canteen =>
       CopyWith$Fragment$canteen.stub(_res);
+
   meals(_fn) => _res;
 }
 
@@ -1196,6 +1203,7 @@ class _CopyWithImpl$Fragment$mealInfo<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
   CopyWith$Fragment$price<TRes> get price {
     final local$price = _instance.price;
     return CopyWith$Fragment$price(local$price, (e) => call(price: e));
@@ -1241,6 +1249,7 @@ class _CopyWithImpl$Fragment$mealInfo<TRes>
                     e,
                     (i) => i,
                   ))).toList());
+
   TRes sides(
           Iterable<Fragment$mealInfo$sides> Function(
                   Iterable<
@@ -1277,7 +1286,9 @@ class _CopyWithStubImpl$Fragment$mealInfo<TRes>
     String? $__typename,
   }) =>
       _res;
+
   CopyWith$Fragment$price<TRes> get price => CopyWith$Fragment$price.stub(_res);
+
   CopyWith$Fragment$nutritionData<TRes> get nutritionData =>
       CopyWith$Fragment$nutritionData.stub(_res);
   CopyWith$Fragment$environmentInfo<TRes> get environmentInfo =>

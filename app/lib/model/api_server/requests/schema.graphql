@@ -215,6 +215,9 @@ enum FoodType {
   # This meal contains pork from regional appropriate animal husbandry.
   PORK_AW
 
+  # This meal contains pork.
+  POULTRY
+
   # This meal contains fish.
   FISH
 

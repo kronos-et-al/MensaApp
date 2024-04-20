@@ -25,6 +25,7 @@ class Variables$Mutation$RemoveDownvote {
   Map<String, dynamic> _$data;
 
   String get imageId => (_$data['imageId'] as String);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$imageId = imageId;
@@ -37,6 +38,7 @@ class Variables$Mutation$RemoveDownvote {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -497,6 +499,7 @@ class Variables$Mutation$RemoveUpvote {
   Map<String, dynamic> _$data;
 
   String get imageId => (_$data['imageId'] as String);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$imageId = imageId;
@@ -509,6 +512,7 @@ class Variables$Mutation$RemoveUpvote {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -963,6 +967,7 @@ class Variables$Mutation$AddDownvote {
   Map<String, dynamic> _$data;
 
   String get imageId => (_$data['imageId'] as String);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$imageId = imageId;
@@ -975,6 +980,7 @@ class Variables$Mutation$AddDownvote {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -1429,6 +1435,7 @@ class Variables$Mutation$AddUpvote {
   Map<String, dynamic> _$data;
 
   String get imageId => (_$data['imageId'] as String);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$imageId = imageId;
@@ -1441,6 +1448,7 @@ class Variables$Mutation$AddUpvote {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -1904,8 +1912,11 @@ class Variables$Mutation$LinkImage {
   Map<String, dynamic> _$data;
 
   String get mealId => (_$data['mealId'] as String);
+
   MultipartFile get image => (_$data['image'] as MultipartFile);
+
   String get hash => (_$data['hash'] as String);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$mealId = mealId;
@@ -1922,6 +1933,7 @@ class Variables$Mutation$LinkImage {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -2439,7 +2451,9 @@ class Variables$Mutation$ReportImage {
   Map<String, dynamic> _$data;
 
   String get imageId => (_$data['imageId'] as String);
+
   Enum$ReportReason get reason => (_$data['reason'] as Enum$ReportReason);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$imageId = imageId;
@@ -2454,6 +2468,7 @@ class Variables$Mutation$ReportImage {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -2948,7 +2963,9 @@ class Variables$Mutation$UpdateRating {
   Map<String, dynamic> _$data;
 
   String get mealId => (_$data['mealId'] as String);
+
   int get rating => (_$data['rating'] as int);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$mealId = mealId;
@@ -2963,6 +2980,7 @@ class Variables$Mutation$UpdateRating {
             this,
             (i) => i,
           );
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {

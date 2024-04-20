@@ -391,6 +391,9 @@ Side _convertSide(Fragment$mealInfo$sides e) {
       additives: e.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
       environmentInfo: e.environmentInfo != null
           ? _convertEnvironmentInfo(e.environmentInfo!)
+          : null,
+      nutritionData: e.nutritionData != null
+          ? _convertNutritionData(e.nutritionData!)
           : null);
 }
 
@@ -480,6 +483,8 @@ FoodType _convertFoodType(Enum$FoodType mealType) {
       return FoodType.vegan;
     case Enum$FoodType.VEGETARIAN:
       return FoodType.vegetarian;
+    case Enum$FoodType.POULTRY:
+      return FoodType.poultry;
     case Enum$FoodType.UNKNOWN:
       return FoodType.unknown;
     case Enum$FoodType.$unknown:
