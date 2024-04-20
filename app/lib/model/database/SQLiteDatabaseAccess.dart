@@ -15,10 +15,12 @@ import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:app/view_model/repository/interface/IDatabaseAccess.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../view_model/repository/data_classes/meal/Allergen.dart';
@@ -77,7 +79,9 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
 
   static Future<Database> _initiate() async {
     WidgetsFlutterBinding.ensureInitialized();
-    if (Platform.isWindows || Platform.isLinux) {
+    if (kIsWeb) {
+      databaseFactory = databaseFactoryFfiWeb;
+    } else if (Platform.isWindows || Platform.isLinux) {
       databaseFactory = databaseFactoryFfi;
     }
     return await openDatabase(
