@@ -1,6 +1,7 @@
 import 'Additive.dart';
 import 'Allergen.dart';
 import 'FoodType.dart';
+import 'NutritionData.dart';
 import 'Price.dart';
 
 /// This class represents a side.
@@ -11,6 +12,7 @@ class Side {
   final Price _price;
   final List<Allergen> _allergens;
   final List<Additive> _additives;
+  final NutritionData? _nutritionData;
 
   /// Constructor that creates a new side.
   ///
@@ -22,12 +24,14 @@ class Side {
     required Price price,
     required List<Allergen> allergens,
     required List<Additive> additives,
+    NutritionData? nutritionData,
   })  : _id = id,
         _name = name,
         _foodType = foodType,
         _price = price,
         _allergens = allergens,
-        _additives = additives;
+        _additives = additives,
+        _nutritionData = nutritionData;
 
   /// Constructor that creates a new side with the committed values.
   /// If any values are not committed these values are replaced with the values of [side].
@@ -39,12 +43,14 @@ class Side {
     Price? price,
     List<Allergen>? allergens,
     List<Additive>? additives,
+    NutritionData? nutritionData
   })  : _id = id ?? side.id,
         _name = name ?? side.name,
         _foodType = foodType ?? side.foodType,
         _price = price ?? side.price,
         _allergens = allergens ?? side.allergens,
-        _additives = additives ?? side.additives;
+        _additives = additives ?? side.additives,
+        _nutritionData = nutritionData ?? side.nutritionData;
 
   /// Returns the id of the side.
   String get id => _id;
@@ -63,6 +69,9 @@ class Side {
 
   /// Returns the additives of the side.
   List<Additive> get additives => _additives;
+
+  /// Returns nutrition data of the side.
+  NutritionData? get nutritionData => _nutritionData;
 
   @override
   bool operator ==(Object other) =>

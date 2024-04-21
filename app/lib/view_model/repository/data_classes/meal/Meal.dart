@@ -1,3 +1,5 @@
+import 'package:app/view_model/repository/data_classes/meal/NutritionData.dart';
+
 import '../filter/Frequency.dart';
 import 'Additive.dart';
 import 'Allergen.dart';
@@ -16,6 +18,7 @@ class Meal {
   final List<Allergen>? _allergens;
   final List<Additive>? _additives;
   final List<Side>? _sides;
+  final NutritionData? _nutritionData;
 
   int _individualRating;
   int _numberOfRatings;
@@ -39,6 +42,7 @@ class Meal {
     List<Allergen>? allergens,
     List<Additive>? additives,
     List<Side>? sides,
+    NutritionData? nutritionData,
     int? individualRating,
     int? numberOfRatings,
     double? averageRating,
@@ -55,6 +59,7 @@ class Meal {
         _allergens = allergens ?? [],
         _additives = additives ?? [],
         _sides = sides ?? [],
+        _nutritionData = nutritionData,
         _individualRating = individualRating ?? 0,
         _numberOfRatings = numberOfRatings ?? 0,
         _averageRating = averageRating ?? 0,
@@ -76,6 +81,7 @@ class Meal {
     List<Allergen>? allergens,
     List<Additive>? additives,
     List<Side>? sides,
+    NutritionData? nutritionData,
     int? individualRating,
     int? numberOfRatings,
     double? averageRating,
@@ -92,6 +98,7 @@ class Meal {
         _allergens = allergens ?? meal.allergens,
         _additives = additives ?? meal.additives,
         _sides = sides ?? meal.sides,
+        _nutritionData = nutritionData ?? meal.nutritionData,
         _individualRating = individualRating ?? meal.individualRating,
         _numberOfRatings = numberOfRatings ?? meal.numberOfRatings,
         _averageRating = averageRating ?? meal.averageRating,
@@ -137,6 +144,9 @@ class Meal {
 
   /// Returns the sides of the meal.
   List<Side>? get sides => _sides;
+
+  /// Returns nutrition data of the meal.
+  NutritionData? get nutritionData => _nutritionData;
 
   /// This method returns the individual rating of the meal.
   int get individualRating => _individualRating;

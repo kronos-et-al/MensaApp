@@ -257,8 +257,8 @@ class DetailsPageState extends State<DetailsPage> {
                                                 frequency:
                                                     meal.numberOfOccurance,
                                                 additives: meal.additives ?? [],
-                                                allergens:
-                                                    meal.allergens ?? []),
+                                                allergens: meal.allergens ?? [],
+                                                nutritionData: meal.nutritionData),
                                             isExpanded:
                                                 expandedAccordionIndex == 0,
                                             onTap: () => setState(() =>
@@ -291,7 +291,8 @@ class DetailsPageState extends State<DetailsPage> {
                                                         MealSideEntry(side: e),
                                                     info: MealAccordionInfo(
                                                         additives: e.additives,
-                                                        allergens: e.allergens),
+                                                        allergens: e.allergens,
+                                                        nutritionData: e.nutritionData),
                                                     isExpanded:
                                                         expandedAccordionIndex ==
                                                             meal.sides!.indexOf(

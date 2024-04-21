@@ -49,6 +49,9 @@ fragment mealInfo on Meal {
     }
     allergens
     additives
+    nutritionData {
+        ...nutritionData
+    }
     statistics {
         lastServed
         nextServed
@@ -77,6 +80,9 @@ fragment mealInfo on Meal {
         price {
             ...price
         }
+        nutritionData {
+            ...nutritionData
+        }
         mealType
     }
 }
@@ -86,4 +92,14 @@ fragment price on Price {
     guest
     pupil
     student
+}
+
+fragment nutritionData on NutritionData {
+    energy
+    protein
+    carbohydrates
+    sugar
+    fat
+    saturatedFat
+    salt
 }
