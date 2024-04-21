@@ -106,6 +106,7 @@ flutter:
     - assets/icons/filter/
     - assets/icons/meal/
     - assets/icons/image/
+    - assets/icons/environment_info/
     - assets/locales/en/
     - assets/locales/de/
     - .env

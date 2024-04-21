@@ -138,16 +138,23 @@ enum Allergen {
   GL
 }
 
-# Information about the provided authentication information.
+# Object containing all information about whether the current request was authenticated.
+# For more informatiun about request authentication, see <https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md>.
 type AuthInfo {
-  # My own user identifier.
-  clientId: UUID!
+  # The in authorization header specified client id if any.
+  clientId: UUID
 
-  # The provided api key identifier (first 10 symbols only!).
+  # Whether this request was authenticated.
+  authenticated: Boolean!
+
+  # Provided api key identifier.
   apiIdent: String!
 
-  # The provided hash of a request.
+  # Provided HMAC hash over request body.
   hash: String!
+
+  # Error message when not authenticated.
+  authError: String
 }
 
 type Canteen {
@@ -159,6 +166,63 @@ type Canteen {
 
   # Provides the lines of the canteen.
   lines: [Line!]!
+}
+
+# This struct contains all environmental information. co2 in grams, water in litres
+type EnvironmentInfo {
+  # The average environmental rating. Out of `max_rating`
+  averageRating: Int!
+
+  # The number of stars the food has for CO2 emmissions. Out of `max_rating`
+  co2Rating: Int!
+
+  # The amount of CO2 emitted by the production of the food. In grams
+  co2Value: Int!
+
+  # The number of stars the food has for water consumption. Out of `max_rating`
+  waterRating: Int!
+
+  # The amount of water used for the production of the food. In Millilitres
+  waterValue: Int!
+
+  # The number of stars the food has for animal welfare. Out of `max_rating`
+  animalWelfareRating: Int!
+
+  # The number of stars the food has for rainforest preservation. Out of `max_rating`
+  rainforestRating: Int!
+
+  # The maximum amount of stars for each category
+  maxRating: Int!
+}
+
+# This enum lists all the types a meal can be of.
+enum FoodType {
+  # This meal is vegan.
+  VEGAN
+
+  # This meal is vegetarian.
+  VEGETARIAN
+
+  # This meal contains beef.
+  BEEF
+
+  # This meal contains beef from regional appropriate animal husbandry.
+  BEEF_AW
+
+  # This meal contains pork.
+  PORK
+
+  # This meal contains pork from regional appropriate animal husbandry.
+  PORK_AW
+
+  # This meal contains pork.
+  POULTRY
+
+  # This meal contains fish.
+  FISH
+
+  # It is unknown whether this meal contains any meat or not.
+  UNKNOWN
 }
 
 type Image {
@@ -176,9 +240,13 @@ type Image {
 
   # The amount of users, who downvoted the image.
   downvotes: Int!
+
+  # This attribute specifies whether or not the user upvoted the image.
+  # Therefor a client id must be provided in the authorization header (see https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md).
   personalUpvote: Boolean!
 
   # This attribute specifies whether or not the user downvoted the image.
+  # Therefor a client id must be provided in the authorization header (see https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md).
   personalDownvote: Boolean!
 }
 
@@ -205,7 +273,7 @@ type Meal {
 
   # Type of this meal.
   # Here the type of meat which is contained in the meal, or whether it is vegetarian or vegan, is specified.
-  mealType: MealType!
+  mealType: FoodType!
 
   # The ratings given by the users to the meal.
   ratings: Ratings!
@@ -230,6 +298,12 @@ type Meal {
 
   # Provides the line this meal is served at.
   line: Line!
+
+  # Provides the environment information of this meal.
+  environmentInfo: EnvironmentInfo
+
+  # Provides the nutrition data of this meal.
+  nutritionData: NutritionData
 }
 
 type MealStatistics {
@@ -246,47 +320,16 @@ type MealStatistics {
   new: Boolean!
 }
 
-# This enum lists all the types a meal can be of.
-enum MealType {
-  # This meal is vegan.
-  VEGAN
-
-  # This meal is vegetarian.
-  VEGETARIAN
-
-  # This meal contains beef.
-  BEEF
-
-  # This meal contains beef from regional appropriate animal husbandry.
-  BEEF_AW
-
-  # This meal contains pork.
-  PORK
-
-  # This meal contains pork from regional appropriate animal husbandry.
-  PORK_AW
-
-  # This meal contains fish.
-  FISH
-
-  # This meal contains poultry.
-  POULTRY
-
-  # It is unknown whether this meal contains any meat or not.
-  UNKNOWN
-}
-
 type MutationRoot {
   # This mutation adds an image to the specified main dish.
   # The user has to be authenticated.
+  # Images will be visible to other users.
   #
-  # `image_url` is a link to a Flickr image used to get information about it.
+  # By uploading an image you agree to license it under the [CC0](https://creativecommons.org/publicdomain/zero/1.0/) license and pledge to have the right to do so.
   #
-  # If the meal does not exist, or the URL does not lead to Flickr
-  # or the image is not licenced under a [CC0](https://creativecommons.org/publicdomain/zero/1.0/) licence
-  # or another error occurred while adding the image an error message will be returned.
+  # The image may not contain inappropriate content, otherwise the request may fail.
   #
-  # If the image was added is successful, `true` is returned.
+  # If the image was added is successfully, `true` is returned.
   addImage(
     # Id of the meal to link an image to.
     mealId: UUID!
@@ -294,7 +337,7 @@ type MutationRoot {
     # The image itself as multipart attachment.
     image: Upload!
 
-    # Sha512 hash of the uploaded image file.
+    # Sha512 hash of the uploaded image file. Encoded as Base64.
     hash: String!
   ): Boolean!
 
@@ -368,6 +411,30 @@ type MutationRoot {
 # * `2000-02-24`
 scalar NaiveDate
 
+# The nutrients of a dish
+type NutritionData {
+  # Energy in Kcal
+  energy: Int!
+
+  # Protein in grams
+  protein: Int!
+
+  # Carbs in grams
+  carbohydrates: Int!
+
+  # Sugar in grams
+  sugar: Int!
+
+  # Fat in grams
+  fat: Int!
+
+  # Saturated fat in grams
+  saturatedFat: Int!
+
+  # Salt in grams
+  salt: Int!
+}
+
 type Price {
   # The price of the meal for students.
   student: Int!
@@ -411,7 +478,8 @@ type QueryRoot {
 
   # This query returns the in the `Authorization` request header provided authentication information.
   # It is intended for debugging purposes to check whether these information got passed correctly.
-  getMyAuth: AuthInfo
+  # Additionally, there is information whether authentication was successful.
+  getMyAuth: AuthInfo!
 }
 
 type Ratings {
@@ -422,6 +490,7 @@ type Ratings {
   ratingsCount: Int!
 
   # Provides this user's rating for the meal.
+  # Therefor a client id must be provided in the authorization header (see https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md).
   personalRating: Int
 }
 
@@ -454,7 +523,7 @@ type Side {
   name: String!
 
   # Here the type of meat which is contained in the side, or whether it is vegetarian or vegan, is specified.
-  mealType: MealType!
+  mealType: FoodType!
 
   # The price of the side
   price: Price!
@@ -464,6 +533,12 @@ type Side {
 
   # Provides the additives of this side
   additives: [Additive!]!
+
+  # Provides the environment information of this meal.
+  environmentInfo: EnvironmentInfo
+
+  # Provides the nutrition data of this meal.
+  nutritionData: NutritionData
 }
 
 # A UUID is a unique 128-bit number, stored as 16 octets. UUIDs are parsed as

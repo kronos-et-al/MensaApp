@@ -249,66 +249,66 @@ Enum$Allergen fromJson$Enum$Allergen(String value) {
   }
 }
 
-enum Enum$MealType {
+enum Enum$FoodType {
   VEGAN,
   VEGETARIAN,
   BEEF,
   BEEF_AW,
   PORK,
   PORK_AW,
-  FISH,
   POULTRY,
+  FISH,
   UNKNOWN,
   $unknown
 }
 
-String toJson$Enum$MealType(Enum$MealType e) {
+String toJson$Enum$FoodType(Enum$FoodType e) {
   switch (e) {
-    case Enum$MealType.VEGAN:
+    case Enum$FoodType.VEGAN:
       return r'VEGAN';
-    case Enum$MealType.VEGETARIAN:
+    case Enum$FoodType.VEGETARIAN:
       return r'VEGETARIAN';
-    case Enum$MealType.BEEF:
+    case Enum$FoodType.BEEF:
       return r'BEEF';
-    case Enum$MealType.BEEF_AW:
+    case Enum$FoodType.BEEF_AW:
       return r'BEEF_AW';
-    case Enum$MealType.PORK:
+    case Enum$FoodType.PORK:
       return r'PORK';
-    case Enum$MealType.PORK_AW:
+    case Enum$FoodType.PORK_AW:
       return r'PORK_AW';
-    case Enum$MealType.FISH:
-      return r'FISH';
-    case Enum$MealType.POULTRY:
+    case Enum$FoodType.POULTRY:
       return r'POULTRY';
-    case Enum$MealType.UNKNOWN:
+    case Enum$FoodType.FISH:
+      return r'FISH';
+    case Enum$FoodType.UNKNOWN:
       return r'UNKNOWN';
-    case Enum$MealType.$unknown:
+    case Enum$FoodType.$unknown:
       return r'$unknown';
   }
 }
 
-Enum$MealType fromJson$Enum$MealType(String value) {
+Enum$FoodType fromJson$Enum$FoodType(String value) {
   switch (value) {
     case r'VEGAN':
-      return Enum$MealType.VEGAN;
+      return Enum$FoodType.VEGAN;
     case r'VEGETARIAN':
-      return Enum$MealType.VEGETARIAN;
+      return Enum$FoodType.VEGETARIAN;
     case r'BEEF':
-      return Enum$MealType.BEEF;
+      return Enum$FoodType.BEEF;
     case r'BEEF_AW':
-      return Enum$MealType.BEEF_AW;
+      return Enum$FoodType.BEEF_AW;
     case r'PORK':
-      return Enum$MealType.PORK;
+      return Enum$FoodType.PORK;
     case r'PORK_AW':
-      return Enum$MealType.PORK_AW;
-    case r'FISH':
-      return Enum$MealType.FISH;
+      return Enum$FoodType.PORK_AW;
     case r'POULTRY':
-      return Enum$MealType.POULTRY;
+      return Enum$FoodType.POULTRY;
+    case r'FISH':
+      return Enum$FoodType.FISH;
     case r'UNKNOWN':
-      return Enum$MealType.UNKNOWN;
+      return Enum$FoodType.UNKNOWN;
     default:
-      return Enum$MealType.$unknown;
+      return Enum$FoodType.$unknown;
   }
 }
 

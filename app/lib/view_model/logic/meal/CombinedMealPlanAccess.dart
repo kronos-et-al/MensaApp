@@ -226,7 +226,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       }
     }
 
-    return await _database.getMeal(meal);
+    return _database.getMeal(meal);
   }
 
   @override

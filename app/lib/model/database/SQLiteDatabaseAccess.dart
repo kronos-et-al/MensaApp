@@ -1,13 +1,20 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:app/model/database/migration/migrations.dart';
 import 'package:app/model/database/model/database_model.dart';
+import 'package:app/model/database/model/db_meal_environment_info.dart';
 import 'package:app/model/database/model/db_mealplan_side.dart';
+import 'package:app/model/database/model/db_side_environment_info.dart';
+import 'package:app/model/database/model/db_side_nutrition_data.dart';
+import 'package:app/model/database/model/environment_info_mixin.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
 import 'package:app/view_model/repository/data_classes/meal/Additive.dart';
+import 'package:app/view_model/repository/data_classes/meal/EnvironmentInfo.dart';
 import 'package:app/view_model/repository/data_classes/meal/FavoriteMeal.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
+import 'package:app/view_model/repository/data_classes/meal/NutritionData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Price.dart';
 import 'package:app/view_model/repository/data_classes/meal/Side.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
@@ -31,11 +38,15 @@ import 'model/db_line.dart';
 import 'model/db_meal.dart';
 import 'model/db_meal_additive.dart';
 import 'model/db_meal_allergen.dart';
+import 'model/db_meal_nutrition_data.dart';
 import 'model/db_meal_plan.dart';
 import 'model/db_mealplan_meal.dart';
 import 'model/db_side.dart';
 import 'model/db_side_additive.dart';
 import 'model/db_side_allergen.dart';
+import 'model/nutrition_data_mixin.dart';
+
+enum NutritionEntity { meal, side }
 
 /// This class accesses the database and uses it as local storage.
 class SQLiteDatabaseAccess implements IDatabaseAccess {
@@ -53,8 +64,12 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
       DBImage.initTable(),
       DBMealAdditive.initTable(),
       DBMealAllergen.initTable(),
+      DBMealNutritionData.initTable(),
+      DBMealEnvironmentInfo.initTable(),
       DBSideAdditive.initTable(),
       DBSideAllergen.initTable(),
+      DBSideNutritionData.initTable(),
+      DBSideEnvironmentInfo.initTable(),
       DBFavorite.initTable()
     ];
   }
@@ -87,7 +102,15 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
           db.execute(sql);
         }
       },
-      version: 1,
+      onUpgrade: (db, oldVersion, newVersion) {
+        for (var i = oldVersion; i < newVersion; i++) {
+          if (dbMigrations.containsKey((i, i + 1))) {
+            Future.forEach(dbMigrations[(i, i + 1)]!,
+                (sql) async => await db.execute(sql));
+          }
+        }
+      },
+      version: 4,
     );
   }
 
@@ -136,12 +159,16 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
                 guest: dbFavorite.priceGuest),
             await _getMealAllergens(dbMeal.mealID),
             await _getMealAdditives(dbMeal.mealID),
+            await _getDBMealNutritionData(dbMeal.mealID),
             [],
             {},
             {},
             {},
+            {},
             await _getDBImages(dbMeal.mealID),
-            dbFavorite.lastDate != null ? _dateFormat.parse(dbFavorite.lastDate!) : null,
+            dbFavorite.lastDate != null
+                ? _dateFormat.parse(dbFavorite.lastDate!)
+                : null,
             null,
             null,
             null,
@@ -173,12 +200,16 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
                 guest: dbFavorite.priceGuest),
             await _getMealAllergens(dbMeal.mealID),
             await _getMealAdditives(dbMeal.mealID),
+            await _getDBMealNutritionData(dbMeal.mealID),
             [],
             {},
             {},
             {},
+            {},
             (await _getDBImages(dbMeal.mealID)),
-            dbFavorite.lastDate != null ? _dateFormat.parse(dbFavorite.lastDate!) : null,
+            dbFavorite.lastDate != null
+                ? _dateFormat.parse(dbFavorite.lastDate!)
+                : null,
             null,
             null,
             null,
@@ -230,12 +261,18 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
           id: dbMeal.mealID,
           name: dbMeal.name,
           foodType: dbMeal.foodType,
-          lastServed: dbMealPlanMeal.lastServed != null ? _dateFormat.parse(dbMealPlanMeal.lastServed!) : null,
-          nextServed: dbMealPlanMeal.nextServed != null ? _dateFormat.parse(dbMealPlanMeal.nextServed!) : null,
+          lastServed: dbMealPlanMeal.lastServed != null
+              ? _dateFormat.parse(dbMealPlanMeal.lastServed!)
+              : null,
+          nextServed: dbMealPlanMeal.nextServed != null
+              ? _dateFormat.parse(dbMealPlanMeal.nextServed!)
+              : null,
           numberOfOccurance: dbMealPlanMeal.frequency,
           relativeFrequency: dbMealPlanMeal.relativeFrequency,
           additives: await _getMealAdditives(dbMeal.mealID),
           allergens: await _getMealAllergens(dbMeal.mealID),
+          nutritionData: await _getMealNutritionData(dbMeal.mealID),
+          environmentInfo: await _getMealEnvironmentInfo(dbMeal.mealID),
           averageRating: dbMeal.averageRating,
           individualRating: dbMeal.individualRating,
           numberOfRatings: dbMeal.numberOfRatings,
@@ -280,7 +317,9 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
               pupil: dbMealPlanSide.pricePupil,
               guest: dbMealPlanSide.priceGuest),
           allergens: await _getSideAllergens(dbSide.sideID) ?? [],
-          additives: await _getSideAdditive(dbSide.sideID) ?? []);
+          additives: await _getSideAdditive(dbSide.sideID) ?? [],
+          nutritionData: await _getSideNutritionData(dbSide.sideID),
+          environmentInfo: await _getSideEnvironmentInfo(dbSide.sideID));
       sides.add(side);
     }
     return sides;
@@ -371,6 +410,9 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         where: '${DBMealAdditive.columnMealID} = ?', whereArgs: [meal.id]);
     await db.delete(DBImage.tableName,
         where: '${DBImage.columnMealID} = ?', whereArgs: [meal.id]);
+    await db.delete(DBMealNutritionData.tableName,
+        where: '${NutritionDataMixin.columnEntityID} = ?',
+        whereArgs: [meal.id]);
 
     DBMeal dbMeal = DBMeal(meal.id, meal.name, meal.foodType,
         meal.individualRating, meal.numberOfRatings, meal.averageRating);
@@ -383,6 +425,13 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
             []);
     await Future.wait(
         meal.images?.map((e) => _insertImage(e, dbMeal)).toList() ?? []);
+
+    if (meal.nutritionData != null) {
+      await _insertMealNutritionData(meal.nutritionData!, dbMeal);
+    }
+    if (meal.environmentInfo != null) {
+      await _insertMealEnvironmentInfo(meal.environmentInfo!, dbMeal);
+    }
 
     return await db.insert(DBMeal.tableName, dbMeal.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
@@ -407,7 +456,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         meal.price.employee,
         meal.price.pupil,
         meal.price.guest,
-        meal.lastServed != null ? _dateFormat.format(meal.lastServed!): null,
+        meal.lastServed != null ? _dateFormat.format(meal.lastServed!) : null,
         _dateFormat.format(meal.nextServed ?? DateTime.now()),
         meal.numberOfOccurance,
         meal.relativeFrequency ?? Frequency.normal);
@@ -422,6 +471,12 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         .toList());
     await Future.wait(
         meal.images?.map((e) => _insertImage(e, dbMeal)).toList() ?? []);
+    if (meal.nutritionData != null) {
+      await _insertMealNutritionData(meal.nutritionData!, dbMeal);
+    }
+    if (meal.environmentInfo != null) {
+      await _insertMealEnvironmentInfo(meal.environmentInfo!, dbMeal);
+    }
     await db.insert(DBMeal.tableName, dbMeal.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
     return await db.insert(DBMealPlanMeal.tableName, mealPlanMeal.toMap(),
@@ -435,6 +490,9 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         where: '${DBSideAllergen.columnSideID} = ?', whereArgs: [side.id]);
     await db.delete(DBSideAdditive.tableName,
         where: '${DBSideAdditive.columnSideID} = ?', whereArgs: [side.id]);
+    await db.delete(DBSideNutritionData.tableName,
+        where: '${NutritionDataMixin.columnEntityID} = ?',
+        whereArgs: [side.id]);
     DBSide dbSide = DBSide(side.id, side.name, side.foodType);
     DBMealPlanSide mealPlanSide = DBMealPlanSide(
         mealPlan.mealPlanID,
@@ -448,6 +506,12 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         side.allergens.map((e) => _insertSideAllergen(e, dbSide)));
     await Future.wait(
         side.additives.map((e) => _insertSideAdditive(e, dbSide)));
+    if (side.nutritionData != null) {
+      await _insertSideNutritionData(side.nutritionData!, dbSide);
+    }
+    if (side.environmentInfo != null) {
+      await _insertSideEnvironmentInfo(side.environmentInfo!, dbSide);
+    }
     await db.insert(DBSide.tableName, dbSide.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
     return await db.insert(DBMealPlanSide.tableName, mealPlanSide.toMap());
@@ -467,6 +531,43 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
+  Future<int> _insertMealNutritionData(
+      NutritionData nutritionData, DBMeal meal) async {
+    var db = await database;
+    var dbMealNutritionData = DBMealNutritionData(
+      meal.mealID,
+      nutritionData.energy,
+      nutritionData.protein,
+      nutritionData.carbohydrates,
+      nutritionData.sugar,
+      nutritionData.fat,
+      nutritionData.saturatedFat,
+      nutritionData.salt,
+    );
+    return await db.insert(
+        DBMealNutritionData.tableName, dbMealNutritionData.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<int> _insertMealEnvironmentInfo(
+      EnvironmentInfo environmentInfo, DBMeal meal) async {
+    var db = await database;
+    var dbMealEnvironmentInfo = DBMealEnvironmentInfo(
+      meal.mealID,
+      environmentInfo.averageRating,
+      environmentInfo.co2Rating,
+      environmentInfo.co2Value,
+      environmentInfo.waterRating,
+      environmentInfo.waterValue,
+      environmentInfo.animalWelfareRating,
+      environmentInfo.rainforestRating,
+      environmentInfo.maxRating
+    );
+    return await db.insert(
+        DBMealEnvironmentInfo.tableName, dbMealEnvironmentInfo.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
   Future<int> _insertSideAllergen(Allergen allergen, DBSide side) async {
     var db = await database;
     var dbSideAllergen = DBSideAllergen(side.sideID, allergen);
@@ -478,6 +579,43 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     var db = await database;
     var dbSideAdditive = DBSideAdditive(side.sideID, additive);
     return await db.insert(DBSideAdditive.tableName, dbSideAdditive.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<int> _insertSideNutritionData(
+      NutritionData nutritionData, DBSide side) async {
+    var db = await database;
+    var dbSideNutritionData = DBSideNutritionData(
+      side.sideID,
+      nutritionData.energy,
+      nutritionData.protein,
+      nutritionData.carbohydrates,
+      nutritionData.sugar,
+      nutritionData.fat,
+      nutritionData.saturatedFat,
+      nutritionData.salt,
+    );
+    return await db.insert(
+        DBSideNutritionData.tableName, dbSideNutritionData.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<int> _insertSideEnvironmentInfo(
+      EnvironmentInfo environmentInfo, DBSide side) async {
+    var db = await database;
+    var dbSideEnvironmentInfo = DBMealEnvironmentInfo(
+        side.sideID,
+        environmentInfo.averageRating,
+        environmentInfo.co2Rating,
+        environmentInfo.co2Value,
+        environmentInfo.waterRating,
+        environmentInfo.waterValue,
+        environmentInfo.animalWelfareRating,
+        environmentInfo.rainforestRating,
+        environmentInfo.maxRating
+    );
+    return await db.insert(
+        DBSideEnvironmentInfo.tableName, dbSideEnvironmentInfo.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
@@ -592,6 +730,44 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     }
   }
 
+  Future<DBMealNutritionData?> _getDBMealNutritionData(String id) async {
+    var result = await _getDBNutritionDataRaw(id, NutritionEntity.meal);
+    return result.isNotEmpty ? DBMealNutritionData.fromMap(result.first) : null;
+  }
+
+  Future<DBMealNutritionData?> _getDBSideNutritionData(String id) async {
+    var result = await _getDBNutritionDataRaw(id, NutritionEntity.side);
+    return result.isNotEmpty ? DBMealNutritionData.fromMap(result.first) : null;
+  }
+
+  Future<List<Map<String, Object?>>> _getDBNutritionDataRaw(
+      String id, NutritionEntity entity) async {
+    var db = await database;
+    var table = entity == NutritionEntity.meal
+        ? DBMealNutritionData.tableName
+        : DBSideNutritionData.tableName;
+    return await db.query(table,
+        where: '${NutritionDataMixin.columnEntityID} = ?', whereArgs: [id]);
+  }
+
+  Future<DBMealEnvironmentInfo?> _getDBMealEnvironmentInfo(String id) async {
+    var db = await database;
+    var result = await db.query(DBMealEnvironmentInfo.tableName,
+        where: '${EnvironmentInfoMixin.columnEntityID} = ?', whereArgs: [id]);
+    return result.isNotEmpty
+        ? DBMealEnvironmentInfo.fromMap(result.first)
+        : null;
+  }
+
+  Future<DBSideEnvironmentInfo?> _getDBSideEnvironmentInfo(String id) async {
+    var db = await database;
+    var result = await db.query(DBSideEnvironmentInfo.tableName,
+        where: '${EnvironmentInfoMixin.columnEntityID} = ?', whereArgs: [id]);
+    return result.isNotEmpty
+        ? DBSideEnvironmentInfo.fromMap(result.first)
+        : null;
+  }
+
   Future<List<Allergen>?> _getMealAllergens(String id) async {
     var db = await database;
     var result = await db.query(DBMealAllergen.tableName,
@@ -628,6 +804,63 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         .toList();
   }
 
+  Future<NutritionData?> _getMealNutritionData(String id) async {
+    return _getNutritionData(id, NutritionEntity.meal);
+  }
+
+  Future<NutritionData?> _getSideNutritionData(String id) async {
+    return _getNutritionData(id, NutritionEntity.side);
+  }
+
+  Future<EnvironmentInfo?> _getMealEnvironmentInfo(String id) async {
+    var environmentInfo = await _getDBMealEnvironmentInfo(id);
+    return environmentInfo != null
+        ? EnvironmentInfo(
+            averageRating: environmentInfo.averageRating,
+            co2Rating: environmentInfo.co2Rating,
+            co2Value: environmentInfo.co2Value,
+            waterRating: environmentInfo.waterRating,
+            waterValue: environmentInfo.waterValue,
+            animalWelfareRating: environmentInfo.animalWelfareRating,
+            rainforestRating: environmentInfo.rainforestRating,
+            maxRating: environmentInfo.maxRating,
+          )
+        : null;
+  }
+
+  Future<EnvironmentInfo?> _getSideEnvironmentInfo(String id) async {
+    var environmentInfo = await _getDBSideEnvironmentInfo(id);
+    return environmentInfo != null
+        ? EnvironmentInfo(
+            averageRating: environmentInfo.averageRating,
+            co2Rating: environmentInfo.co2Rating,
+            co2Value: environmentInfo.co2Value,
+            waterRating: environmentInfo.waterRating,
+            waterValue: environmentInfo.waterValue,
+            animalWelfareRating: environmentInfo.animalWelfareRating,
+            rainforestRating: environmentInfo.rainforestRating,
+            maxRating: environmentInfo.maxRating,
+          )
+        : null;
+  }
+
+  Future<NutritionData?> _getNutritionData(
+      String id, NutritionEntity entity) async {
+    NutritionDataMixin? dbNutritionData = entity == NutritionEntity.meal
+        ? await _getDBMealNutritionData(id)
+        : await _getDBSideNutritionData(id);
+    return dbNutritionData != null
+        ? NutritionData(
+            energy: dbNutritionData.energy,
+            protein: dbNutritionData.protein,
+            carbohydrates: dbNutritionData.carbohydrates,
+            sugar: dbNutritionData.sugar,
+            fat: dbNutritionData.fat,
+            saturatedFat: dbNutritionData.saturatedFat,
+            salt: dbNutritionData.salt)
+        : null;
+  }
+
   @override
   Future<Canteen?> getCanteenById(String id) async {
     DBCanteen? canteen = await _getDBCanteen(id);
@@ -661,8 +894,10 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
             images: (await _getDBImages(dbMeal.mealID))
                 .map((e) => DatabaseTransformer.fromDBImage(e))
                 .toList(),
+            environmentInfo: await _getMealEnvironmentInfo(dbMeal.mealID),
             allergens: await _getMealAllergens(dbMeal.mealID),
-            additives: await _getMealAdditives(dbMeal.mealID));
+            additives: await _getMealAdditives(dbMeal.mealID),
+            nutritionData: await _getMealNutritionData(dbMeal.mealID));
         return Success(newMeal);
       } else {
         return Failure(NoMealException("No meal found with id ${meal.id}"));
@@ -729,6 +964,12 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         db.delete(DBSideAdditive.tableName,
             where: '${DBSideAdditive.columnSideID} = ?',
             whereArgs: [mealPlanSide.sideID]);
+        db.delete(DBSideNutritionData.tableName,
+            where: '${NutritionDataMixin.columnEntityID} = ?',
+            whereArgs: [mealPlanSide.sideID]);
+        db.delete(DBSideEnvironmentInfo.tableName,
+            where: '${EnvironmentInfoMixin.columnEntityID} = ?',
+            whereArgs: [mealPlanSide.sideID]);
         db.delete(DBMealPlanSide.tableName,
             where: '${DBMealPlanSide.columnSideID} = ?',
             whereArgs: [mealPlanSide.sideID]);
@@ -758,6 +999,12 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
             whereArgs: [mealPlanMeal.mealID]);
         db.delete(DBMealAdditive.tableName,
             where: '${DBMealAdditive.columnMealID} = ?',
+            whereArgs: [mealPlanMeal.mealID]);
+        db.delete(DBMealNutritionData.tableName,
+            where: '${NutritionDataMixin.columnEntityID} = ?',
+            whereArgs: [mealPlanMeal.mealID]);
+        db.delete(DBMealEnvironmentInfo.tableName,
+            where: '${EnvironmentInfoMixin.columnEntityID} = ?',
             whereArgs: [mealPlanMeal.mealID]);
         db.delete(DBImage.tableName,
             where: '${DBImage.columnMealID} = ?',

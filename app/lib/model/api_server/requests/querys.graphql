@@ -49,6 +49,12 @@ fragment mealInfo on Meal {
     }
     allergens
     additives
+    nutritionData {
+        ...nutritionData
+    }
+    environmentInfo {
+        ...environmentInfo
+    }
     statistics {
         lastServed
         nextServed
@@ -77,6 +83,12 @@ fragment mealInfo on Meal {
         price {
             ...price
         }
+        nutritionData {
+            ...nutritionData
+        }
+        environmentInfo {
+            ...environmentInfo
+        }
         mealType
     }
 }
@@ -86,4 +98,25 @@ fragment price on Price {
     guest
     pupil
     student
+}
+
+fragment nutritionData on NutritionData {
+    energy
+    protein
+    carbohydrates
+    sugar
+    fat
+    saturatedFat
+    salt
+}
+
+fragment environmentInfo on EnvironmentInfo {
+    averageRating
+    co2Rating
+    co2Value
+    waterRating
+    waterValue
+    animalWelfareRating
+    rainforestRating
+    maxRating
 }
