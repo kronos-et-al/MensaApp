@@ -7,6 +7,7 @@ import 'package:app/model/api_server/requests/schema.graphql.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
 import 'package:app/view_model/repository/data_classes/meal/Additive.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
+import 'package:app/view_model/repository/data_classes/meal/EnvironmentInfo.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
 
@@ -343,6 +344,9 @@ class GraphQlServerAccess implements IServerAccess {
       nutritionData: meal.nutritionData != null
           ? _convertNutritionData(meal.nutritionData!)
           : null,
+      environmentInfo: meal.environmentInfo != null
+          ? _convertEnvironmentInfo(meal.environmentInfo!)
+          : null,
       averageRating: meal.ratings.averageRating,
       individualRating: meal.ratings.personalRating,
       numberOfRatings: meal.ratings.ratingsCount,
@@ -385,6 +389,9 @@ Side _convertSide(Fragment$mealInfo$sides e) {
       price: _convertPrice(e.price),
       allergens: e.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
       additives: e.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
+      environmentInfo: e.environmentInfo != null
+          ? _convertEnvironmentInfo(e.environmentInfo!)
+          : null,
       nutritionData: e.nutritionData != null
           ? _convertNutritionData(e.nutritionData!)
           : null);
@@ -494,6 +501,20 @@ NutritionData _convertNutritionData(Fragment$nutritionData nutritionData) {
     fat: nutritionData.fat,
     saturatedFat: nutritionData.saturatedFat,
     salt: nutritionData.salt,
+  );
+}
+
+EnvironmentInfo _convertEnvironmentInfo(
+    Fragment$environmentInfo environmentInfo) {
+  return EnvironmentInfo(
+    averageRating: environmentInfo.averageRating,
+    co2Rating: environmentInfo.co2Rating,
+    co2Value: environmentInfo.co2Value,
+    waterRating: environmentInfo.waterRating,
+    waterValue: environmentInfo.waterValue,
+    animalWelfareRating: environmentInfo.animalWelfareRating,
+    rainforestRating: environmentInfo.rainforestRating,
+    maxRating: environmentInfo.maxRating,
   );
 }
 

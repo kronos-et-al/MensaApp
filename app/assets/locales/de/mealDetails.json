@@ -1,6 +1,6 @@
 {
   "lastServed": "Zuletzt angeboten am: {lastServed}",
   "nextServed": "Wird wieder angeboten am: {nextServed}",
-  "frequency": "Wurde in den letzten drei Monaten {frequency}-Mal angeboten",
+  "frequency": "Wurde {frequency}-Mal in den letzten 3 Monaten angeboten\n(zuletzt am {lastServed}, nächstes Mal am {nextServed})",
   "titleStatistics": "Statistik"
 }
