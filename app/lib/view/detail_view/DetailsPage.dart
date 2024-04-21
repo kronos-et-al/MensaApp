@@ -152,7 +152,11 @@ class DetailsPageState extends State<DetailsPage> {
                                                         }
                                                     },
                                                 icon: meal.isFavorite
-                                                    ? FavoriteFilledIcon(color: themeData.colorScheme.primary,)
+                                                    ? FavoriteFilledIcon(
+                                                        color: themeData
+                                                            .colorScheme
+                                                            .primary,
+                                                      )
                                                     : const FavoriteOutlinedIcon())),
                                     MensaIconButton(
                                         semanticLabel: FlutterI18n.translate(
@@ -258,8 +262,10 @@ class DetailsPageState extends State<DetailsPage> {
                                                     meal.numberOfOccurance,
                                                 additives: meal.additives ?? [],
                                                 allergens: meal.allergens ?? [],
-                                                nutritionData: meal.nutritionData,
-                                                environmentInfo: meal.environmentInfo),
+                                                nutritionData:
+                                                    meal.nutritionData,
+                                                environmentInfo:
+                                                    meal.environmentInfo),
                                             isExpanded:
                                                 expandedAccordionIndex == 0,
                                             onTap: () => setState(() =>
@@ -293,24 +299,41 @@ class DetailsPageState extends State<DetailsPage> {
                                                     info: MealAccordionInfo(
                                                         additives: e.additives,
                                                         allergens: e.allergens,
-                                                        nutritionData: e.nutritionData,
-                                                        environmentInfo: e.environmentInfo),
+                                                        nutritionData:
+                                                            e.nutritionData,
+                                                        environmentInfo:
+                                                            e.environmentInfo),
                                                     isExpanded:
                                                         expandedAccordionIndex ==
                                                             meal.sides!.indexOf(
                                                                     e) +
                                                                 1,
-                                                    onTap: () => setState(() =>
-                                                        expandedAccordionIndex =
-                                                            expandedAccordionIndex ==
-                                                                    meal.sides!.indexOf(
-                                                                            e) +
-                                                                        1
-                                                                ? null
-                                                                : meal.sides!
-                                                                        .indexOf(
-                                                                            e) +
-                                                                    1),
+                                                    onTap: () => {
+                                                      if (e.additives.isEmpty &&
+                                                          e.allergens.isEmpty &&
+                                                          e.environmentInfo ==
+                                                              null &&
+                                                          e.nutritionData ==
+                                                              null)
+                                                        {
+                                                          setState(() =>
+                                                              expandedAccordionIndex =
+                                                                  null)
+                                                        }
+                                                      else
+                                                        {
+                                                          setState(() => expandedAccordionIndex =
+                                                              expandedAccordionIndex ==
+                                                                      meal.sides!.indexOf(
+                                                                              e) +
+                                                                          1
+                                                                  ? null
+                                                                  : meal.sides!
+                                                                          .indexOf(
+                                                                              e) +
+                                                                      1),
+                                                        }
+                                                    },
                                                   ))
                                               .toList(),
                                           const SizedBox(height: 16),

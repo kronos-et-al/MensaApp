@@ -41,7 +41,6 @@ class MealAccordionInfo extends StatelessWidget {
     final DateFormat _dateFormat = DateFormat("E dd.MM.yyyy",
         FlutterI18n.currentLocale(context)?.languageCode ?? "de-DE");
     ThemeData theme = Theme.of(context);
-    print(_environmentInfo);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -77,8 +76,9 @@ class MealAccordionInfo extends StatelessWidget {
                 ),
               ],
             )
-          ]),
-        Padding(
+          ])
+        else const SizedBox(height: 0),
+        if (_allergens.isNotEmpty) Padding(
             padding: const EdgeInsets.only(right: 8, top: 2),
             child: Text(
               "${FlutterI18n.translate(context, _allergens.isNotEmpty ? "allergen.allergenTitle" : "allergen.allergenTitleEmpty")} ${_allergens.length > 1 ? ([
@@ -93,7 +93,8 @@ class MealAccordionInfo extends StatelessWidget {
               style: const TextStyle(
                 fontWeight: FontWeight.w300,
               ),
-            )),
+            ))
+        else const SizedBox(height: 0),
         const SizedBox(height: 8),
         _environmentInfo != null
             ? MealEnvironmentInfo(environmentInfo: _environmentInfo!)

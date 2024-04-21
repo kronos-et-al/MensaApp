@@ -12,24 +12,26 @@ class MealAccordion extends StatelessWidget {
   final Function()? _onTap;
   final Color? _backgroundColor;
   final Color? _expandedColor;
+  final bool _disabled;
 
   /// Creates a new MealAccordion.
-  const MealAccordion(
-      {super.key,
-      required bool isExpanded,
-      MealMainEntry? mainEntry,
-      MealSideEntry? sideEntry,
-      required MealAccordionInfo info,
-      Function()? onTap,
-      Color? backgroundColor,
-      Color? expandedColor})
+  const MealAccordion({super.key,
+    required bool isExpanded,
+    MealMainEntry? mainEntry,
+    MealSideEntry? sideEntry,
+    required MealAccordionInfo info,
+    Function()? onTap,
+    Color? backgroundColor,
+    Color? expandedColor,
+    bool disabled = false})
       : _isExpanded = isExpanded,
         _mainEntry = mainEntry,
         _sideEntry = sideEntry,
         _info = info,
         _onTap = onTap,
         _backgroundColor = backgroundColor,
-        _expandedColor = expandedColor;
+        _expandedColor = expandedColor,
+        _disabled = disabled;
 
   @override
   Widget build(BuildContext context) {
@@ -37,20 +39,31 @@ class MealAccordion extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4.0),
           color: _isExpanded
-              ? _expandedColor ?? Theme.of(context).colorScheme.surface
-              : _backgroundColor ?? Theme.of(context).colorScheme.background,
+              ? _expandedColor ?? Theme
+              .of(context)
+              .colorScheme
+              .surface
+              : _backgroundColor ?? Theme
+              .of(context)
+              .colorScheme
+              .background,
         ),
         child: Material(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(4.0),
           child: InkWell(
+              enableFeedback: !_disabled,
               splashColor:
-                  Theme.of(context).colorScheme.background.withOpacity(0.1),
+              Theme
+                  .of(context)
+                  .colorScheme
+                  .background
+                  .withOpacity(0.1),
               borderRadius: BorderRadius.circular(4.0),
-              onTap: _onTap,
+              onTap: _disabled ? null : _onTap,
               child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+                  const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                   child: Column(
                     children: [
                       _mainEntry ?? _sideEntry ?? Container(),
@@ -59,8 +72,8 @@ class MealAccordion extends StatelessWidget {
                           Expanded(
                               child: _isExpanded
                                   ? Padding(
-                                      padding: const EdgeInsets.only(left: 40),
-                                      child: _info)
+                                  padding: const EdgeInsets.only(left: 40),
+                                  child: _info)
                                   : Container()),
                         ],
                       ),
