@@ -46,14 +46,14 @@ class FilterPreferences {
 
   /// Adds a special type of meat or the category unknown to the categories that are shown.
   addMeatCategory(FoodType foodType) {
-    if ([FoodType.beef, FoodType.fish, FoodType.pork].contains(foodType)) {
+    if ([FoodType.beef, FoodType.fish, FoodType.pork, FoodType.poultry].contains(foodType)) {
       _categories.add(foodType);
     }
   }
 
   /// Removes a special type of meat or the category unknown from the categories that are shown.
   removeMeatCategory(FoodType foodType) {
-    if ([FoodType.beef, FoodType.fish, FoodType.pork].contains(foodType)) {
+    if ([FoodType.beef, FoodType.fish, FoodType.pork, FoodType.poultry].contains(foodType)) {
       _categories.remove(foodType);
     }
   }

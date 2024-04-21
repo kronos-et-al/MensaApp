@@ -257,6 +257,7 @@ enum Enum$MealType {
   PORK,
   PORK_AW,
   FISH,
+  POULTRY,
   UNKNOWN,
   $unknown
 }
@@ -277,6 +278,8 @@ String toJson$Enum$MealType(Enum$MealType e) {
       return r'PORK_AW';
     case Enum$MealType.FISH:
       return r'FISH';
+    case Enum$MealType.POULTRY:
+      return r'POULTRY';
     case Enum$MealType.UNKNOWN:
       return r'UNKNOWN';
     case Enum$MealType.$unknown:
@@ -300,6 +303,8 @@ Enum$MealType fromJson$Enum$MealType(String value) {
       return Enum$MealType.PORK_AW;
     case r'FISH':
       return Enum$MealType.FISH;
+    case r'POULTRY':
+      return Enum$MealType.POULTRY;
     case r'UNKNOWN':
       return Enum$MealType.UNKNOWN;
     default:

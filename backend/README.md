@@ -66,6 +66,10 @@ The following options are available:
 | `RATE_LIMIT`                             | Limit the number of API requests per second. `0` means disabled.                                                                                                                                                                                                                              | `0`  (disabled)                                                                                                              |
 | `MAX_UPLOAD_SIZE`                        | Maximal size (in bytes) an http body can have to get accepted. This implies a maximal size an image upload can have.                                                                                                                                                                          | `10485760`  (10 MiB)                                                                                                         |
 
+### Notes
+- The **timezone** of log messages and the chron schedule is only queried once at backend startup from the host os because of technical limitations. For changes in timezone (e.g. summer time) the server has to be restarted.
+
+
 
 ## Building the backend
 

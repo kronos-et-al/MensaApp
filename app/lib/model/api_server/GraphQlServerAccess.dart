@@ -478,6 +478,8 @@ FoodType _convertMealType(Enum$MealType mealType) {
       return FoodType.vegan;
     case Enum$MealType.VEGETARIAN:
       return FoodType.vegetarian;
+    case Enum$MealType.POULTRY:
+      return FoodType.poultry;
     case Enum$MealType.UNKNOWN:
       return FoodType.unknown;
     case Enum$MealType.$unknown:
