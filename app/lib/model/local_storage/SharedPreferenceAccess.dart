@@ -48,12 +48,20 @@ class SharedPreferenceAccess implements ILocalStorage {
     final onlyFavorites = _pref.getBool('filterFavorite');
     final sortedBy = _pref.getString('filterSort');
     final ascending = _pref.getBool('filterSortAscending');
+    final isAdaptedForPoultry = _pref.getBool('filterAdaptedForPoultry');
 
     // convert values to right format
     List<FoodType>? foodTypeEnum;
     if (categories != null) {
       foodTypeEnum = List.of(categories.map((e) =>
           FoodType.values.firstWhere((element) => element.toString() == e)));
+      if (isAdaptedForPoultry == null ||
+          isAdaptedForPoultry == false && foodTypeEnum.length >= 8) {
+        foodTypeEnum.add(FoodType.poultry);
+        _pref.setStringList(
+            'filterCategories', List.of(foodTypeEnum.map((e) => e.toString())));
+        _pref.setBool('filterAdaptedForPoultry', true);
+      }
     }
 
     List<Allergen>? allergensEnum;
