@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.custom-scrollbar {
+    scrollbar-color: theme('colors.super-light-grey') transparent;
+    scrollbar-width: thick;
+}

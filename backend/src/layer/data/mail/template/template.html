@@ -8,577 +8,39 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
 
     <link rel="stylesheet" href="./output.css"> <!-- needs to get inlined! -->
-    <style>
-        /*! tailwindcss v3.4.4 | MIT License | https://tailwindcss.com*/
-        *,
-        :after,
-        :before {
-            box-sizing: border-box;
-            border: 0 solid
-        }
-
-        :after,
-        :before {
-            --tw-content: ""
-        }
-
-        :host,
-        html {
-            line-height: 1.5;
-            -webkit-text-size-adjust: 100%;
-            -moz-tab-size: 4;
-            -o-tab-size: 4;
-            tab-size: 4;
-            font-family: Roboto, sans-serif;
-            font-feature-settings: normal;
-            font-variation-settings: normal;
-            -webkit-tap-highlight-color: transparent
-        }
-
-        body {
-            margin: 0;
-            line-height: inherit
-        }
-
-        hr {
-            height: 0;
-            color: inherit;
-            border-top-width: 1px
-        }
-
-        abbr:where([title]) {
-            -webkit-text-decoration: underline dotted;
-            text-decoration: underline dotted
-        }
-
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            font-size: inherit;
-            font-weight: inherit
-        }
-
-        a {
-            color: inherit;
-            text-decoration: inherit
-        }
-
-        b,
-        strong {
-            font-weight: bolder
-        }
-
-        code,
-        kbd,
-        pre,
-        samp {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
-            font-feature-settings: normal;
-            font-variation-settings: normal;
-            font-size: 1em
-        }
-
-        small {
-            font-size: 80%
-        }
-
-        sub,
-        sup {
-            font-size: 75%;
-            line-height: 0;
-            position: relative;
-            vertical-align: initial
-        }
-
-        sub {
-            bottom: -.25em
-        }
-
-        sup {
-            top: -.5em
-        }
-
-        table {
-            text-indent: 0;
-            border-color: inherit;
-            border-collapse: collapse
-        }
-
-        button,
-        input,
-        optgroup,
-        select,
-        textarea {
-            font-family: inherit;
-            font-feature-settings: inherit;
-            font-variation-settings: inherit;
-            font-size: 100%;
-            font-weight: inherit;
-            line-height: inherit;
-            letter-spacing: inherit;
-            color: inherit;
-            margin: 0;
-            padding: 0
-        }
-
-        button,
-        select {
-            text-transform: none
-        }
-
-        button,
-        input:where([type=button]),
-        input:where([type=reset]),
-        input:where([type=submit]) {
-            -webkit-appearance: button;
-            background-color: initial;
-            background-image: none
-        }
-
-        :-moz-focusring {
-            outline: auto
-        }
-
-        :-moz-ui-invalid {
-            box-shadow: none
-        }
-
-        progress {
-            vertical-align: initial
-        }
-
-        ::-webkit-inner-spin-button,
-        ::-webkit-outer-spin-button {
-            height: auto
-        }
-
-        [type=search] {
-            -webkit-appearance: textfield;
-            outline-offset: -2px
-        }
-
-        ::-webkit-search-decoration {
-            -webkit-appearance: none
-        }
-
-        ::-webkit-file-upload-button {
-            -webkit-appearance: button;
-            font: inherit
-        }
-
-        summary {
-            display: list-item
-        }
-
-        blockquote,
-        dd,
-        dl,
-        figure,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6,
-        hr,
-        p,
-        pre {
-            margin: 0
-        }
-
-        fieldset {
-            margin: 0
-        }
-
-        fieldset,
-        legend {
-            padding: 0
-        }
-
-        menu,
-        ol,
-        ul {
-            list-style: none;
-            margin: 0;
-            padding: 0
-        }
-
-        dialog {
-            padding: 0
-        }
-
-        textarea {
-            resize: vertical
-        }
-
-        input::-moz-placeholder,
-        textarea::-moz-placeholder {
-            opacity: 1;
-            color: #9ca3af
-        }
-
-        input::placeholder,
-        textarea::placeholder {
-            opacity: 1;
-            color: #9ca3af
-        }
-
-        [role=button],
-        button {
-            cursor: pointer
-        }
-
-        :disabled {
-            cursor: default
-        }
-
-        audio,
-        canvas,
-        embed,
-        iframe,
-        img,
-        object,
-        svg,
-        video {
-            display: block;
-            vertical-align: middle
-        }
-
-        img,
-        video {
-            max-width: 100%;
-            height: auto
-        }
-
-        [hidden] {
-            display: none
-        }
-
-        *,
-        ::backdrop,
-        :after,
-        :before {
-            --tw-border-spacing-x: 0;
-            --tw-border-spacing-y: 0;
-            --tw-translate-x: 0;
-            --tw-translate-y: 0;
-            --tw-rotate: 0;
-            --tw-skew-x: 0;
-            --tw-skew-y: 0;
-            --tw-scale-x: 1;
-            --tw-scale-y: 1;
-            --tw-pan-x: ;
-            --tw-pan-y: ;
-            --tw-pinch-zoom: ;
-            --tw-scroll-snap-strictness: proximity;
-            --tw-gradient-from-position: ;
-            --tw-gradient-via-position: ;
-            --tw-gradient-to-position: ;
-            --tw-ordinal: ;
-            --tw-slashed-zero: ;
-            --tw-numeric-figure: ;
-            --tw-numeric-spacing: ;
-            --tw-numeric-fraction: ;
-            --tw-ring-inset: ;
-            --tw-ring-offset-width: 0px;
-            --tw-ring-offset-color: #fff;
-            --tw-ring-color: #3b82f680;
-            --tw-ring-offset-shadow: 0 0 #0000;
-            --tw-ring-shadow: 0 0 #0000;
-            --tw-shadow: 0 0 #0000;
-            --tw-shadow-colored: 0 0 #0000;
-            --tw-blur: ;
-            --tw-brightness: ;
-            --tw-contrast: ;
-            --tw-grayscale: ;
-            --tw-hue-rotate: ;
-            --tw-invert: ;
-            --tw-saturate: ;
-            --tw-sepia: ;
-            --tw-drop-shadow: ;
-            --tw-backdrop-blur: ;
-            --tw-backdrop-brightness: ;
-            --tw-backdrop-contrast: ;
-            --tw-backdrop-grayscale: ;
-            --tw-backdrop-hue-rotate: ;
-            --tw-backdrop-invert: ;
-            --tw-backdrop-opacity: ;
-            --tw-backdrop-saturate: ;
-            --tw-backdrop-sepia: ;
-            --tw-contain-size: ;
-            --tw-contain-layout: ;
-            --tw-contain-paint: ;
-            --tw-contain-style:
-        }
-
-        .m-0 {
-            margin: 0
-        }
-
-        .m-auto {
-            margin: auto
-        }
-
-        .mx-auto {
-            margin-left: auto;
-            margin-right: auto
-        }
-
-        .inline {
-            display: inline
-        }
-
-        .flex {
-            display: flex
-        }
-
-        .inline-flex {
-            display: inline-flex
-        }
-
-        .table {
-            display: table
-        }
-
-        .table-cell {
-            display: table-cell
-        }
-
-        .table-row-group {
-            display: table-row-group
-        }
-
-        .table-row {
-            display: table-row
-        }
-
-        .grid {
-            display: grid
-        }
-
-        .aspect-video {
-            aspect-ratio: 16/9
-        }
-
-        .size-10 {
-            width: 2.5rem;
-            height: 2.5rem
-        }
-
-        .size-full {
-            width: 100%;
-            height: 100%
-        }
-
-        .size-5 {
-            width: 1.25rem;
-            height: 1.25rem
-        }
-
-        .h-10 {
-            height: 2.5rem
-        }
-
-        .h-full {
-            height: 100%
-        }
-
-        .w-full {
-            width: 100%
-        }
-
-        .max-w-2xl {
-            max-width: 42rem
-        }
-
-        .grid-cols-1 {
-            grid-template-columns: repeat(1, minmax(0, 1fr))
-        }
-
-        .grid-cols-2 {
-            grid-template-columns: repeat(2, minmax(0, 1fr))
-        }
-
-        .flex-col {
-            flex-direction: column
-        }
-
-        .items-center {
-            align-items: center
-        }
-
-        .justify-center {
-            justify-content: center
-        }
-
-        .justify-between {
-            justify-content: space-between
-        }
-
-        .gap-4 {
-            gap: 1rem
-        }
-
-        .gap-8 {
-            gap: 2rem
-        }
-
-        .justify-self-center {
-            justify-self: center
-        }
-
-        .rounded-3xl {
-            border-radius: 1.5rem
-        }
-
-        .rounded-xl {
-            border-radius: .75rem
-        }
-
-        .bg-dark-grey {
-            --tw-bg-opacity: 1;
-            background-color: rgb(30 30 30/var(--tw-bg-opacity))
-        }
-
-        .bg-green {
-            --tw-bg-opacity: 1;
-            background-color: rgb(122 172 43/var(--tw-bg-opacity))
-        }
-
-        .bg-light-grey {
-            --tw-bg-opacity: 1;
-            background-color: rgb(51 51 51/var(--tw-bg-opacity))
-        }
-
-        .bg-red {
-            --tw-bg-opacity: 1;
-            background-color: rgb(211 47 47/var(--tw-bg-opacity))
-        }
-
-        .bg-\[url\(\'https\:\/\/api\.mensa-ka\.de\/image\/8a5be6a6-4825-4348-a53d-a44dd11e15c0\.jpg\'\)\] {
-            background-image: url(https://api.mensa-ka.de/image/8a5be6a6-4825-4348-a53d-a44dd11e15c0.jpg)
-        }
-
-        .bg-cover {
-            background-size: cover
-        }
-
-        .bg-center {
-            background-position: 50%
-        }
-
-        .fill-green {
-            fill: #7aac2b
-        }
-
-        .fill-white {
-            fill: #fff
-        }
-
-        .fill-red {
-            fill: #d32f2f
-        }
-
-        .p-1 {
-            padding: .25rem
-        }
-
-        .p-10 {
-            padding: 2.5rem
-        }
-
-        .p-2 {
-            padding: .5rem
-        }
-
-        .p-4 {
-            padding: 1rem
-        }
-
-        .px-8 {
-            padding-left: 2rem;
-            padding-right: 2rem
-        }
-
-        .pt-6 {
-            padding-top: 1.5rem
-        }
-
-        .align-middle {
-            vertical-align: middle
-        }
-
-        .text-3xl {
-            font-size: 1.875rem;
-            line-height: 2.25rem
-        }
-
-        .text-5xl {
-            font-size: 3rem;
-            line-height: 1
-        }
-
-        .text-sm {
-            font-size: .875rem;
-            line-height: 1.25rem
-        }
-
-        .text-xl {
-            font-size: 1.25rem;
-            line-height: 1.75rem
-        }
-
-        .font-bold {
-            font-weight: 700
-        }
-
-        .text-dark-grey {
-            --tw-text-opacity: 1;
-            color: rgb(30 30 30/var(--tw-text-opacity))
-        }
-
-        .text-red {
-            --tw-text-opacity: 1;
-            color: rgb(211 47 47/var(--tw-text-opacity))
-        }
-
-        .text-white {
-            --tw-text-opacity: 1;
-            color: rgb(255 255 255/var(--tw-text-opacity))
-        }
-
-        .drop-shadow {
-            --tw-drop-shadow: drop-shadow(0 1px 2px #0000001a) drop-shadow(0 1px 1px #0000000f);
-            filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)
-        }
-
-        .backdrop-blur-xl {
-            --tw-backdrop-blur: blur(24px);
-            -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
-            backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)
-        }
-
-        .active\:invisible:active {
-            visibility: hidden
-        }
-    </style>
 </head>
 
 <body class="bg-dark-grey text-white">
 
     <div class="grid grid-cols-1 gap-8 p-10 text-xl max-w-2xl mx-auto">
-        <h1 class="text-3xl font-bold text-primary justify-self-center">
-            Image reported!
-        </h1>
+
+        <div class="flex flex-none items-center">
+            <svg class="size-10 bg-green rounded-full mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="35 30 197 197"
+                id="vector">
+                <g id="group" transform="translate(16.02 16.02) scale(0.88 0.88)">
+                    <path id="path"
+                        d="M 100 125 L 120.62 125 L 124.77 191.45 C 124.78 191.59 124.78 191.73 124.78 191.88 C 124.78 196.37 121.14 200 116.66 200 L 103.95 200 C 99.46 200 95.83 196.37 95.83 191.88 C 95.83 191.74 95.83 191.6 95.84 191.45 L 99.99 125 Z"
+                        fill="#333333" />
+                    <path id="path_1"
+                        d="M 175 137.5 L 154.17 137.5 L 154.17 192.18 C 154.17 196.5 157.67 200 161.99 200 L 175.53 200 C 179.84 200 183.34 196.5 183.34 192.18 C 183.34 191.84 183.32 191.49 183.27 191.15 L 175 137.5 Z"
+                        fill="#333333" />
+                    <path id="path_2"
+                        d="M 158.33 62.5 C 156.03 62.5 154.16 64.37 154.16 66.67 L 154.16 137.5 L 174.99 137.5 C 174.99 137.5 183.32 124.42 183.32 100 C 183.32 79.29 172.65 62.5 158.32 62.5 Z M 131.25 62.5 C 127.81 62.5 125 65.31 125 68.75 L 125 104.17 C 125 106.47 123.13 108.34 120.83 108.34 C 118.53 108.34 116.66 106.47 116.66 104.17 L 116.66 68.75 C 116.66 65.31 113.85 62.5 110.41 62.5 C 106.97 62.5 104.16 65.31 104.16 68.75 L 104.16 104.17 C 104.16 106.47 102.29 108.34 99.99 108.34 C 97.69 108.34 95.82 106.47 95.82 104.17 L 95.82 68.75 C 95.82 65.31 93.01 62.5 89.57 62.5 C 86.13 62.5 83.32 65.31 83.32 68.75 L 83.32 108.33 C 83.32 117.53 90.78 125 99.99 125 L 120.82 125 C 130.02 125 137.49 117.54 137.49 108.33 L 137.49 68.75 C 137.49 65.31 134.68 62.5 131.24 62.5 Z"
+                        fill="#ffffff" />
+                </g>
+            </svg>
+
+            <h1 class="text-3xl font-bold h-auto">
+                Mensa KA Image Report
+            </h1>
+
+        </div>
 
         <div
             class="rounded-3xl aspect-video w-full bg-cover bg-center bg-[url('https://api.mensa-ka.de/image/8a5be6a6-4825-4348-a53d-a44dd11e15c0.jpg')]">
             <div
                 class="backdrop-blur-xl active:invisible size-full rounded-3xl flex flex-col items-center justify-between">
-                <div class="text-5xl fill-white align-middle h-full flex flex-col justify-center">
+                <div class="text-5xl align-middle h-full flex flex-col justify-center">
                     <svg class="fill-white size-10" xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 576 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
                         <path
@@ -591,59 +53,80 @@
 
 
         <div class="grid gap-4">
-            <div class="pt-6">
-                <div>Meal: {meal}</div>
-                <div>Reason: {reason}</div>
-                <div>Hidden:
-                    <!-- hide inappropriate-->
-                    <svg class="fill-green size-5 inline" xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                        <path
-                            d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" />
-                    </svg>
-                    <svg class="fill-red size-5 inline" xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 384 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                        <path
-                            d="M376.6 84.5c11.3-13.6 9.5-33.8-4.1-45.1s-33.8-9.5-45.1 4.1L192 206 56.6 43.5C45.3 29.9 25.1 28.1 11.5 39.4S-3.9 70.9 7.4 84.5L150.3 256 7.4 427.5c-11.3 13.6-9.5 33.8 4.1 45.1s33.8 9.5 45.1-4.1L192 306 327.4 468.5c11.3 13.6 31.5 15.4 45.1 4.1s15.4-31.5 4.1-45.1L233.7 256 376.6 84.5z" />
-                    </svg>
-                    (a / b)
-                </div>
+            <div class="bg-light-grey rounded-xl p-4 m-0">
+                <table class="table-fixed w-full">
+                    <tbody>
+                        <tr>
+                            <td class="w-1/2">Meal</td>
+                            <td>{meal} <br> {id}</td>
+                        </tr>
+                        <tr>
+                            <td>Reason</td>
+                            <td>{reason}</td>
+                        </tr>
+                        <tr>
+                            <td>Hidden</td>
+                            <td>
+                                <!-- hide inappropriate-->
+                                <svg class="fill-green size-5 inline" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                    <path
+                                        d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" />
+                                </svg>
+                                <svg class="fill-red size-5 inline" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 384 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                    <path
+                                        d="M376.6 84.5c11.3-13.6 9.5-33.8-4.1-45.1s-33.8-9.5-45.1 4.1L192 206 56.6 43.5C45.3 29.9 25.1 28.1 11.5 39.4S-3.9 70.9 7.4 84.5L150.3 256 7.4 427.5c-11.3 13.6-9.5 33.8 4.1 45.1s33.8 9.5 45.1-4.1L192 306 327.4 468.5c11.3 13.6 31.5 15.4 45.1 4.1s15.4-31.5 4.1-45.1L233.7 256 376.6 84.5z" />
+                                </svg>
+                                (a / b)
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
             </div>
 
             <div class="grid grid-cols-2">
-                <a class="bg-red m-auto p-2 px-8 rounded-xl text-dark-grey" href="#">Delete</a>
-                <a class="bg-green m-auto p-2 px-8 rounded-xl text-dark-grey" href="#">Verify</a>
+                <a class="bg-red m-auto p-2 px-8 rounded-xl text-dark-greys drop-shadow-md" href="#">Delete</a>
+                <a class="bg-green m-auto p-2 px-8 rounded-xl text-dark-grey drop-shadow-md" href="#">Verify</a>
             </div>
         </div>
 
-        <div class="table w-full bg-light-grey h-10 rounded-xl p-4 m-0">
-            <div class="table-row-group">
-                <div class=table-row>
-                    <div class="table-cell">Reported By</div>
-                    <div class="table-cell">{reporter}</div>
-                </div>
-                <div class=table-row>
-                    <div class="table-cell">Number of Reports</div>
-                    <div class="table-cell">{reporter}</div>
-                </div>
-                <div class=table-row>
-                    <div class="table-cell">Image Age</div>
-                    <div class="table-cell">{reporter}</div>
-                </div>
-                <div class=table-row>
-                    <div class="table-cell">Rating</div>
-                    <div class="table-cell"> u / d</div>
-                </div>
-                <div class=table-row>
-                    <div class="table-cell">Rank</div>
-                    <div class="table-cell"> {rank}</div>
+        <div>
+            <h2 class="text-2xl mb-2">More Information</h2>
+            <div class="table w-full bg-light-grey rounded-xl p-4 m-0">
+                <div class="table-row-group">
+                    <div class=table-row>
+                        <div class="table-cell w-1/2">Report Date</div>
+                        <div class="table-cell">{date}</div>
+                    </div>
+                    <div class=table-row>
+                        <div class="table-cell w-1/2">Reported By</div>
+                        <div class="table-cell">{reporter}</div>
+                    </div>
+                    <div class=table-row>
+                        <div class="table-cell">Number of Reports</div>
+                        <div class="table-cell">{reporter}</div>
+                    </div>
+                    <div class=table-row>
+                        <div class="table-cell">Image Age</div>
+                        <div class="table-cell">{reporter}</div>
+                    </div>
+                    <div class=table-row>
+                        <div class="table-cell">Rating</div>
+                        <div class="table-cell"> u / d</div>
+                    </div>
+                    <div class=table-row>
+                        <div class="table-cell">Rank</div>
+                        <div class="table-cell"> {rank}</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div>
-            <h2 class="text-2xl scroll-pl-20 ">Other Images</h2>
-            <div class="overflow-x-auto snap-x snap-mandatory">
+            <h2 class="text-2xl">Other Images</h2>
+            <div class="overflow-x-auto snap-x snap-mandatory custom-scrollbar">
                 <div class="flex flex-none w-fit">
                     <img class="h-40 object-cover rounded-xl m-2 snap-center snap-always"
                         src="https://api.mensa-ka.de/image/8a5be6a6-4825-4348-a53d-a44dd11e15c0.jpg" />
