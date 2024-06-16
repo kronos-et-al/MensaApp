@@ -9,6 +9,7 @@ module.exports = {
       'green': '#7AAC2B',
       'red': '#D32F2F',
       'white': '#ffffff',
+      'black': '#000000',
     },
     fontFamily: {
       sans: ['Roboto', 'sans-serif'],
