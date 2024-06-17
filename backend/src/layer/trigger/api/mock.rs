@@ -217,6 +217,7 @@ impl RequestDataAccess for RequestDatabaseMock {
             report_count: 0,
             approved: false,
             upload_date: Date::default(),
+            meal_id: Uuid::default(),
         };
         let d2 = Image {
             id: Uuid::parse_str("e4e1c2f5-881c-4e1f-8618-ca8f6f3bf1d2").expect(INVALID_UUID),
@@ -226,6 +227,7 @@ impl RequestDataAccess for RequestDatabaseMock {
             report_count: 0,
             approved: false,
             upload_date: Date::default(),
+            meal_id: Uuid::default(),
         };
         let d3 = Image {
             id: Uuid::parse_str("9f0a4fb0-c233-4a16-8f3a-2bbbf735ef07").expect(INVALID_UUID),
@@ -235,6 +237,7 @@ impl RequestDataAccess for RequestDatabaseMock {
             report_count: 0,
             approved: false,
             upload_date: Date::default(),
+            meal_id: Uuid::default(),
         };
         Ok(vec![d1, d2, d3])
     }

@@ -32,6 +32,7 @@ impl CommandDataAccess for CommandDatabaseMock {
             downvotes: 2000,
             rank: 0.1,
             id: Uuid::default(),
+            meal_id: Uuid::default(),
         };
         Ok(info)
     }

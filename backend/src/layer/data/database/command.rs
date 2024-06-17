@@ -21,7 +21,7 @@ impl CommandDataAccess for PersistentCommandData {
         let record = sqlx::query!(
             r#"
             SELECT approved, link_date as upload_date, report_count,
-            upvotes, downvotes, image_id, rank
+            upvotes, downvotes, image_id, rank, food_id
             FROM image_detail
             WHERE image_id = $1
             ORDER BY image_id
@@ -39,6 +39,7 @@ impl CommandDataAccess for PersistentCommandData {
             downvotes: u32::try_from(null_error!(record.downvotes))?,
             upvotes: u32::try_from(null_error!(record.upvotes))?,
             id: null_error!(record.image_id),
+            meal_id: null_error!(record.food_id),
         })
     }
 
@@ -190,6 +191,7 @@ mod test {
             approved: false,
             upload_date: Local::now().date_naive(),
             report_count: 0,
+            meal_id: Uuid::default(),
         }
     }
 

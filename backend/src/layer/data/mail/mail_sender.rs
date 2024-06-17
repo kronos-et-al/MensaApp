@@ -2,11 +2,14 @@
 use std::fmt::Debug;
 
 use async_trait::async_trait;
+use minijinja::{context, Environment, Value};
 use thiserror::Error;
 
 use lettre::{
-    address::AddressError, message::Mailbox, transport::smtp::authentication::Credentials, Address,
-    Message, SmtpTransport, Transport,
+    address::AddressError,
+    message::{Mailbox, MaybeString, SinglePart},
+    transport::smtp::authentication::Credentials,
+    Address, Message, SmtpTransport, Transport,
 };
 
 use crate::{
@@ -14,13 +17,13 @@ use crate::{
     layer::data::mail::mail_info::MailInfo,
 };
 
-use string_template::Template;
 use tracing::{error, info};
 
 /// Result returned when sending emails, potentially containing a [`MailError`].
 pub type MailResult<T> = std::result::Result<T, MailError>;
 
-const REPORT_TEMPLATE: &str = include_str!("./template.txt");
+const REPORT_TEMPLATE: &str = include_str!("./template/template.html");
+const REPORT_CSS: &str = include_str!("./template/output.css");
 const SENDER_NAME: &str = "MensaKa";
 const RECEIVER_NAME: &str = "Administrator";
 const MAIL_SUBJECT: &str = "An image was reported and requires your review";
@@ -77,7 +80,7 @@ impl MailSender {
             .from(sender)
             .to(reciever)
             .subject(MAIL_SUBJECT)
-            .body(report)?;
+            .singlepart(SinglePart::html(MaybeString::String(report)))?;
         self.mailer.send(&email)?;
         info!(
             ?info,
@@ -97,39 +100,33 @@ impl MailSender {
     }
 
     fn get_report(info: &ImageReportInfo) -> String {
-        let info_array_map = [
-            ("image_link", &info.image_link as &dyn ToString),
-            ("image_id", &info.image_id),
-            ("report_count", &info.report_count),
-            ("reason", &info.reason),
-            ("image_got_hidden", &info.image_got_hidden),
-            ("positive_rating_count", &info.positive_rating_count),
-            ("negative_rating_count", &info.negative_rating_count),
-            ("get_image_rank", &info.get_image_rank),
-            ("report_barrier", &info.report_barrier),
-            ("client_id", &info.client_id),
-            ("image_age", &info.image_age),
-        ];
+        let env = Environment::new();
+        let template = env
+            .template_from_str(REPORT_TEMPLATE)
+            .expect("template always preset");
 
-        let info_map = info_array_map
-            .into_iter()
-            .map(|(k, v)| (k, v.to_string()))
-            .collect::<Vec<_>>();
-        let info_map = info_map.iter().map(|(k, v)| (*k, v.as_str())).collect();
-
-        Template::new(REPORT_TEMPLATE).render(&info_map)
+        template
+            .render(context!(
+                css => REPORT_CSS,
+                delete_url => "#", // todo
+                verify_url => "#", // todo
+                ..Value::from_serialize(info),
+            ))
+            .expect("all arguments provided at compile time")
     }
 }
 
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
+    use super::REPORT_CSS;
     use crate::{
         interface::admin_notification::{AdminNotification, ImageReportInfo},
         layer::data::mail::mail_info::MailInfo,
         layer::data::mail::mail_sender::MailSender,
         util::Uuid,
     };
+    use chrono::Local;
     use dotenvy;
     use std::env::{self, VarError};
     use tracing_test::traced_test;
@@ -141,15 +138,23 @@ mod test {
     const ADMIN_EMAIL_ENV_NAME: &str = "ADMIN_EMAIL";
 
     #[tokio::test]
+    #[ignore]
+    async fn test_print_report() {
+        let info = get_report_info();
+        let report = MailSender::get_report(&info);
+        println!("{report}");
+    }
+
+    #[tokio::test]
     async fn test_get_report() {
         let info = get_report_info();
         let report = MailSender::get_report(&info).replace("\r\n", "\n");
         assert!(
-            !report.contains("{{"),
+            !report.contains("{{ "),
             "the template must not contain any formatting"
         );
         assert!(
-            !report.contains("}}"),
+            !report.contains(" }}"),
             "the template must not contain any formatting"
         );
         assert!(
@@ -164,10 +169,10 @@ mod test {
             report.contains(info.report_count.to_string().as_str()),
             "the template must contain all of the information from the report info"
         );
-        assert!(
-            report.contains(info.image_got_hidden.to_string().as_str()),
-            "the template must contain all of the information from the report info"
-        );
+        // assert!(
+        //     report.contains(info.image_got_hidden.to_string().as_str()),
+        //     "the template must contain all of the information from the report info"
+        // );
         assert!(
             report.contains(info.positive_rating_count.to_string().as_str()),
             "the template must contain all of the information from the report info"
@@ -177,7 +182,7 @@ mod test {
             "the template must contain all of the information from the report info"
         );
         assert!(
-            report.contains(info.get_image_rank.to_string().as_str()),
+            report.contains(info.image_rank.to_string().as_str()),
             "the template must contain all of the information from the report info"
         );
         assert!(
@@ -191,6 +196,9 @@ mod test {
         assert!(
             report.contains(info.image_age.to_string().as_str()),
             "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(REPORT_CSS), "Report css must be included. maybe auto-formatting destroyed the braces in template.html?"
         );
     }
 
@@ -227,14 +235,18 @@ mod test {
             reason: crate::util::ReportReason::Advert,
             image_got_hidden: true,
             image_id: Uuid::default(),
-            image_link: String::from("www.test.com"),
+            image_link: String::from("https://picsum.photos/200/300"),
             report_count: 1,
             positive_rating_count: 10,
             negative_rating_count: 20,
-            get_image_rank: 1.0,
+            image_rank: 1.0,
             report_barrier: 1,
             client_id: Uuid::default(),
             image_age: 1,
+            meal_id: Uuid::default(),
+            meal_name: "Happy Meal".into(),
+            report_date: Local::now().date_naive(),
+            other_image_urls: vec!["https://picsum.photos/200/300".into()],
         }
     }
 

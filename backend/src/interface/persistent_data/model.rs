@@ -92,6 +92,8 @@ pub struct Image {
     pub upload_date: Date,
     /// Amount of open report request related to that image.
     pub report_count: u32,
+    /// Id of the meal this image belongs to.
+    pub meal_id: Uuid,
 }
 
 /// This struct contains all environmental information. co2 in grams, water in litres

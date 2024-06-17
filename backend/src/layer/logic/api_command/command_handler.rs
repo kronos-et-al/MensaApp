@@ -65,7 +65,7 @@ where
 
     fn will_be_hidden(image: &Image) -> bool {
         Self::days_since(image.upload_date) <= 30
-            && image.report_count > Self::get_report_barrier(image.upload_date)
+            && image.report_count >= Self::get_report_barrier(image.upload_date)
     }
 
     fn days_since(date: Date) -> i64 {
@@ -119,10 +119,14 @@ where
                 report_count: info.report_count,
                 positive_rating_count: info.upvotes,
                 negative_rating_count: info.downvotes,
-                get_image_rank: info.rank,
+                image_rank: info.rank,
                 report_barrier: Self::get_report_barrier(info.upload_date),
                 client_id,
                 image_age: Self::days_since(info.upload_date),
+                report_date: Local::now().date_naive(),
+                meal_id: info.meal_id,
+                meal_name: "Happy Meal".into(), // todo
+                other_image_urls: vec![],       // todo
             };
 
             self.admin_notification

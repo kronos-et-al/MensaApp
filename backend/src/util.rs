@@ -7,6 +7,7 @@ use std::fmt::Display;
 use async_graphql::Enum;
 use image::DynamicImage;
 use lazy_static::lazy_static;
+use serde::Serialize;
 
 /// Date type used in multiple places.
 pub type Date = chrono::NaiveDate;
@@ -146,7 +147,7 @@ pub enum FoodType {
 }
 
 /// This enum lists all the predetermined reasons a image can be reported for.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Enum, sqlx::Type, Serialize)]
 #[sqlx(type_name = "report_reason", rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ReportReason {
     /// This picture shows offensive content.

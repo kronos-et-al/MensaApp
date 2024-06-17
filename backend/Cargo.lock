@@ -464,6 +464,7 @@ dependencies = [
  "iana-time-zone",
  "js-sys",
  "num-traits",
+ "serde",
  "wasm-bindgen",
  "windows-targets 0.52.3",
 ]
@@ -1695,6 +1696,7 @@ dependencies = [
  "lazy_static",
  "lettre",
  "mime",
+ "minijinja",
  "multer 3.0.0",
  "rand",
  "regex",
@@ -1706,7 +1708,6 @@ dependencies = [
  "serial_test",
  "sha2",
  "sqlx",
- "string_template",
  "tempfile",
  "thiserror",
  "time",
@@ -1734,6 +1735,15 @@ checksum = "4192263c238a5f0d0c6bfd21f336a313a4ce1c450542449ca191bb657b4642ef"
 dependencies = [
  "mime",
  "unicase",
+]
+
+[[package]]
+name = "minijinja"
+version = "2.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e136ef580d7955019ab0a407b68d77c292a9976907e217900f3f76bc8f6dc1a4"
+dependencies = [
+ "serde",
 ]
 
 [[package]]
@@ -3130,15 +3140,6 @@ dependencies = [
  "phf_shared 0.10.0",
  "proc-macro2",
  "quote",
-]
-
-[[package]]
-name = "string_template"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc6f2c6b2c3fa950895c9aeb0c3cb9271d7eb580662af9af2b711b593f446320"
-dependencies = [
- "regex",
 ]
 
 [[package]]
