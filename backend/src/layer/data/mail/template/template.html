@@ -39,9 +39,10 @@
 
         </div>
 
-        <div class="rounded-3xl aspect-video w-full bg-cover bg-center bg-[url('{{ image_url }}')]">
-            <div
-                class="backdrop-blur-xl active:invisible size-full rounded-3xl flex flex-col items-center justify-between">
+        <div class="aspect-video w-full relative z-0 flex">
+            <img class="size-full rounded-3xl cover" src="{{ image_url }}" />
+            <div class="absolute inset-y-0 left-0 z-10 rounded-3xl backdrop-blur-xl active:invisible size-full flex flex-col items-center
+            justify-between">
                 <div class="text-5xl align-middle h-full flex flex-col justify-center">
                     <svg class="fill-white size-10" xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 576 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
@@ -122,7 +123,7 @@
                     </div>
                     <div class=table-row>
                         <div class="table-cell">Rating</div>
-                        <div class="table-cell"> +{{ positive_rating_count }} -{{ negative_rating_count }}</div>
+                        <div class="table-cell"> +{{ positive_rating_count }} &minus;{{ negative_rating_count }}</div>
                     </div>
                     <div class=table-row>
                         <div class="table-cell">Rank</div>
@@ -132,7 +133,7 @@
             </div>
         </div>
 
-        {% if other_images %}
+        {% if other_image_urls %}
         <div>
             <h2 class="text-2xl">Other Images</h2>
             <div class="overflow-x-auto snap-x snap-mandatory">

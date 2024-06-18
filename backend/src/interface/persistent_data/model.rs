@@ -75,8 +75,8 @@ pub struct Side {
     pub price: Price,
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
 /// This structure is used for database operations. This image structure is based on the database entity 'image'.
+#[derive(Debug, Default, PartialEq, Clone)]
 pub struct Image {
     /// Database-identification of the image.
     pub id: Uuid,
@@ -94,6 +94,17 @@ pub struct Image {
     pub report_count: u32,
     /// Id of the meal this image belongs to.
     pub meal_id: Uuid,
+}
+
+/// This structure contains all information of an image necessary to file a report.
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct ExtendedImage {
+    /// Information that can be directly queried from the image and is also useful elsewhere, see [Image].
+    pub image: Image,
+    /// Name of the meal this image belongs to.
+    pub meal_name: String,
+    /// List of urls of other images of the same meal.
+    pub other_image_urls: Vec<String>,
 }
 
 /// This struct contains all environmental information. co2 in grams, water in litres

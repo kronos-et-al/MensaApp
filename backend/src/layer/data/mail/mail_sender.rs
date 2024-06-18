@@ -158,7 +158,7 @@ mod test {
             "the template must not contain any formatting"
         );
         assert!(
-            report.contains(info.image_link.as_str()),
+            report.contains(info.image_url.as_str()),
             "the template must contain all of the information from the report info."
         );
         assert!(
@@ -235,7 +235,7 @@ mod test {
             reason: crate::util::ReportReason::Advert,
             image_got_hidden: true,
             image_id: Uuid::default(),
-            image_link: String::from("https://picsum.photos/200/300"),
+            image_url: String::from("https://picsum.photos/500/330"),
             report_count: 1,
             positive_rating_count: 10,
             negative_rating_count: 20,
@@ -246,7 +246,12 @@ mod test {
             meal_id: Uuid::default(),
             meal_name: "Happy Meal".into(),
             report_date: Local::now().date_naive(),
-            other_image_urls: vec!["https://picsum.photos/200/300".into()],
+            other_image_urls: vec![
+                "https://picsum.photos/500/300".into(),
+                "https://picsum.photos/500/350".into(),
+                "https://picsum.photos/400/350".into(),
+                "https://picsum.photos/300/350".into(),
+            ],
         }
     }
 

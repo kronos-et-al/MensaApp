@@ -22,7 +22,7 @@ pub struct ImageReportInfo {
     /// Identifier of the image used in the datastore.
     pub image_id: Uuid,
     /// URL to the image at the image hoster.
-    pub image_link: String,
+    pub image_url: String,
     /// Number of times this image was reported, including the current report.
     pub report_count: u32,
     /// Number of positive ratings for this image.

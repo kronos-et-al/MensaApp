@@ -4,6 +4,7 @@ pub mod model;
 use crate::interface::persistent_data::model::{ApiKey, Canteen, Image, Line, Meal, Side};
 use crate::util::{Additive, Allergen, Date, FoodType, NutritionData, Price, ReportReason, Uuid};
 use async_trait::async_trait;
+use model::ExtendedImage;
 use sqlx::migrate::MigrateError;
 use std::num::TryFromIntError;
 use thiserror::Error;
@@ -174,7 +175,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 /// An interface for api actions. The Command component uses this interface for database access.
 pub trait CommandDataAccess: Sync + Send {
     /// Returns the ImageInfo struct of image.
-    async fn get_image_info(&self, image_id: Uuid) -> Result<Image>;
+    async fn get_image_info(&self, image_id: Uuid) -> Result<ExtendedImage>;
     /// Marks an image as hidden. Hidden images cant be seen by users.
     async fn hide_image(&self, image_id: Uuid) -> Result<()>;
     /// Saves an image report

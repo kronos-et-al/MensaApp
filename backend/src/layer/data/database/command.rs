@@ -3,9 +3,12 @@ use async_trait::async_trait;
 use sqlx::{Pool, Postgres};
 
 use crate::{
-    interface::persistent_data::{model::Image, CommandDataAccess, Result},
+    interface::persistent_data::{
+        model::{ExtendedImage, Image},
+        CommandDataAccess, Result,
+    },
     null_error,
-    util::{ReportReason, Uuid},
+    util::{image_id_to_url, ReportReason, Uuid},
 };
 
 /// Class implementing all database requests arising from graphql manipulations.
@@ -17,12 +20,12 @@ pub struct PersistentCommandData {
 #[async_trait]
 #[allow(clippy::missing_panics_doc)] // necessary because sqlx macro sometimes create unreachable panics?
 impl CommandDataAccess for PersistentCommandData {
-    async fn get_image_info(&self, image_id: Uuid) -> Result<Image> {
+    async fn get_image_info(&self, image_id: Uuid) -> Result<ExtendedImage> {
         let record = sqlx::query!(
             r#"
             SELECT approved, link_date as upload_date, report_count,
-            upvotes, downvotes, image_id, rank, food_id
-            FROM image_detail
+            upvotes, downvotes, image_id, rank, food_id, f.name as meal_name
+            FROM image_detail JOIN food f USING (food_id)
             WHERE image_id = $1
             ORDER BY image_id
             "#,
@@ -31,15 +34,33 @@ impl CommandDataAccess for PersistentCommandData {
         .fetch_one(&self.pool)
         .await?;
 
-        Ok(Image {
-            approved: null_error!(record.approved),
-            rank: null_error!(record.rank),
-            report_count: u32::try_from(null_error!(record.report_count))?,
-            upload_date: null_error!(record.upload_date),
-            downvotes: u32::try_from(null_error!(record.downvotes))?,
-            upvotes: u32::try_from(null_error!(record.upvotes))?,
-            id: null_error!(record.image_id),
-            meal_id: null_error!(record.food_id),
+        let other_image_urls = sqlx::query_scalar!(
+            "
+            SELECT image_id FROM image_detail 
+            WHERE currently_visible AND food_id = $1
+            ORDER BY rank DESC
+            ",
+            record.food_id
+        )
+        .fetch_all(&self.pool)
+        .await?
+        .iter()
+        .map(|i| Ok(image_id_to_url(null_error!(i))))
+        .collect::<Result<Vec<_>>>()?;
+
+        Ok(ExtendedImage {
+            image: Image {
+                approved: null_error!(record.approved),
+                rank: null_error!(record.rank),
+                report_count: u32::try_from(null_error!(record.report_count))?,
+                upload_date: null_error!(record.upload_date),
+                downvotes: u32::try_from(null_error!(record.downvotes))?,
+                upvotes: u32::try_from(null_error!(record.upvotes))?,
+                id: null_error!(record.image_id),
+                meal_id: null_error!(record.food_id),
+            },
+            meal_name: record.meal_name,
+            other_image_urls,
         })
     }
 
@@ -182,16 +203,20 @@ mod test {
         assert!(command.get_image_info(WRONG_UUID).await.is_err());
     }
 
-    fn provide_dummy_image() -> Image {
-        Image {
-            id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
-            rank: 0.5,
-            downvotes: 0,
-            upvotes: 0,
-            approved: false,
-            upload_date: Local::now().date_naive(),
-            report_count: 0,
-            meal_id: Uuid::default(),
+    fn provide_dummy_image() -> ExtendedImage {
+        ExtendedImage {
+            image: Image {
+                id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
+                rank: 0.5,
+                downvotes: 0,
+                upvotes: 0,
+                approved: false,
+                upload_date: Local::now().date_naive(),
+                report_count: 0,
+                meal_id: Uuid::default(),
+            },
+            meal_name: "Happy Meal".into(),
+            other_image_urls: vec!["https://picsum.photos/500/300".into()],
         }
     }
 

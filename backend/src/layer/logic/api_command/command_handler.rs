@@ -101,32 +101,32 @@ where
         client_id: Uuid,
     ) -> Result<()> {
         let mut info = self.command_data.get_image_info(image_id).await?;
-        if !info.approved {
-            info.report_count += 1;
+        if !info.image.approved {
+            info.image.report_count += 1;
             self.command_data
                 .add_report(image_id, client_id, reason)
                 .await?;
-            let will_be_hidden = Self::will_be_hidden(&info);
+            let will_be_hidden = Self::will_be_hidden(&info.image);
             if will_be_hidden {
                 self.command_data.hide_image(image_id).await?;
-                info!(image = ?info, "Automatically hid image {image_id} because reported {} times.", info.report_count);
+                info!(image_info = ?info, "Automatically hid image {image_id} because reported {} times.", info.image.report_count);
             }
             let report_info = ImageReportInfo {
                 reason,
                 image_id,
                 image_got_hidden: will_be_hidden,
-                image_link: image_id_to_url(image_id),
-                report_count: info.report_count,
-                positive_rating_count: info.upvotes,
-                negative_rating_count: info.downvotes,
-                image_rank: info.rank,
-                report_barrier: Self::get_report_barrier(info.upload_date),
+                image_url: image_id_to_url(image_id),
+                report_count: info.image.report_count,
+                positive_rating_count: info.image.upvotes,
+                negative_rating_count: info.image.downvotes,
+                image_rank: info.image.rank,
+                report_barrier: Self::get_report_barrier(info.image.upload_date),
                 client_id,
-                image_age: Self::days_since(info.upload_date),
+                image_age: Self::days_since(info.image.upload_date),
                 report_date: Local::now().date_naive(),
-                meal_id: info.meal_id,
-                meal_name: "Happy Meal".into(), // todo
-                other_image_urls: vec![],       // todo
+                meal_id: info.image.meal_id,
+                meal_name: info.meal_name,
+                other_image_urls: info.other_image_urls,
             };
 
             self.admin_notification
