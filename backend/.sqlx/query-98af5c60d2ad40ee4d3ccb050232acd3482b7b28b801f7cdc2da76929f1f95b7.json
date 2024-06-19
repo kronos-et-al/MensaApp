@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT approved, link_date as upload_date, report_count,\n            upvotes, downvotes, image_id, rank\n            FROM image_detail\n            WHERE image_id = $1\n            ORDER BY image_id\n            ",
+  "query": "\n            SELECT approved, link_date as upload_date, report_count,\n            upvotes, downvotes, image_id, rank, food_id, f.name as meal_name\n            FROM image_detail JOIN food f USING (food_id)\n            WHERE image_id = $1\n            ORDER BY image_id\n            ",
   "describe": {
     "columns": [
       {
@@ -37,6 +37,16 @@
         "ordinal": 6,
         "name": "rank",
         "type_info": "Float4"
+      },
+      {
+        "ordinal": 7,
+        "name": "food_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 8,
+        "name": "meal_name",
+        "type_info": "Text"
       }
     ],
     "parameters": {
@@ -51,8 +61,10 @@
       true,
       true,
       true,
-      true
+      true,
+      true,
+      false
     ]
   },
-  "hash": "12b971e2d40ed13906dfc4ba3266cf97744c1d7000d9b7020c4a08b1e16f882a"
+  "hash": "98af5c60d2ad40ee4d3ccb050232acd3482b7b28b801f7cdc2da76929f1f95b7"
 }

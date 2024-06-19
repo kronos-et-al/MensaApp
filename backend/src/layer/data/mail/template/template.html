@@ -61,7 +61,8 @@
                     <tbody>
                         <tr>
                             <td class="w-1/2">Meal</td>
-                            <td class="leading-none">{{ meal_name}}<br><span class="text-[0.6em] select-all"> {{ meal_id }}</span>
+                            <td class="leading-none">{{ meal_name}}<br><span class="text-[0.6em] select-all"> {{ meal_id
+                                    }}</span>
                             </td>
                         </tr>
                         <tr>
@@ -71,6 +72,7 @@
                         <tr>
                             <td>Hidden</td>
                             <td>
+                                <!-- Image got hidden? {{ image_got_hidden }} -->
                                 {% if image_got_hidden %}
                                 <svg class="fill-green size-5 inline" xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
@@ -122,7 +124,7 @@
                     </div>
                     <div class=table-row>
                         <div class="table-cell">Rating</div>
-                        <div class="table-cell"> +{{ positive_rating_count }} &minus;{{ negative_rating_count }}</div>
+                        <div class="table-cell"> +{{ positive_rating_count }} / &minus;{{ negative_rating_count }}</div>
                     </div>
                     <div class=table-row>
                         <div class="table-cell">Rank</div>

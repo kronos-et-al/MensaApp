@@ -213,10 +213,14 @@ mod test {
                 approved: false,
                 upload_date: Local::now().date_naive(),
                 report_count: 0,
-                meal_id: Uuid::default(),
+                meal_id: Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
             },
-            meal_name: "Happy Meal".into(),
-            other_image_urls: vec!["https://picsum.photos/500/300".into()],
+            meal_name: "Geflügel - Cevapcici, Ajvar, Djuvec Reis".into(),
+            other_image_urls: vec![
+                "http://localhost/image/ea8cce48-a3c7-4f8e-a222-5f3891c13804.jpg".into(),
+                "http://localhost/image/1aa73d5d-1701-4975-aa3c-1422a8bc10e8.jpg".into(),
+                "http://localhost/image/76b904fe-d0f1-4122-8832-d0e21acab86d.jpg".into(),
+            ],
         }
     }
 

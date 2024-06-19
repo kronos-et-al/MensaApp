@@ -182,10 +182,10 @@ mod test {
             report.contains(info.report_count.to_string().as_str()),
             "the template must contain all of the information from the report info"
         );
-        // assert!(
-        //     report.contains(info.image_got_hidden.to_string().as_str()),
-        //     "the template must contain all of the information from the report info"
-        // );
+        assert!(
+            report.contains(info.image_got_hidden.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
         assert!(
             report.contains(info.positive_rating_count.to_string().as_str()),
             "the template must contain all of the information from the report info"
@@ -208,6 +208,22 @@ mod test {
         );
         assert!(
             report.contains(info.image_age.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(info.meal_id.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(info.meal_name.as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(info.other_image_urls[0].as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(info.report_date.to_string().as_str()),
             "the template must contain all of the information from the report info"
         );
         assert!(
@@ -247,16 +263,16 @@ mod test {
         ImageReportInfo {
             reason: crate::util::ReportReason::Advert,
             image_got_hidden: true,
-            image_id: Uuid::default(),
+            image_id: Uuid::from_u128(9_789_789),
             image_url: String::from("https://picsum.photos/500/330"),
             report_count: 1,
             positive_rating_count: 10,
             negative_rating_count: 20,
             image_rank: 1.0,
             report_barrier: 1,
-            client_id: Uuid::default(),
+            client_id: Uuid::from_u128(123),
             image_age: 1,
-            meal_id: Uuid::default(),
+            meal_id: Uuid::from_u128(567),
             meal_name: "Happy Meal".into(),
             report_date: Local::now().date_naive(),
             other_image_urls: vec![
