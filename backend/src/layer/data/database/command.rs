@@ -217,9 +217,9 @@ mod test {
             },
             meal_name: "Geflügel - Cevapcici, Ajvar, Djuvec Reis".into(),
             other_image_urls: vec![
-                "http://localhost/image/ea8cce48-a3c7-4f8e-a222-5f3891c13804.jpg".into(),
-                "http://localhost/image/1aa73d5d-1701-4975-aa3c-1422a8bc10e8.jpg".into(),
-                "http://localhost/image/76b904fe-d0f1-4122-8832-d0e21acab86d.jpg".into(),
+                image_id_to_url(Uuid::parse_str("ea8cce48-a3c7-4f8e-a222-5f3891c13804").unwrap()),
+                image_id_to_url(Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap()),
+                image_id_to_url(Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap()),
             ],
         }
     }

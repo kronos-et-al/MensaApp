@@ -182,7 +182,7 @@ impl HTMLParser {
     ///
     /// ```
     /// use crate::mensa_app_backend::layer::data::swka_parser::html_parser::HTMLParser;
-    /// let canteen_data = HTMLParser::new().transform(include_str!("./test_data/test_normal.html"), 42_u32).unwrap();
+    /// let canteen_data = HTMLParser.transform(include_str!("./test_data/test_normal.html"), 42_u32).unwrap();
     /// ```
     ///
     /// # Errors
