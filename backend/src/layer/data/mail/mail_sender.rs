@@ -26,7 +26,6 @@ const REPORT_TEMPLATE: &str = include_str!("./template/template.html");
 const REPORT_CSS: &str = include_str!("./template/output.css");
 const SENDER_NAME: &str = "MensaKa";
 const RECEIVER_NAME: &str = "Administrator";
-const MAIL_SUBJECT: &str = "An image was reported and requires your review";
 
 /// Enum describing the possible ways, the mail notification can fail.
 #[derive(Debug, Error)]
@@ -76,10 +75,24 @@ impl MailSender {
         let sender = self.get_sender()?;
         let reciever = self.get_receiver()?;
         let report = Self::get_report(info);
+
+        let subject = format!(
+            "Image {}… {}, {}x: {}",
+            &info.image_id.to_string()[..6],
+            if info.image_got_hidden {
+                "hidden"
+            } else {
+                "reported"
+            },
+            info.report_count,
+            info.reason
+        );
+
         let email = Message::builder()
             .from(sender)
             .to(reciever)
-            .subject(MAIL_SUBJECT)
+            .subject(subject)
+            .references(format!("<{}@image-reports.mensa-ka.de>", info.image_id))
             .singlepart(SinglePart::html(MaybeString::String(report)))?;
         self.mailer.send(&email)?;
         info!(
