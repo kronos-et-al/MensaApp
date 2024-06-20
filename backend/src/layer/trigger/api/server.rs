@@ -39,7 +39,10 @@ use crate::{
         api_command::Command,
         persistent_data::{model::ApiKey, AuthDataAccess, RequestDataAccess},
     },
-    layer::trigger::api::auth::auth_middleware,
+    layer::trigger::api::{
+        admin::{admin_auth_middleware, admin_router, AdminKey, ArcCommand},
+        auth::auth_middleware,
+    },
     util::{local_to_global_url, IMAGE_BASE_PATH},
 };
 
@@ -62,6 +65,8 @@ pub struct ApiServerInfo {
     pub rate_limit: Option<NonZeroU64>,
     /// Maximum accepted http body size
     pub max_body_size: u64,
+    /// Api key for accessing the admin api
+    pub admin_key: String,
 }
 
 enum State {
@@ -87,6 +92,7 @@ pub struct ApiServer {
     schema: GraphQLSchema,
     state: State,
     api_keys: Vec<ApiKey>,
+    command_copy: Arc<dyn Command + Send + Sync>,
 }
 
 impl ApiServer {
@@ -99,7 +105,8 @@ impl ApiServer {
         command: impl Command + 'static,
         auth: impl AuthDataAccess,
     ) -> Self {
-        let schema: GraphQLSchema = construct_schema(data_access, command);
+        let command_arc = Arc::new(command);
+        let schema: GraphQLSchema = construct_schema(data_access, command_arc.clone());
         Self {
             server_info,
             schema,
@@ -108,6 +115,7 @@ impl ApiServer {
                 .get_api_keys()
                 .await
                 .expect("could not get api keys from database"),
+            command_copy: command_arc,
         }
     }
 
@@ -139,12 +147,24 @@ impl ApiServer {
                 Duration::from_secs(1),
             ));
 
+        let admin_auth = middleware::from_fn_with_state(
+            AdminKey(self.server_info.admin_key.clone()),
+            admin_auth_middleware,
+        );
+        let admin_router = admin_router();
+
         let app = Router::new()
             .route(
                 "/",
                 get(graphql_playground).post(graphql_handler.layer(auth)),
             )
             .layer(Extension(self.schema.clone()))
+            .nest(
+                "/admin",
+                admin_router
+                    .layer(admin_auth)
+                    .with_state(self.command_copy.clone() as ArcCommand),
+            )
             .nest_service(IMAGE_BASE_PATH, ServeDir::new(&self.server_info.image_dir))
             .layer(rate_limit)
             .layer(DefaultBodyLimit::max(
@@ -280,6 +300,7 @@ mod tests {
             image_dir: temp_dir(),
             rate_limit: None,
             max_body_size: BODY_SIZE,
+            admin_key: "admin".into(),
         };
         ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await
     }
@@ -290,6 +311,7 @@ mod tests {
             image_dir,
             rate_limit: None,
             max_body_size: BODY_SIZE,
+            admin_key: "admin".into(),
         };
         ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await
     }
@@ -498,6 +520,7 @@ mod tests {
             image_dir: temp_dir(),
             rate_limit: None,
             max_body_size: 1 << 10,
+            admin_key: "admin".into(),
         };
         let mut server = ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await;
 

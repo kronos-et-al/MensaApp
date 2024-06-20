@@ -1,5 +1,7 @@
 //! This interface allows to execute API commands.
 
+use std::sync::Arc;
+
 use async_trait::async_trait;
 use thiserror::Error;
 
@@ -47,6 +49,62 @@ pub trait Command: Send + Sync {
 
     /// command to add a rating to a meal.
     async fn set_meal_rating(&self, meal_id: Uuid, rating: u32, client_id: Uuid) -> Result<()>;
+}
+
+#[async_trait]
+impl<C: Command> Command for Arc<C> {
+    async fn report_image(
+        &self,
+        image_id: Uuid,
+        reason: ReportReason,
+        client_id: Uuid,
+    ) -> Result<()> {
+        Self::as_ref(self)
+            .report_image(image_id, reason, client_id)
+            .await
+    }
+
+    async fn add_image_upvote(&self, image_id: Uuid, client_id: Uuid) -> Result<()> {
+        Self::as_ref(self)
+            .add_image_upvote(image_id, client_id)
+            .await
+    }
+
+    async fn add_image_downvote(&self, image_id: Uuid, client_id: Uuid) -> Result<()> {
+        Self::as_ref(self)
+            .add_image_downvote(image_id, client_id)
+            .await
+    }
+
+    async fn remove_image_upvote(&self, image_id: Uuid, client_id: Uuid) -> Result<()> {
+        Self::as_ref(self)
+            .remove_image_upvote(image_id, client_id)
+            .await
+    }
+
+    async fn remove_image_downvote(&self, image_id: Uuid, client_id: Uuid) -> Result<()> {
+        Self::as_ref(self)
+            .remove_image_downvote(image_id, client_id)
+            .await
+    }
+
+    async fn add_image(
+        &self,
+        meal_id: Uuid,
+        image_type: Option<String>,
+        image_file: Vec<u8>,
+        client_id: Uuid,
+    ) -> Result<()> {
+        Self::as_ref(self)
+            .add_image(meal_id, image_type, image_file, client_id)
+            .await
+    }
+
+    async fn set_meal_rating(&self, meal_id: Uuid, rating: u32, client_id: Uuid) -> Result<()> {
+        Self::as_ref(self)
+            .set_meal_rating(meal_id, rating, client_id)
+            .await
+    }
 }
 
 /// Enum describing the possible ways, a command can fail.
