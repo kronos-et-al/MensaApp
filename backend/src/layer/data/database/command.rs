@@ -37,10 +37,11 @@ impl CommandDataAccess for PersistentCommandData {
         let other_image_urls = sqlx::query_scalar!(
             "
             SELECT image_id FROM image_detail 
-            WHERE currently_visible AND food_id = $1
+            WHERE currently_visible AND food_id = $1 AND image_id <> $2
             ORDER BY rank DESC
             ",
-            record.food_id
+            record.food_id,
+            image_id
         )
         .fetch_all(&self.pool)
         .await?
@@ -219,7 +220,6 @@ mod test {
             other_image_urls: vec![
                 image_id_to_url(Uuid::parse_str("ea8cce48-a3c7-4f8e-a222-5f3891c13804").unwrap()),
                 image_id_to_url(Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap()),
-                image_id_to_url(Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap()),
             ],
         }
     }
