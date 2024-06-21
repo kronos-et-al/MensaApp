@@ -57,8 +57,8 @@ pub enum ServerError {
     /// Error while creating mensa parser component.
     #[error("error while creating mensa parser component: {0}")]
     ParseError(#[from] ParseError),
-    /// Error while creating image_validation component.
-    #[error("error while creating image_validation component: {0}")]
+    /// Error while creating image validation component.
+    #[error("error while creating image validation component: {0}")]
     ValidationApiError(#[from] ImageValidationError),
     /// Io error
     #[error("io error: {0}")]

@@ -204,8 +204,8 @@ impl ApiServer {
 
 /// Constructs the graphql schema with all its settings.
 pub(super) fn construct_schema(
-    data_access: impl RequestDataAccess + Sync + Send + 'static,
-    command: impl Command + Sync + Send + 'static,
+    data_access: impl RequestDataAccess + 'static,
+    command: impl Command + 'static,
 ) -> GraphQLSchema {
     let data_access_box: DataBox = Box::new(data_access);
     let command_box: CommandBox = Box::new(command);

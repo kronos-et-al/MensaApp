@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, \n                approved, report_count, link_date \n            FROM (\n                --- not reported by user\n                SELECT image_id \n                FROM image LEFT JOIN image_report r USING (image_id)\n                GROUP BY image_id\n                HAVING COUNT(*) FILTER (WHERE r.user_id = $2) = 0\n            ) not_reported JOIN image_detail USING (image_id)\n            WHERE currently_visible AND food_id = $1\n            ORDER BY rank DESC, image_id\n            ",
+  "query": "\n            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, \n                approved, report_count, link_date, food_id\n            FROM (\n                --- not reported by user\n                SELECT image_id \n                FROM image LEFT JOIN image_report r USING (image_id)\n                GROUP BY image_id\n                HAVING COUNT(*) FILTER (WHERE r.user_id = $2) = 0\n            ) not_reported JOIN image_detail USING (image_id)\n            WHERE currently_visible AND food_id = $1\n            ORDER BY rank DESC, image_id\n            ",
   "describe": {
     "columns": [
       {
@@ -47,6 +47,11 @@
         "ordinal": 8,
         "name": "link_date",
         "type_info": "Date"
+      },
+      {
+        "ordinal": 9,
+        "name": "food_id",
+        "type_info": "Uuid"
       }
     ],
     "parameters": {
@@ -64,8 +69,9 @@
       true,
       true,
       true,
+      true,
       true
     ]
   },
-  "hash": "c5f662f0391eeed9436a57398e9f5d25524fac35d52f6b2c899a3a80e13b3c3a"
+  "hash": "8ab5a4ceb485e856899d026fa312f506d5a54a0ae181c1c6a6fde00836a71a95"
 }

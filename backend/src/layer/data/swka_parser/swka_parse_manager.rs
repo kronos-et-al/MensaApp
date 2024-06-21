@@ -44,7 +44,7 @@ impl SwKaParseManager {
                 parse_info.number_of_weeks_to_poll,
             ),
             request: SwKaHtmlRequest::new(parse_info.client_timeout, parse_info.client_user_agent)?,
-            html_parser: HTMLParser::new(),
+            html_parser: HTMLParser,
         })
     }
 

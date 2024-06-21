@@ -8,7 +8,10 @@ use crate::{
         admin_notification::{AdminNotification, ImageReportInfo},
         image_storage::ImageStorage,
         image_validation::ImageValidation,
-        persistent_data::{model::Image, CommandDataAccess, DataError, Result as DataResult},
+        persistent_data::{
+            model::{ExtendedImage, Image},
+            CommandDataAccess, DataError, Result as DataResult,
+        },
     },
     util::{Date, ImageResource, ReportReason, Uuid},
 };
@@ -23,15 +26,20 @@ pub struct CommandDatabaseMock;
 #[async_trait]
 impl CommandDataAccess for CommandDatabaseMock {
     /// Returns the ImageInfo struct of image.
-    async fn get_image_info(&self, _image_id: Uuid) -> DataResult<Image> {
-        let info = Image {
-            approved: false,
-            upload_date: Date::default(),
-            report_count: 100,
-            upvotes: 200,
-            downvotes: 2000,
-            rank: 0.1,
-            id: Uuid::default(),
+    async fn get_image_info(&self, _image_id: Uuid) -> DataResult<ExtendedImage> {
+        let info = ExtendedImage {
+            image: Image {
+                approved: false,
+                upload_date: Date::default(),
+                report_count: 100,
+                upvotes: 200,
+                downvotes: 2000,
+                rank: 0.1,
+                id: Uuid::default(),
+                meal_id: Uuid::default(),
+            },
+            meal_name: "Happy Meal".into(),
+            other_image_urls: vec![],
         };
         Ok(info)
     }
