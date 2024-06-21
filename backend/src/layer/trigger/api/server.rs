@@ -147,11 +147,10 @@ impl ApiServer {
                 Duration::from_secs(1),
             ));
 
-        let admin_auth = middleware::from_fn_with_state(
-            AdminKey(self.server_info.admin_key.clone()),
-            admin_auth_middleware,
+        let admin_router = admin_router(
+            self.server_info.admin_key.clone(),
+            self.command_copy.clone() as ArcCommand,
         );
-        let admin_router = admin_router();
 
         let app = Router::new()
             .route(
@@ -159,12 +158,7 @@ impl ApiServer {
                 get(graphql_playground).post(graphql_handler.layer(auth)),
             )
             .layer(Extension(self.schema.clone()))
-            .nest(
-                "/admin",
-                admin_router
-                    .layer(admin_auth)
-                    .with_state(self.command_copy.clone() as ArcCommand),
-            )
+            .nest("/admin", admin_router)
             .nest_service(IMAGE_BASE_PATH, ServeDir::new(&self.server_info.image_dir))
             .layer(rate_limit)
             .layer(DefaultBodyLimit::max(

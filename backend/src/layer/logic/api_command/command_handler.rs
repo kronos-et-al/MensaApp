@@ -190,6 +190,14 @@ where
             .await?;
         Ok(())
     }
+
+    async fn delete_image(&self, _image_id: Uuid) -> Result<()> {
+        todo!()
+    }
+
+    async fn verify_image(&self, _image_id: Uuid) -> Result<()> {
+        todo!()
+    }
 }
 
 #[cfg(test)]

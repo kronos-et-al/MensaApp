@@ -354,6 +354,14 @@ impl Command for CommandMock {
     ) -> CommandResult<()> {
         Ok(())
     }
+
+    async fn delete_image(&self, _image_id: Uuid) -> CommandResult<()> {
+        Ok(())
+    }
+
+    async fn verify_image(&self, _image_id: Uuid) -> CommandResult<()> {
+        Ok(())
+    }
 }
 
 pub struct AuthDataMock;

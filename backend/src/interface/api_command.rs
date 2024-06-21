@@ -49,6 +49,12 @@ pub trait Command: Send + Sync {
 
     /// command to add a rating to a meal.
     async fn set_meal_rating(&self, meal_id: Uuid, rating: u32, client_id: Uuid) -> Result<()>;
+
+    /// Marks an image as verified and deletes all its reports. // todo do we want this?
+    async fn verify_image(&self, image_id: Uuid) -> Result<()>;
+
+    /// Deletes an image. // todo only hide?
+    async fn delete_image(&self, image_id: Uuid) -> Result<()>;
 }
 
 #[async_trait]
@@ -104,6 +110,14 @@ impl<C: Command> Command for Arc<C> {
         Self::as_ref(self)
             .set_meal_rating(meal_id, rating, client_id)
             .await
+    }
+
+    async fn verify_image(&self, image_id: Uuid) -> Result<()> {
+        Self::as_ref(self).verify_image(image_id).await
+    }
+
+    async fn delete_image(&self, image_id: Uuid) -> Result<()> {
+        Self::as_ref(self).delete_image(image_id).await
     }
 }
 
