@@ -40,7 +40,7 @@
         </div>
 
         <div class="aspect-video w-full relative z-0 flex items-center">
-            <img class="size-full rounded-3xl cover" src="{{ image_url }}" />
+            <img class="size-full rounded-3xl object-cover" src="{{ image_url }}" />
             <div
                 class="absolute inset-y-0 left-0 z-10 rounded-3xl backdrop-blur-xl active:invisible size-full text-5xl h-full flex flex-col items-center justify-center">
                 <svg class="fill-white size-10" xmlns="http://www.w3.org/2000/svg"
@@ -128,7 +128,7 @@
                     </div>
                     <div class=table-row>
                         <div class="table-cell">Rank</div>
-                        <div class="table-cell"> {{ image_rank }}</div>
+                        <div class="table-cell"> {{ image_rank|round(3) }}</div>
                     </div>
                 </div>
             </div>

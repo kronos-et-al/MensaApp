@@ -195,7 +195,7 @@ mod test {
             "the template must contain all of the information from the report info"
         );
         assert!(
-            report.contains(info.image_rank.to_string().as_str()),
+            report.contains(&info.image_rank.to_string()[0..4]),
             "the template must contain all of the information from the report info"
         );
         assert!(
@@ -264,11 +264,11 @@ mod test {
             reason: crate::util::ReportReason::Advert,
             image_got_hidden: true,
             image_id: Uuid::from_u128(9_789_789),
-            image_url: String::from("https://picsum.photos/500/330"),
+            image_url: String::from("https://picsum.photos/500/200"),
             report_count: 1,
             positive_rating_count: 10,
             negative_rating_count: 20,
-            image_rank: 1.0,
+            image_rank: 0.123_456,
             report_barrier: 1,
             client_id: Uuid::from_u128(123),
             image_age: 1,
