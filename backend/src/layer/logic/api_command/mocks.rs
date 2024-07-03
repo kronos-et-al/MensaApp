@@ -5,7 +5,7 @@ use async_trait::async_trait;
 
 use crate::{
     interface::{
-        admin_notification::{AdminNotification, ImageReportInfo},
+        admin_notification::{self, AdminNotification, ImageReportInfo},
         image_storage::ImageStorage,
         image_validation::ImageValidation,
         persistent_data::{
@@ -124,6 +124,14 @@ impl CommandDataAccess for CommandDatabaseMock {
             Ok(())
         }
     }
+
+    async fn delete_image(&self, _image_id: Uuid) -> DataResult<()> {
+        Ok(())
+    }
+
+    async fn verify_image(&self, _image_id: Uuid) -> DataResult<()> {
+        Ok(())
+    }
 }
 
 #[derive(Default, Debug)]
@@ -133,6 +141,12 @@ pub struct CommandAdminNotificationMock;
 impl AdminNotification for CommandAdminNotificationMock {
     /// Notifies an administrator about a newly reported image and the response automatically taken.
     async fn notify_admin_image_report(&self, _info: ImageReportInfo) {}
+    async fn notify_admin_image_deleted(&self, _image_id: Uuid) -> admin_notification::Result<()> {
+        Ok(())
+    }
+    async fn notify_admin_image_verified(&self, _image_id: Uuid) -> admin_notification::Result<()> {
+        Ok(())
+    }
 }
 
 #[derive(Default, Debug)]
@@ -158,6 +172,10 @@ impl ImageStorage for CommandImageStorageMock {
         _id: Uuid,
         _image: ImageResource,
     ) -> crate::interface::image_storage::Result<()> {
+        Ok(())
+    }
+
+    async fn delete_image(&self, _image_id: Uuid) -> crate::interface::image_storage::Result<()> {
         Ok(())
     }
 }

@@ -191,12 +191,21 @@ where
         Ok(())
     }
 
-    async fn delete_image(&self, _image_id: Uuid) -> Result<()> {
-        todo!()
+    async fn delete_image(&self, image_id: Uuid) -> Result<()> {
+        self.command_data.delete_image(image_id).await?;
+        self.image_storage.delete_image(image_id).await?;
+        self.admin_notification
+            .notify_admin_image_deleted(image_id)
+            .await?;
+        Ok(())
     }
 
-    async fn verify_image(&self, _image_id: Uuid) -> Result<()> {
-        todo!()
+    async fn verify_image(&self, image_id: Uuid) -> Result<()> {
+        self.command_data.verify_image(image_id).await?;
+        self.admin_notification
+            .notify_admin_image_verified(image_id)
+            .await?;
+        Ok(())
     }
 }
 

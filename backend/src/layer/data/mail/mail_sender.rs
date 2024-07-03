@@ -1,50 +1,31 @@
 //! Module responsible for sending email notifications to administrators.
-use std::fmt::Debug;
 
 use async_trait::async_trait;
 use minijinja::{context, Environment, Value};
-use thiserror::Error;
 
+use crate::{
+    interface::admin_notification::{AdminNotification, ImageReportInfo, Result},
+    layer::data::mail::mail_info::MailInfo,
+    util::Uuid,
+};
 use lettre::{
-    address::AddressError,
     message::{Mailbox, MaybeString, SinglePart},
     transport::smtp::authentication::Credentials,
     Address, Message, SmtpTransport, Transport,
 };
 
-use crate::{
-    interface::admin_notification::{AdminNotification, ImageReportInfo},
-    layer::data::mail::mail_info::MailInfo,
-};
-
 use tracing::{error, info};
 
-/// Result returned when sending emails, potentially containing a [`MailError`].
-pub type MailResult<T> = std::result::Result<T, MailError>;
-
 const REPORT_TEMPLATE: &str = include_str!("./template/template.html");
+const NOTIFY_TEMPLATE: &str = include_str!("./template/notification.html");
 const REPORT_CSS: &str = include_str!("./template/output.css");
 const SENDER_NAME: &str = "MensaKa";
 const RECEIVER_NAME: &str = "Administrator";
 
-/// Enum describing the possible ways, the mail notification can fail.
-#[derive(Debug, Error)]
-pub enum MailError {
-    /// Error occurring when an email address could not be parsed.
-    #[error("an error occurred while parsing the addresses: {0}")]
-    AddressError(#[from] AddressError),
-    /// Error occurring when an email could not be constructed.
-    #[error("an error occurred while parsing the mail: {0}")]
-    MailParseError(#[from] lettre::error::Error),
-    /// Error occurring when mail sender instance could bot be build.
-    #[error("an error occurred while sending the mail: {0}")]
-    MailSendError(#[from] lettre::transport::smtp::Error),
-}
-
 /// Class for sending emails.
 pub struct MailSender {
     config: MailInfo,
-    mailer: SmtpTransport,
+    mailer: SmtpTransport, // todo async transport?
 }
 
 #[async_trait]
@@ -54,6 +35,21 @@ impl AdminNotification for MailSender {
             error!(%info.image_id, %info.reason, self.config.admin_email_address, "Error notifying administrator: {error}");
         }
     }
+    async fn notify_admin_image_deleted(&self, image_id: Uuid) -> Result<()> {
+        let subject = format!("🗑️ Image {}… deleted", &image_id.to_string()[..6],);
+
+        let body = Self::get_notification_body("deleted", image_id);
+
+        self.send_message(subject, image_id, body)
+    }
+
+    async fn notify_admin_image_verified(&self, image_id: Uuid) -> Result<()> {
+        let subject = format!("✅ Image {}… verified", &image_id.to_string()[..6],);
+
+        let body = Self::get_notification_body("verified", image_id);
+
+        self.send_message(subject, image_id, body)
+    }
 }
 
 impl MailSender {
@@ -61,7 +57,7 @@ impl MailSender {
     ///
     /// # Errors
     /// Returns an error, if the connection could not be established to the smtp server
-    pub fn new(config: MailInfo) -> MailResult<Self> {
+    pub fn new(config: MailInfo) -> Result<Self> {
         let creds = Credentials::new(config.username.clone(), config.password.clone());
         let transport_builder = SmtpTransport::relay(&config.smtp_server)?;
         let mailer = transport_builder
@@ -71,13 +67,11 @@ impl MailSender {
         Ok(Self { config, mailer })
     }
 
-    fn try_notify_admin_image_report(&self, info: &ImageReportInfo) -> MailResult<()> {
-        let sender = self.get_sender()?;
-        let reciever = self.get_receiver()?;
+    fn try_notify_admin_image_report(&self, info: &ImageReportInfo) -> Result<()> {
         let report = Self::get_report(info);
 
         let subject = format!(
-            "Image {}… {}, {}x: {}",
+            "{icon} Image {}… {}, {}x: {}",
             &info.image_id.to_string()[..6],
             if info.image_got_hidden {
                 "hidden"
@@ -85,16 +79,15 @@ impl MailSender {
                 "reported"
             },
             info.report_count,
-            info.reason
+            info.reason,
+            icon = if info.image_got_hidden {
+                "👻"
+            } else {
+                "📜"
+            }
         );
 
-        let email = Message::builder()
-            .from(sender)
-            .to(reciever)
-            .subject(subject)
-            .references(format!("<{}@image-reports.mensa-ka.de>", info.image_id))
-            .singlepart(SinglePart::html(MaybeString::String(report)))?;
-        self.mailer.send(&email)?;
+        self.send_message(subject, info.image_id, report)?;
         info!(
             ?info,
             "Notified administrators about image report for image with id {}", info.image_id,
@@ -102,12 +95,12 @@ impl MailSender {
         Ok(())
     }
 
-    fn get_sender(&self) -> MailResult<Mailbox> {
+    fn get_sender(&self) -> Result<Mailbox> {
         let address = self.config.username.parse::<Address>()?;
         Ok(Mailbox::new(Some(SENDER_NAME.to_string()), address))
     }
 
-    fn get_receiver(&self) -> MailResult<Mailbox> {
+    fn get_receiver(&self) -> Result<Mailbox> {
         let address = self.config.admin_email_address.parse::<Address>()?;
         Ok(Mailbox::new(Some(RECEIVER_NAME.to_string()), address))
     }
@@ -126,6 +119,36 @@ impl MailSender {
                 ..Value::from_serialize(info),
             ))
             .expect("all arguments provided at compile time")
+    }
+
+    fn get_notification_body(action: &str, image_id: Uuid) -> String {
+        let env = Environment::new();
+        let template = env
+            .template_from_str(NOTIFY_TEMPLATE)
+            .expect("template always preset");
+
+        template
+            .render(context!(
+                css => REPORT_CSS,
+                action => action,
+                image_id => image_id,
+            ))
+            .expect("all arguments provided at compile time")
+    }
+
+    fn get_references_tag(image_id: Uuid) -> String {
+        format!("<{image_id}@image-reports.mensa-ka.de>")
+    }
+
+    fn send_message(&self, subject: impl Into<String>, image_id: Uuid, body: String) -> Result<()> {
+        let message = Message::builder()
+            .from(self.get_sender()?)
+            .to(self.get_receiver()?)
+            .subject(subject)
+            .references(Self::get_references_tag(image_id))
+            .singlepart(SinglePart::html(MaybeString::String(body)))?;
+        self.mailer.send(&message)?;
+        Ok(())
     }
 }
 

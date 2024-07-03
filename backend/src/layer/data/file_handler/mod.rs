@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use crate::util::IMAGE_EXTENSION;
 
 use async_trait::async_trait;
+use tokio::fs;
 use tracing::trace;
 
 use crate::{
@@ -47,6 +48,16 @@ impl ImageStorage for FileHandler {
             .expect("image saving should not panic nor get aborted")?;
 
         trace!(path = file_path_string, "Saved image {id}");
+
+        Ok(())
+    }
+
+    async fn delete_image(&self, id: Uuid) -> Result<()> {
+        let mut path = self.image_path.clone();
+        path.push(id.to_string());
+        path.set_extension(IMAGE_EXTENSION);
+
+        fs::remove_file(path).await?;
 
         Ok(())
     }

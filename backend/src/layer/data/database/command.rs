@@ -181,6 +181,23 @@ impl CommandDataAccess for PersistentCommandData {
         .await?;
         Ok(())
     }
+
+    async fn delete_image(&self, image_id: Uuid) -> Result<()> {
+        sqlx::query!("DELETE FROM image WHERE image_id = $1", image_id)
+            .execute(&self.pool)
+            .await?;
+        Ok(())
+    }
+
+    async fn verify_image(&self, image_id: Uuid) -> Result<()> {
+        sqlx::query!(
+            "UPDATE image SET approved = true WHERE image_id = $1",
+            image_id
+        )
+        .execute(&self.pool)
+        .await?;
+        Ok(())
+    }
 }
 
 #[cfg(test)]

@@ -40,7 +40,7 @@ use crate::{
         persistent_data::{model::ApiKey, AuthDataAccess, RequestDataAccess},
     },
     layer::trigger::api::{
-        admin::{admin_auth_middleware, admin_router, AdminKey, ArcCommand},
+        admin::{admin_router, ArcCommand},
         auth::auth_middleware,
     },
     util::{local_to_global_url, IMAGE_BASE_PATH},
