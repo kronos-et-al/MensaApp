@@ -36,7 +36,7 @@ impl AdminNotification for MailSender {
         }
     }
     async fn notify_admin_image_deleted(&self, image_id: Uuid) -> Result<()> {
-        let subject = format!("🗑️ Image {}… deleted", &image_id.to_string()[..6],);
+        let subject = format!("❌ Image {}… deleted", &image_id.to_string()[..6],);
 
         let body = Self::get_notification_body("deleted", image_id);
 
@@ -280,6 +280,28 @@ mod test {
             assert!(s.iter().filter(|l| l.contains("INFO")).count() == 1);
             Ok(())
         });
+    }
+
+    #[tokio::test]
+    async fn test_notify_admin_image_deleted() {
+        let mail_info = get_mail_info().unwrap();
+        let sender = MailSender::new(mail_info).unwrap();
+        assert!(sender.mailer.test_connection().unwrap());
+
+        let id = Uuid::default();
+
+        assert!(sender.notify_admin_image_deleted(id).await.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_notify_admin_image_verified() {
+        let mail_info = get_mail_info().unwrap();
+        let sender = MailSender::new(mail_info).unwrap();
+        assert!(sender.mailer.test_connection().unwrap());
+
+        let id = Uuid::default();
+
+        assert!(sender.notify_admin_image_verified(id).await.is_ok());
     }
 
     fn get_report_info() -> ImageReportInfo {
