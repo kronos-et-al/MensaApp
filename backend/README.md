@@ -5,6 +5,17 @@ Backend application for providing and synchronizing meal plan data of the cantee
 
 If you just want to use the (Android, iOS) App, the following is not necessary.
 
+
+## APIs
+
+There are two kinds of APIs available:
+- The main GraphQL API for accessing data like meal plans etc. \
+  This API is accesssable under `/` and ad documentation can be accessed on the there hosted GraphQL playground. 
+  For authentication herefore see [here](../doc/ApiAuth.md)
+- An admin API for deleting reported images etc. \
+  This API can be accessed under `/admin/...` and requires HTTP-Basic authentication for user `admin` with the password set in the `ADMIN_KEY` env var.
+  available admin API requests can be seen [here](../doc/AdminAPI.md)
+
 ## Running the backend yourself
 
 ### Deploy using docker-compose
