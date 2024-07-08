@@ -6,7 +6,7 @@ use minijinja::{context, Environment, Value};
 use crate::{
     interface::admin_notification::{AdminNotification, ImageReportInfo, Result},
     layer::data::mail::mail_info::MailInfo,
-    util::Uuid,
+    util::{self, Uuid},
 };
 use lettre::{
     message::{Mailbox, MaybeString, SinglePart},
@@ -114,8 +114,8 @@ impl MailSender {
         template
             .render(context!(
                 css => REPORT_CSS,
-                delete_url => "#", // todo
-                verify_url => "#", // todo
+                delete_url => util::local_to_global_url(&format!("/admin/report/delete_image/{}", info.image_id)),
+                verify_url => util::local_to_global_url(&format!("/admin/report/verify_image/{}", info.image_id)),
                 ..Value::from_serialize(info),
             ))
             .expect("all arguments provided at compile time")

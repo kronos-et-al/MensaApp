@@ -137,7 +137,7 @@ pub enum CommandError {
     #[error("Error during image preprocessing occured: {0}")]
     ImagePreprocessingError(#[from] ImagePreprocessingError),
     /// Error ocurred while saving image.
-    #[error("Error while saving image: {0}")]
+    #[error("Error while accessing image storage: {0}")]
     ImageStorageError(#[from] image_storage::ImageError),
     /// Error while image verification.
     #[error("Image could not be verified: {0}")]
