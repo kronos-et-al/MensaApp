@@ -10,7 +10,9 @@ use crate::{
     util::{ReportReason, Uuid},
 };
 
-use super::{admin_notification::MailError, image_storage, image_validation, persistent_data::DataError};
+use super::{
+    admin_notification::MailError, image_storage, image_validation, persistent_data::DataError,
+};
 
 /// Result returned from commands, potentially containing a [`CommandError`].
 pub type Result<T> = std::result::Result<T, CommandError>;
@@ -50,7 +52,7 @@ pub trait Command: Send + Sync {
     /// command to add a rating to a meal.
     async fn set_meal_rating(&self, meal_id: Uuid, rating: u32, client_id: Uuid) -> Result<()>;
 
-    /// Marks an image as verified. 
+    /// Marks an image as verified.
     async fn verify_image(&self, image_id: Uuid) -> Result<()>;
 
     /// Deletes an image.
@@ -144,5 +146,5 @@ pub enum CommandError {
     ImageValidationError(#[from] image_validation::ImageValidationError),
     /// Error while trying to send aan admin notification.
     #[error("Administrator could not be notified: {0}")]
-    AdminNotificationError(#[from] MailError)
+    AdminNotificationError(#[from] MailError),
 }
