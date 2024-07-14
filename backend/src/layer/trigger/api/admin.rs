@@ -59,16 +59,19 @@ async fn version() -> &'static str {
 async fn verify_image(
     State(command): State<ArcCommand>,
     Path(image_id): Path<Uuid>,
-) -> Result<(), CommandError> {
-    command.verify_image(image_id).await
+) -> Result<String, CommandError> {
+    command.verify_image(image_id).await?;
+
+    Ok(format!("Successfully verified image {image_id}"))
 }
 
 #[debug_handler]
 async fn delete_image(
     State(command): State<ArcCommand>,
     Path(image_id): Path<Uuid>,
-) -> Result<(), CommandError> {
-    command.delete_image(image_id).await
+) -> Result<String, CommandError> {
+    command.delete_image(image_id).await?;
+    Ok(format!("Successfully deleted image {image_id}"))
 }
 
 const ADMIN_USER: &str = "admin";
