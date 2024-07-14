@@ -479,4 +479,34 @@ mod test {
             .unwrap()
             .len()
     }
+
+    #[sqlx::test(fixtures("meal", "image"))]
+    async fn test_delete_image(pool: PgPool) {
+        let command = PersistentCommandData { pool: pool.clone() };
+        let id = "ea8cce48-a3c7-4f8e-a222-5f3891c13804".try_into().unwrap();
+        command.delete_image(id).await.unwrap();
+
+        assert_eq!(
+            0,
+            sqlx::query_scalar!("SELECT COUNT(*) FROM image WHERE image_id = $1", id)
+                .fetch_one(&pool)
+                .await
+                .unwrap()
+                .unwrap()
+        );
+    }
+
+    #[sqlx::test(fixtures("meal", "image"))]
+    async fn test_verify_image(pool: PgPool) {
+        let command = PersistentCommandData { pool: pool.clone() };
+        let id = "ea8cce48-a3c7-4f8e-a222-5f3891c13804".try_into().unwrap();
+        command.verify_image(id).await.unwrap();
+
+        assert!(
+            sqlx::query_scalar!("SELECT approved FROM image WHERE image_id = $1", id)
+                .fetch_one(&pool)
+                .await
+                .unwrap()
+        );
+    }
 }

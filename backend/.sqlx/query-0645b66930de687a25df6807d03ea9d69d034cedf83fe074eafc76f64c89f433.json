@@ -1,0 +1,45 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT additive as \"additive: Additive\" FROM food_additive WHERE food_id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "additive: Additive",
+        "type_info": {
+          "Custom": {
+            "name": "additive",
+            "kind": {
+              "Enum": [
+                "COLORANT",
+                "PRESERVING_AGENTS",
+                "ANTIOXIDANT_AGENTS",
+                "FLAVOUR_ENHANCER",
+                "PHOSPHATE",
+                "SURFACE_WAXED",
+                "SULPHUR",
+                "ARTIFICIALLY_BLACKENED_OLIVES",
+                "SWEETENER",
+                "LAXATIVE_IF_OVERUSED",
+                "PHENYLALANINE",
+                "ALCOHOL",
+                "PRESSED_MEAT",
+                "GLAZING_WITH_CACAO",
+                "PRESSED_FISH"
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "0645b66930de687a25df6807d03ea9d69d034cedf83fe074eafc76f64c89f433"
+}

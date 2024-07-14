@@ -212,6 +212,8 @@ where
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
+    use std::sync::Arc;
+
     use chrono::Local;
 
     use crate::interface::api_command::{Command, Result};
@@ -394,6 +396,45 @@ mod test {
             .set_meal_rating(MEAL_ID_TO_FAIL, 2, client_id)
             .await
             .is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_image() {
+        let handler = get_handler().unwrap();
+
+        let image = Uuid::try_from("94cf40a7-ade4-4c1f-b718-89b2d418c2d0").unwrap();
+
+        handler.delete_image(image).await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_verify_image() {
+        let handler = get_handler().unwrap();
+
+        let image = Uuid::try_from("94cf40a7-ade4-4c1f-b718-89b2d418c2d0").unwrap();
+
+        handler.verify_image(image).await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_arc() {
+        let handler = get_handler().unwrap();
+        let handler = Arc::new(handler);
+
+        let id = Uuid::default();
+        let image_file = include_bytes!("tests/test.jpg").to_vec();
+
+        handler.add_image(id, None, image_file, id).await.unwrap();
+        handler.add_image_downvote(id, id).await.unwrap();
+        handler.add_image_upvote(id, id).await.unwrap();
+        handler.remove_image_downvote(id, id).await.unwrap();
+        handler.remove_image_upvote(id, id).await.unwrap();
+        handler
+            .report_image(id, ReportReason::Advert, id)
+            .await
+            .unwrap();
+        handler.set_meal_rating(id, 1, id).await.unwrap();
+        handler.verify_image(id).await.unwrap();
     }
 
     fn get_handler() -> Result<
