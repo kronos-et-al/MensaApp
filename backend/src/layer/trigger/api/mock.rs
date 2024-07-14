@@ -299,6 +299,7 @@ impl RequestDataAccess for RequestDatabaseMock {
     }
 }
 
+pub const FAIL_ID: Uuid = Uuid::from_u128(12345);
 pub struct CommandMock;
 
 #[async_trait]
@@ -355,8 +356,14 @@ impl Command for CommandMock {
         Ok(())
     }
 
-    async fn delete_image(&self, _image_id: Uuid) -> CommandResult<()> {
-        Ok(())
+    async fn delete_image(&self, image_id: Uuid) -> CommandResult<()> {
+        if image_id == FAIL_ID {
+            Err(crate::interface::api_command::CommandError::DataError(
+                crate::interface::persistent_data::DataError::NoSuchItem,
+            ))
+        } else {
+            Ok(())
+        }
     }
 
     async fn verify_image(&self, _image_id: Uuid) -> CommandResult<()> {

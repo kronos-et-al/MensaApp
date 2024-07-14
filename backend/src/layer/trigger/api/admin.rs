@@ -122,7 +122,10 @@ mod test {
 
     use super::ADMIN_USER;
     use crate::{
-        layer::trigger::api::{admin::admin_router, mock::CommandMock},
+        layer::trigger::api::{
+            admin::admin_router,
+            mock::{CommandMock, FAIL_ID},
+        },
         util::Uuid,
     };
 
@@ -168,6 +171,16 @@ mod test {
             StatusCode::OK,
             authed_client
                 .get(format!("http://{socket}/report/delete_image/{id}"))
+                .send()
+                .await
+                .unwrap()
+                .status()
+        );
+
+        assert_eq!(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            authed_client
+                .get(format!("http://{socket}/report/delete_image/{FAIL_ID}"))
                 .send()
                 .await
                 .unwrap()

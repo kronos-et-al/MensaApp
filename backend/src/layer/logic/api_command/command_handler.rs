@@ -435,6 +435,7 @@ mod test {
             .unwrap();
         handler.set_meal_rating(id, 1, id).await.unwrap();
         handler.verify_image(id).await.unwrap();
+        handler.delete_image(id).await.unwrap();
     }
 
     fn get_handler() -> Result<
