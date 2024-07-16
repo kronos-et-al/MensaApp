@@ -1,15 +1,38 @@
 //! This interface allows administrators to be notified of reporting requests.
 
 use async_trait::async_trait;
+use lettre::address::AddressError;
 use serde::Serialize;
+use thiserror::Error;
 
 use crate::util::{Date, ReportReason, Uuid};
+
+/// Result returned when sending emails, potentially containing a [`MailError`].
+pub type Result<T> = std::result::Result<T, MailError>;
 
 /// Interface for notification of administrators.
 #[async_trait]
 pub trait AdminNotification: Sync + Send {
     /// Notifies an administrator about a newly reported image and the response automatically taken.
     async fn notify_admin_image_report(&self, info: ImageReportInfo);
+    /// Notifies an administrator about an image gotten verified.
+    async fn notify_admin_image_verified(&self, image_id: Uuid) -> Result<()>;
+    /// Notifies an administrator about an image gotten deleted.
+    async fn notify_admin_image_deleted(&self, image_id: Uuid) -> Result<()>;
+}
+
+/// Enum describing the possible ways, the mail notification can fail.
+#[derive(Debug, Error)]
+pub enum MailError {
+    /// Error occurring when an email address could not be parsed.
+    #[error("an error occurred while parsing the addresses: {0}")]
+    AddressError(#[from] AddressError),
+    /// Error occurring when an email could not be constructed.
+    #[error("an error occurred while parsing the mail: {0}")]
+    MailParseError(#[from] lettre::error::Error),
+    /// Error occurring when mail sender instance could bot be build.
+    #[error("an error occurred while sending the mail: {0}")]
+    MailSendError(#[from] lettre::transport::smtp::Error),
 }
 
 #[derive(Debug, Serialize)]

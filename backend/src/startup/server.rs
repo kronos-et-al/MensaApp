@@ -5,16 +5,15 @@ use thiserror::Error;
 use tokio::signal::ctrl_c;
 use tracing::info;
 
+use crate::interface::admin_notification::MailError;
 use crate::interface::image_validation::ImageValidationError;
 use crate::layer::data::image_validation::google_api_handler::GoogleApiHandler;
 use crate::{
     interface::{api_command::CommandError, mensa_parser::ParseError, persistent_data::DataError},
     layer::{
         data::{
-            database::factory::DataAccessFactory,
-            file_handler::FileHandler,
-            mail::mail_sender::{MailError, MailSender},
-            swka_parser::swka_parse_manager::SwKaParseManager,
+            database::factory::DataAccessFactory, file_handler::FileHandler,
+            mail::mail_sender::MailSender, swka_parser::swka_parse_manager::SwKaParseManager,
         },
         logic::{
             api_command::command_handler::CommandHandler,

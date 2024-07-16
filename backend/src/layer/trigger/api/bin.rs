@@ -35,6 +35,7 @@ async fn main() {
         image_dir: temp_dir(),
         rate_limit: None,
         max_body_size: 10 << 20,
+        admin_key: "admin".into(),
     };
 
     let image_pre_info = ImagePreprocessingInfo {

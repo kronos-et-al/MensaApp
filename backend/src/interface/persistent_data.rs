@@ -198,6 +198,12 @@ pub trait CommandDataAccess: Sync + Send {
 
     /// Adds or updates a rating to the database. The rating will be related to the given meal and the given user.
     async fn add_rating(&self, meal_id: Uuid, user_id: Uuid, rating: u32) -> Result<()>;
+
+    /// Marks an image as verified. This leads to future reports being ignored.
+    async fn verify_image(&self, image_id: Uuid) -> Result<()>;
+
+    /// Deletes all entries related to an image.
+    async fn delete_image(&self, image_id: Uuid) -> Result<()>;
 }
 
 /// An interface for database access necessary for the authentication process.

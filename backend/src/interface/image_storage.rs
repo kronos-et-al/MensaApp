@@ -13,6 +13,8 @@ pub type Result<T> = std::result::Result<T, ImageError>;
 pub trait ImageStorage: Send + Sync {
     /// Permanently saves an image with the given id.
     async fn save_image(&self, id: Uuid, image: ImageResource) -> Result<()>;
+    /// Deletes an image resource.
+    async fn delete_image(&self, id: Uuid) -> Result<()>;
 }
 
 /// Enum describing possible ways an file operation can go wrong.
@@ -21,4 +23,8 @@ pub enum ImageError {
     /// An error in the image processing library occurred.
     #[error("Error while image operation: {0}")]
     ImageError(#[from] image::ImageError),
+
+    /// An error while io operation to an image.
+    #[error("Error while image io operation: {0}")]
+    IoError(#[from] tokio::io::Error),
 }

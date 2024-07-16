@@ -37,10 +37,11 @@ impl CommandDataAccess for PersistentCommandData {
         let other_image_urls = sqlx::query_scalar!(
             "
             SELECT image_id FROM image_detail 
-            WHERE currently_visible AND food_id = $1
+            WHERE currently_visible AND food_id = $1 AND image_id <> $2
             ORDER BY rank DESC
             ",
-            record.food_id
+            record.food_id,
+            image_id
         )
         .fetch_all(&self.pool)
         .await?
@@ -180,6 +181,23 @@ impl CommandDataAccess for PersistentCommandData {
         .await?;
         Ok(())
     }
+
+    async fn delete_image(&self, image_id: Uuid) -> Result<()> {
+        sqlx::query!("DELETE FROM image WHERE image_id = $1", image_id)
+            .execute(&self.pool)
+            .await?;
+        Ok(())
+    }
+
+    async fn verify_image(&self, image_id: Uuid) -> Result<()> {
+        sqlx::query!(
+            "UPDATE image SET approved = true WHERE image_id = $1",
+            image_id
+        )
+        .execute(&self.pool)
+        .await?;
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -219,7 +237,6 @@ mod test {
             other_image_urls: vec![
                 image_id_to_url(Uuid::parse_str("ea8cce48-a3c7-4f8e-a222-5f3891c13804").unwrap()),
                 image_id_to_url(Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap()),
-                image_id_to_url(Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap()),
             ],
         }
     }
@@ -461,5 +478,35 @@ mod test {
             .await
             .unwrap()
             .len()
+    }
+
+    #[sqlx::test(fixtures("meal", "image"))]
+    async fn test_delete_image(pool: PgPool) {
+        let command = PersistentCommandData { pool: pool.clone() };
+        let id = "ea8cce48-a3c7-4f8e-a222-5f3891c13804".try_into().unwrap();
+        command.delete_image(id).await.unwrap();
+
+        assert_eq!(
+            0,
+            sqlx::query_scalar!("SELECT COUNT(*) FROM image WHERE image_id = $1", id)
+                .fetch_one(&pool)
+                .await
+                .unwrap()
+                .unwrap()
+        );
+    }
+
+    #[sqlx::test(fixtures("meal", "image"))]
+    async fn test_verify_image(pool: PgPool) {
+        let command = PersistentCommandData { pool: pool.clone() };
+        let id = "ea8cce48-a3c7-4f8e-a222-5f3891c13804".try_into().unwrap();
+        command.verify_image(id).await.unwrap();
+
+        assert!(
+            sqlx::query_scalar!("SELECT approved FROM image WHERE image_id = $1", id)
+                .fetch_one(&pool)
+                .await
+                .unwrap()
+        );
     }
 }

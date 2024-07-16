@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["template.html"],
+  content: ["template.html", "notification.html"],
   theme: {
     colors: {
       'dark-grey': '#1E1E1E',

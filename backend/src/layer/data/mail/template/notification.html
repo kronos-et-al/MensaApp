@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Mensa KA Image Notification</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <!-- <link rel="stylesheet" href="./output.css"> -->
+    {{ "<style>
+        " ~ css ~ "
+    </style>" }}
+</head>
+
+<body class="bg-dark-grey text-white">
+
+
+    <div class="grid grid-cols-1 gap-8 p-10 text-xl max-w-2xl mx-auto">
+
+        <div class="flex flex-none items-center">
+            <svg class="size-10 bg-green rounded-full mr-4 flex-none" xmlns="http://www.w3.org/2000/svg"
+                viewBox="35 30 197 197" id="vector">
+                <g id="group" transform="translate(16.02 16.02) scale(0.88 0.88)">
+                    <path id="path"
+                        d="M 100 125 L 120.62 125 L 124.77 191.45 C 124.78 191.59 124.78 191.73 124.78 191.88 C 124.78 196.37 121.14 200 116.66 200 L 103.95 200 C 99.46 200 95.83 196.37 95.83 191.88 C 95.83 191.74 95.83 191.6 95.84 191.45 L 99.99 125 Z"
+                        fill="#333333" />
+                    <path id="path_1"
+                        d="M 175 137.5 L 154.17 137.5 L 154.17 192.18 C 154.17 196.5 157.67 200 161.99 200 L 175.53 200 C 179.84 200 183.34 196.5 183.34 192.18 C 183.34 191.84 183.32 191.49 183.27 191.15 L 175 137.5 Z"
+                        fill="#333333" />
+                    <path id="path_2"
+                        d="M 158.33 62.5 C 156.03 62.5 154.16 64.37 154.16 66.67 L 154.16 137.5 L 174.99 137.5 C 174.99 137.5 183.32 124.42 183.32 100 C 183.32 79.29 172.65 62.5 158.32 62.5 Z M 131.25 62.5 C 127.81 62.5 125 65.31 125 68.75 L 125 104.17 C 125 106.47 123.13 108.34 120.83 108.34 C 118.53 108.34 116.66 106.47 116.66 104.17 L 116.66 68.75 C 116.66 65.31 113.85 62.5 110.41 62.5 C 106.97 62.5 104.16 65.31 104.16 68.75 L 104.16 104.17 C 104.16 106.47 102.29 108.34 99.99 108.34 C 97.69 108.34 95.82 106.47 95.82 104.17 L 95.82 68.75 C 95.82 65.31 93.01 62.5 89.57 62.5 C 86.13 62.5 83.32 65.31 83.32 68.75 L 83.32 108.33 C 83.32 117.53 90.78 125 99.99 125 L 120.82 125 C 130.02 125 137.49 117.54 137.49 108.33 L 137.49 68.75 C 137.49 65.31 134.68 62.5 131.24 62.5 Z"
+                        fill="#ffffff" />
+                </g>
+            </svg>
+
+            <h1 class="text-3xl font-bold h-auto">
+                Mensa KA Image Notification
+            </h1>
+
+        </div>
+
+        <div class="text-lg">Image <span class="select-all">{{ image_id }}</span> got {{ action }}. </div>
+
+    </div>
+
+</body>
+
+</html>
