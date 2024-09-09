@@ -47,7 +47,7 @@ where
     ///
     /// # Errors
     /// Returns an error, if the api keys could not be gotten from `command_data`
-    pub fn new(
+    pub const fn new(
         image_preprocessing_info: ImagePreprocessingInfo,
         command_data: DataAccess,
         admin_notification: Notify,
