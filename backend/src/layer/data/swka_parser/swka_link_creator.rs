@@ -25,7 +25,7 @@ pub struct SwKaLinkCreator {
 impl SwKaLinkCreator {
     /// Method for creating a [`SwKaLinkCreator`] instance.
     #[must_use]
-    pub fn new(
+    pub const fn new(
         base_url: String,
         valid_canteens: Vec<String>,
         number_of_weeks_to_poll: u32,
