@@ -438,7 +438,7 @@ mod test {
         handler.delete_image(id).await.unwrap();
     }
 
-    fn get_handler() -> Result<
+    const fn get_handler() -> Result<
         CommandHandler<
             CommandDatabaseMock,
             CommandAdminNotificationMock,
