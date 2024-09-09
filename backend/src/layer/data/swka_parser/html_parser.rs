@@ -168,16 +168,10 @@ const INVALID_ROOT_NODE_MESSAGE: &str =
     "could not find mensa root node. this could mean a wrong webpage got loaded";
 
 /// A static class, that transforms html files into datatypes, that can be used for further processing using the `HTMLParser::transform` function.
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct HTMLParser;
 
 impl HTMLParser {
-    /// Method for creating a [`HTMLParser`] instance.
-    #[must_use]
-    pub const fn new() -> Self {
-        Self
-    }
-
     /// Transforms an html document into a vector containing tuples of `Date` and `ParseCanteens`
     ///
     /// # Arguments
@@ -188,7 +182,7 @@ impl HTMLParser {
     ///
     /// ```
     /// use crate::mensa_app_backend::layer::data::swka_parser::html_parser::HTMLParser;
-    /// let canteen_data = HTMLParser::new().transform(include_str!("./test_data/test_normal.html"), 42_u32).unwrap();
+    /// let canteen_data = HTMLParser.transform(include_str!("./test_data/test_normal.html"), 42_u32).unwrap();
     /// ```
     ///
     /// # Errors
@@ -598,13 +592,13 @@ mod tests {
     async fn test_invalid() {
         let path = "src/layer/data/swka_parser/test_data/test_invalid.html";
         let file_contents = read_from_file(path).unwrap();
-        let canteen_data = HTMLParser::new().transform(&file_contents, 42_u32);
+        let canteen_data = HTMLParser.transform(&file_contents, 42_u32);
         assert!(canteen_data.is_err());
     }
 
     fn test_html(path: &str) {
         let file_contents = read_from_file(path).unwrap();
-        let canteen_data = HTMLParser::new().transform(&file_contents, 42_u32).unwrap();
+        let canteen_data = HTMLParser.transform(&file_contents, 42_u32).unwrap();
 
         //let remove_for_producton = write_output_to_file(path, &canteen_data);
         let expected = read_from_file(&path.replace(".html", ".txt"))

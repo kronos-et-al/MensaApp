@@ -65,7 +65,7 @@ where
 
     fn will_be_hidden(image: &Image) -> bool {
         Self::days_since(image.upload_date) <= 30
-            && image.report_count > Self::get_report_barrier(image.upload_date)
+            && image.report_count >= Self::get_report_barrier(image.upload_date)
     }
 
     fn days_since(date: Date) -> i64 {
@@ -101,28 +101,32 @@ where
         client_id: Uuid,
     ) -> Result<()> {
         let mut info = self.command_data.get_image_info(image_id).await?;
-        if !info.approved {
-            info.report_count += 1;
+        if !info.image.approved {
+            info.image.report_count += 1;
             self.command_data
                 .add_report(image_id, client_id, reason)
                 .await?;
-            let will_be_hidden = Self::will_be_hidden(&info);
+            let will_be_hidden = Self::will_be_hidden(&info.image);
             if will_be_hidden {
                 self.command_data.hide_image(image_id).await?;
-                info!(image = ?info, "Automatically hid image {image_id} because reported {} times.", info.report_count);
+                info!(image_info = ?info, "Automatically hid image {image_id} because reported {} times.", info.image.report_count);
             }
             let report_info = ImageReportInfo {
                 reason,
                 image_id,
                 image_got_hidden: will_be_hidden,
-                image_link: image_id_to_url(image_id),
-                report_count: info.report_count,
-                positive_rating_count: info.upvotes,
-                negative_rating_count: info.downvotes,
-                get_image_rank: info.rank,
-                report_barrier: Self::get_report_barrier(info.upload_date),
+                image_url: image_id_to_url(image_id),
+                report_count: info.image.report_count,
+                positive_rating_count: info.image.upvotes,
+                negative_rating_count: info.image.downvotes,
+                image_rank: info.image.rank,
+                report_barrier: Self::get_report_barrier(info.image.upload_date),
                 client_id,
-                image_age: Self::days_since(info.upload_date),
+                image_age: Self::days_since(info.image.upload_date),
+                report_date: Local::now().date_naive(),
+                meal_id: info.image.meal_id,
+                meal_name: info.meal_name,
+                other_image_urls: info.other_image_urls,
             };
 
             self.admin_notification
@@ -186,11 +190,30 @@ where
             .await?;
         Ok(())
     }
+
+    async fn delete_image(&self, image_id: Uuid) -> Result<()> {
+        self.command_data.delete_image(image_id).await?;
+        self.image_storage.delete_image(image_id).await?;
+        self.admin_notification
+            .notify_admin_image_deleted(image_id)
+            .await?;
+        Ok(())
+    }
+
+    async fn verify_image(&self, image_id: Uuid) -> Result<()> {
+        self.command_data.verify_image(image_id).await?;
+        self.admin_notification
+            .notify_admin_image_verified(image_id)
+            .await?;
+        Ok(())
+    }
 }
 
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
+    use std::sync::Arc;
+
     use chrono::Local;
 
     use crate::interface::api_command::{Command, Result};
@@ -373,6 +396,46 @@ mod test {
             .set_meal_rating(MEAL_ID_TO_FAIL, 2, client_id)
             .await
             .is_err());
+    }
+
+    #[tokio::test]
+    async fn test_delete_image() {
+        let handler = get_handler().unwrap();
+
+        let image = Uuid::try_from("94cf40a7-ade4-4c1f-b718-89b2d418c2d0").unwrap();
+
+        handler.delete_image(image).await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_verify_image() {
+        let handler = get_handler().unwrap();
+
+        let image = Uuid::try_from("94cf40a7-ade4-4c1f-b718-89b2d418c2d0").unwrap();
+
+        handler.verify_image(image).await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_arc() {
+        let handler = get_handler().unwrap();
+        let handler = Arc::new(handler);
+
+        let id = Uuid::default();
+        let image_file = include_bytes!("tests/test.jpg").to_vec();
+
+        handler.add_image(id, None, image_file, id).await.unwrap();
+        handler.add_image_downvote(id, id).await.unwrap();
+        handler.add_image_upvote(id, id).await.unwrap();
+        handler.remove_image_downvote(id, id).await.unwrap();
+        handler.remove_image_upvote(id, id).await.unwrap();
+        handler
+            .report_image(id, ReportReason::Advert, id)
+            .await
+            .unwrap();
+        handler.set_meal_rating(id, 1, id).await.unwrap();
+        handler.verify_image(id).await.unwrap();
+        handler.delete_image(id).await.unwrap();
     }
 
     fn get_handler() -> Result<

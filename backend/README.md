@@ -5,6 +5,17 @@ Backend application for providing and synchronizing meal plan data of the cantee
 
 If you just want to use the (Android, iOS) App, the following is not necessary.
 
+
+## APIs
+
+There are two kinds of APIs available:
+- The main GraphQL API for accessing data like meal plans etc. \
+  This API is accessible under `/`. The documentation can be found there, at the GraphQL playground.
+  For authentication herefore see [here](../doc/ApiAuth.md)
+- An admin API for deleting reported images etc. \
+  This API can be accessed under `/admin/...` and requires HTTP-Basic authentication for user `admin` with the password set in the `ADMIN_KEY` env var.
+  available admin API requests can be seen [here](../doc/AdminAPI.md)
+
 ## Running the backend yourself
 
 ### Deploy using docker-compose
@@ -65,6 +76,7 @@ The following options are available:
 | `MAX_IMAGE_WIDTH` and `MAX_IMAGE_HEIGHT` | Maximum width and height stored for stored images. Uploaded images will be scaled accordingly.                                                                                                                                                                                                | `1920` and `1080`                                                                                                            |
 | `RATE_LIMIT`                             | Limit the number of API requests per second. `0` means disabled.                                                                                                                                                                                                                              | `0`  (disabled)                                                                                                              |
 | `MAX_UPLOAD_SIZE`                        | Maximal size (in bytes) an http body can have to get accepted. This implies a maximal size an image upload can have.                                                                                                                                                                          | `10485760`  (10 MiB)                                                                                                         |
+| `ADMIN_KEY`                              | Key to access admin api commands. Must be entered for http basic auth, username "admin".                                                                                                                                                                                                      | required                                                                                                                     |
 
 ### Notes
 - The **timezone** of log messages and the chron schedule is only queried once at backend startup from the host os because of technical limitations. For changes in timezone (e.g. summer time) the server has to be restarted.

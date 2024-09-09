@@ -1,0 +1,60 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM food_plan WHERE line_id = $1 AND food_id = $2 AND serve_date = $3",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "line_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "food_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "serve_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 3,
+        "name": "price_student",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "price_employee",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "price_guest",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "price_pupil",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Date"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "2565b5a0dc047093196615919d1dfbd2ebeba2be0932e49bdc8ab2115071ef0c"
+}

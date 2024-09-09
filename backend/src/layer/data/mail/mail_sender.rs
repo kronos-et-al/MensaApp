@@ -1,48 +1,31 @@
 //! Module responsible for sending email notifications to administrators.
-use std::fmt::Debug;
 
 use async_trait::async_trait;
-use thiserror::Error;
-
-use lettre::{
-    address::AddressError, message::Mailbox, transport::smtp::authentication::Credentials, Address,
-    Message, SmtpTransport, Transport,
-};
+use minijinja::{context, Environment, Value};
 
 use crate::{
-    interface::admin_notification::{AdminNotification, ImageReportInfo},
+    interface::admin_notification::{AdminNotification, ImageReportInfo, Result},
     layer::data::mail::mail_info::MailInfo,
+    util::{self, Uuid},
+};
+use lettre::{
+    message::{Mailbox, MaybeString, SinglePart},
+    transport::smtp::authentication::Credentials,
+    Address, Message, SmtpTransport, Transport,
 };
 
-use string_template::Template;
 use tracing::{error, info};
 
-/// Result returned when sending emails, potentially containing a [`MailError`].
-pub type MailResult<T> = std::result::Result<T, MailError>;
-
-const REPORT_TEMPLATE: &str = include_str!("./template.txt");
+const REPORT_TEMPLATE: &str = include_str!("./template/template.html");
+const NOTIFY_TEMPLATE: &str = include_str!("./template/notification.html");
+const REPORT_CSS: &str = include_str!("./template/output.css");
 const SENDER_NAME: &str = "MensaKa";
 const RECEIVER_NAME: &str = "Administrator";
-const MAIL_SUBJECT: &str = "An image was reported and requires your review";
-
-/// Enum describing the possible ways, the mail notification can fail.
-#[derive(Debug, Error)]
-pub enum MailError {
-    /// Error occurring when an email address could not be parsed.
-    #[error("an error occurred while parsing the addresses: {0}")]
-    AddressError(#[from] AddressError),
-    /// Error occurring when an email could not be constructed.
-    #[error("an error occurred while parsing the mail: {0}")]
-    MailParseError(#[from] lettre::error::Error),
-    /// Error occurring when mail sender instance could bot be build.
-    #[error("an error occurred while sending the mail: {0}")]
-    MailSendError(#[from] lettre::transport::smtp::Error),
-}
 
 /// Class for sending emails.
 pub struct MailSender {
     config: MailInfo,
-    mailer: SmtpTransport,
+    mailer: SmtpTransport, // todo async transport?
 }
 
 #[async_trait]
@@ -52,6 +35,21 @@ impl AdminNotification for MailSender {
             error!(%info.image_id, %info.reason, self.config.admin_email_address, "Error notifying administrator: {error}");
         }
     }
+    async fn notify_admin_image_deleted(&self, image_id: Uuid) -> Result<()> {
+        let subject = format!("❌ Image {}… deleted", &image_id.to_string()[..6],);
+
+        let body = Self::get_notification_body("deleted", image_id);
+
+        self.send_message(subject, image_id, body)
+    }
+
+    async fn notify_admin_image_verified(&self, image_id: Uuid) -> Result<()> {
+        let subject = format!("✅ Image {}… verified", &image_id.to_string()[..6],);
+
+        let body = Self::get_notification_body("verified", image_id);
+
+        self.send_message(subject, image_id, body)
+    }
 }
 
 impl MailSender {
@@ -59,7 +57,7 @@ impl MailSender {
     ///
     /// # Errors
     /// Returns an error, if the connection could not be established to the smtp server
-    pub fn new(config: MailInfo) -> MailResult<Self> {
+    pub fn new(config: MailInfo) -> Result<Self> {
         let creds = Credentials::new(config.username.clone(), config.password.clone());
         let transport_builder = SmtpTransport::relay(&config.smtp_server)?;
         let mailer = transport_builder
@@ -69,16 +67,27 @@ impl MailSender {
         Ok(Self { config, mailer })
     }
 
-    fn try_notify_admin_image_report(&self, info: &ImageReportInfo) -> MailResult<()> {
-        let sender = self.get_sender()?;
-        let reciever = self.get_receiver()?;
+    fn try_notify_admin_image_report(&self, info: &ImageReportInfo) -> Result<()> {
         let report = Self::get_report(info);
-        let email = Message::builder()
-            .from(sender)
-            .to(reciever)
-            .subject(MAIL_SUBJECT)
-            .body(report)?;
-        self.mailer.send(&email)?;
+
+        let subject = format!(
+            "{icon} Image {}… {}, {}x: {}",
+            &info.image_id.to_string()[..6],
+            if info.image_got_hidden {
+                "hidden"
+            } else {
+                "reported"
+            },
+            info.report_count,
+            info.reason,
+            icon = if info.image_got_hidden {
+                "👻"
+            } else {
+                "📜"
+            }
+        );
+
+        self.send_message(subject, info.image_id, report)?;
         info!(
             ?info,
             "Notified administrators about image report for image with id {}", info.image_id,
@@ -86,50 +95,74 @@ impl MailSender {
         Ok(())
     }
 
-    fn get_sender(&self) -> MailResult<Mailbox> {
+    fn get_sender(&self) -> Result<Mailbox> {
         let address = self.config.username.parse::<Address>()?;
         Ok(Mailbox::new(Some(SENDER_NAME.to_string()), address))
     }
 
-    fn get_receiver(&self) -> MailResult<Mailbox> {
+    fn get_receiver(&self) -> Result<Mailbox> {
         let address = self.config.admin_email_address.parse::<Address>()?;
         Ok(Mailbox::new(Some(RECEIVER_NAME.to_string()), address))
     }
 
     fn get_report(info: &ImageReportInfo) -> String {
-        let info_array_map = [
-            ("image_link", &info.image_link as &dyn ToString),
-            ("image_id", &info.image_id),
-            ("report_count", &info.report_count),
-            ("reason", &info.reason),
-            ("image_got_hidden", &info.image_got_hidden),
-            ("positive_rating_count", &info.positive_rating_count),
-            ("negative_rating_count", &info.negative_rating_count),
-            ("get_image_rank", &info.get_image_rank),
-            ("report_barrier", &info.report_barrier),
-            ("client_id", &info.client_id),
-            ("image_age", &info.image_age),
-        ];
+        let env = Environment::new();
+        let template = env
+            .template_from_str(REPORT_TEMPLATE)
+            .expect("template always preset");
 
-        let info_map = info_array_map
-            .into_iter()
-            .map(|(k, v)| (k, v.to_string()))
-            .collect::<Vec<_>>();
-        let info_map = info_map.iter().map(|(k, v)| (*k, v.as_str())).collect();
+        template
+            .render(context!(
+                css => REPORT_CSS,
+                delete_url => util::local_to_global_url(&format!("/admin/report/delete_image/{}", info.image_id)),
+                verify_url => util::local_to_global_url(&format!("/admin/report/verify_image/{}", info.image_id)),
+                ..Value::from_serialize(info),
+            ))
+            .expect("all arguments provided at compile time")
+    }
 
-        Template::new(REPORT_TEMPLATE).render(&info_map)
+    fn get_notification_body(action: &str, image_id: Uuid) -> String {
+        let env = Environment::new();
+        let template = env
+            .template_from_str(NOTIFY_TEMPLATE)
+            .expect("template always preset");
+
+        template
+            .render(context!(
+                css => REPORT_CSS,
+                action => action,
+                image_id => image_id,
+            ))
+            .expect("all arguments provided at compile time")
+    }
+
+    fn get_references_tag(image_id: Uuid) -> String {
+        format!("<{image_id}@image-reports.mensa-ka.de>")
+    }
+
+    fn send_message(&self, subject: impl Into<String>, image_id: Uuid, body: String) -> Result<()> {
+        let message = Message::builder()
+            .from(self.get_sender()?)
+            .to(self.get_receiver()?)
+            .subject(subject)
+            .references(Self::get_references_tag(image_id))
+            .singlepart(SinglePart::html(MaybeString::String(body)))?;
+        self.mailer.send(&message)?;
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
+    use super::REPORT_CSS;
     use crate::{
         interface::admin_notification::{AdminNotification, ImageReportInfo},
         layer::data::mail::mail_info::MailInfo,
         layer::data::mail::mail_sender::MailSender,
         util::Uuid,
     };
+    use chrono::Local;
     use dotenvy;
     use std::env::{self, VarError};
     use tracing_test::traced_test;
@@ -141,19 +174,27 @@ mod test {
     const ADMIN_EMAIL_ENV_NAME: &str = "ADMIN_EMAIL";
 
     #[tokio::test]
+    #[ignore]
+    async fn test_print_report() {
+        let info = get_report_info();
+        let report = MailSender::get_report(&info);
+        println!("{report}");
+    }
+
+    #[tokio::test]
     async fn test_get_report() {
         let info = get_report_info();
         let report = MailSender::get_report(&info).replace("\r\n", "\n");
         assert!(
-            !report.contains("{{"),
+            !report.contains("{{ "),
             "the template must not contain any formatting"
         );
         assert!(
-            !report.contains("}}"),
+            !report.contains(" }}"),
             "the template must not contain any formatting"
         );
         assert!(
-            report.contains(info.image_link.as_str()),
+            report.contains(info.image_url.as_str()),
             "the template must contain all of the information from the report info."
         );
         assert!(
@@ -177,7 +218,7 @@ mod test {
             "the template must contain all of the information from the report info"
         );
         assert!(
-            report.contains(info.get_image_rank.to_string().as_str()),
+            report.contains(&info.image_rank.to_string()[0..4]),
             "the template must contain all of the information from the report info"
         );
         assert!(
@@ -191,6 +232,25 @@ mod test {
         assert!(
             report.contains(info.image_age.to_string().as_str()),
             "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(info.meal_id.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(info.meal_name.as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(info.other_image_urls[0].as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(info.report_date.to_string().as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
+            report.contains(REPORT_CSS), "Report css must be included. maybe auto-formatting destroyed the braces in template.html?"
         );
     }
 
@@ -222,19 +282,50 @@ mod test {
         });
     }
 
+    #[tokio::test]
+    async fn test_notify_admin_image_deleted() {
+        let mail_info = get_mail_info().unwrap();
+        let sender = MailSender::new(mail_info).unwrap();
+        assert!(sender.mailer.test_connection().unwrap());
+
+        let id = Uuid::default();
+
+        assert!(sender.notify_admin_image_deleted(id).await.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_notify_admin_image_verified() {
+        let mail_info = get_mail_info().unwrap();
+        let sender = MailSender::new(mail_info).unwrap();
+        assert!(sender.mailer.test_connection().unwrap());
+
+        let id = Uuid::default();
+
+        assert!(sender.notify_admin_image_verified(id).await.is_ok());
+    }
+
     fn get_report_info() -> ImageReportInfo {
         ImageReportInfo {
             reason: crate::util::ReportReason::Advert,
             image_got_hidden: true,
-            image_id: Uuid::default(),
-            image_link: String::from("www.test.com"),
+            image_id: Uuid::from_u128(9_789_789),
+            image_url: String::from("https://picsum.photos/500/200"),
             report_count: 1,
             positive_rating_count: 10,
             negative_rating_count: 20,
-            get_image_rank: 1.0,
+            image_rank: 0.123_456,
             report_barrier: 1,
-            client_id: Uuid::default(),
+            client_id: Uuid::from_u128(123),
             image_age: 1,
+            meal_id: Uuid::from_u128(567),
+            meal_name: "Happy Meal".into(),
+            report_date: Local::now().date_naive(),
+            other_image_urls: vec![
+                "https://picsum.photos/500/300".into(),
+                "https://picsum.photos/500/350".into(),
+                "https://picsum.photos/400/350".into(),
+                "https://picsum.photos/300/350".into(),
+            ],
         }
     }
 

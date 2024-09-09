@@ -217,6 +217,7 @@ impl RequestDataAccess for RequestDatabaseMock {
             report_count: 0,
             approved: false,
             upload_date: Date::default(),
+            meal_id: Uuid::default(),
         };
         let d2 = Image {
             id: Uuid::parse_str("e4e1c2f5-881c-4e1f-8618-ca8f6f3bf1d2").expect(INVALID_UUID),
@@ -226,6 +227,7 @@ impl RequestDataAccess for RequestDatabaseMock {
             report_count: 0,
             approved: false,
             upload_date: Date::default(),
+            meal_id: Uuid::default(),
         };
         let d3 = Image {
             id: Uuid::parse_str("9f0a4fb0-c233-4a16-8f3a-2bbbf735ef07").expect(INVALID_UUID),
@@ -235,6 +237,7 @@ impl RequestDataAccess for RequestDatabaseMock {
             report_count: 0,
             approved: false,
             upload_date: Date::default(),
+            meal_id: Uuid::default(),
         };
         Ok(vec![d1, d2, d3])
     }
@@ -296,6 +299,7 @@ impl RequestDataAccess for RequestDatabaseMock {
     }
 }
 
+pub const FAIL_ID: Uuid = Uuid::from_u128(12345);
 pub struct CommandMock;
 
 #[async_trait]
@@ -349,6 +353,20 @@ impl Command for CommandMock {
         _rating: u32,
         _client_id: Uuid,
     ) -> CommandResult<()> {
+        Ok(())
+    }
+
+    async fn delete_image(&self, image_id: Uuid) -> CommandResult<()> {
+        if image_id == FAIL_ID {
+            Err(crate::interface::api_command::CommandError::DataError(
+                crate::interface::persistent_data::DataError::NoSuchItem,
+            ))
+        } else {
+            Ok(())
+        }
+    }
+
+    async fn verify_image(&self, _image_id: Uuid) -> CommandResult<()> {
         Ok(())
     }
 }

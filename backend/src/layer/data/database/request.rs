@@ -200,7 +200,7 @@ impl RequestDataAccess for PersistentRequestData {
         sqlx::query!(
             "
             SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
-                approved, report_count, link_date 
+                approved, report_count, link_date, food_id
             FROM (
                 --- not reported by user
                 SELECT image_id 
@@ -226,6 +226,7 @@ impl RequestDataAccess for PersistentRequestData {
                 approved: null_error!(r.approved),
                 report_count: u32::try_from(null_error!(r.report_count))?,
                 upload_date: null_error!(r.link_date),
+                meal_id: null_error!(r.food_id),
             })
         })
         .collect::<Result<Vec<_>>>()
@@ -568,6 +569,7 @@ mod tests {
             upvotes: 0,
             upload_date: Local::now().date_naive(),
             report_count: 0,
+            meal_id: Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
         };
         let image2 = Image {
             id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),

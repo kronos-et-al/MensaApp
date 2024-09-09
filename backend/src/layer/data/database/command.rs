@@ -3,9 +3,12 @@ use async_trait::async_trait;
 use sqlx::{Pool, Postgres};
 
 use crate::{
-    interface::persistent_data::{model::Image, CommandDataAccess, Result},
+    interface::persistent_data::{
+        model::{ExtendedImage, Image},
+        CommandDataAccess, Result,
+    },
     null_error,
-    util::{ReportReason, Uuid},
+    util::{image_id_to_url, ReportReason, Uuid},
 };
 
 /// Class implementing all database requests arising from graphql manipulations.
@@ -17,12 +20,12 @@ pub struct PersistentCommandData {
 #[async_trait]
 #[allow(clippy::missing_panics_doc)] // necessary because sqlx macro sometimes create unreachable panics?
 impl CommandDataAccess for PersistentCommandData {
-    async fn get_image_info(&self, image_id: Uuid) -> Result<Image> {
+    async fn get_image_info(&self, image_id: Uuid) -> Result<ExtendedImage> {
         let record = sqlx::query!(
             r#"
             SELECT approved, link_date as upload_date, report_count,
-            upvotes, downvotes, image_id, rank
-            FROM image_detail
+            upvotes, downvotes, image_id, rank, food_id, f.name as meal_name
+            FROM image_detail JOIN food f USING (food_id)
             WHERE image_id = $1
             ORDER BY image_id
             "#,
@@ -31,14 +34,34 @@ impl CommandDataAccess for PersistentCommandData {
         .fetch_one(&self.pool)
         .await?;
 
-        Ok(Image {
-            approved: null_error!(record.approved),
-            rank: null_error!(record.rank),
-            report_count: u32::try_from(null_error!(record.report_count))?,
-            upload_date: null_error!(record.upload_date),
-            downvotes: u32::try_from(null_error!(record.downvotes))?,
-            upvotes: u32::try_from(null_error!(record.upvotes))?,
-            id: null_error!(record.image_id),
+        let other_image_urls = sqlx::query_scalar!(
+            "
+            SELECT image_id FROM image_detail 
+            WHERE currently_visible AND food_id = $1 AND image_id <> $2
+            ORDER BY rank DESC
+            ",
+            record.food_id,
+            image_id
+        )
+        .fetch_all(&self.pool)
+        .await?
+        .iter()
+        .map(|i| Ok(image_id_to_url(null_error!(i))))
+        .collect::<Result<Vec<_>>>()?;
+
+        Ok(ExtendedImage {
+            image: Image {
+                approved: null_error!(record.approved),
+                rank: null_error!(record.rank),
+                report_count: u32::try_from(null_error!(record.report_count))?,
+                upload_date: null_error!(record.upload_date),
+                downvotes: u32::try_from(null_error!(record.downvotes))?,
+                upvotes: u32::try_from(null_error!(record.upvotes))?,
+                id: null_error!(record.image_id),
+                meal_id: null_error!(record.food_id),
+            },
+            meal_name: record.meal_name,
+            other_image_urls,
         })
     }
 
@@ -158,6 +181,23 @@ impl CommandDataAccess for PersistentCommandData {
         .await?;
         Ok(())
     }
+
+    async fn delete_image(&self, image_id: Uuid) -> Result<()> {
+        sqlx::query!("DELETE FROM image WHERE image_id = $1", image_id)
+            .execute(&self.pool)
+            .await?;
+        Ok(())
+    }
+
+    async fn verify_image(&self, image_id: Uuid) -> Result<()> {
+        sqlx::query!(
+            "UPDATE image SET approved = true WHERE image_id = $1",
+            image_id
+        )
+        .execute(&self.pool)
+        .await?;
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -181,15 +221,23 @@ mod test {
         assert!(command.get_image_info(WRONG_UUID).await.is_err());
     }
 
-    fn provide_dummy_image() -> Image {
-        Image {
-            id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
-            rank: 0.5,
-            downvotes: 0,
-            upvotes: 0,
-            approved: false,
-            upload_date: Local::now().date_naive(),
-            report_count: 0,
+    fn provide_dummy_image() -> ExtendedImage {
+        ExtendedImage {
+            image: Image {
+                id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
+                rank: 0.5,
+                downvotes: 0,
+                upvotes: 0,
+                approved: false,
+                upload_date: Local::now().date_naive(),
+                report_count: 0,
+                meal_id: Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
+            },
+            meal_name: "Geflügel - Cevapcici, Ajvar, Djuvec Reis".into(),
+            other_image_urls: vec![
+                image_id_to_url(Uuid::parse_str("ea8cce48-a3c7-4f8e-a222-5f3891c13804").unwrap()),
+                image_id_to_url(Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap()),
+            ],
         }
     }
 
@@ -430,5 +478,35 @@ mod test {
             .await
             .unwrap()
             .len()
+    }
+
+    #[sqlx::test(fixtures("meal", "image"))]
+    async fn test_delete_image(pool: PgPool) {
+        let command = PersistentCommandData { pool: pool.clone() };
+        let id = "ea8cce48-a3c7-4f8e-a222-5f3891c13804".try_into().unwrap();
+        command.delete_image(id).await.unwrap();
+
+        assert_eq!(
+            0,
+            sqlx::query_scalar!("SELECT COUNT(*) FROM image WHERE image_id = $1", id)
+                .fetch_one(&pool)
+                .await
+                .unwrap()
+                .unwrap()
+        );
+    }
+
+    #[sqlx::test(fixtures("meal", "image"))]
+    async fn test_verify_image(pool: PgPool) {
+        let command = PersistentCommandData { pool: pool.clone() };
+        let id = "ea8cce48-a3c7-4f8e-a222-5f3891c13804".try_into().unwrap();
+        command.verify_image(id).await.unwrap();
+
+        assert!(
+            sqlx::query_scalar!("SELECT approved FROM image WHERE image_id = $1", id)
+                .fetch_one(&pool)
+                .await
+                .unwrap()
+        );
     }
 }

@@ -172,6 +172,7 @@ impl ConfigReader {
                 .ok()
                 .and_then(|v| v.parse().ok())
                 .unwrap_or(DEFAULT_UPLOAD_SIZE),
+            admin_key: read_var("ADMIN_KEY")?,
         };
 
         info.rate_limit.map_or_else(
