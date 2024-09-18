@@ -119,6 +119,9 @@ migrate images       --migrate-images
 ### Graphql mock server
 To run a mock version of the graphql server, run `cargo run --bin graphql_mock`.
 
+### Fully mocked server
+To run a mock version of the entire server, run `cargo run --bin standalone_mock`. This version mocks away the Mailserver, the FileHandler and Google Vision. It should be used only for testing purposes. The database, GraphQL interface and the Website parser are still active.
+
 ### Documentation
 The documentation can be accessed with `cargo doc --open`.
 

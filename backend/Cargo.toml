@@ -80,5 +80,9 @@ serde_json = "1.0.107"
 name = "graphql_mock"
 path = "src/layer/trigger/api/bin.rs"
 
+[[bin]]
+name = "standalone_mock"
+path = "src/startup/standalone_demo_bin.rs"
+
 [profile.dev.package.sqlx-macros]
 opt-level = 3

@@ -47,7 +47,7 @@ where
     ///
     /// # Errors
     /// Returns an error, if the api keys could not be gotten from `command_data`
-    pub fn new(
+    pub const fn new(
         image_preprocessing_info: ImagePreprocessingInfo,
         command_data: DataAccess,
         admin_notification: Notify,
@@ -438,7 +438,7 @@ mod test {
         handler.delete_image(id).await.unwrap();
     }
 
-    fn get_handler() -> Result<
+    const fn get_handler() -> Result<
         CommandHandler<
             CommandDatabaseMock,
             CommandAdminNotificationMock,
