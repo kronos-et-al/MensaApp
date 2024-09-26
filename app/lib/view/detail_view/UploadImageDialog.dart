@@ -21,9 +21,8 @@ class UploadImageDialog extends StatefulWidget {
   final Meal _meal;
 
   /// Creates a new UploadImageDialog.
-  const UploadImageDialog({Key? key, required Meal meal})
-      : _meal = meal,
-        super(key: key);
+  const UploadImageDialog({super.key, required Meal meal})
+      : _meal = meal;
 
   @override
   State<UploadImageDialog> createState() => _UploadImageDialogState();
@@ -31,8 +30,6 @@ class UploadImageDialog extends StatefulWidget {
 
 /// This widget is used to display a dialog to upload an image.
 class _UploadImageDialogState extends State<UploadImageDialog> {
-  final TextEditingController _textFieldController = TextEditingController();
-
   String parseMimeType(XFile image) {
     if (image.mimeType == null) {
       print(image.name);

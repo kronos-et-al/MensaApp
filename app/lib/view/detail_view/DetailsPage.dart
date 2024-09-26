@@ -73,7 +73,7 @@ class DetailsPageState extends State<DetailsPage> {
   Widget build(BuildContext context) {
     // These provider are necessary for the synchronization of each other. They need to be initialized even if they are unused.
     IMealAccess mealAccess = Provider.of<IMealAccess>(context);
-    IImageAccess imageAccess = Provider.of<IImageAccess>(context);
+    Provider.of<IImageAccess>(context);
     ThemeData themeData = Theme.of(context);
     return FutureBuilder(
         future: mealAccess.getMeal(widget._meal),
@@ -312,7 +312,7 @@ class DetailsPageState extends State<DetailsPage> {
                                                                             e) +
                                                                     1),
                                                   ))
-                                              .toList(),
+                                              ,
                                           const SizedBox(height: 16),
                                           RatingsOverview(
                                             meal: meal,

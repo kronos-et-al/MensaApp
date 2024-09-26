@@ -708,28 +708,6 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     return result.map((imageRow) => DBImage.fromMap(imageRow)).toList();
   }
 
-  Future<DBMealPlan?> _getDBMealPlan(String mealPlanID) async {
-    var db = await database;
-    var result = await db.query(DBMealPlan.tableName,
-        where: '${DBMealPlan.columnMealPlanID} = ?', whereArgs: [mealPlanID]);
-    if (result.isNotEmpty) {
-      return DBMealPlan.fromMap(result.first);
-    } else {
-      return null;
-    }
-  }
-
-  Future<DBFavorite?> _getDBFavorite(String favoriteID) async {
-    var db = await database;
-    var result = await db.query(DBFavorite.tableName,
-        where: '${DBFavorite.columnMealID} = ?', whereArgs: [favoriteID]);
-    if (result.isNotEmpty) {
-      return DBFavorite.fromMap(result.first);
-    } else {
-      return null;
-    }
-  }
-
   Future<DBMealNutritionData?> _getDBMealNutritionData(String id) async {
     var result = await _getDBNutritionDataRaw(id, NutritionEntity.meal);
     return result.isNotEmpty ? DBMealNutritionData.fromMap(result.first) : null;

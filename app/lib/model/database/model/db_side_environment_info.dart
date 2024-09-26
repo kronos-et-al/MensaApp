@@ -23,7 +23,7 @@ class DBSideEnvironmentInfo with EnvironmentInfoMixin implements DatabaseModel {
       int animalWelfareRating,
       int rainforestRating,
       int maxRating) {
-    this.entityID = sideID;
+    entityID = sideID;
     this.averageRating = averageRating;
     this.co2Rating = co2Rating;
     this.co2Value = co2Value;

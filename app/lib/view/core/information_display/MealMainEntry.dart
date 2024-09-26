@@ -14,9 +14,8 @@ class MealMainEntry extends StatelessWidget {
       NumberFormat.currency(locale: 'de_DE', symbol: '€');
 
   /// Creates a MealMainEntry.
-  MealMainEntry({Key? key, required Meal meal})
-      : _meal = meal,
-        super(key: key);
+  MealMainEntry({super.key, required Meal meal})
+      : _meal = meal;
 
   @override
   Widget build(BuildContext context) {

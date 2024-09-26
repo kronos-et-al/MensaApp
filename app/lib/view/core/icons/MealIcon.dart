@@ -17,14 +17,13 @@ class MealIcon extends StatelessWidget {
 
   /// This widget is used to display the icon for a meal.
   const MealIcon(
-      {Key? key,
+      {super.key,
       required FoodType foodType,
       double width = 24,
       double height = 24})
       : _foodType = foodType,
         _width = width,
-        _height = height,
-        super(key: key);
+        _height = height;
 
   @override
   Widget build(BuildContext context) {

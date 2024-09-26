@@ -1,5 +1,5 @@
-/// This classes are exceptions that can occur by accessing or loading the meal plan.
-/// This happens with functional programming.
+// This classes are exceptions that can occur by accessing or loading the meal plan.
+// This happens with functional programming.
 
 /// This class is the superclass of all meal plan exceptions
 sealed class MealPlanException implements Exception {

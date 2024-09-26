@@ -37,8 +37,8 @@ class MensaCheckbox extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4.0),
                 ),
                 // Set the border color of the checkbox to the primary color when it is selected and to the surface color when it is not selected, this makes the border invisible
-                fillColor: MaterialStateProperty.resolveWith((states) {
-                  if (states.contains(MaterialState.selected)) {
+                fillColor: WidgetStateProperty.resolveWith((states) {
+                  if (states.contains(WidgetState.selected)) {
                     return Theme.of(context).colorScheme.primary;
                   } else {
                     return Theme.of(context).colorScheme.surface;

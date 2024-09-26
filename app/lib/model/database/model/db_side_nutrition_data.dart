@@ -14,7 +14,7 @@ class DBSideNutritionData with NutritionDataMixin implements DatabaseModel {
   }
 
   DBSideNutritionData(String sideID, int energy, int protein, int carbohydrates, int sugar, int fat, int saturatedFat, int salt) {
-    this.entityID = sideID;
+    entityID = sideID;
     this.energy = energy;
     this.protein = protein;
     this.carbohydrates = carbohydrates;

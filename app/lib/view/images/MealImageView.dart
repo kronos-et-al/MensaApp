@@ -12,12 +12,11 @@ class MealImageView extends StatefulWidget {
   final Curve curve = Curves.fastLinearToSlowEaseIn;
 
   const MealImageView(
-      {Key? key,
+      {super.key,
       required this.imageData,
       this.minScale = 1.0,
       this.maxScale = 5.0,
-      this.onScaleChanged})
-      : super(key: key);
+      this.onScaleChanged});
 
   @override
   State<MealImageView> createState() => _MealImageViewState();
