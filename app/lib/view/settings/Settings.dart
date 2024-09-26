@@ -6,6 +6,7 @@ import 'package:app/view/settings/SettingsSection.dart';
 import 'package:app/view_model/logic/preference/IPreferenceAccess.dart';
 import 'package:app/view_model/repository/data_classes/settings/MensaColorScheme.dart';
 import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
+import 'package:app/view_model/repository/data_classes/settings/Language.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
@@ -63,6 +64,17 @@ class Settings extends StatelessWidget {
                           value: storage.getPriceCategory(),
                           items: _getPriceCategoryEntries(context),
                           heading: "settings.priceCategory"),
+                      const SizedBox(height: 16),
+                      SettingsDropdownEntry<Language>(
+                          onChanged: (value) {
+                            if (value != null &&
+                                value != storage.getLanguage()) {
+                              storage.setLanguage(value);
+                            }
+                          },
+                          value: storage.getLanguage(),
+                          items: _getLanguageEntries(context),
+                          heading: "settings.language"),
                       const SizedBox(height: 16),
                       SettingsSection(heading: "settings.about", children: [
                         Row(
@@ -201,4 +213,23 @@ class Settings extends StatelessWidget {
 
     return entries;
   }
+  List<MensaDropdownEntry<Language>> _getLanguageEntries(
+      BuildContext context) {
+    List<MensaDropdownEntry<Language>> entries = [];
+
+    for (final value in Language.values) {
+      entries.add(MensaDropdownEntry(
+          value: value,
+          label:
+            firstLetterUppercase(value.toString())));
+    }
+
+    return entries;
+  }
 }
+
+String firstLetterUppercase(String s) {
+  return s[0].toUpperCase() + s.substring(1);
+}
+
+

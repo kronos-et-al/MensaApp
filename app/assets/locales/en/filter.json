@@ -1,0 +1,32 @@
+{
+  "filterTitle": "Filter",
+  "foodType": "Food type",
+  "foodTypeSectionAll": "All",
+  "foodTypeSectionVegetarian": "Vegetarian",
+  "foodTypeSectionVegan": "Vegan",
+  "foodTypeSelectionUnknown": "Unknown",
+  "foodTypeSelectionPork": "Pork",
+  "foodTypeSelectionBeef": "Beef",
+  "foodTypeSelectionPoultry": "Poultry",
+  "foodTypeSelectionFish": "Fish",
+  "allergensTitle": "Allergens",
+  "priceTitle": "Maximum price",
+  "ratingTitle": "Minimum rating",
+  "favoritesOnlyTitle": "Only show favorites",
+  "sortByTitle": "Sorted by",
+  "frequencyTitle": "Frequency",
+  "frequencySectionAll": "All",
+  "frequencySectionRare": "Rare",
+  "frequencySectionNew": "New",
+  "priceMin": "0€",
+  "priceMax": "10€",
+  "ratingMin": "1 Star",
+  "ratingMax": "5 Star",
+  "storeButton": "Apply",
+  "sorting": {
+    "line": "Line",
+    "price": "Price",
+    "rating": "Rating",
+    "frequency": "Frequency"
+  }
+}

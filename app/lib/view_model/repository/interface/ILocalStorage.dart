@@ -1,3 +1,5 @@
+import 'package:app/view_model/repository/data_classes/settings/Language.dart';
+
 import '../data_classes/filter/FilterPreferences.dart';
 import '../data_classes/settings/MensaColorScheme.dart';
 import '../data_classes/settings/MealPlanFormat.dart';
@@ -40,4 +42,10 @@ abstract class ILocalStorage {
 
   /// Sets the committed MealPlanFormat.
   Future<void> setMealPlanFormat(MealPlanFormat format);
+
+  /// Returns the saved Language
+  Language? getLanguage();
+
+  /// Sets the committed Language
+  Future<void> setLanguage(Language language);
 }

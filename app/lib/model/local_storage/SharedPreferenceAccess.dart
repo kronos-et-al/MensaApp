@@ -1,6 +1,7 @@
 import 'package:app/view_model/repository/data_classes/filter/FilterPreferences.dart';
 import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
+import 'package:app/view_model/repository/data_classes/settings/Language.dart';
 import 'package:app/view_model/repository/data_classes/settings/MealPlanFormat.dart';
 import 'package:app/view_model/repository/data_classes/settings/MensaColorScheme.dart';
 import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
@@ -144,5 +145,17 @@ class SharedPreferenceAccess implements ILocalStorage {
   @override
   Future<void> setCanteen(String canteen) async {
     await _pref.setString('canteen', canteen);
+  }
+
+  @override
+  Language? getLanguage() {
+    final language = _pref.getString('language');
+    return Language.values.firstWhere((e) => e.toString() == language,
+        orElse: () => Language.deutsch);
+  }
+
+  @override
+  Future<void> setLanguage(Language language) async {
+    await _pref.setString('language', language.toString());
   }
 }

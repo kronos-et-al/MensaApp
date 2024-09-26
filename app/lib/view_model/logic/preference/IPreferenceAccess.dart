@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../repository/data_classes/settings/MensaColorScheme.dart';
 import '../../repository/data_classes/settings/MealPlanFormat.dart';
 import '../../repository/data_classes/settings/PriceCategory.dart';
+import '../../repository/data_classes/settings/Language.dart';
 
 /// This is an interface for accessing the preferences.
 abstract class IPreferenceAccess with ChangeNotifier {
@@ -29,4 +30,10 @@ abstract class IPreferenceAccess with ChangeNotifier {
 
   /// Sets the committed MealPlanFormat.
   Future<void> setMealPlanFormat(MealPlanFormat format);
+
+  /// Returns the saved Language
+  Language getLanguage();
+
+  /// Sets the committed Language
+  Future<void> setLanguage(Language language);
 }

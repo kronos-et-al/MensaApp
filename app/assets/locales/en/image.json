@@ -1,0 +1,23 @@
+{
+  "reportImageTitle": "Report image",
+  "reportDescription": "Please select a reason for reporting the image",
+  "reportSelectReson": "Select reason",
+  "reportButton": "Report image",
+  "newImageButton": "New image",
+
+  "linkImageTitle": "Upload image",
+  "linkDescription": "Please follow the following steps to upload an image:",
+  "linkFirstPoint": "Images are shown to other users.\nBy uploading an image, I agree to publish it under ",
+  "linkFirstLink": "CC0 1.0",
+  "linkFirstPointSecondText": " (Public Domain / No Rights Reserved).\nPlease only upload images that do not infringe upon the rights of others and applicable copyright.",
+  "linkButton": "Upload",
+
+  "labelSelectImage": "Select image",
+  "labelTakeImage": "Take image",
+
+  "loadingError": "Image could not be loaded",
+
+  "uploadException": {
+    "noMeal": "Loading error"
+  }
+}

@@ -1,6 +1,7 @@
 {
   "colorScheme": "Farbschema",
   "priceCategory": "Preiskategorie",
+  "language": "Sprache",
   "about": "Über die App",
   "version": "Softwareversion:",
   "licence": "Der Quellcode der App ist unter der MIT-Lizenz verfügbar.",

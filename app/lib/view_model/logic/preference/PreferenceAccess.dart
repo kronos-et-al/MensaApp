@@ -1,4 +1,5 @@
 import 'package:app/view_model/logic/preference/IPreferenceAccess.dart';
+import 'package:app/view_model/repository/data_classes/settings/Language.dart';
 import 'package:app/view_model/repository/data_classes/settings/MealPlanFormat.dart';
 import 'package:app/view_model/repository/data_classes/settings/MensaColorScheme.dart';
 import 'package:app/view_model/repository/data_classes/settings/PriceCategory.dart';
@@ -15,6 +16,7 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
   late MensaColorScheme _colorScheme;
   late PriceCategory _priceCategory;
   late MealPlanFormat _mealPlanFormat;
+  late Language _language;
 
   /// Stores the access to the local storage and loads the values that are stored in the preferences.
   PreferenceAccess(this._access) {
@@ -25,6 +27,7 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
     _clientIdentifier = _access.getClientIdentifier() ?? "";
     _colorScheme = _access.getColorScheme() ?? MensaColorScheme.system;
     _mealPlanFormat = _access.getMealPlanFormat() ?? MealPlanFormat.grid;
+    _language = _access.getLanguage() ?? Language.deutsch;
 
     PriceCategory? category = _access.getPriceCategory();
     if (category == null) {
@@ -56,6 +59,11 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
   }
 
   @override
+  Language getLanguage() {
+    return _language;
+  }
+
+  @override
   Future<void> setClientIdentifier(String identifier) async {
     _clientIdentifier = identifier;
     await _access.setClientIdentifier(identifier);
@@ -80,6 +88,13 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
   Future<void> setPriceCategory(PriceCategory category) async {
     _priceCategory = category;
     await _access.setPriceCategory(category);
+    notifyListeners();
+  }
+
+  @override
+  Future<void> setLanguage(Language language) async {
+    _language = language;
+    await _access.setLanguage(language);
     notifyListeners();
   }
 }

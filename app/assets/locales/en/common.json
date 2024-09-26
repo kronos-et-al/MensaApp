@@ -1,3 +1,9 @@
 {
-  "demo": "Flutter Demo Home Page"
+  "settings": "Settings",
+  "favorites": "Favorites",
+  "mealPlan": "Meal plan",
+  "noFavorites": "No favorites found",
+  "appTitle": "Mensa KA",
+  "welcomeTitle": "Welcome",
+  "welcomeLabel": "Please wait for a moment, while we load the latest data"
 }

@@ -1,0 +1,17 @@
+{
+  "nutritionTitle": "Nutrition data",
+  "energy": "Energy",
+  "energyUnit": "kcal",
+  "protein": "Protein",
+  "proteinUnit": "g",
+  "carbohydrates": "Carbohydrates",
+  "carbohydratesUnit": "g",
+  "sugar": "Sugar",
+  "sugarUnit": "g",
+  "fat": "Fat",
+  "fatUnit": "g",
+  "saturatedFat": "Saturated fats",
+  "saturatedFatUnit": "g",
+  "salt": "Salt",
+  "saltUnit": "g"
+}

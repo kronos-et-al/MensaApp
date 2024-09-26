@@ -1,0 +1,14 @@
+{
+  "colorScheme": "Colour Scheme",
+  "priceCategory": "Price category",
+  "language": "Language",
+  "about": "About the app",
+  "version": "Software version:",
+  "licence": "The source code is available under MIT-Licence.",
+  "gitHubLink": "Check us out on GitHub",
+  "legalInformation": "Legal information",
+  "privacyPolicy": "Privacy policy",
+  "contactDetails": "Contact",
+  "clientID": "Client ID: {clientID}",
+  "snackBarCopiedToClipboard": "Copied to clipboard"
+}

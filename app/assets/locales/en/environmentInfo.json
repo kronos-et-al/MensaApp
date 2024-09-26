@@ -1,0 +1,16 @@
+{
+  "co2Title": "CO2-emissions",
+  "co2Value": "{value} g",
+  "waterTitle": "Water usage",
+  "waterValue": "{value} l",
+  "animalWelfareTitle": "Animal welfare",
+  "animalWelfareValue": "{value}",
+  "animalWelfareValue1": "no certification",
+  "animalWelfareValue2": "partly certified",
+  "animalWelfareValue3": "vegan/ethical",
+  "rainforestTitle": "Rainforest",
+  "rainforestValue": "{value}",
+  "rainforestValue1": "not protected",
+  "rainforestValue2": "partly protected",
+  "rainforestValue3": "protected"
+}
