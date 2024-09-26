@@ -117,9 +117,6 @@ class MealPlanView extends StatelessWidget {
                                   ],
                                 ),
                               ));
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
                         }
                         if (snapshot.hasError) return const MealPlanError();
                         MealPlanFormat mealPlanFormat =
