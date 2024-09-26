@@ -38,8 +38,8 @@ dependencies:
   cupertino_icons: ^1.0.2
 
   # Internationalization
-  flutter_i18n: ^0.33.0
-  intl: ^0.18.0
+  flutter_i18n: ^0.36.2
+  intl: ^0.19.0
   path_provider:
   flutter_localizations:
     sdk: flutter
@@ -52,15 +52,15 @@ dependencies:
   image_picker: ^1.0.4
 
   provider: ^6.0.5
-  mocktail: ^0.3.0
+  mocktail: ^1.0.4
   graphql_flutter: ^5.1.1
   crypto: ^3.0.3
   convert: ^3.1.1
-  uuid: ^3.0.7
-  package_info_plus: ^4.0.2
+  uuid: ^4.5.1
+  package_info_plus: ^8.0.2
   url_launcher: ^6.1.12
   sqlite3_flutter_libs: ^0.5.15
-  http: ^0.13.0
+  http: ^1.2.2
   http_parser: ^4.0.2
   gql_exec: any
 
@@ -79,10 +79,10 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
-  graphql_codegen: ^0.12.2
+  flutter_lints: ^5.0.0
+  graphql_codegen: ^1.0.1
   build_runner: ^2.4.6
-  lints: ^2.1.1
+  lints: ^5.0.0
   test: ^1.24.1
 
 # For information on the generic Dart part of this file, see the
