@@ -132,6 +132,7 @@ class MensaApp extends StatelessWidget {
                       Locale('de'),
                       Locale('en'),
                     ],
+                    locale: preferenceAccess.getLocale(),
                     theme: ThemeData(
                       useMaterial3: true,
                       brightness: Brightness.light,

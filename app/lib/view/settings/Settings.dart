@@ -221,7 +221,7 @@ class Settings extends StatelessWidget {
       entries.add(MensaDropdownEntry(
           value: value,
           label:
-            firstLetterUppercase(value.toString())));
+            firstLetterUppercase(value.name)));
     }
 
     return entries;

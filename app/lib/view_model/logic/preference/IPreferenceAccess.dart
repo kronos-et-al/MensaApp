@@ -36,4 +36,7 @@ abstract class IPreferenceAccess with ChangeNotifier {
 
   /// Sets the committed Language
   Future<void> setLanguage(Language language);
+
+  /// Returns the saved locale
+  Locale getLocale();
 }

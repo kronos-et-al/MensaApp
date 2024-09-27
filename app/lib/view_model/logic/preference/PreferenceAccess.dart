@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:app/view_model/logic/preference/IPreferenceAccess.dart';
 import 'package:app/view_model/repository/data_classes/settings/Language.dart';
 import 'package:app/view_model/repository/data_classes/settings/MealPlanFormat.dart';
@@ -61,6 +63,16 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
   @override
   Language getLanguage() {
     return _language;
+  }
+
+  @override
+  Locale getLocale() {
+    switch(_language) {
+      case Language.english:
+        return Locale('en');
+      case Language.deutsch:
+        return Locale('de');
+    }
   }
 
   @override
