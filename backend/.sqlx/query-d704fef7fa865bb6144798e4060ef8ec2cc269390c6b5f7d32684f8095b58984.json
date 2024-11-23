@@ -32,7 +32,7 @@
         },
         {
           "Custom": {
-            "name": "_allergen",
+            "name": "allergen[]",
             "kind": {
               "Array": {
                 "Custom": {
