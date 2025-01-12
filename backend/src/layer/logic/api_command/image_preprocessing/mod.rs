@@ -1,6 +1,6 @@
 //! Module for preprocessing uploaded images
 
-use image::{imageops::FilterType, ImageReader, DynamicImage, ImageError, ImageFormat};
+use image::{imageops::FilterType, DynamicImage, ImageError, ImageFormat, ImageReader};
 use std::io::Cursor;
 use thiserror::Error;
 

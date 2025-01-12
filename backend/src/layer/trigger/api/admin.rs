@@ -11,7 +11,10 @@ use axum::{
     routing::method_routing::get,
     Router,
 };
-use axum_extra::{headers::{authorization::Basic, Authorization}, TypedHeader};
+use axum_extra::{
+    headers::{authorization::Basic, Authorization},
+    TypedHeader,
+};
 use hyper::{header::WWW_AUTHENTICATE, HeaderMap, Request, StatusCode};
 
 use tracing::warn;
@@ -111,7 +114,9 @@ pub(super) async fn admin_auth_middleware(
 #[allow(clippy::unwrap_used)]
 mod test {
     use std::{
-        future::IntoFuture, net::{Ipv4Addr, SocketAddr, SocketAddrV4}, sync::Arc
+        future::IntoFuture,
+        net::{Ipv4Addr, SocketAddr, SocketAddrV4},
+        sync::Arc,
     };
 
     use axum::http::HeaderValue;
