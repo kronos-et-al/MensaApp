@@ -7,7 +7,7 @@ use crate::util::ImageResource;
 use async_trait::async_trait;
 use base64::engine::general_purpose;
 use base64::Engine;
-use image::ImageOutputFormat;
+use image::ImageFormat;
 use std::io::Cursor;
 
 /// The [`GoogleApiHandler`] struct is used to manage tasks
@@ -54,7 +54,7 @@ impl ImageValidation for GoogleApiHandler {
 
 fn image_to_base64(img: &ImageResource) -> Result<String> {
     let mut image_data: Vec<u8> = Vec::new();
-    img.write_to(&mut Cursor::new(&mut image_data), ImageOutputFormat::Png)
+    img.write_to(&mut Cursor::new(&mut image_data), ImageFormat::Png)
         .map_err(|e| ImageEncodeFailed(e.to_string()))?;
     Ok(general_purpose::STANDARD.encode(image_data))
 }

@@ -38,7 +38,7 @@ pub enum AuthError {
     )]
     MissingClientId,
     /// No or invalid authentication provided but the request needs to be authenticated.
-    #[error("One of the queries/mutations you requested requires authentication. Your auth info: {0:?} \nSee {} for more details.", AUTH_DOC_URL)]
+    #[error("One of the queries/mutations you requested requires authentication. Your auth info: {0:?} \nSee {url} for more details.", url = AUTH_DOC_URL)]
     MissingOrInvalidAuth(AuthInfo),
 }
 

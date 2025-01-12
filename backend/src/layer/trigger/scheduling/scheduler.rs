@@ -53,7 +53,7 @@ impl Scheduler {
         // mensa update parsing
         let mensa_parse_update = mensa_parse.clone();
         let update_parse_job = Job::new_async_tz(
-            info.update_parse_schedule.as_ref(),
+            &info.update_parse_schedule,
             timezone,
             move |_, _| {
                 let mensa_parse = mensa_parse_update.clone();
@@ -79,7 +79,7 @@ impl Scheduler {
 
         // mensa full parsing
         let full_parse_job =
-            Job::new_async_tz(info.full_parse_schedule.as_ref(), timezone, move |_, _| {
+            Job::new_async_tz(&info.full_parse_schedule, timezone, move |_, _| {
                 let mensa_parse = mensa_parse.clone();
                 Box::pin(
                     async move {
