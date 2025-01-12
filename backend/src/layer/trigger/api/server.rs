@@ -561,13 +561,12 @@ mod tests {
             .send()
             .await;
 
-        println!("{send:?}");
-        if let Ok(response) = send {
-            println!("{:?}", response.text().await);
-        }
+        assert!(
+            send.is_err()
+                || send.unwrap().text().await.unwrap()
+                    == "could not read body: length limit exceeded"
+        );
 
-        panic!();
-
-        // server.shutdown().await;
+        server.shutdown().await;
     }
 }
