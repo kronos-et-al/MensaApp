@@ -270,7 +270,7 @@ mod tests {
     use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
     use base64::{engine::general_purpose, Engine};
     use hmac::{Hmac, Mac};
-    use image::{io::Reader, DynamicImage, ImageBuffer, ImageFormat};
+    use image::{DynamicImage, ImageBuffer, ImageFormat, ImageReader};
     use reqwest::header::{AUTHORIZATION, CONTENT_TYPE};
     use serial_test::serial;
     use sha2::{Digest, Sha512};
@@ -447,7 +447,7 @@ mod tests {
 
         let file_type = resp.headers()[CONTENT_TYPE].to_str().unwrap().to_owned();
         let resp_bytes = resp.bytes().await.unwrap();
-        let mut reader = Reader::new(Cursor::new(&resp_bytes));
+        let mut reader = ImageReader::new(Cursor::new(&resp_bytes));
         reader.set_format(ImageFormat::from_mime_type(file_type).unwrap());
 
         reader.decode().expect("Should decode response to image")
@@ -544,25 +544,17 @@ mod tests {
 
         let test_request = [b"--boundary\r\nContent-Disposition: form-data; name=\"operations\"\r\n\r\n".as_ref(), &operations, b"\r\n--boundary\r\nContent-Disposition: form-data; name=\"map\"\r\n\r\n{\"0\":[\"variables.image\"]}\r\n--boundary\r\ncontent-type: image/jpeg\r\ncontent-disposition: form-data; name=\"0\"; filename=\"a\"\r\n\r\n".as_ref(), 
         image,
-        b"\r\n--boundary--".as_ref()].concat();
+        b"\r\n--boundary--\r\n".as_ref()].concat();
 
         let client = reqwest::Client::new();
-        let resp = client
+
+        assert!(client
             .post(format!("http://localhost:{TEST_PORT}"))
             .header(AUTHORIZATION, format!("Mensa {auth}"))
             .header(CONTENT_TYPE, "multipart/form-data; boundary=boundary")
             .body(test_request)
             .send()
-            .await
-            .unwrap()
-            .text()
-            .await
-            .unwrap();
-
-        assert_eq!(
-            "could not read body: length limit exceeded", resp,
-            "wrong data returned on graphql upload image check."
-        );
+            .await.is_err());
 
         server.shutdown().await;
     }

@@ -71,10 +71,10 @@ minijinja = "2.0.2"
 [dev-dependencies]
 serial_test = "3.0.0"
 rand = "0.8.0"
-tracing-test = "0.2.4"
 rusty-fork = "0.3.0"
 tempfile = "3.8.0"
 serde_json = "1.0.107"
+tracing-test = "0.2.5"
 
 [[bin]]
 name = "graphql_mock"

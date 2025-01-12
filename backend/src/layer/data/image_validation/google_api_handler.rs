@@ -67,13 +67,13 @@ mod tests {
     use crate::layer::data::image_validation::google_api_handler::{
         image_to_base64, GoogleApiHandler,
     };
+    use base64::prelude::BASE64_STANDARD;
+    use base64::Engine;
     use dotenvy::dotenv;
     use std::{env, fs};
 
     const J_IMG: &str = "src/layer/data/image_validation/test/test.jpg";
-    const J_B64: &str = "src/layer/data/image_validation/test/j_test.txt";
     const P_IMG: &str = "src/layer/data/image_validation/test/test.png";
-    const P_B64: &str = "src/layer/data/image_validation/test/p_test.txt";
 
     #[tokio::test]
     async fn test_validate_image() {
@@ -87,8 +87,24 @@ mod tests {
     fn test_image_to_base64() {
         let j_img = image::open(J_IMG).unwrap();
         let p_img = image::open(P_IMG).unwrap();
-        assert_eq!(image_to_base64(&j_img).unwrap(), load_b64str(J_B64));
-        assert_eq!(image_to_base64(&p_img).unwrap(), load_b64str(P_B64));
+        assert_eq!(
+            j_img,
+            image::load_from_memory(
+                &BASE64_STANDARD
+                    .decode(image_to_base64(&j_img).unwrap())
+                    .unwrap()
+            )
+            .unwrap()
+        );
+        assert_eq!(
+            p_img,
+            image::load_from_memory(
+                &BASE64_STANDARD
+                    .decode(image_to_base64(&p_img).unwrap())
+                    .unwrap()
+            )
+            .unwrap()
+        );
     }
 
     fn load_b64str(path: &str) -> String {
