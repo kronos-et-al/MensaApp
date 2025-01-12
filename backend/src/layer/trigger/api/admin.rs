@@ -5,13 +5,13 @@ use std::sync::Arc;
 use axum::{
     debug_handler,
     extract::{Path, State},
-    headers::{authorization::Basic, Authorization},
     http::HeaderValue,
     middleware::{self, Next},
     response::IntoResponse,
     routing::method_routing::get,
-    Router, TypedHeader,
+    Router,
 };
+use axum_extra::{headers::{authorization::Basic, Authorization}, TypedHeader};
 use hyper::{header::WWW_AUTHENTICATE, HeaderMap, Request, StatusCode};
 
 use tracing::warn;
@@ -94,7 +94,7 @@ pub(super) async fn admin_auth_middleware(
     creds: Option<TypedHeader<Authorization<Basic>>>,
     State(auth_key): State<AdminKey>,
     req: Request<axum::body::Body>,
-    next: Next<axum::body::Body>,
+    next: Next,
 ) -> impl IntoResponse {
     let Some(creds) = creds else {
         return Err(unauthenticated());
@@ -111,11 +111,10 @@ pub(super) async fn admin_auth_middleware(
 #[allow(clippy::unwrap_used)]
 mod test {
     use std::{
-        net::{Ipv4Addr, SocketAddr, SocketAddrV4},
-        sync::Arc,
+        future::IntoFuture, net::{Ipv4Addr, SocketAddr, SocketAddrV4}, sync::Arc
     };
 
-    use axum::{http::HeaderValue, Server};
+    use axum::http::HeaderValue;
     use base64::Engine;
     use hyper::{header::AUTHORIZATION, HeaderMap, StatusCode};
     use reqwest::Client;
@@ -137,9 +136,10 @@ mod test {
         let router = admin_router(key.clone(), command);
         let socket = SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::LOCALHOST, 8081));
         println!("socket: {socket}");
-        let server = Server::bind(&socket).serve(router.into_make_service());
+        let listener = tokio::net::TcpListener::bind(socket).await.unwrap();
+        let server = axum::serve(listener, router);
 
-        tokio::spawn(server);
+        tokio::spawn(server.into_future());
 
         assert_eq!(
             StatusCode::UNAUTHORIZED,

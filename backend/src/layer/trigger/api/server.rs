@@ -2,7 +2,7 @@
 
 use std::{
     fmt::Display,
-    future::Future,
+    future::{Future, IntoFuture},
     mem,
     net::{Ipv6Addr, SocketAddrV6},
     num::NonZeroU64,
@@ -25,7 +25,7 @@ use axum::{
     middleware,
     response::{self, IntoResponse},
     routing::get,
-    BoxError, Extension, Router, Server,
+    BoxError, Extension, Router,
 };
 
 use hyper::StatusCode;
@@ -123,7 +123,7 @@ impl ApiServer {
     ///
     /// # Panics
     /// This function panics if the server is in the wrong state, meaning it is already running or shut down.
-    pub fn start(&mut self) {
+    pub async fn start(&mut self) {
         assert!(
             matches!(self.state, State::Created),
             "tried to start graphql server while in state {}",
@@ -175,7 +175,8 @@ impl ApiServer {
             0,
         ));
 
-        let server = Server::bind(&socket).serve(app.into_make_service());
+        let listener = tokio::net::TcpListener::bind(socket).await.expect("bind to tcp socket");
+        let server = axum::serve(listener, app);
 
         let shutdown_notify = Arc::new(Notify::new());
         let shutdown_notify_sender = shutdown_notify.clone();
@@ -183,7 +184,7 @@ impl ApiServer {
         let with_shutdown =
             server.with_graceful_shutdown(async move { shutdown_notify_sender.notified().await });
 
-        let join_handle = tokio::spawn(with_shutdown);
+        let join_handle = tokio::spawn(with_shutdown.into_future());
 
         let shutdown = async move {
             shutdown_notify.notify_one();

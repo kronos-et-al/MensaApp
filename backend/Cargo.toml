@@ -20,19 +20,19 @@ async-trait = "0.1.68"
 chrono = { version = "0.4.26", features = ["serde"] }
 thiserror = "2.0"
 uuid = "1.4.0"
-axum = { version = "0.6.18", features = [
+axum = { version = "0.7", features = [
     "http2",
     "macros",
     "multipart",
     "tracing",
 ] }
-async-graphql = { version = "6.0.0", features = [
+async-graphql = { version = "7.0", features = [
     "chrono",
     "uuid",
     "tracing",
     "unblock",
 ] }
-async-graphql-axum = "6.0.0"
+async-graphql-axum = "7.0"
 tokio = { version = "1.29.0", features = ["full"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3.17", features = ["env-filter", "time"] }
@@ -41,7 +41,7 @@ base64 = "0.22"
 sha2 = "0.10.7"
 heck = "0.5"
 dotenvy = "0.15.7"
-reqwest = { version = "0.11", features = ["json"] }
+reqwest = { version = "0.12", features = ["json"] }
 scraper = "0.22"
 regex = "1.9.1"
 futures = "0.3.28"
@@ -58,15 +58,16 @@ lettre = "0.11.1"
 lazy_static = "1.4.0"
 colored = "3"
 image = "0.25"
-tower-http = { version = "0.4.4", features = ["fs"] }
-tower = { version = "0.4.13", features = ["limit", "buffer"] }
+tower-http = { version = "0.6", features = ["fs"] }
+tower = { version = "0.5", features = ["limit", "buffer"] }
 serde = "1.0.188"
 google-jwt-auth = "0.1.0"
-hyper = { version = "0.14" }
+hyper = { version = "1.5" }
 mime = "0.3.17"
 hmac = "0.12.1"
 multer = { version = "3.1", features = ["tokio-io"] }
 minijinja = "2.0.2"
+axum-extra = { version = "0.9", features = ["typed-header"] }
 
 [dev-dependencies]
 serial_test = "3.0.0"
