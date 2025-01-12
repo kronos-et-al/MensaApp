@@ -96,7 +96,7 @@ mod tests {
         image_path.push(uuid.to_string());
         image_path.set_extension(IMAGE_EXTENSION);
 
-        let read_image = image::io::Reader::open(image_path)
+        let read_image = image::ImageReader::open(image_path)
             .unwrap()
             .decode()
             .unwrap();

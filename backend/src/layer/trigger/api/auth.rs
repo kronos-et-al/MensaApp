@@ -5,11 +5,10 @@ use std::{error::Error, fmt::Display, io::Cursor};
 
 use axum::{
     body::to_bytes,
-    extract::{self, DefaultBodyLimit, State},
+    extract::{self},
     http::Request,
     middleware::Next,
     response::IntoResponse,
-    Extension,
 };
 use axum_extra::{
     headers::{authorization::Credentials, Authorization, ContentType},
@@ -19,7 +18,6 @@ use base64::{
     engine::general_purpose::{self, STANDARD},
     Engine,
 };
-use futures::StreamExt;
 use hmac::{Hmac, Mac};
 use hyper::{body::Bytes, StatusCode};
 use mime::Mime;

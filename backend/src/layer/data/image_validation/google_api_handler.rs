@@ -107,10 +107,6 @@ mod tests {
         );
     }
 
-    fn load_b64str(path: &str) -> String {
-        fs::read_to_string(path).unwrap()
-    }
-
     fn get_handler() -> GoogleApiHandler {
         dotenv().ok();
         let path = env::var("SERVICE_ACCOUNT_JSON").unwrap();

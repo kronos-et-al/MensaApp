@@ -7,6 +7,7 @@ use tracing::debug;
 
 use crate::interface::mealplan_management::MensaParseScheduling;
 
+/// Mock for [`MensaParseScheduling`].
 #[derive(Default, Clone)]
 pub struct MensaParseMock {
     update_calls: Arc<Mutex<u32>>,

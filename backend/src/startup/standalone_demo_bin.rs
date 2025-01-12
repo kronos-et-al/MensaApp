@@ -84,7 +84,7 @@ async fn run() -> Result<()> {
 
     // run server
     scheduler.start().await;
-    api_server.start();
+    api_server.start().await;
 
     info!("Server is running");
 

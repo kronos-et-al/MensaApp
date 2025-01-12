@@ -320,7 +320,7 @@ mod tests {
     /// Test whether api version is available as health check.
     async fn test_graphql() {
         let mut server = get_test_server().await;
-        server.start();
+        server.start().await;
 
         let test_request = r#"
         {
@@ -360,7 +360,7 @@ mod tests {
     /// Test whether the graphql playground is served.
     async fn test_playground() {
         let mut server = get_test_server().await;
-        server.start();
+        server.start().await;
 
         let result = reqwest::get(format!("http://localhost:{TEST_PORT}"))
             .await
@@ -389,8 +389,8 @@ mod tests {
     #[serial]
     async fn test_double_start() {
         let mut server = get_test_server().await;
-        server.start();
-        server.start();
+        server.start().await;
+        server.start().await;
     }
 
     #[tokio::test]
@@ -425,7 +425,7 @@ mod tests {
         );
 
         let mut server = get_test_server_with_images(image_folder.path().to_owned()).await;
-        server.start();
+        server.start().await;
 
         // save image after server is started to check "dynamic" file requests
         image
@@ -462,7 +462,7 @@ mod tests {
     #[serial]
     async fn test_large_image_upload() {
         let mut server = get_test_server().await;
-        server.start();
+        server.start().await;
 
         let image = include_bytes!("test_data/test_real.jpg").as_ref();
 
@@ -523,7 +523,7 @@ mod tests {
         };
         let mut server = ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await;
 
-        server.start();
+        server.start().await;
 
         let image = include_bytes!("test_data/test_real.jpg").as_ref();
 
