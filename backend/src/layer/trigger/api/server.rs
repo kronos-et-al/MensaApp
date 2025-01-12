@@ -553,14 +553,17 @@ mod tests {
 
         let client = reqwest::Client::new();
 
-        assert!(client
+        let send = client
             .post(format!("http://localhost:{TEST_PORT}"))
             .header(AUTHORIZATION, format!("Mensa {auth}"))
             .header(CONTENT_TYPE, "multipart/form-data; boundary=boundary")
             .body(test_request)
             .send()
-            .await
-            .is_err());
+            .await;
+
+        println!("{send:?}");
+
+        assert!(send.is_err());
 
         server.shutdown().await;
     }
