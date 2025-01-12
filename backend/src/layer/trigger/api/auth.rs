@@ -4,12 +4,12 @@
 use std::{error::Error, fmt::Display, io::Cursor};
 
 use axum::{
-    body::{self, to_bytes},
-    extract,
-    http::{request::Parts, Request},
+    body::to_bytes,
+    extract::{self, DefaultBodyLimit, State},
+    http::Request,
     middleware::Next,
     response::IntoResponse,
-    RequestExt,
+    Extension,
 };
 use axum_extra::{
     headers::{authorization::Credentials, Authorization, ContentType},
@@ -19,10 +19,9 @@ use base64::{
     engine::general_purpose::{self, STANDARD},
     Engine,
 };
-use futures::{Stream, StreamExt};
+use futures::StreamExt;
 use hmac::{Hmac, Mac};
 use hyper::{body::Bytes, StatusCode};
-use image::codecs::qoi;
 use mime::Mime;
 use multer::{parse_boundary, Multipart};
 use sha2::Sha512;
@@ -139,14 +138,14 @@ impl IntoResponse for AuthMiddlewareError {
 pub(super) async fn auth_middleware(
     content_type: Option<TypedHeader<ContentType>>,
     auth: Option<TypedHeader<Authorization<MensaAuthHeader>>>,
-    extract::State(api_keys): extract::State<Vec<ApiKey>>,
+    extract::State((body_limit, api_keys)): extract::State<(usize, Vec<ApiKey>)>,
     req: Request<axum::body::Body>,
     next: Next,
 ) -> Result<impl IntoResponse, AuthMiddlewareError> {
     let auth_header = auth.map(|a| a.0 .0);
 
     let (parts, body) = req.into_parts();
-    let body_bytes = to_bytes(body, 10000000)
+    let body_bytes = to_bytes(body, body_limit)
         .await
         .map_err(|e| AuthMiddlewareError::UnableToReadBody(Box::new(e)))?;
 

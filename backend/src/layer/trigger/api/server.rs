@@ -130,7 +130,14 @@ impl ApiServer {
             self.state
         );
 
-        let auth = middleware::from_fn_with_state(self.api_keys.clone(), auth_middleware);
+        let max_body_size = self
+            .server_info
+            .max_body_size
+            .try_into()
+            .expect("max body size should fit in usize");
+
+        let auth =
+            middleware::from_fn_with_state((max_body_size, self.api_keys.clone()), auth_middleware);
 
         let rate_limit = ServiceBuilder::new()
             .layer(HandleErrorLayer::new(|err: BoxError| async move {
@@ -161,12 +168,7 @@ impl ApiServer {
             .nest("/admin", admin_router)
             .nest_service(IMAGE_BASE_PATH, ServeDir::new(&self.server_info.image_dir))
             .layer(rate_limit)
-            .layer(DefaultBodyLimit::max(
-                self.server_info
-                    .max_body_size
-                    .try_into()
-                    .expect("max body size should fit in usize"),
-            ));
+            .layer(DefaultBodyLimit::max(max_body_size));
 
         let socket = std::net::SocketAddr::V6(SocketAddrV6::new(
             Ipv6Addr::UNSPECIFIED,
@@ -175,7 +177,9 @@ impl ApiServer {
             0,
         ));
 
-        let listener = tokio::net::TcpListener::bind(socket).await.expect("bind to tcp socket");
+        let listener = tokio::net::TcpListener::bind(socket)
+            .await
+            .expect("bind to tcp socket");
         let server = axum::serve(listener, app);
 
         let shutdown_notify = Arc::new(Notify::new());
@@ -555,7 +559,8 @@ mod tests {
             .header(CONTENT_TYPE, "multipart/form-data; boundary=boundary")
             .body(test_request)
             .send()
-            .await.is_err());
+            .await
+            .is_err());
 
         server.shutdown().await;
     }
