@@ -12,7 +12,7 @@ use std::io::Cursor;
 
 /// The [`GoogleApiHandler`] struct is used to manage tasks
 /// of the [`crate::layer::data::image_validation`] component.
-/// 
+///
 /// The tasks are:<br>
 ///     - converting images<br>
 ///     - calling the api<br>
