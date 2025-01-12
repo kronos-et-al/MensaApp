@@ -562,9 +562,12 @@ mod tests {
             .await;
 
         println!("{send:?}");
+        if let Ok(response) = send {
+            println!("{:?}", response.text().await);
+        }
 
-        assert!(send.is_err());
+        panic!();
 
-        server.shutdown().await;
+        // server.shutdown().await;
     }
 }
