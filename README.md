@@ -40,6 +40,7 @@ For more details on these parts, please see their readmes in the sub-folders.
 
 ## Background
 We developed this project as part of the "Praxis der Softwareentwicklung" course, part of the [KIT](https://www.kit.edu/english) bachelor's degree program in computer science.
+The there created documentation documents (in German) are available as inspiration in [doc/pse](doc/pse). Note that they may be outdated regarding the state of this application. Their LaTeX source is currently not available, but we can provide you access to our presets on request (<contact@mensa-ka.de>).
 
 ## License & Legal
 This application is available under the MIT license (see [LICENSE](LICENSE)).
