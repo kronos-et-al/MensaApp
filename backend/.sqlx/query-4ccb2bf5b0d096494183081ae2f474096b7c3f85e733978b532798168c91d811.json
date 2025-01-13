@@ -8,7 +8,7 @@
         "Uuid",
         {
           "Custom": {
-            "name": "_additive",
+            "name": "additive[]",
             "kind": {
               "Array": {
                 "Custom": {

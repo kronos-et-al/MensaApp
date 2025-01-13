@@ -1,6 +1,6 @@
 //! Module for preprocessing uploaded images
 
-use image::{imageops::FilterType, io::Reader, DynamicImage, ImageError, ImageFormat};
+use image::{imageops::FilterType, DynamicImage, ImageError, ImageFormat, ImageReader};
 use std::io::Cursor;
 use thiserror::Error;
 
@@ -58,7 +58,7 @@ impl ImagePreprocessor {
         let max_width = self.max_width;
         let max_height = self.max_height;
 
-        let mut reader = Reader::new(Cursor::new(image_data));
+        let mut reader = ImageReader::new(Cursor::new(image_data));
         if let Some(format) = image_type.and_then(ImageFormat::from_mime_type) {
             reader.set_format(format);
         } else {

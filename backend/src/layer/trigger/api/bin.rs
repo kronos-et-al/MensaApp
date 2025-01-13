@@ -57,7 +57,7 @@ async fn main() {
         AuthDataMock,
     )
     .await;
-    server.start();
+    server.start().await;
     tokio::signal::ctrl_c()
         .await
         .expect("failed to listen for CTRL-C event");

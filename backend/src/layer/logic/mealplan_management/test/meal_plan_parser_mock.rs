@@ -74,6 +74,7 @@ fn get_canteens(canteen_amount: u32, line_amount: u32, dish_amount: u32) -> Vec<
     canteens
 }
 
+/// Mock of [`MealplanParser`].
 pub struct MealPlanParserMock;
 
 #[async_trait]

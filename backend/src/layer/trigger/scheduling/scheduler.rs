@@ -52,10 +52,8 @@ impl Scheduler {
 
         // mensa update parsing
         let mensa_parse_update = mensa_parse.clone();
-        let update_parse_job = Job::new_async_tz(
-            info.update_parse_schedule.as_ref(),
-            timezone,
-            move |_, _| {
+        let update_parse_job =
+            Job::new_async_tz(&info.update_parse_schedule, timezone, move |_, _| {
                 let mensa_parse = mensa_parse_update.clone();
                 Box::pin(
                     async move {
@@ -68,9 +66,8 @@ impl Scheduler {
                     }
                     .instrument(info_span!("update_parsing")),
                 )
-            },
-        )
-        .expect("could not create schedule for image reviewing");
+            })
+            .expect("could not create schedule for image reviewing");
 
         scheduler
             .add(update_parse_job)
@@ -78,22 +75,21 @@ impl Scheduler {
             .expect("could not add job for update parsing to scheduler");
 
         // mensa full parsing
-        let full_parse_job =
-            Job::new_async_tz(info.full_parse_schedule.as_ref(), timezone, move |_, _| {
-                let mensa_parse = mensa_parse.clone();
-                Box::pin(
-                    async move {
-                        info!("Started mensa full parsing.");
-                        let start: Instant = Instant::now();
+        let full_parse_job = Job::new_async_tz(&info.full_parse_schedule, timezone, move |_, _| {
+            let mensa_parse = mensa_parse.clone();
+            Box::pin(
+                async move {
+                    info!("Started mensa full parsing.");
+                    let start: Instant = Instant::now();
 
-                        mensa_parse.start_full_parsing().await;
+                    mensa_parse.start_full_parsing().await;
 
-                        info!("Finished mensa full parsing in {:?}.", start.elapsed());
-                    }
-                    .instrument(info_span!("full_parsing")),
-                )
-            })
-            .expect("could not create schedule for image reviewing");
+                    info!("Finished mensa full parsing in {:?}.", start.elapsed());
+                }
+                .instrument(info_span!("full_parsing")),
+            )
+        })
+        .expect("could not create schedule for image reviewing");
 
         scheduler
             .add(full_parse_job)

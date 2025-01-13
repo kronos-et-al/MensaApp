@@ -7,7 +7,7 @@ use crate::util::ImageResource;
 use async_trait::async_trait;
 use base64::engine::general_purpose;
 use base64::Engine;
-use image::ImageOutputFormat;
+use image::ImageFormat;
 use std::io::Cursor;
 
 /// The [`GoogleApiHandler`] struct is used to manage tasks
@@ -54,7 +54,7 @@ impl ImageValidation for GoogleApiHandler {
 
 fn image_to_base64(img: &ImageResource) -> Result<String> {
     let mut image_data: Vec<u8> = Vec::new();
-    img.write_to(&mut Cursor::new(&mut image_data), ImageOutputFormat::Png)
+    img.write_to(&mut Cursor::new(&mut image_data), ImageFormat::Png)
         .map_err(|e| ImageEncodeFailed(e.to_string()))?;
     Ok(general_purpose::STANDARD.encode(image_data))
 }
@@ -67,13 +67,13 @@ mod tests {
     use crate::layer::data::image_validation::google_api_handler::{
         image_to_base64, GoogleApiHandler,
     };
+    use base64::prelude::BASE64_STANDARD;
+    use base64::Engine;
     use dotenvy::dotenv;
     use std::{env, fs};
 
     const J_IMG: &str = "src/layer/data/image_validation/test/test.jpg";
-    const J_B64: &str = "src/layer/data/image_validation/test/j_test.txt";
     const P_IMG: &str = "src/layer/data/image_validation/test/test.png";
-    const P_B64: &str = "src/layer/data/image_validation/test/p_test.txt";
 
     #[tokio::test]
     async fn test_validate_image() {
@@ -87,12 +87,24 @@ mod tests {
     fn test_image_to_base64() {
         let j_img = image::open(J_IMG).unwrap();
         let p_img = image::open(P_IMG).unwrap();
-        assert_eq!(image_to_base64(&j_img).unwrap(), load_b64str(J_B64));
-        assert_eq!(image_to_base64(&p_img).unwrap(), load_b64str(P_B64));
-    }
-
-    fn load_b64str(path: &str) -> String {
-        fs::read_to_string(path).unwrap()
+        assert_eq!(
+            j_img,
+            image::load_from_memory(
+                &BASE64_STANDARD
+                    .decode(image_to_base64(&j_img).unwrap())
+                    .unwrap()
+            )
+            .unwrap()
+        );
+        assert_eq!(
+            p_img,
+            image::load_from_memory(
+                &BASE64_STANDARD
+                    .decode(image_to_base64(&p_img).unwrap())
+                    .unwrap()
+            )
+            .unwrap()
+        );
     }
 
     fn get_handler() -> GoogleApiHandler {

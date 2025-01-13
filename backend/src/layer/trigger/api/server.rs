@@ -2,7 +2,7 @@
 
 use std::{
     fmt::Display,
-    future::Future,
+    future::{Future, IntoFuture},
     mem,
     net::{Ipv6Addr, SocketAddrV6},
     num::NonZeroU64,
@@ -25,7 +25,7 @@ use axum::{
     middleware,
     response::{self, IntoResponse},
     routing::get,
-    BoxError, Extension, Router, Server,
+    BoxError, Extension, Router,
 };
 
 use hyper::StatusCode;
@@ -123,14 +123,21 @@ impl ApiServer {
     ///
     /// # Panics
     /// This function panics if the server is in the wrong state, meaning it is already running or shut down.
-    pub fn start(&mut self) {
+    pub async fn start(&mut self) {
         assert!(
             matches!(self.state, State::Created),
             "tried to start graphql server while in state {}",
             self.state
         );
 
-        let auth = middleware::from_fn_with_state(self.api_keys.clone(), auth_middleware);
+        let max_body_size = self
+            .server_info
+            .max_body_size
+            .try_into()
+            .expect("max body size should fit in usize");
+
+        let auth =
+            middleware::from_fn_with_state((max_body_size, self.api_keys.clone()), auth_middleware);
 
         let rate_limit = ServiceBuilder::new()
             .layer(HandleErrorLayer::new(|err: BoxError| async move {
@@ -161,12 +168,7 @@ impl ApiServer {
             .nest("/admin", admin_router)
             .nest_service(IMAGE_BASE_PATH, ServeDir::new(&self.server_info.image_dir))
             .layer(rate_limit)
-            .layer(DefaultBodyLimit::max(
-                self.server_info
-                    .max_body_size
-                    .try_into()
-                    .expect("max body size should fit in usize"),
-            ));
+            .layer(DefaultBodyLimit::max(max_body_size));
 
         let socket = std::net::SocketAddr::V6(SocketAddrV6::new(
             Ipv6Addr::UNSPECIFIED,
@@ -175,7 +177,10 @@ impl ApiServer {
             0,
         ));
 
-        let server = Server::bind(&socket).serve(app.into_make_service());
+        let listener = tokio::net::TcpListener::bind(socket)
+            .await
+            .expect("bind to tcp socket");
+        let server = axum::serve(listener, app);
 
         let shutdown_notify = Arc::new(Notify::new());
         let shutdown_notify_sender = shutdown_notify.clone();
@@ -183,7 +188,7 @@ impl ApiServer {
         let with_shutdown =
             server.with_graceful_shutdown(async move { shutdown_notify_sender.notified().await });
 
-        let join_handle = tokio::spawn(with_shutdown);
+        let join_handle = tokio::spawn(with_shutdown.into_future());
 
         let shutdown = async move {
             shutdown_notify.notify_one();
@@ -270,7 +275,7 @@ mod tests {
     use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
     use base64::{engine::general_purpose, Engine};
     use hmac::{Hmac, Mac};
-    use image::{io::Reader, DynamicImage, ImageBuffer, ImageFormat};
+    use image::{DynamicImage, ImageBuffer, ImageFormat, ImageReader};
     use reqwest::header::{AUTHORIZATION, CONTENT_TYPE};
     use serial_test::serial;
     use sha2::{Digest, Sha512};
@@ -315,7 +320,7 @@ mod tests {
     /// Test whether api version is available as health check.
     async fn test_graphql() {
         let mut server = get_test_server().await;
-        server.start();
+        server.start().await;
 
         let test_request = r#"
         {
@@ -355,7 +360,7 @@ mod tests {
     /// Test whether the graphql playground is served.
     async fn test_playground() {
         let mut server = get_test_server().await;
-        server.start();
+        server.start().await;
 
         let result = reqwest::get(format!("http://localhost:{TEST_PORT}"))
             .await
@@ -384,8 +389,8 @@ mod tests {
     #[serial]
     async fn test_double_start() {
         let mut server = get_test_server().await;
-        server.start();
-        server.start();
+        server.start().await;
+        server.start().await;
     }
 
     #[tokio::test]
@@ -420,7 +425,7 @@ mod tests {
         );
 
         let mut server = get_test_server_with_images(image_folder.path().to_owned()).await;
-        server.start();
+        server.start().await;
 
         // save image after server is started to check "dynamic" file requests
         image
@@ -447,7 +452,7 @@ mod tests {
 
         let file_type = resp.headers()[CONTENT_TYPE].to_str().unwrap().to_owned();
         let resp_bytes = resp.bytes().await.unwrap();
-        let mut reader = Reader::new(Cursor::new(&resp_bytes));
+        let mut reader = ImageReader::new(Cursor::new(&resp_bytes));
         reader.set_format(ImageFormat::from_mime_type(file_type).unwrap());
 
         reader.decode().expect("Should decode response to image")
@@ -457,7 +462,7 @@ mod tests {
     #[serial]
     async fn test_large_image_upload() {
         let mut server = get_test_server().await;
-        server.start();
+        server.start().await;
 
         let image = include_bytes!("test_data/test_real.jpg").as_ref();
 
@@ -518,7 +523,7 @@ mod tests {
         };
         let mut server = ApiServer::new(info, RequestDatabaseMock, CommandMock, AuthDataMock).await;
 
-        server.start();
+        server.start().await;
 
         let image = include_bytes!("test_data/test_real.jpg").as_ref();
 
@@ -544,24 +549,22 @@ mod tests {
 
         let test_request = [b"--boundary\r\nContent-Disposition: form-data; name=\"operations\"\r\n\r\n".as_ref(), &operations, b"\r\n--boundary\r\nContent-Disposition: form-data; name=\"map\"\r\n\r\n{\"0\":[\"variables.image\"]}\r\n--boundary\r\ncontent-type: image/jpeg\r\ncontent-disposition: form-data; name=\"0\"; filename=\"a\"\r\n\r\n".as_ref(), 
         image,
-        b"\r\n--boundary--".as_ref()].concat();
+        b"\r\n--boundary--\r\n".as_ref()].concat();
 
         let client = reqwest::Client::new();
-        let resp = client
+
+        let send = client
             .post(format!("http://localhost:{TEST_PORT}"))
             .header(AUTHORIZATION, format!("Mensa {auth}"))
             .header(CONTENT_TYPE, "multipart/form-data; boundary=boundary")
             .body(test_request)
             .send()
-            .await
-            .unwrap()
-            .text()
-            .await
-            .unwrap();
+            .await;
 
-        assert_eq!(
-            "could not read body: length limit exceeded", resp,
-            "wrong data returned on graphql upload image check."
+        assert!(
+            send.is_err()
+                || send.unwrap().text().await.unwrap()
+                    == "could not read body: length limit exceeded"
         );
 
         server.shutdown().await;

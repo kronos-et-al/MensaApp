@@ -4,12 +4,15 @@
 use std::{error::Error, fmt::Display, io::Cursor};
 
 use axum::{
-    extract,
-    headers::{authorization::Credentials, Authorization, ContentType},
-    http::{request::Parts, Request},
+    body::to_bytes,
+    extract::{self},
+    http::Request,
     middleware::Next,
     response::IntoResponse,
-    RequestExt, TypedHeader,
+};
+use axum_extra::{
+    headers::{authorization::Credentials, Authorization, ContentType},
+    TypedHeader,
 };
 use base64::{
     engine::general_purpose::{self, STANDARD},
@@ -38,7 +41,7 @@ pub enum AuthError {
     )]
     MissingClientId,
     /// No or invalid authentication provided but the request needs to be authenticated.
-    #[error("One of the queries/mutations you requested requires authentication. Your auth info: {0:?} \nSee {} for more details.", AUTH_DOC_URL)]
+    #[error("One of the queries/mutations you requested requires authentication. Your auth info: {0:?} \nSee {url} for more details.", url = AUTH_DOC_URL)]
     MissingOrInvalidAuth(AuthInfo),
 }
 
@@ -133,23 +136,26 @@ impl IntoResponse for AuthMiddlewareError {
 pub(super) async fn auth_middleware(
     content_type: Option<TypedHeader<ContentType>>,
     auth: Option<TypedHeader<Authorization<MensaAuthHeader>>>,
-    extract::State(api_keys): extract::State<Vec<ApiKey>>,
+    extract::State((body_limit, api_keys)): extract::State<(usize, Vec<ApiKey>)>,
     req: Request<axum::body::Body>,
-    next: Next<axum::body::Body>,
+    next: Next,
 ) -> Result<impl IntoResponse, AuthMiddlewareError> {
     let auth_header = auth.map(|a| a.0 .0);
 
-    let (parts, body_bytes) = read_bytes_from_request(req).await?;
+    let (parts, body) = req.into_parts();
+    let body_bytes = to_bytes(body, body_limit)
+        .await
+        .map_err(|e| AuthMiddlewareError::UnableToReadBody(Box::new(e)))?;
 
     let bytes_to_hash = match content_type {
         Some(TypedHeader(content_type)) if is_multipart(content_type.clone()) => {
-            extract_operation_bytes_from_multipart(&content_type, &body_bytes).await?
+            &extract_operation_bytes_from_multipart(&content_type, &body_bytes).await?
         }
-        _ => body_bytes.clone(),
+        _ => &body_bytes,
     };
 
     let auth = AuthInfo {
-        authenticated: authenticate(auth_header.as_ref(), &api_keys, &bytes_to_hash),
+        authenticated: authenticate(auth_header.as_ref(), &api_keys, bytes_to_hash),
 
         client_id: auth_header.as_ref().map(|a| a.client_id),
         api_ident: auth_header
@@ -163,35 +169,11 @@ pub(super) async fn auth_middleware(
     };
 
     // run main request
-    let mut req = Request::from_parts(parts, hyper::Body::from(body_bytes));
+    let body = axum::body::Body::from(body_bytes);
+    let mut req = Request::from_parts(parts, body);
     req.extensions_mut().insert(auth);
 
     Ok(next.run(req).await)
-}
-
-async fn read_bytes_from_request(
-    req: Request<hyper::Body>,
-) -> Result<(Parts, Bytes), AuthMiddlewareError> {
-    Ok(match req.with_limited_body() {
-        Ok(r) => {
-            let (p, b) = r.into_parts();
-            (
-                p,
-                hyper::body::to_bytes(b)
-                    .await
-                    .map_err(|e| AuthMiddlewareError::UnableToReadBody(e))?,
-            )
-        }
-        Err(r) => {
-            let (p, b) = r.into_parts();
-            (
-                p,
-                hyper::body::to_bytes(b)
-                    .await
-                    .map_err(|e| AuthMiddlewareError::UnableToReadBody(Box::new(e)))?,
-            )
-        }
-    })
 }
 
 fn is_multipart(content_type: ContentType) -> bool {
