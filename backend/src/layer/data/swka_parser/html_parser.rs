@@ -397,7 +397,8 @@ impl HTMLParser {
     fn get_food_type(dish_node: &ElementRef, name: &str) -> Option<FoodType> {
         let preliminary_dish_type = Self::get_preliminary_food_type(dish_node);
         if (preliminary_dish_type.is_none() || Some(FoodType::Unknown) == preliminary_dish_type)
-            && Self::is_poultry(name) // depricated with proper polutry type from parsing
+            && Self::is_poultry(name)
+        // depricated with proper polutry type from parsing
         {
             return Some(FoodType::Poultry);
         }
