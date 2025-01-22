@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            UPDATE food_nutrition_data \n            SET energy = $2, \n                protein = $3, \n                carbohydrates = $4,\n                sugar = $5,\n                fat = $6,\n                saturated_fat = $7,\n                salt = $8\n            WHERE food_id = $1\n            ",
+  "query": "\n            INSERT INTO food_env_score (food_id, co2_rating, co2_value, water_rating, water_value, animal_welfare_rating, rainforest_rating, max_rating) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)\n            ON CONFLICT (food_id) DO UPDATE\n            SET co2_rating = $2, \n                co2_value = $3, \n                water_rating = $4,\n                water_value = $5,\n                animal_welfare_rating = $6,\n                rainforest_rating = $7,\n                max_rating = $8\n            ",
   "describe": {
     "columns": [],
     "parameters": {
@@ -8,7 +8,7 @@
         "Uuid",
         {
           "Custom": {
-            "name": "energy",
+            "name": "env_rating",
             "kind": {
               "Domain": "Int4"
             }
@@ -16,7 +16,7 @@
         },
         {
           "Custom": {
-            "name": "weight",
+            "name": "env_value",
             "kind": {
               "Domain": "Int4"
             }
@@ -24,7 +24,7 @@
         },
         {
           "Custom": {
-            "name": "weight",
+            "name": "env_rating",
             "kind": {
               "Domain": "Int4"
             }
@@ -32,7 +32,7 @@
         },
         {
           "Custom": {
-            "name": "weight",
+            "name": "env_value",
             "kind": {
               "Domain": "Int4"
             }
@@ -40,7 +40,7 @@
         },
         {
           "Custom": {
-            "name": "weight",
+            "name": "env_rating",
             "kind": {
               "Domain": "Int4"
             }
@@ -48,7 +48,7 @@
         },
         {
           "Custom": {
-            "name": "weight",
+            "name": "env_rating",
             "kind": {
               "Domain": "Int4"
             }
@@ -56,7 +56,7 @@
         },
         {
           "Custom": {
-            "name": "weight",
+            "name": "env_rating",
             "kind": {
               "Domain": "Int4"
             }
@@ -66,5 +66,5 @@
     },
     "nullable": []
   },
-  "hash": "0b7637abde5c5651205aeea8b17b9ebb6e6aacace079158943ec150c44236115"
+  "hash": "74ab9b22292a023308f4da649f84f357b55cd6ac0a6f1022d2d1e66c72d3731c"
 }
