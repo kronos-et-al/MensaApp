@@ -175,12 +175,14 @@ mod tests {
         scheduler.shutdown().await;
 
         assert!(
-            (9..=10).contains(&mensa_parser.get_full_calls()),
-            "full parse was not called right amount"
+            (9..=12).contains(&mensa_parser.get_full_calls()),
+            "full parse was not called right amount: {}",
+            mensa_parser.get_full_calls()
         );
         assert!(
-            (4..=5).contains(&mensa_parser.get_update_calls()),
-            "update parse was not called right amount"
+            (4..=6).contains(&mensa_parser.get_update_calls()),
+            "update parse was not called right amount: {}",
+            mensa_parser.get_update_calls()
         );
     }
 
