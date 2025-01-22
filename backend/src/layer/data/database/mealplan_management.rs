@@ -309,9 +309,11 @@ impl PersistentMealplanManagementData {
     }
 
     async fn update_nutrition_data(&self, food_id: &Uuid, data: NutritionData) -> Result<()> {
+        // Newly inserting nutrition data is also possible!
         sqlx::query!(
             "
-            UPDATE food_nutrition_data 
+            INSERT INTO food_nutrition_data (food_id, energy, protein, carbohydrates, sugar, fat, saturated_fat, salt) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ON CONFLICT (food_id) DO UPDATE
             SET energy = $2, 
                 protein = $3, 
                 carbohydrates = $4,
@@ -319,7 +321,6 @@ impl PersistentMealplanManagementData {
                 fat = $6,
                 saturated_fat = $7,
                 salt = $8
-            WHERE food_id = $1
             ",
             food_id,
             i32::try_from(data.energy)? as _,
@@ -340,9 +341,11 @@ impl PersistentMealplanManagementData {
         food_id: &Uuid,
         info: ParseEnvironmentInfo,
     ) -> Result<()> {
+        // Newly inserting nutrition data is also possible!
         sqlx::query!(
             "
-            UPDATE food_env_score 
+            INSERT INTO food_env_score (food_id, co2_rating, co2_value, water_rating, water_value, animal_welfare_rating, rainforest_rating, max_rating) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ON CONFLICT (food_id) DO UPDATE
             SET co2_rating = $2, 
                 co2_value = $3, 
                 water_rating = $4,
@@ -350,7 +353,6 @@ impl PersistentMealplanManagementData {
                 animal_welfare_rating = $6,
                 rainforest_rating = $7,
                 max_rating = $8
-            WHERE food_id = $1
             ",
             food_id,
             i32::try_from(info.co2_rating)? as _,
@@ -485,7 +487,6 @@ mod test {
     #![allow(clippy::cast_sign_loss)]
 
     use super::*;
-    use crate::interface::persistent_data::model::EnvironmentInfo;
     use crate::util::Additive::Sulphur;
     use crate::util::Allergen::{Ei, Se, So, We, ML};
     use crate::util::Date;

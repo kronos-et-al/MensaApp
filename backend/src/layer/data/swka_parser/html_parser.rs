@@ -625,7 +625,16 @@ mod tests {
         let html = include_str!("test_data/test_missing_nutrition.html");
         let res = HTMLParser.transform(html, 0).unwrap();
 
-        let meal = res.iter().find_map(|(date, canteen)| canteen.lines.iter().find_map(|line| line.dishes.iter().find(|meal| meal.name == "Tomaten-Chili-Knoblauchspaghetti mit Tofu"))).unwrap();
+        let meal = res
+            .iter()
+            .find_map(|(_, canteen)| {
+                canteen.lines.iter().find_map(|line| {
+                    line.dishes
+                        .iter()
+                        .find(|meal| meal.name == "Tomaten-Chili-Knoblauchspaghetti mit Tofu")
+                })
+            })
+            .unwrap();
 
         // dbg!(meal);
         assert!(meal.env_score.is_some());
