@@ -485,6 +485,7 @@ mod test {
     #![allow(clippy::cast_sign_loss)]
 
     use super::*;
+    use crate::interface::persistent_data::model::EnvironmentInfo;
     use crate::util::Additive::Sulphur;
     use crate::util::Allergen::{Ei, Se, So, We, ML};
     use crate::util::Date;
@@ -1053,6 +1054,85 @@ mod test {
                 .await
                 .unwrap();
         assert_eq!(&actual_name, name);
+    }
+
+    #[sqlx::test(fixtures("meal", "nutrition_data", "environment_info"))]
+    async fn test_update_meal_missing_nutrition(pool: PgPool) {
+        let data = PersistentMealplanManagementData { pool: pool.clone() };
+
+        let food_uuid = Uuid::try_from("1b5633c2-05c5-4444-90e5-2e475bae6463").unwrap();
+        let name = "mealy";
+
+        // Ensure, env and nut data are not yet present: this is the case we want to test.
+        let num_env = sqlx::query_scalar!(
+            "SELECT COUNT(*) FROM food_env_score WHERE food_id = $1",
+            food_uuid
+        )
+        .fetch_one(&pool)
+        .await
+        .unwrap()
+        .unwrap();
+        let num_nut = sqlx::query_scalar!(
+            "SELECT COUNT(*) FROM food_nutrition_data WHERE food_id = $1",
+            food_uuid
+        )
+        .fetch_one(&pool)
+        .await
+        .unwrap()
+        .unwrap();
+        assert_eq!(num_env, 0);
+        assert_eq!(num_nut, 0);
+
+        let env = ParseEnvironmentInfo {
+            co2_rating: 3,
+            co2_value: 3,
+            water_rating: 3,
+            water_value: 3,
+            animal_welfare_rating: 3,
+            rainforest_rating: 3,
+            max_rating: 3,
+        };
+
+        let nut = NutritionData {
+            energy: 2,
+            protein: 2,
+            carbohydrates: 2,
+            sugar: 2,
+            fat: 2,
+            saturated_fat: 2,
+            salt: 2,
+        };
+
+        let ok = data
+            .update_meal(food_uuid, name, Some(nut), Some(env))
+            .await
+            .is_ok();
+        assert!(ok);
+
+        let actual_name =
+            sqlx::query_scalar!("SELECT name FROM food where food_id = $1", food_uuid)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+        assert_eq!(&actual_name, name);
+
+        let co2 = sqlx::query_scalar!(
+            "SELECT co2_rating FROM food_env_score WHERE food_id = $1",
+            food_uuid
+        )
+        .fetch_one(&pool)
+        .await
+        .expect("env data present");
+        assert_eq!(co2, 3);
+
+        let energy = sqlx::query_scalar!(
+            "SELECT energy FROM food_nutrition_data WHERE food_id = $1",
+            food_uuid
+        )
+        .fetch_one(&pool)
+        .await
+        .expect("env data present");
+        assert_eq!(energy, 2);
     }
 
     #[sqlx::test(fixtures("meal"))]
