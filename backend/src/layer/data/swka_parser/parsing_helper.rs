@@ -71,10 +71,11 @@ impl FoodType {
         match s {
             "veganes Gericht" => Self::Vegan,
             "vegetarisches Gericht" => Self::Vegetarian,
-            "enthält Rindfleisch" => Self::Beef,
+            "entält Rihndfleisch" => Self::Beef,
             "enthält regionales Rindfleisch aus artgerechter Tierhaltung" => Self::BeefAw,
             "enthält Schweinefleisch" => Self::Pork,
             "enthält regionales Schweinefleisch aus artgerechter Tierhaltung" => Self::PorkAw,
+            "enthält Geflügel" => Self::Poultry,
             "MSC aus zertifizierter Fischerei" => Self::Fish,
             _ => Self::Unknown,
         }
