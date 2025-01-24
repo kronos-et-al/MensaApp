@@ -7,6 +7,7 @@ use async_trait::async_trait;
 use model::ExtendedImage;
 use sqlx::migrate::MigrateError;
 use std::num::TryFromIntError;
+use std::sync::Arc;
 use thiserror::Error;
 
 use self::model::EnvironmentInfo;
@@ -17,14 +18,14 @@ use super::mensa_parser::model::ParseEnvironmentInfo;
 pub type Result<T> = std::result::Result<T, DataError>;
 
 /// Enumerations for possible data request faults
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Clone)]
 pub enum DataError {
     /// Requested data does not exist
     #[error("the requested item could not be found in the database")]
     NoSuchItem,
     /// Error occurred during data request or an internal connection fault.
     #[error("internal error ocurred: {0}")]
-    InternalError(#[from] sqlx::Error),
+    InternalError(Arc<sqlx::Error>),
     /// Failed to convert integers.
     #[error("error converting type: {0}")]
     TypeConversionError(#[from] TryFromIntError),
@@ -33,7 +34,18 @@ pub enum DataError {
     UnexpectedNullError(String),
     /// Database migration could not be run.
     #[error("error while running database migration: {0}")]
-    MigrateError(#[from] MigrateError),
+    MigrateError(Arc<MigrateError>),
+}
+
+impl From<sqlx::Error> for DataError {
+    fn from(value: sqlx::Error) -> Self {
+        Self::InternalError(Arc::new(value))
+    }
+}
+impl From<sqlx::migrate::MigrateError> for DataError {
+    fn from(value: sqlx::migrate::MigrateError) -> Self {
+        Self::MigrateError(Arc::new(value))
+    }
 }
 
 /// Extracts a value from an option by returning an [`DataError::UnexpectedNullError`] using [`std::ops::Try`] (`?`).

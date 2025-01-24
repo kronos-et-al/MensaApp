@@ -14,7 +14,7 @@ pub struct ApiKey {
 }
 
 /// Struct for database-operations. Related to the database entity 'canteen'.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Canteen {
     /// Identification of the canteen
     pub id: Uuid,
@@ -34,7 +34,7 @@ pub struct Line {
 }
 
 /// Struct for database-operations. Related to the database entity 'meal'.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Meal {
     /// Identification of the meal.
     pub id: Uuid,

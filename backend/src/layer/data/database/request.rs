@@ -1,4 +1,7 @@
 //! Module responsible for handling database requests for api requests.
+use std::collections::HashMap;
+
+use async_graphql::dataloader::{DataLoader, Loader};
 use async_trait::async_trait;
 use chrono::{Duration, Local};
 use sqlx::{Pool, Postgres};
@@ -13,25 +16,56 @@ use crate::{
 };
 
 /// Class implementing all database requests arising from graphql manipulations.
-#[derive(Debug)]
 pub struct PersistentRequestData {
-    pub(super) pool: Pool<Postgres>,
+    pool: Pool<Postgres>,
     /// Number of weeks, including the current week, we get/have data for.
-    pub(super) max_weeks_data: u32,
+    max_weeks_data: u32,
+    canteen_loader: DataLoader<CanteenDataloader>,
+}
+
+impl PersistentRequestData {
+    /// Cereates a new [`PersistantRequestData`] object including dataloaders.
+    #[must_use]
+    pub fn new(pool: Pool<Postgres>, max_weeks_data: u32) -> Self {
+        Self {
+            max_weeks_data,
+            canteen_loader: DataLoader::new(CanteenDataloader(pool.clone()), tokio::spawn),
+            pool,
+        }
+    }
+}
+
+struct CanteenDataloader(Pool<Postgres>);
+
+impl Loader<Uuid> for CanteenDataloader {
+    type Value = Canteen;
+    type Error = DataError;
+    async fn load(
+        &self,
+        keys: &[Uuid],
+    ) -> std::result::Result<HashMap<Uuid, Self::Value>, Self::Error> {
+        sqlx::query_as!(
+            Canteen,
+            "SELECT canteen_id as id, name FROM canteen WHERE canteen_id = ANY ($1)",
+            keys
+        )
+        .fetch_all(&self.0)
+        .await
+        .map(|canteens| {
+            canteens
+                .into_iter()
+                .map(|canteen| (canteen.id, canteen))
+                .collect()
+        })
+        .map_err(Into::into)
+    }
 }
 
 #[async_trait]
 #[allow(clippy::missing_panics_doc)] // necessary because sqlx macro sometimes create unreachable panics?
 impl RequestDataAccess for PersistentRequestData {
     async fn get_canteen(&self, id: Uuid) -> Result<Option<Canteen>> {
-        sqlx::query_as!(
-            Canteen,
-            "SELECT canteen_id as id, name FROM canteen WHERE canteen_id = $1",
-            id
-        )
-        .fetch_optional(&self.pool)
-        .await
-        .map_err(Into::into)
+        self.canteen_loader.load_one(id).await
     }
 
     async fn get_canteens(&self) -> Result<Vec<Canteen>> {
@@ -350,10 +384,7 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen"))]
     async fn test_get_canteen(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
 
         let canteen_id_strs = [
             "10728cc4-1e07-4e18-a9d9-ca45b9782413",
@@ -380,10 +411,7 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen"))]
     async fn test_get_canteens(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
 
         let canteen = request.get_canteens().await.unwrap();
         assert!(canteen.len() == 3);
@@ -394,10 +422,7 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen", "line"))]
     async fn test_get_line(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
 
         let lines = request
             .get_lines(Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap())
@@ -412,10 +437,7 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen", "line"))]
     async fn test_get_lines(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
 
         let line_id_strs = [
             "3e8c11fa-906a-4c6a-bc71-28756c6b00ae",
@@ -438,10 +460,7 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_get_meal(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
 
         let meal_id_strs = [
             "f7337122-b018-48ad-b420-6202dc3cb4ff",
@@ -478,10 +497,7 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_get_meals(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
 
         let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
 
@@ -520,10 +536,7 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_get_sides(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let date = Local::now().date_naive();
         let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
 
@@ -538,10 +551,7 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "image"))]
     async fn test_get_visible_images(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         let client_id = Uuid::parse_str("c51d2d81-3547-4f07-af58-ed613c6ece67").unwrap();
 
@@ -581,10 +591,7 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "image", "rating"))]
     async fn test_get_personal_rating(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         let client_id = Uuid::parse_str("c51d2d81-3547-4f07-af58-ed613c6ece67").unwrap();
 
@@ -602,10 +609,7 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "image", "rating"))]
     async fn test_get_personal_upvote(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
         let client_id = Uuid::parse_str("c51d2d81-3547-4f07-af58-ed613c6ece67").unwrap();
 
@@ -628,10 +632,7 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "image", "rating"))]
     async fn test_get_personal_downvote(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
         let client_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
 
@@ -654,10 +655,7 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "additive"))]
     async fn test_get_additives(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let food_ids = [
             "f7337122-b018-48ad-b420-6202dc3cb4ff",
             "73cf367b-a536-4b49-ad0c-cb984caa9a08",
@@ -689,10 +687,7 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "allergen"))]
     async fn test_get_allergens(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let food_ids = [
             "f7337122-b018-48ad-b420-6202dc3cb4ff",
             "73cf367b-a536-4b49-ad0c-cb984caa9a08",
@@ -724,10 +719,7 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "environment_info"))]
     async fn test_get_environment_info(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let food_ids = [
             "f7337122-b018-48ad-b420-6202dc3cb4ff",
             "73cf367b-a536-4b49-ad0c-cb984caa9a08",
@@ -784,10 +776,7 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "nutrition_data"))]
     async fn test_get_nutrition_data(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let food_ids = [
             "f7337122-b018-48ad-b420-6202dc3cb4ff",
             "73cf367b-a536-4b49-ad0c-cb984caa9a08",
