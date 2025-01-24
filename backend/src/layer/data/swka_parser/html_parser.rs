@@ -620,4 +620,25 @@ mod tests {
     fn read_from_file(path: &str) -> std::io::Result<String> {
         fs::read_to_string(path)
     }
+
+    #[test]
+    fn test_missing_nutrition() {
+        let html = include_str!("test_data/test_missing_nutrition.html");
+        let res = HTMLParser.transform(html, 0).unwrap();
+
+        let meal = res
+            .iter()
+            .find_map(|(_, canteen)| {
+                canteen.lines.iter().find_map(|line| {
+                    line.dishes
+                        .iter()
+                        .find(|meal| meal.name == "Tomaten-Chili-Knoblauchspaghetti mit Tofu")
+                })
+            })
+            .unwrap();
+
+        // dbg!(meal);
+        assert!(meal.env_score.is_some());
+        assert!(meal.nutrition_data.is_some());
+    }
 }
