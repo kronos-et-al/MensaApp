@@ -39,8 +39,8 @@ pub(super) fn admin_router(admin_key: String, command: ArcCommand) -> Router<()>
 
     Router::new()
         .route("/version", get(version))
-        .route("/report/delete_image/:image_id", get(delete_image))
-        .route("/report/verify_image/:image_id", get(verify_image))
+        .route("/report/delete_image/{image_id}", get(delete_image))
+        .route("/report/verify_image/{image_id}", get(verify_image))
         .layer(admin_auth)
         .with_state(command)
 }
