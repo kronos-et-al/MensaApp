@@ -23,7 +23,7 @@ pub struct Canteen {
 }
 
 /// Struct for database-operations. Related to the database entity 'line'.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Line {
     /// Identification of the line
     pub id: Uuid,
@@ -63,7 +63,7 @@ pub struct Meal {
 }
 
 /// This structure is used for database operations. This side structure is based on the database entities 'food', 'foodAllergen' and 'foodAdditive'.
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Side {
     /// Identification of the side.
     pub id: Uuid,

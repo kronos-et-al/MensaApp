@@ -1,9 +1,11 @@
 //! Module responsible for handling database requests for api requests.
-use std::collections::HashMap;
 
-use async_graphql::dataloader::{DataLoader, Loader};
+mod dataloader;
+
+use async_graphql::dataloader::DataLoader;
 use async_trait::async_trait;
 use chrono::{Duration, Local};
+use dataloader::{CanteenDataloader, LineDataLoader, MealDataLoader, MealKey};
 use sqlx::{Pool, Postgres};
 
 use crate::{
@@ -21,6 +23,8 @@ pub struct PersistentRequestData {
     /// Number of weeks, including the current week, we get/have data for.
     max_weeks_data: u32,
     canteen_loader: DataLoader<CanteenDataloader>,
+    line_loader: DataLoader<LineDataLoader>,
+    meal_loader: DataLoader<MealDataLoader>,
 }
 
 impl PersistentRequestData {
@@ -30,34 +34,10 @@ impl PersistentRequestData {
         Self {
             max_weeks_data,
             canteen_loader: DataLoader::new(CanteenDataloader(pool.clone()), tokio::spawn),
+            line_loader: DataLoader::new(LineDataLoader(pool.clone()), tokio::spawn),
+            meal_loader: DataLoader::new(MealDataLoader(pool.clone()), tokio::spawn),
             pool,
         }
-    }
-}
-
-struct CanteenDataloader(Pool<Postgres>);
-
-impl Loader<Uuid> for CanteenDataloader {
-    type Value = Canteen;
-    type Error = DataError;
-    async fn load(
-        &self,
-        keys: &[Uuid],
-    ) -> std::result::Result<HashMap<Uuid, Self::Value>, Self::Error> {
-        sqlx::query_as!(
-            Canteen,
-            "SELECT canteen_id as id, name FROM canteen WHERE canteen_id = ANY ($1)",
-            keys
-        )
-        .fetch_all(&self.0)
-        .await
-        .map(|canteens| {
-            canteens
-                .into_iter()
-                .map(|canteen| (canteen.id, canteen))
-                .collect()
-        })
-        .map_err(Into::into)
     }
 }
 
@@ -79,14 +59,7 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_line(&self, id: Uuid) -> Result<Option<Line>> {
-        sqlx::query_as!(
-            Line,
-            "SELECT line_id as id, name, canteen_id FROM line WHERE line_id = $1",
-            id
-        )
-        .fetch_optional(&self.pool)
-        .await
-        .map_err(Into::into)
+        self.line_loader.load_one(id).await
     }
 
     async fn get_lines(&self, canteen_id: Uuid) -> Result<Vec<Line>> {
@@ -101,41 +74,13 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_meal(&self, id: Uuid, line_id: Uuid, date: Date) -> Result<Option<Meal>> {
-        sqlx::query!(
-            r#"
-            SELECT food_id, name, food_type as "food_type: FoodType",
-                price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,
-                new, frequency, last_served, next_served, average_rating, rating_count
-            FROM meal_detail JOIN food_plan USING (food_id)
-            WHERE food_id = $1 AND line_id = $2 AND serve_date = $3
-            "#,
-            id,
-            line_id,
-            date
-        )
-        .fetch_optional(&self.pool)
-        .await?
-        .map(|m| {
-            Ok(Meal {
-                id: null_error!(m.food_id),
-                line_id: m.line_id,
-                date: m.date,
-                name: null_error!(m.name),
-                food_type: null_error!(m.food_type),
-                price: Price {
-                    price_student: u32::try_from(m.price_student)?,
-                    price_employee: u32::try_from(m.price_employee)?,
-                    price_guest: u32::try_from(m.price_guest)?,
-                    price_pupil: u32::try_from(m.price_pupil)?
-                },
-                frequency: u32::try_from(null_error!(m.frequency))?,
-                new: null_error!(m.new),
-                last_served: m.last_served,
-                next_served: m.next_served,
-                average_rating: null_error!(m.average_rating),
-                rating_count: u32::try_from(null_error!(m.rating_count))?,
+        self.meal_loader
+            .load_one(MealKey {
+                food_id: id,
+                line_id,
+                serve_date: date,
             })
-        }).transpose()
+            .await
     }
 
     async fn get_meals(&self, line_id: Uuid, date: Date) -> Result<Option<Vec<Meal>>> {
