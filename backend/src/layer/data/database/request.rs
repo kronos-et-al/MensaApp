@@ -6,7 +6,9 @@ use async_graphql::dataloader::DataLoader;
 use async_once_cell::OnceCell;
 use async_trait::async_trait;
 use chrono::{Duration, Local, NaiveDate};
-use dataloader::{CanteenDataloader, LineDataLoader, MealDataLoader, MealKey};
+use dataloader::{
+    CanteenDataloader, LineDataLoader, ManyMealsDataLoader, ManyMealsKey, MealDataLoader, MealKey,
+};
 use sqlx::{Pool, Postgres};
 
 use crate::{
@@ -28,6 +30,7 @@ pub struct PersistentRequestData {
     canteen_loader: DataLoader<CanteenDataloader>,
     line_loader: DataLoader<LineDataLoader>,
     meal_loader: DataLoader<MealDataLoader>,
+    many_meals_loader: DataLoader<ManyMealsDataLoader>,
 }
 
 impl PersistentRequestData {
@@ -40,6 +43,7 @@ impl PersistentRequestData {
             canteen_loader: DataLoader::new(CanteenDataloader(pool.clone()), tokio::spawn),
             line_loader: DataLoader::new(LineDataLoader(pool.clone()), tokio::spawn),
             meal_loader: DataLoader::new(MealDataLoader(pool.clone()), tokio::spawn),
+            many_meals_loader: DataLoader::new(ManyMealsDataLoader(pool.clone()), tokio::spawn),
             pool,
         }
     }
@@ -109,43 +113,13 @@ impl RequestDataAccess for PersistentRequestData {
             return Ok(None);
         }
 
-        sqlx::query!(
-            r#"
-            SELECT food_id, name, food_type as "food_type: FoodType",
-                price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,
-                new, frequency, last_served, next_served, average_rating, rating_count
-            FROM meal_detail JOIN food_plan USING (food_id)
-            WHERE line_id = $1 AND serve_date = $2
-            ORDER BY price_student DESC, food_type DESC, food_id
-            "#,
-            line_id,
-            date
-        )
-        .fetch_all(&self.pool)
-        .await?
-        .into_iter()
-        .map(|m| {
-            Ok(Meal {
-                id: null_error!(m.food_id),
-                line_id: m.line_id,
-                date: m.date,
-                name: null_error!(m.name),
-                food_type: null_error!(m.food_type),
-                price: Price {
-                    price_student: u32::try_from(m.price_student)?,
-                    price_employee: u32::try_from(m.price_employee)?,
-                    price_guest: u32::try_from(m.price_guest)?,
-                    price_pupil: u32::try_from(m.price_pupil)?
-                },
-                frequency: u32::try_from(null_error!(m.frequency))?,
-                new: null_error!(m.new),
-                last_served: m.last_served,
-                next_served: m.next_served,
-                average_rating: null_error!(m.average_rating),
-                rating_count: u32::try_from(null_error!(m.rating_count))?,
+        self.many_meals_loader
+            .load_one(ManyMealsKey {
+                line_id,
+                serve_date: date,
             })
-        })
-        .collect::<Result<Vec<_>>>().map(Some)
+            .await
+            .map(|vec| Some(vec.unwrap_or_default())) // returning an empty list instead of none is important here!
     }
 
     async fn get_sides(&self, line_id: Uuid, date: Date) -> Result<Vec<Side>> {
