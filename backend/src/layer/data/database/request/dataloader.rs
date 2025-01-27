@@ -7,16 +7,19 @@ use uuid::Uuid;
 use crate::interface::persistent_data::Result;
 use crate::util::{FoodType, Price};
 
-use crate::{interface::persistent_data::{model::{Canteen, Line, Meal}, DataError}, util::Date};
-
-
-
+use crate::{
+    interface::persistent_data::{
+        model::{Canteen, Line, Meal},
+        DataError,
+    },
+    util::Date,
+};
 
 pub(super) struct CanteenDataloader(pub Pool<Postgres>);
 impl Loader<Uuid> for CanteenDataloader {
     type Value = Canteen;
     type Error = DataError;
-    async fn load( 
+    async fn load(
         &self,
         keys: &[Uuid],
     ) -> std::result::Result<HashMap<Uuid, Self::Value>, Self::Error> {
@@ -52,8 +55,6 @@ impl Loader<Uuid> for LineDataLoader {
     }
 }
 
-
-
 pub(super) struct MealDataLoader(pub Pool<Postgres>);
 #[derive(Clone, PartialEq, Eq, Hash, sqlx::Type)]
 pub(super) struct MealKey {
@@ -84,7 +85,7 @@ impl Loader<MealKey> for MealDataLoader {
         .await?
         .into_iter()
         .map(|m| {
-            Ok(( MealKey {food_id: m.food_id, line_id: m.line_id, serve_date: m.date}, 
+            Ok(( MealKey {food_id: m.food_id, line_id: m.line_id, serve_date: m.date},
                 Meal {
                 id: m.food_id,
                 line_id: m.line_id,

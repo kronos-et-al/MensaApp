@@ -3,8 +3,9 @@
 mod dataloader;
 
 use async_graphql::dataloader::DataLoader;
+use async_once_cell::OnceCell;
 use async_trait::async_trait;
-use chrono::{Duration, Local};
+use chrono::{Duration, Local, NaiveDate};
 use dataloader::{CanteenDataloader, LineDataLoader, MealDataLoader, MealKey};
 use sqlx::{Pool, Postgres};
 
@@ -22,6 +23,8 @@ pub struct PersistentRequestData {
     pool: Pool<Postgres>,
     /// Number of weeks, including the current week, we get/have data for.
     max_weeks_data: u32,
+    /// Date of first meal plan entry, to show "no data" on dates before.
+    first_date: OnceCell<Option<NaiveDate>>,
     canteen_loader: DataLoader<CanteenDataloader>,
     line_loader: DataLoader<LineDataLoader>,
     meal_loader: DataLoader<MealDataLoader>,
@@ -33,6 +36,7 @@ impl PersistentRequestData {
     pub fn new(pool: Pool<Postgres>, max_weeks_data: u32) -> Self {
         Self {
             max_weeks_data,
+            first_date: OnceCell::new(),
             canteen_loader: DataLoader::new(CanteenDataloader(pool.clone()), tokio::spawn),
             line_loader: DataLoader::new(LineDataLoader(pool.clone()), tokio::spawn),
             meal_loader: DataLoader::new(MealDataLoader(pool.clone()), tokio::spawn),
@@ -94,9 +98,13 @@ impl RequestDataAccess for PersistentRequestData {
         }
 
         // If date is to far in the past, return `None`.
-        let first_date = sqlx::query_scalar!("SELECT MIN(serve_date) FROM food_plan")
-            .fetch_one(&self.pool)
+        let first_date = self
+            .first_date
+            .get_or_try_init(
+                sqlx::query_scalar!("SELECT MIN(serve_date) FROM food_plan").fetch_one(&self.pool),
+            )
             .await?;
+
         if first_date.map_or(true, |first_date| first_date > date) {
             return Ok(None);
         }
