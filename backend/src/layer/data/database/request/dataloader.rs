@@ -4,6 +4,7 @@ use async_graphql::dataloader::Loader;
 use sqlx::{Pool, Postgres};
 use uuid::Uuid;
 
+use crate::interface::persistent_data::model::{Image, Side};
 use crate::interface::persistent_data::Result;
 use crate::util::{FoodType, Price};
 
@@ -107,24 +108,23 @@ impl Loader<MealKey> for MealDataLoader {
             }))
         })
         .collect::<Result<HashMap<_,_>>>()
-        .map_err(Into::into)
     }
 }
 
 
 pub(super) struct ManyMealsDataLoader(pub Pool<Postgres>);
 #[derive(Clone, PartialEq, Eq, Hash, sqlx::Type)]
-pub(super) struct ManyMealsKey {
+pub(super) struct LineDishKey {
     pub(super) line_id: Uuid,
     pub(super) serve_date: Date,
 }
-impl Loader<ManyMealsKey> for ManyMealsDataLoader {
+impl Loader<LineDishKey> for ManyMealsDataLoader {
     type Value = Vec<Meal>;
     type Error = DataError;
     async fn load(
         &self,
-        keys: &[ManyMealsKey],
-    ) -> std::result::Result<HashMap<ManyMealsKey, Self::Value>, Self::Error> {
+        keys: &[LineDishKey],
+    ) -> std::result::Result<HashMap<LineDishKey, Self::Value>, Self::Error> {
         sqlx::query!(
             r#"
             SELECT food_id as "food_id!", name as "name!", food_type as "food_type!: FoodType",
@@ -140,7 +140,7 @@ impl Loader<ManyMealsKey> for ManyMealsDataLoader {
         .fetch_all(&self.0)
         .await?
         .into_iter().try_fold( HashMap::<_,Vec<_>>::new(), |mut hmap, m| {
-                hmap.entry(ManyMealsKey {line_id: m.line_id, serve_date: m.date}).or_default().push( 
+                hmap.entry(LineDishKey {line_id: m.line_id, serve_date: m.date}).or_default().push( 
                     Meal {
                     id: m.food_id,
                     line_id: m.line_id,
@@ -163,7 +163,90 @@ impl Loader<ManyMealsKey> for ManyMealsDataLoader {
 
                 Result::<_>::Ok(hmap)
         })
-        .map_err(Into::into)
+    }
+}
+
+
+pub(super) struct SidesLoader(pub Pool<Postgres>);
+impl Loader<LineDishKey> for SidesLoader {
+    type Value = Vec<Side>;
+    type Error = DataError;
+    async fn load(
+        &self,
+        keys: &[LineDishKey],
+    ) -> std::result::Result<HashMap<LineDishKey, Self::Value>, Self::Error> {
+        sqlx::query!(
+            r#"
+            SELECT line_id, serve_date, food_id, name, food_type as "food_type: FoodType", 
+            price_student, price_employee, price_guest, price_pupil
+            FROM food JOIN food_plan USING (food_id)
+            WHERE ROW(line_id, serve_date) IN (SELECT a, b FROM UNNEST($1::uuid[], $2::date[]) x(a,b))
+                AND food_id NOT IN (SELECT food_id FROM meal)
+            ORDER BY food_id
+            "#,
+            &keys.iter().map(|k| k.line_id).collect::<Vec<_>>(),
+            &keys.iter().map(|k| k.serve_date).collect::<Vec<_>>()
+        )
+        .fetch_all(&self.0)
+        .await?
+        .into_iter()
+        .try_fold( HashMap::<_,Vec<_>>::new(), |mut hmap, side| {
+            hmap.entry(LineDishKey {line_id: side.line_id, serve_date: side.serve_date}).or_default().push( 
+                Side {
+                id: side.food_id,
+                food_type: side.food_type,
+                name: side.name,
+                price: Price {
+                    price_student: u32::try_from(side.price_student)?,
+                    price_employee: u32::try_from(side.price_employee)?,
+                    price_guest: u32::try_from(side.price_guest)?,
+                    price_pupil: u32::try_from(side.price_pupil)?,
+                },
+            });
+            Ok(hmap)
+        })
+    }
+}
+
+
+pub(super) struct ImageLoader(pub Pool<Postgres>);
+impl Loader<Uuid> for ImageLoader {
+    type Value = Vec<Image>;
+    type Error = DataError;
+    async fn load(
+        &self,
+        keys: &[Uuid],
+    ) -> std::result::Result<HashMap<Uuid, Self::Value>, Self::Error> {
+        sqlx::query!(
+            r#"
+                SELECT image_id as "image_id!", rank as "rank!", upvotes as "upvotes!", downvotes as "downvotes!", approved as "approved!", 
+                    report_count as "report_count!", link_date as "upload_date!", food_id as "meal_id!", 
+                    array_agg(r.user_id) FILTER (WHERE r.user_id IS NOT NULL) as "reporting_users!"
+                FROM image_detail LEFT JOIN image_report r USING (image_id)
+                WHERE currently_visible AND food_id = ANY ($1)
+                GROUP BY image_id, rank, upvotes, downvotes, approved, report_count, link_date, food_id
+                ORDER BY rank DESC, image_id
+            "#,
+            &keys
+        )
+        .fetch_all(&self.0)
+        .await?
+        .into_iter()
+        .try_fold(HashMap::<_,Vec<_>>::new(), |mut h, m| {
+            h.entry(  m.meal_id).or_default().push(
+                Image {
+                    id: m.image_id,
+                    rank: m.rank,
+                    upvotes: u32::try_from(m.upvotes)?,
+                    downvotes: u32::try_from(m.downvotes)?,
+                    approved: m.approved,
+                    upload_date: m.upload_date,
+                    report_count: u32::try_from(m.report_count)?,
+                    meal_id: m.meal_id,
+                    reporting_users: Some(m.reporting_users)
+            });
+            Ok(h)
+        })
     }
 }
 

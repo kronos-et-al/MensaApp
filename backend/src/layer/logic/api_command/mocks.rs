@@ -37,6 +37,7 @@ impl CommandDataAccess for CommandDatabaseMock {
                 rank: 0.1,
                 id: Uuid::default(),
                 meal_id: Uuid::default(),
+                reporting_users: Default::default()
             },
             meal_name: "Happy Meal".into(),
             other_image_urls: vec![],

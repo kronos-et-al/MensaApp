@@ -7,7 +7,8 @@ use async_once_cell::OnceCell;
 use async_trait::async_trait;
 use chrono::{Duration, Local, NaiveDate};
 use dataloader::{
-    CanteenDataloader, LineDataLoader, ManyMealsDataLoader, ManyMealsKey, MealDataLoader, MealKey,
+    CanteenDataloader, ImageLoader, LineDataLoader, LineDishKey, ManyMealsDataLoader,
+    MealDataLoader, MealKey, SidesLoader,
 };
 use sqlx::{Pool, Postgres};
 
@@ -16,8 +17,7 @@ use crate::{
         model::{Canteen, EnvironmentInfo, Image, Line, Meal, Side},
         DataError, RequestDataAccess, Result,
     },
-    null_error,
-    util::{Additive, Allergen, Date, FoodType, NutritionData, Price, Uuid},
+    util::{Additive, Allergen, Date, NutritionData, Uuid},
 };
 
 /// Class implementing all database requests arising from graphql manipulations.
@@ -31,6 +31,8 @@ pub struct PersistentRequestData {
     line_loader: DataLoader<LineDataLoader>,
     meal_loader: DataLoader<MealDataLoader>,
     many_meals_loader: DataLoader<ManyMealsDataLoader>,
+    sides_loader: DataLoader<SidesLoader>,
+    image_loader: DataLoader<ImageLoader>,
 }
 
 impl PersistentRequestData {
@@ -44,6 +46,8 @@ impl PersistentRequestData {
             line_loader: DataLoader::new(LineDataLoader(pool.clone()), tokio::spawn),
             meal_loader: DataLoader::new(MealDataLoader(pool.clone()), tokio::spawn),
             many_meals_loader: DataLoader::new(ManyMealsDataLoader(pool.clone()), tokio::spawn),
+            sides_loader: DataLoader::new(SidesLoader(pool.clone()), tokio::spawn),
+            image_loader: DataLoader::new(ImageLoader(pool.clone()), tokio::spawn),
             pool,
         }
     }
@@ -114,7 +118,7 @@ impl RequestDataAccess for PersistentRequestData {
         }
 
         self.many_meals_loader
-            .load_one(ManyMealsKey {
+            .load_one(LineDishKey {
                 line_id,
                 serve_date: date,
             })
@@ -123,34 +127,13 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_sides(&self, line_id: Uuid, date: Date) -> Result<Vec<Side>> {
-        sqlx::query!(
-            r#"
-            SELECT food_id, name, food_type as "food_type: FoodType", 
-            price_student, price_employee, price_guest, price_pupil
-            FROM food JOIN food_plan USING (food_id)
-            WHERE line_id = $1 AND serve_date = $2 AND food_id NOT IN (SELECT food_id FROM meal)
-            ORDER BY food_id
-            "#,
-            line_id,
-            date
-        )
-        .fetch_all(&self.pool)
-        .await?
-        .into_iter()
-        .map(|side| {
-            Ok(Side {
-                id: side.food_id,
-                food_type: side.food_type,
-                name: side.name,
-                price: Price {
-                    price_student: u32::try_from(side.price_student)?,
-                    price_employee: u32::try_from(side.price_employee)?,
-                    price_guest: u32::try_from(side.price_guest)?,
-                    price_pupil: u32::try_from(side.price_pupil)?,
-                },
+        self.sides_loader
+            .load_one(LineDishKey {
+                line_id,
+                serve_date: date,
             })
-        })
-        .collect::<Result<Vec<_>>>()
+            .await
+            .map(Option::unwrap_or_default)
     }
 
     async fn get_visible_images(
@@ -158,39 +141,21 @@ impl RequestDataAccess for PersistentRequestData {
         meal_id: Uuid,
         client_id: Option<Uuid>,
     ) -> Result<Vec<Image>> {
-        sqlx::query!(
-            "
-            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
-                approved, report_count, link_date, food_id
-            FROM (
-                --- not reported by user
-                SELECT image_id 
-                FROM image LEFT JOIN image_report r USING (image_id)
-                GROUP BY image_id
-                HAVING COUNT(*) FILTER (WHERE r.user_id = $2) = 0
-            ) not_reported JOIN image_detail USING (image_id)
-            WHERE currently_visible AND food_id = $1
-            ORDER BY rank DESC, image_id
-            ",
-            meal_id,
-            client_id
-        )
-        .fetch_all(&self.pool)
-        .await?
-        .into_iter()
-        .map(|r| {
-            Ok(Image {
-                id: r.image_id,
-                rank: null_error!(r.rank),
-                downvotes: u32::try_from(null_error!(r.downvotes))?,
-                upvotes: u32::try_from(null_error!(r.upvotes))?,
-                approved: null_error!(r.approved),
-                report_count: u32::try_from(null_error!(r.report_count))?,
-                upload_date: null_error!(r.link_date),
-                meal_id: null_error!(r.food_id),
+        Ok(self
+            .image_loader
+            .load_one(meal_id)
+            .await?
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|im| {
+                im.reporting_users.as_ref().is_none_or(|users| {
+                    let Some(client_id) = client_id else {
+                        return true;
+                    };
+                    !users.contains(&client_id)
+                })
             })
-        })
-        .collect::<Result<Vec<_>>>()
+            .collect())
     }
 
     async fn get_personal_rating(&self, meal_id: Uuid, client_id: Uuid) -> Result<Option<u32>> {
@@ -301,6 +266,8 @@ impl RequestDataAccess for PersistentRequestData {
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used)]
+    use crate::util::{FoodType, Price};
+
     use super::*;
     use chrono::Duration;
     use futures::future;
@@ -507,11 +474,12 @@ mod tests {
             upload_date: Local::now().date_naive(),
             report_count: 0,
             meal_id: Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
+            reporting_users: Default::default(),
         };
         let image2 = Image {
             id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
             approved: false,
-            ..image1
+            ..image1.clone()
         };
         vec![image1, image2]
     }

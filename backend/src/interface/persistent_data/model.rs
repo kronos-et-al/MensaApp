@@ -94,6 +94,8 @@ pub struct Image {
     pub report_count: u32,
     /// Id of the meal this image belongs to.
     pub meal_id: Uuid,
+    /// User ids of users that reported this image. May not be filled with data.
+    pub reporting_users: Option<Vec<Uuid>>,
 }
 
 /// This structure contains all information of an image necessary to file a report.
