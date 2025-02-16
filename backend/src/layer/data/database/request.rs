@@ -7,8 +7,7 @@ use async_once_cell::OnceCell;
 use async_trait::async_trait;
 use chrono::{Duration, Local, NaiveDate};
 use dataloader::{
-    CanteenDataloader, ImageLoader, LineDataLoader, LineDishKey, ManyMealsDataLoader,
-    MealDataLoader, MealKey, SidesLoader,
+    CanteenDataloader, ImageLoader, LineDataLoader, LineDishKey, ManyMealsDataLoader, MealDataLoader, MealKey, RatingKey, RatingLoader, SidesLoader
 };
 use sqlx::{Pool, Postgres};
 
@@ -33,6 +32,7 @@ pub struct PersistentRequestData {
     many_meals_loader: DataLoader<ManyMealsDataLoader>,
     sides_loader: DataLoader<SidesLoader>,
     image_loader: DataLoader<ImageLoader>,
+    rating_loader: DataLoader<RatingLoader>
 }
 
 impl PersistentRequestData {
@@ -48,6 +48,7 @@ impl PersistentRequestData {
             many_meals_loader: DataLoader::new(ManyMealsDataLoader(pool.clone()), tokio::spawn),
             sides_loader: DataLoader::new(SidesLoader(pool.clone()), tokio::spawn),
             image_loader: DataLoader::new(ImageLoader(pool.clone()), tokio::spawn),
+            rating_loader: DataLoader::new(RatingLoader(pool.clone()), tokio::spawn),
             pool,
         }
     }
@@ -104,15 +105,15 @@ impl RequestDataAccess for PersistentRequestData {
         if date >= first_unknown_day {
             return Ok(None);
         }
-
-        // If date is to far in the past, return `None`.
+        
         let first_date = self
-            .first_date
-            .get_or_try_init(
-                sqlx::query_scalar!("SELECT MIN(serve_date) FROM food_plan").fetch_one(&self.pool),
-            )
-            .await?;
-
+        .first_date
+        .get_or_try_init(
+            sqlx::query_scalar!("SELECT MIN(serve_date) FROM food_plan").fetch_one(&self.pool),
+        )
+        .await?;
+    
+        // If date is to far in the past, return `None`.
         if first_date.map_or(true, |first_date| first_date > date) {
             return Ok(None);
         }
@@ -158,16 +159,8 @@ impl RequestDataAccess for PersistentRequestData {
             .collect())
     }
 
-    async fn get_personal_rating(&self, meal_id: Uuid, client_id: Uuid) -> Result<Option<u32>> {
-        let res = sqlx::query_scalar!(
-            "SELECT rating FROM meal_rating WHERE food_id = $1 AND user_id = $2",
-            meal_id,
-            client_id
-        )
-        .fetch_optional(&self.pool)
-        .await?;
-
-        res.map(u32::try_from).transpose().map_err(Into::into)
+    async fn get_personal_rating(&self, food_id: Uuid, client_id: Uuid) -> Result<Option<u32>> {
+        self.rating_loader.load_one(RatingKey{food_id, user_id: client_id}).await
     }
 
     async fn get_personal_upvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool> {

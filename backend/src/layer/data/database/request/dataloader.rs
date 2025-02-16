@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use async_graphql::dataloader::Loader;
+use futures::{StreamExt, TryStreamExt};
 use sqlx::{Pool, Postgres};
 use uuid::Uuid;
 
@@ -247,6 +248,35 @@ impl Loader<Uuid> for ImageLoader {
             });
             Ok(h)
         })
+    }
+}
+
+pub(super) struct RatingLoader(pub Pool<Postgres>);
+#[derive(Clone, PartialEq, Eq, Hash, sqlx::Type)]
+pub(super) struct RatingKey {
+    pub(super) food_id: Uuid,
+    pub(super) user_id: Uuid,
+}
+impl Loader<RatingKey> for RatingLoader {
+    type Value = u32;
+    type Error = DataError;
+    async fn load(
+        &self,
+        keys: &[RatingKey],
+    ) -> std::result::Result<HashMap<RatingKey, Self::Value>, Self::Error> {
+        sqlx::query!(
+            r#"
+               SELECT rating, food_id, user_id FROM meal_rating
+               WHERE ROW(food_id, user_id) IN (SELECT food_id, user_id FROM UNNEST($1::uuid[], $2::uuid[]) x(food_id, user_id))
+            "#,
+            &keys.iter().map(|k| k.food_id).collect::<Vec<_>>(),
+            &keys.iter().map(|k| k.user_id).collect::<Vec<_>>()
+        )
+        .fetch(&self.0).map(|k| {
+            let k = k?;
+            Ok((RatingKey{food_id: k.food_id, user_id: k.user_id}, u32::try_from(k.rating)?))
+        }).try_collect()
+        .await
     }
 }
 
