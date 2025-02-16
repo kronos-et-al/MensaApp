@@ -36,6 +36,22 @@ impl Loader<Uuid> for CanteenDataloader {
         .map_err(Into::into)
     }
 }
+impl Loader<()> for CanteenDataloader {
+    type Value = Vec<Canteen>;
+    type Error = DataError;
+    async fn load(
+        &self,
+        _keys: &[()],
+    ) -> std::result::Result<HashMap<(), Self::Value>, Self::Error> {
+        let canteens = sqlx::query_as!(
+            Canteen,
+            "SELECT canteen_id as id, name FROM canteen ORDER BY position"
+        )
+        .fetch_all(&self.0)
+        .await?;
+        Ok(HashMap::from([((), canteens)]))
+    }
+}
 
 pub(super) struct LineDataLoader(pub Pool<Postgres>);
 impl Loader<Uuid> for LineDataLoader {
@@ -54,6 +70,25 @@ impl Loader<Uuid> for LineDataLoader {
         .await
         .map(|values| values.into_iter().map(|value| (value.id, value)).collect())
         .map_err(Into::into)
+    }
+}
+
+pub(super) struct CanteenLinesLoader(pub Pool<Postgres>);
+impl Loader<Uuid> for CanteenLinesLoader {
+    type Value = Vec<Line>;
+    type Error = DataError;
+    async fn load(
+        &self,
+        keys: &[Uuid],
+    ) -> std::result::Result<HashMap<Uuid, Self::Value>, Self::Error> {
+        sqlx::query_as!(Line,
+            "SELECT line_id as id, name, canteen_id FROM line WHERE canteen_id = ANY($1) ORDER BY position",
+            keys
+        )
+        .fetch(&self.0).try_fold(HashMap::<_,Vec<_>>::new(), |mut h, m| async move {
+            h.entry(m.canteen_id).or_default().push(m);
+            Ok(h)
+        }).await.map_err(Into::into)
     }
 }
 

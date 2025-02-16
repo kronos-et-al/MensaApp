@@ -7,16 +7,17 @@ use async_once_cell::OnceCell;
 use async_trait::async_trait;
 use chrono::{Duration, Local, NaiveDate};
 use dataloader::{
-    AdditiveLoader, AllergenLoader, CanteenDataloader, DownvoteKey, EnvironmentInfoLoader,
-    ImageLoader, ImageVoteLoader, LineDataLoader, LineDishKey, ManyMealsDataLoader, MealDataLoader,
-    MealKey, NutritionDataLoader, RatingKey, RatingLoader, SidesLoader, UpvoteKey,
+    AdditiveLoader, AllergenLoader, CanteenDataloader, CanteenLinesLoader, DownvoteKey,
+    EnvironmentInfoLoader, ImageLoader, ImageVoteLoader, LineDataLoader, LineDishKey,
+    ManyMealsDataLoader, MealDataLoader, MealKey, NutritionDataLoader, RatingKey, RatingLoader,
+    SidesLoader, UpvoteKey,
 };
 use sqlx::{Pool, Postgres};
 
 use crate::{
     interface::persistent_data::{
         model::{Canteen, EnvironmentInfo, Image, Line, Meal, Side},
-        RequestDataAccess, Result,
+        DataError, RequestDataAccess, Result,
     },
     util::{Additive, Allergen, Date, NutritionData, Uuid},
 };
@@ -30,6 +31,7 @@ pub struct PersistentRequestData {
     first_date: OnceCell<Option<NaiveDate>>,
     canteen_loader: DataLoader<CanteenDataloader>,
     line_loader: DataLoader<LineDataLoader>,
+    canteen_line_loader: DataLoader<CanteenLinesLoader>,
     meal_loader: DataLoader<MealDataLoader>,
     many_meals_loader: DataLoader<ManyMealsDataLoader>,
     sides_loader: DataLoader<SidesLoader>,
@@ -51,6 +53,7 @@ impl PersistentRequestData {
             first_date: OnceCell::new(),
             canteen_loader: DataLoader::new(CanteenDataloader(pool.clone()), tokio::spawn),
             line_loader: DataLoader::new(LineDataLoader(pool.clone()), tokio::spawn),
+            canteen_line_loader: DataLoader::new(CanteenLinesLoader(pool.clone()), tokio::spawn),
             meal_loader: DataLoader::new(MealDataLoader(pool.clone()), tokio::spawn),
             many_meals_loader: DataLoader::new(ManyMealsDataLoader(pool.clone()), tokio::spawn),
             sides_loader: DataLoader::new(SidesLoader(pool.clone()), tokio::spawn),
@@ -77,13 +80,10 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_canteens(&self) -> Result<Vec<Canteen>> {
-        sqlx::query_as!(
-            Canteen,
-            "SELECT canteen_id as id, name FROM canteen ORDER BY position"
-        )
-        .fetch_all(&self.pool)
-        .await
-        .map_err(Into::into)
+        self.canteen_loader
+            .load_one(())
+            .await
+            .and_then(|c| c.ok_or(DataError::NoSuchItem))
     }
 
     async fn get_line(&self, id: Uuid) -> Result<Option<Line>> {
@@ -91,14 +91,10 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_lines(&self, canteen_id: Uuid) -> Result<Vec<Line>> {
-        sqlx::query_as!(
-            Line,
-            "SELECT line_id as id, name, canteen_id FROM line WHERE canteen_id = $1 ORDER BY position",
-            canteen_id
-        )
-        .fetch_all(&self.pool)
-        .await
-        .map_err(Into::into)
+        self.canteen_line_loader
+            .load_one(canteen_id)
+            .await
+            .map(Option::unwrap_or_default)
     }
 
     async fn get_meal(&self, id: Uuid, line_id: Uuid, date: Date) -> Result<Option<Meal>> {
