@@ -16,7 +16,7 @@ use sqlx::{Pool, Postgres};
 use crate::{
     interface::persistent_data::{
         model::{Canteen, EnvironmentInfo, Image, Line, Meal, Side},
-        DataError, RequestDataAccess, Result,
+        RequestDataAccess, Result,
     },
     util::{Additive, Allergen, Date, NutritionData, Uuid},
 };

@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use async_graphql::dataloader::Loader;
-use async_graphql::Data;
 use futures::{StreamExt, TryStreamExt};
 use sqlx::{Pool, Postgres};
 use uuid::Uuid;

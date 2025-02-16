@@ -59,7 +59,7 @@ impl CommandDataAccess for PersistentCommandData {
                 upvotes: u32::try_from(null_error!(record.upvotes))?,
                 id: null_error!(record.image_id),
                 meal_id: null_error!(record.food_id),
-                reporting_users: Default::default(),
+                reporting_users: Option::default(),
             },
             meal_name: record.meal_name,
             other_image_urls,
@@ -233,7 +233,7 @@ mod test {
                 upload_date: Local::now().date_naive(),
                 report_count: 0,
                 meal_id: Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
-                reporting_users: Default::default(),
+                reporting_users: Option::default(),
             },
             meal_name: "Geflügel - Cevapcici, Ajvar, Djuvec Reis".into(),
             other_image_urls: vec![
