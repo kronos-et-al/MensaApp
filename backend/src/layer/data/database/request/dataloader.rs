@@ -221,7 +221,7 @@ impl Loader<Uuid> for ImageLoader {
             r#"
                 SELECT image_id as "image_id!", rank as "rank!", upvotes as "upvotes!", downvotes as "downvotes!", approved as "approved!", 
                     report_count as "report_count!", link_date as "upload_date!", food_id as "meal_id!", 
-                    array_agg(r.user_id) FILTER (WHERE r.user_id IS NOT NULL) as "reporting_users!"
+                    COALESCE(array_agg(r.user_id) FILTER (WHERE r.user_id IS NOT NULL), ARRAY[]::uuid[]) as "reporting_users!"
                 FROM image_detail LEFT JOIN image_report r USING (image_id)
                 WHERE currently_visible AND food_id = ANY ($1)
                 GROUP BY image_id, rank, upvotes, downvotes, approved, report_count, link_date, food_id
@@ -243,7 +243,7 @@ impl Loader<Uuid> for ImageLoader {
                     upload_date: m.upload_date,
                     report_count: u32::try_from(m.report_count)?,
                     meal_id: m.meal_id,
-                    reporting_users: Some(m.reporting_users)
+                    reporting_users: Some(m.reporting_users) // todo maybe put into outer tuple instead modifying image struct and carrying these additional arrays everywhere. Overhead?
             });
             Ok(h)
         })

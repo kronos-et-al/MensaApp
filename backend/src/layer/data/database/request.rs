@@ -462,6 +462,15 @@ mod tests {
                 .unwrap(),
             vec![]
         );
+
+        assert_eq!(
+            request
+                .get_visible_images(meal_id, None)
+                .await
+                .unwrap()
+                .len(),
+            3
+        );
     }
 
     fn provide_dummy_images() -> Vec<Image> {
@@ -474,7 +483,7 @@ mod tests {
             upload_date: Local::now().date_naive(),
             report_count: 0,
             meal_id: Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
-            reporting_users: Default::default(),
+            reporting_users: Some(Vec::new()),
         };
         let image2 = Image {
             id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
