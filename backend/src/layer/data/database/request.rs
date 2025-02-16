@@ -7,7 +7,9 @@ use async_once_cell::OnceCell;
 use async_trait::async_trait;
 use chrono::{Duration, Local, NaiveDate};
 use dataloader::{
-    AdditiveLoader, AllergenLoader, CanteenDataloader, DownvoteKey, ImageLoader, ImageVoteLoader, LineDataLoader, LineDishKey, ManyMealsDataLoader, MealDataLoader, MealKey, RatingKey, RatingLoader, SidesLoader, UpvoteKey
+    AdditiveLoader, AllergenLoader, CanteenDataloader, DownvoteKey, EnvironmentInfoLoader,
+    ImageLoader, ImageVoteLoader, LineDataLoader, LineDishKey, ManyMealsDataLoader, MealDataLoader,
+    MealKey, NutritionDataLoader, RatingKey, RatingLoader, SidesLoader, UpvoteKey,
 };
 use sqlx::{Pool, Postgres};
 
@@ -36,6 +38,8 @@ pub struct PersistentRequestData {
     image_vote_loader: DataLoader<ImageVoteLoader>,
     additive_loader: DataLoader<AdditiveLoader>,
     allergen_loader: DataLoader<AllergenLoader>,
+    environment_info_loader: DataLoader<EnvironmentInfoLoader>,
+    nutrition_data_loader: DataLoader<NutritionDataLoader>,
 }
 
 impl PersistentRequestData {
@@ -55,6 +59,11 @@ impl PersistentRequestData {
             image_vote_loader: DataLoader::new(ImageVoteLoader(pool.clone()), tokio::spawn),
             additive_loader: DataLoader::new(AdditiveLoader(pool.clone()), tokio::spawn),
             allergen_loader: DataLoader::new(AllergenLoader(pool.clone()), tokio::spawn),
+            nutrition_data_loader: DataLoader::new(NutritionDataLoader(pool.clone()), tokio::spawn),
+            environment_info_loader: DataLoader::new(
+                EnvironmentInfoLoader(pool.clone()),
+                tokio::spawn,
+            ),
             pool,
         }
     }
@@ -111,14 +120,14 @@ impl RequestDataAccess for PersistentRequestData {
         if date >= first_unknown_day {
             return Ok(None);
         }
-        
+
         let first_date = self
-        .first_date
-        .get_or_try_init(
-            sqlx::query_scalar!("SELECT MIN(serve_date) FROM food_plan").fetch_one(&self.pool),
-        )
-        .await?;
-    
+            .first_date
+            .get_or_try_init(
+                sqlx::query_scalar!("SELECT MIN(serve_date) FROM food_plan").fetch_one(&self.pool),
+            )
+            .await?;
+
         // If date is to far in the past, return `None`.
         if first_date.map_or(true, |first_date| first_date > date) {
             return Ok(None);
@@ -166,71 +175,54 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_personal_rating(&self, food_id: Uuid, client_id: Uuid) -> Result<Option<u32>> {
-        self.rating_loader.load_one(RatingKey{food_id, user_id: client_id}).await
+        self.rating_loader
+            .load_one(RatingKey {
+                food_id,
+                user_id: client_id,
+            })
+            .await
     }
 
     async fn get_personal_upvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool> {
-        self.image_vote_loader.load_one(UpvoteKey{image_id, user_id: client_id}).await.map(|o| o.is_some())
+        self.image_vote_loader
+            .load_one(UpvoteKey {
+                image_id,
+                user_id: client_id,
+            })
+            .await
+            .map(|o| o.is_some())
     }
 
     async fn get_personal_downvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool> {
-        self.image_vote_loader.load_one(DownvoteKey{image_id, user_id: client_id}).await.map(|o| o.is_some())
+        self.image_vote_loader
+            .load_one(DownvoteKey {
+                image_id,
+                user_id: client_id,
+            })
+            .await
+            .map(|o| o.is_some())
     }
 
     async fn get_additives(&self, food_id: Uuid) -> Result<Vec<Additive>> {
-        self.additive_loader.load_one(food_id).await.map(Option::unwrap_or_default)
+        self.additive_loader
+            .load_one(food_id)
+            .await
+            .map(Option::unwrap_or_default)
     }
 
     async fn get_allergens(&self, food_id: Uuid) -> Result<Vec<Allergen>> {
-        self.allergen_loader.load_one(food_id).await.map(Option::unwrap_or_default)
+        self.allergen_loader
+            .load_one(food_id)
+            .await
+            .map(Option::unwrap_or_default)
     }
 
     async fn get_nutrition_data(&self, food_id: Uuid) -> Result<Option<NutritionData>> {
-        let res = sqlx::query!(
-            r#"SELECT energy, protein, carbohydrates, sugar, fat, saturated_fat, salt FROM food_nutrition_data WHERE food_id = $1"#,
-            food_id
-        ).fetch_optional(&self.pool)
-        .await?;
-        let result = match res {
-            Some(res) => Some(NutritionData {
-                energy: u32::try_from(res.energy)?,
-                protein: u32::try_from(res.protein)?,
-                carbohydrates: u32::try_from(res.carbohydrates)?,
-                sugar: u32::try_from(res.sugar)?,
-                fat: u32::try_from(res.fat)?,
-                saturated_fat: u32::try_from(res.saturated_fat)?,
-                salt: u32::try_from(res.salt)?,
-            }),
-            None => None,
-        };
-        Ok(result)
+        self.nutrition_data_loader.load_one(food_id).await
     }
 
     async fn get_environment_information(&self, food_id: Uuid) -> Result<Option<EnvironmentInfo>> {
-        let res = sqlx::query!(
-            r#"SELECT co2_rating, co2_value, water_rating, water_value, animal_welfare_rating, rainforest_rating, max_rating FROM food_env_score WHERE food_id = $1"#,
-            food_id
-        ).fetch_optional(&self.pool).await?;
-        if let Some(res) = res {
-            let co2_rating = u32::try_from(res.co2_rating)?;
-            let water_rating = u32::try_from(res.water_rating)?;
-            let animal_welfare_rating = u32::try_from(res.animal_welfare_rating)?;
-            let rainforest_rating = u32::try_from(res.rainforest_rating)?;
-            let average_rating =
-                (co2_rating + water_rating + animal_welfare_rating + rainforest_rating) / 4;
-            Ok(Some(EnvironmentInfo {
-                average_rating,
-                co2_rating,
-                co2_value: u32::try_from(res.co2_value)?,
-                water_rating,
-                water_value: u32::try_from(res.water_value)?,
-                animal_welfare_rating,
-                rainforest_rating,
-                max_rating: u32::try_from(res.max_rating)?,
-            }))
-        } else {
-            Ok(None)
-        }
+        self.environment_info_loader.load_one(food_id).await
     }
 }
 

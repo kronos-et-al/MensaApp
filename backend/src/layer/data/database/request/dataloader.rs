@@ -1,13 +1,14 @@
 use std::collections::HashMap;
 
 use async_graphql::dataloader::Loader;
+use async_graphql::Data;
 use futures::{StreamExt, TryStreamExt};
 use sqlx::{Pool, Postgres};
 use uuid::Uuid;
 
-use crate::interface::persistent_data::model::{Image, Side};
+use crate::interface::persistent_data::model::{EnvironmentInfo, Image, Side};
 use crate::interface::persistent_data::Result;
-use crate::util::{Additive, Allergen, FoodType, Price};
+use crate::util::{Additive, Allergen, FoodType, NutritionData, Price};
 
 use crate::{
     interface::persistent_data::{
@@ -112,7 +113,6 @@ impl Loader<MealKey> for MealDataLoader {
     }
 }
 
-
 pub(super) struct ManyMealsDataLoader(pub Pool<Postgres>);
 #[derive(Clone, PartialEq, Eq, Hash, sqlx::Type)]
 pub(super) struct LineDishKey {
@@ -141,7 +141,7 @@ impl Loader<LineDishKey> for ManyMealsDataLoader {
         .fetch_all(&self.0)
         .await?
         .into_iter().try_fold( HashMap::<_,Vec<_>>::new(), |mut hmap, m| {
-                hmap.entry(LineDishKey {line_id: m.line_id, serve_date: m.date}).or_default().push( 
+                hmap.entry(LineDishKey {line_id: m.line_id, serve_date: m.date}).or_default().push(
                     Meal {
                     id: m.food_id,
                     line_id: m.line_id,
@@ -167,7 +167,6 @@ impl Loader<LineDishKey> for ManyMealsDataLoader {
     }
 }
 
-
 pub(super) struct SidesLoader(pub Pool<Postgres>);
 impl Loader<LineDishKey> for SidesLoader {
     type Value = Vec<Side>;
@@ -192,7 +191,7 @@ impl Loader<LineDishKey> for SidesLoader {
         .await?
         .into_iter()
         .try_fold( HashMap::<_,Vec<_>>::new(), |mut hmap, side| {
-            hmap.entry(LineDishKey {line_id: side.line_id, serve_date: side.serve_date}).or_default().push( 
+            hmap.entry(LineDishKey {line_id: side.line_id, serve_date: side.serve_date}).or_default().push(
                 Side {
                 id: side.food_id,
                 food_type: side.food_type,
@@ -208,7 +207,6 @@ impl Loader<LineDishKey> for SidesLoader {
         })
     }
 }
-
 
 pub(super) struct ImageLoader(pub Pool<Postgres>);
 impl Loader<Uuid> for ImageLoader {
@@ -377,5 +375,67 @@ impl Loader<Uuid> for AllergenLoader {
             h.entry(  m.food_id).or_default().push(m.allergen);
             Ok(h)
         }).await.map_err(Into::into)
+    }
+}
+pub(super) struct NutritionDataLoader(pub Pool<Postgres>);
+impl Loader<Uuid> for NutritionDataLoader {
+    type Value = NutritionData;
+    type Error = DataError;
+    async fn load(
+        &self,
+        keys: &[Uuid],
+    ) -> std::result::Result<HashMap<Uuid, Self::Value>, Self::Error> {
+        sqlx::query!(
+            r#"
+               SELECT food_id, energy, protein, carbohydrates, sugar, fat, saturated_fat, salt FROM food_nutrition_data WHERE food_id = ANY($1)
+            "#,
+            &keys
+        )
+        .fetch(&self.0)
+        .map(|k| {let k = k?; Ok((k.food_id, NutritionData{
+            carbohydrates: u32::try_from(k.carbohydrates)?,
+            energy: u32::try_from(k.energy)?,
+            fat: u32::try_from(k.fat)?,
+            protein: u32::try_from(k.protein)?,
+            salt: u32::try_from(k.salt)?,
+            saturated_fat: u32::try_from(k.saturated_fat)?,
+            sugar: u32::try_from(k.sugar)?,
+        }))}).try_collect().await
+    }
+}
+pub(super) struct EnvironmentInfoLoader(pub Pool<Postgres>);
+impl Loader<Uuid> for EnvironmentInfoLoader {
+    type Value = EnvironmentInfo;
+    type Error = DataError;
+    async fn load(
+        &self,
+        keys: &[Uuid],
+    ) -> std::result::Result<HashMap<Uuid, Self::Value>, Self::Error> {
+        sqlx::query!(
+            r#"
+               SELECT food_id, co2_rating, co2_value, water_rating, water_value, animal_welfare_rating, rainforest_rating, max_rating FROM food_env_score WHERE food_id = ANY($1)
+            "#,
+            &keys
+        )
+        .fetch(&self.0)
+        .map(|k| {
+            let k = k?;
+            let co2_rating = u32::try_from(k.co2_rating)?;
+            let water_rating = u32::try_from(k.water_rating)?;
+            let animal_welfare_rating = u32::try_from(k.animal_welfare_rating)?;
+            let rainforest_rating = u32::try_from(k.rainforest_rating)?;
+            let average_rating =
+                (co2_rating + water_rating + animal_welfare_rating + rainforest_rating) / 4;
+            Ok((k.food_id, EnvironmentInfo{
+                    animal_welfare_rating,
+                    average_rating,
+                    co2_rating,
+                    co2_value: u32::try_from(k.co2_value)?,
+                    rainforest_rating,
+                    water_rating,
+                    water_value: u32::try_from(k.water_value)?,
+                    max_rating: u32::try_from(k.max_rating)?,
+                }))
+        }).try_collect().await
     }
 }
