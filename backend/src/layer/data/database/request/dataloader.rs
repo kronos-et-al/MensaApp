@@ -7,7 +7,7 @@ use uuid::Uuid;
 
 use crate::interface::persistent_data::model::{Image, Side};
 use crate::interface::persistent_data::Result;
-use crate::util::{FoodType, Price};
+use crate::util::{Additive, Allergen, FoodType, Price};
 
 use crate::{
     interface::persistent_data::{
@@ -280,3 +280,102 @@ impl Loader<RatingKey> for RatingLoader {
     }
 }
 
+pub(super) struct ImageVoteLoader(pub Pool<Postgres>);
+#[derive(Clone, PartialEq, Eq, Hash, sqlx::Type)]
+pub(super) struct UpvoteKey {
+    pub(super) image_id: Uuid,
+    pub(super) user_id: Uuid,
+}
+impl Loader<UpvoteKey> for ImageVoteLoader {
+    type Value = ();
+    type Error = DataError;
+    async fn load(
+        &self,
+        keys: &[UpvoteKey],
+    ) -> std::result::Result<HashMap<UpvoteKey, Self::Value>, Self::Error> {
+        sqlx::query!(
+            r#"
+               SELECT image_id, user_id FROM image_rating
+               WHERE rating = 1 AND ROW(image_id, user_id) IN (SELECT a, b FROM UNNEST($1::uuid[], $2::uuid[]) x(a, b))
+            "#,
+            &keys.iter().map(|k| k.image_id).collect::<Vec<_>>(),
+            &keys.iter().map(|k| k.user_id).collect::<Vec<_>>()
+        )
+        .fetch(&self.0).map(|k| {
+            let k = k?;
+            Ok((UpvoteKey{image_id: k.image_id, user_id: k.user_id}, ()))
+        }).try_collect()
+        .await
+    }
+}
+#[derive(Clone, PartialEq, Eq, Hash, sqlx::Type)]
+pub(super) struct DownvoteKey {
+    pub(super) image_id: Uuid,
+    pub(super) user_id: Uuid,
+}
+impl Loader<DownvoteKey> for ImageVoteLoader {
+    type Value = ();
+    type Error = DataError;
+    async fn load(
+        &self,
+        keys: &[DownvoteKey],
+    ) -> std::result::Result<HashMap<DownvoteKey, Self::Value>, Self::Error> {
+        sqlx::query!(
+            r#"
+               SELECT image_id, user_id FROM image_rating
+               WHERE rating = -1 AND ROW(image_id, user_id) IN (SELECT a, b FROM UNNEST($1::uuid[], $2::uuid[]) x(a, b))
+            "#,
+            &keys.iter().map(|k| k.image_id).collect::<Vec<_>>(),
+            &keys.iter().map(|k| k.user_id).collect::<Vec<_>>()
+        )
+        .fetch(&self.0).map(|k| {
+            let k = k?;
+            Ok((DownvoteKey{image_id: k.image_id, user_id: k.user_id}, ()))
+        }).try_collect()
+        .await
+    }
+}
+
+pub(super) struct AdditiveLoader(pub Pool<Postgres>);
+impl Loader<Uuid> for AdditiveLoader {
+    type Value = Vec<Additive>;
+    type Error = DataError;
+    async fn load(
+        &self,
+        keys: &[Uuid],
+    ) -> std::result::Result<HashMap<Uuid, Self::Value>, Self::Error> {
+        sqlx::query!(
+            r#"
+               SELECT food_id, additive as "additive: Additive" FROM food_additive WHERE food_id = ANY ($1) ORDER BY additive
+            "#,
+            &keys
+        )
+        .fetch(&self.0)
+        .try_fold(HashMap::<_,Vec<_>>::new(), |mut h, m| async move {
+            h.entry(  m.food_id).or_default().push(m.additive);
+            Ok(h)
+        }).await.map_err(Into::into)
+    }
+}
+
+pub(super) struct AllergenLoader(pub Pool<Postgres>);
+impl Loader<Uuid> for AllergenLoader {
+    type Value = Vec<Allergen>;
+    type Error = DataError;
+    async fn load(
+        &self,
+        keys: &[Uuid],
+    ) -> std::result::Result<HashMap<Uuid, Self::Value>, Self::Error> {
+        sqlx::query!(
+            r#"
+               SELECT food_id, allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = ANY ($1) ORDER BY allergen
+            "#,
+            &keys
+        )
+        .fetch(&self.0)
+        .try_fold(HashMap::<_,Vec<_>>::new(), |mut h, m| async move {
+            h.entry(  m.food_id).or_default().push(m.allergen);
+            Ok(h)
+        }).await.map_err(Into::into)
+    }
+}

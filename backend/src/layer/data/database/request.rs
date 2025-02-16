@@ -7,7 +7,7 @@ use async_once_cell::OnceCell;
 use async_trait::async_trait;
 use chrono::{Duration, Local, NaiveDate};
 use dataloader::{
-    CanteenDataloader, ImageLoader, LineDataLoader, LineDishKey, ManyMealsDataLoader, MealDataLoader, MealKey, RatingKey, RatingLoader, SidesLoader
+    AdditiveLoader, AllergenLoader, CanteenDataloader, DownvoteKey, ImageLoader, ImageVoteLoader, LineDataLoader, LineDishKey, ManyMealsDataLoader, MealDataLoader, MealKey, RatingKey, RatingLoader, SidesLoader, UpvoteKey
 };
 use sqlx::{Pool, Postgres};
 
@@ -32,7 +32,10 @@ pub struct PersistentRequestData {
     many_meals_loader: DataLoader<ManyMealsDataLoader>,
     sides_loader: DataLoader<SidesLoader>,
     image_loader: DataLoader<ImageLoader>,
-    rating_loader: DataLoader<RatingLoader>
+    rating_loader: DataLoader<RatingLoader>,
+    image_vote_loader: DataLoader<ImageVoteLoader>,
+    additive_loader: DataLoader<AdditiveLoader>,
+    allergen_loader: DataLoader<AllergenLoader>,
 }
 
 impl PersistentRequestData {
@@ -49,6 +52,9 @@ impl PersistentRequestData {
             sides_loader: DataLoader::new(SidesLoader(pool.clone()), tokio::spawn),
             image_loader: DataLoader::new(ImageLoader(pool.clone()), tokio::spawn),
             rating_loader: DataLoader::new(RatingLoader(pool.clone()), tokio::spawn),
+            image_vote_loader: DataLoader::new(ImageVoteLoader(pool.clone()), tokio::spawn),
+            additive_loader: DataLoader::new(AdditiveLoader(pool.clone()), tokio::spawn),
+            allergen_loader: DataLoader::new(AllergenLoader(pool.clone()), tokio::spawn),
             pool,
         }
     }
@@ -164,47 +170,19 @@ impl RequestDataAccess for PersistentRequestData {
     }
 
     async fn get_personal_upvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool> {
-        sqlx::query_scalar!(
-            "SELECT rating FROM image_rating WHERE image_id = $1 AND user_id = $2 AND rating = 1",
-            image_id,
-            client_id
-        )
-        .fetch_optional(&self.pool)
-        .await
-        .map_err(Into::<DataError>::into)
-        .map(|o| o.is_some())
+        self.image_vote_loader.load_one(UpvoteKey{image_id, user_id: client_id}).await.map(|o| o.is_some())
     }
 
     async fn get_personal_downvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool> {
-        sqlx::query_scalar!(
-            "SELECT rating FROM image_rating WHERE image_id = $1 AND user_id = $2 AND rating = -1",
-            image_id,
-            client_id
-        )
-        .fetch_optional(&self.pool)
-        .await
-        .map_err(Into::<DataError>::into)
-        .map(|o| o.is_some())
+        self.image_vote_loader.load_one(DownvoteKey{image_id, user_id: client_id}).await.map(|o| o.is_some())
     }
 
     async fn get_additives(&self, food_id: Uuid) -> Result<Vec<Additive>> {
-        let res = sqlx::query_scalar!(
-            r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1 ORDER BY additive"#,
-            food_id
-        )
-        .fetch_all(&self.pool)
-        .await?;
-        Ok(res)
+        self.additive_loader.load_one(food_id).await.map(Option::unwrap_or_default)
     }
 
     async fn get_allergens(&self, food_id: Uuid) -> Result<Vec<Allergen>> {
-        let res = sqlx::query_scalar!(
-            r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1 ORDER BY allergen"#,
-            food_id
-        )
-        .fetch_all(&self.pool)
-        .await?;
-        Ok(res)
+        self.allergen_loader.load_one(food_id).await.map(Option::unwrap_or_default)
     }
 
     async fn get_nutrition_data(&self, food_id: Uuid) -> Result<Option<NutritionData>> {
