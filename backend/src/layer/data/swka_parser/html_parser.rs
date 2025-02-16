@@ -133,8 +133,6 @@ lazy_static! {
     static ref VOLUME_REGEX: Regex = Regex::new(r"([0-9]*),([0-9]{2}) l").expect(REGEX_PARSE_E_MSG);
 
     static ref ID_REGEX: Regex = Regex::new(r"[0-9]{18,}").expect(REGEX_PARSE_E_MSG);
-
-    static ref POULTRY_REGEX: Regex = Regex::new(r"(?i)ente|chicken|pute|geflügel|h[üäua]hn").expect(REGEX_PARSE_E_MSG);
 }
 
 const DISH_NODE_CLASS_SELECTOR_PREFIX: &str = "tr.mt-";
@@ -314,7 +312,7 @@ impl HTMLParser {
     fn get_dish(dish_node: &ElementRef) -> Option<Dish> {
         let name = Self::get_dish_name(dish_node)?;
         Some(Dish {
-            food_type: Self::get_food_type(dish_node, &name).unwrap_or(FoodType::Unknown),
+            food_type: Self::get_food_type(dish_node).unwrap_or(FoodType::Unknown),
             name,
             price: Self::get_dish_price(dish_node),
             allergens: Self::get_dish_allergens(dish_node).unwrap_or_default(),
@@ -394,26 +392,12 @@ impl HTMLParser {
             .collect()
     }
 
-    fn get_food_type(dish_node: &ElementRef, name: &str) -> Option<FoodType> {
-        let preliminary_dish_type = Self::get_preliminary_food_type(dish_node);
-        if (preliminary_dish_type.is_none() || Some(FoodType::Unknown) == preliminary_dish_type)
-            && Self::is_poultry(name)
-        {
-            return Some(FoodType::Poultry);
-        }
-        preliminary_dish_type
-    }
-
-    fn get_preliminary_food_type(dish_node: &ElementRef) -> Option<FoodType> {
+    fn get_food_type(dish_node: &ElementRef) -> Option<FoodType> {
         let dish_type_node = dish_node.select(&DISH_TYPE_NODE_CLASS_SELECTOR).next()?;
         dish_type_node
             .value()
             .attr(DISH_TYPE_ATTRIBUTE_NAME)
             .map(FoodType::parse)
-    }
-
-    fn is_poultry(name: &str) -> bool {
-        POULTRY_REGEX.captures(name).is_some()
     }
 
     fn get_dish_env_score(dish_node: &ElementRef) -> Option<ParseEnvironmentInfo> {
@@ -588,6 +572,11 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_poultry() {
+        test_html("src/layer/data/swka_parser/test_data/test_poultry.html");
+    }
+
+    #[tokio::test]
     /// Tests an html page, that is not from the Studierendenwerk Karlsruhe. (Source: https://cbracco.github.io/html5-test-page/)
     async fn test_invalid() {
         let path = "src/layer/data/swka_parser/test_data/test_invalid.html";
@@ -600,7 +589,7 @@ mod tests {
         let file_contents = read_from_file(path).unwrap();
         let canteen_data = HTMLParser.transform(&file_contents, 42_u32).unwrap();
 
-        //let remove_for_producton = write_output_to_file(path, &canteen_data);
+        // let remove_for_producton = write_output_to_file(path, &canteen_data);
         let expected = read_from_file(&path.replace(".html", ".txt"))
             .unwrap()
             .replace("\r\n", "\n");
