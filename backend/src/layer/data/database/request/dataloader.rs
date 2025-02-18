@@ -109,8 +109,9 @@ impl Loader<MealKey> for MealDataLoader {
         sqlx::query!(
             r#"
             SELECT food_id as "food_id!", name as "name!", food_type as "food_type!: FoodType",
-                price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,
-                new as "new!", frequency as "frequency!", last_served, next_served, average_rating as "average_rating!", rating_count as "rating_count!"
+                price_student as "price_student!", price_employee as "price_employee!", price_guest as "price_guest!", 
+                price_pupil as "price_pupil!", serve_date as "date!", line_id as "line_id!", new as "new!", 
+                frequency as "frequency!", last_served, next_served, average_rating as "average_rating!", rating_count as "rating_count!"
             FROM meal_detail JOIN food_plan USING (food_id)
             WHERE ROW(food_id, line_id, serve_date) IN (SELECT a, b, c FROM UNNEST($1::uuid[], $2::uuid[], $3::date[]) x(a,b,c))
             "#,
