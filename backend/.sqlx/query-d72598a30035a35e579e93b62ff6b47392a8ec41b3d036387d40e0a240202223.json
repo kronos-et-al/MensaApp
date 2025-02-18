@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT food_id as \"food_id!\", name as \"name!\", food_type as \"food_type!: FoodType\",\n                price_student as \"price_student!\", price_employee as \"price_employee!\", price_guest as \"price_guest!\", \n                price_pupil as \"price_pupil!\", serve_date as \"date!\", line_id as \"line_id!\", new as \"new!\", \n                frequency as \"frequency!\", last_served, next_served, average_rating as \"average_rating!\", rating_count as \"rating_count!\"\n            FROM meal_detail JOIN food_plan USING (food_id)\n            WHERE ROW(food_id, line_id, serve_date) IN (SELECT a, b, c FROM UNNEST($1::uuid[], $2::uuid[], $3::date[]) x(a,b,c))\n            ",
+  "query": "\n            SELECT food_id as \"food_id!\", name as \"name!\", food_type as \"food_type!: FoodType\",\n                price_student as \"price_student!\", price_employee as \"price_employee!\", price_guest as \"price_guest!\",\n                price_pupil as \"price_pupil!\", serve_date as \"date!\", line_id as \"line_id!\", new as \"new!\",\n                frequency as \"frequency!\", last_served, next_served, average_rating as \"average_rating!\", rating_count as \"rating_count!\"\n            FROM meal_detail JOIN food_plan USING (food_id)\n            WHERE ROW(food_id, line_id, serve_date) IN (SELECT a, b, c FROM UNNEST($1::uuid[], $2::uuid[], $3::date[]) x(a,b,c))\n            ",
   "describe": {
     "columns": [
       {
@@ -121,5 +121,5 @@
       true
     ]
   },
-  "hash": "47c895772f611608e9bae4113995101ff70e58a7ddcee0d686ce9b76da662f6d"
+  "hash": "d72598a30035a35e579e93b62ff6b47392a8ec41b3d036387d40e0a240202223"
 }
