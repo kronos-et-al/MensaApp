@@ -45,7 +45,7 @@ pub struct PersistentRequestData {
 }
 
 impl PersistentRequestData {
-    /// Cereates a new [`PersistantRequestData`] object including dataloaders.
+    /// Creates a new [`PersistentRequestData`] object including data loaders.
     #[must_use]
     pub fn new(pool: Pool<Postgres>, max_weeks_data: u32) -> Self {
         Self {
