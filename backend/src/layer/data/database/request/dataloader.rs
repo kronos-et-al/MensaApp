@@ -6,7 +6,6 @@ use sqlx::{Pool, Postgres};
 use uuid::Uuid;
 
 use crate::interface::persistent_data::model::{EnvironmentInfo, Image, Side};
-use crate::interface::persistent_data::Result;
 use crate::util::{Additive, Allergen, FoodType, NutritionData, Price};
 
 use crate::{
@@ -30,10 +29,13 @@ impl Loader<Uuid> for CanteenDataloader {
             "SELECT canteen_id as id, name FROM canteen WHERE canteen_id = ANY ($1)",
             keys
         )
-        .fetch_all(&self.0)
+        .fetch(&self.0)
+        .map(|value| {
+            let value = value?;
+            Ok((value.id, value))
+        })
+        .try_collect()
         .await
-        .map(|values| values.into_iter().map(|value| (value.id, value)).collect())
-        .map_err(Into::into)
     }
 }
 impl Loader<()> for CanteenDataloader {
@@ -66,10 +68,13 @@ impl Loader<Uuid> for LineDataLoader {
             "SELECT line_id as id, name, canteen_id FROM line WHERE line_id = ANY ($1)",
             keys
         )
-        .fetch_all(&self.0)
+        .fetch(&self.0)
+        .map(|value| {
+            let value = value?;
+            Ok((value.id, value))
+        })
+        .try_collect()
         .await
-        .map(|values| values.into_iter().map(|value| (value.id, value)).collect())
-        .map_err(Into::into)
     }
 }
 
@@ -119,10 +124,9 @@ impl Loader<MealKey> for MealDataLoader {
             &keys.iter().map(|k| k.line_id).collect::<Vec<_>>(),
             &keys.iter().map(|k| k.serve_date).collect::<Vec<_>>()
         )
-        .fetch_all(&self.0)
-        .await?
-        .into_iter()
+        .fetch(&self.0)
         .map(|m| {
+            let m = m?;
             Ok(( MealKey {food_id: m.food_id, line_id: m.line_id, serve_date: m.date},
                 Meal {
                 id: m.food_id,
@@ -144,7 +148,7 @@ impl Loader<MealKey> for MealDataLoader {
                 rating_count: u32::try_from(m.rating_count)?,
             }))
         })
-        .collect::<Result<HashMap<_,_>>>()
+        .try_collect().await
     }
 }
 
@@ -173,9 +177,9 @@ impl Loader<LineDishKey> for ManyMealsDataLoader {
             &keys.iter().map(|k| k.line_id).collect::<Vec<_>>(),
             &keys.iter().map(|k| k.serve_date).collect::<Vec<_>>()
         )
-        .fetch_all(&self.0)
-        .await?
-        .into_iter().try_fold( HashMap::<_,Vec<_>>::new(), |mut hmap, m| {
+        .fetch(&self.0)
+        .map_err(DataError::from)
+        .try_fold( HashMap::<_,Vec<_>>::new(), |mut hmap, m| async move{
                 hmap.entry(LineDishKey {line_id: m.line_id, serve_date: m.date}).or_default().push(
                     Meal {
                     id: m.food_id,
@@ -197,8 +201,8 @@ impl Loader<LineDishKey> for ManyMealsDataLoader {
                     rating_count: u32::try_from(m.rating_count)?,
                 });
 
-                Result::<_>::Ok(hmap)
-        })
+                Ok(hmap)
+        }).await
     }
 }
 
@@ -222,10 +226,9 @@ impl Loader<LineDishKey> for SidesLoader {
             &keys.iter().map(|k| k.line_id).collect::<Vec<_>>(),
             &keys.iter().map(|k| k.serve_date).collect::<Vec<_>>()
         )
-        .fetch_all(&self.0)
-        .await?
-        .into_iter()
-        .try_fold( HashMap::<_,Vec<_>>::new(), |mut hmap, side| {
+        .fetch(&self.0)
+        .map_err(DataError::from)
+        .try_fold( HashMap::<_,Vec<_>>::new(), |mut hmap, side| async move {
             hmap.entry(LineDishKey {line_id: side.line_id, serve_date: side.serve_date}).or_default().push(
                 Side {
                 id: side.food_id,
@@ -239,7 +242,7 @@ impl Loader<LineDishKey> for SidesLoader {
                 },
             });
             Ok(hmap)
-        })
+        }).await
     }
 }
 
@@ -263,10 +266,9 @@ impl Loader<Uuid> for ImageLoader {
             "#,
             &keys
         )
-        .fetch_all(&self.0)
-        .await?
-        .into_iter()
-        .try_fold(HashMap::<_,Vec<_>>::new(), |mut h, m| {
+        .fetch(&self.0)
+        .map_err(DataError::from)
+        .try_fold(HashMap::<_,Vec<_>>::new(), |mut h, m| async move {
             h.entry(  m.meal_id).or_default().push(
                 Image {
                     id: m.image_id,
@@ -280,7 +282,7 @@ impl Loader<Uuid> for ImageLoader {
                     reporting_users: Some(m.reporting_users) // todo maybe put into outer tuple instead modifying image struct and carrying these additional arrays everywhere. Overhead?
             });
             Ok(h)
-        })
+        }).await
     }
 }
 
