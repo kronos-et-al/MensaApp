@@ -1,47 +1,52 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT co2_rating, co2_value, water_rating, water_value, animal_welfare_rating, rainforest_rating, max_rating FROM food_env_score WHERE food_id = $1",
+  "query": "\n               SELECT food_id, co2_rating, co2_value, water_rating, water_value, animal_welfare_rating, rainforest_rating, max_rating FROM food_env_score WHERE food_id = ANY($1)\n            ",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
+        "name": "food_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
         "name": "co2_rating",
         "type_info": "Int4"
       },
       {
-        "ordinal": 1,
+        "ordinal": 2,
         "name": "co2_value",
         "type_info": "Int4"
       },
       {
-        "ordinal": 2,
+        "ordinal": 3,
         "name": "water_rating",
         "type_info": "Int4"
       },
       {
-        "ordinal": 3,
+        "ordinal": 4,
         "name": "water_value",
         "type_info": "Int4"
       },
       {
-        "ordinal": 4,
+        "ordinal": 5,
         "name": "animal_welfare_rating",
         "type_info": "Int4"
       },
       {
-        "ordinal": 5,
+        "ordinal": 6,
         "name": "rainforest_rating",
         "type_info": "Int4"
       },
       {
-        "ordinal": 6,
+        "ordinal": 7,
         "name": "max_rating",
         "type_info": "Int4"
       }
     ],
     "parameters": {
       "Left": [
-        "Uuid"
+        "UuidArray"
       ]
     },
     "nullable": [
@@ -51,8 +56,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "f051c8b0a22c58526989d03c3155937816d5eee92f8d30c7c684e4ec828fc7f9"
+  "hash": "cf4fc7b2f1aa456d1b779e61e28616ecaacdff04ec244af06e8fb6cbbe15d2a3"
 }

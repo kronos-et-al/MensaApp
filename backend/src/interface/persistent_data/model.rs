@@ -14,7 +14,7 @@ pub struct ApiKey {
 }
 
 /// Struct for database-operations. Related to the database entity 'canteen'.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Canteen {
     /// Identification of the canteen
     pub id: Uuid,
@@ -23,7 +23,7 @@ pub struct Canteen {
 }
 
 /// Struct for database-operations. Related to the database entity 'line'.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Line {
     /// Identification of the line
     pub id: Uuid,
@@ -34,7 +34,7 @@ pub struct Line {
 }
 
 /// Struct for database-operations. Related to the database entity 'meal'.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Meal {
     /// Identification of the meal.
     pub id: Uuid,
@@ -63,7 +63,7 @@ pub struct Meal {
 }
 
 /// This structure is used for database operations. This side structure is based on the database entities 'food', 'foodAllergen' and 'foodAdditive'.
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Side {
     /// Identification of the side.
     pub id: Uuid,
@@ -94,6 +94,8 @@ pub struct Image {
     pub report_count: u32,
     /// Id of the meal this image belongs to.
     pub meal_id: Uuid,
+    /// User ids of users that reported this image. May not be filled with data.
+    pub reporting_users: Option<Vec<Uuid>>,
 }
 
 /// This structure contains all information of an image necessary to file a report.

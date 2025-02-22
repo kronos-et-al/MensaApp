@@ -1,47 +1,52 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT energy, protein, carbohydrates, sugar, fat, saturated_fat, salt FROM food_nutrition_data WHERE food_id = $1",
+  "query": "\n               SELECT food_id, energy, protein, carbohydrates, sugar, fat, saturated_fat, salt FROM food_nutrition_data WHERE food_id = ANY($1)\n            ",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
+        "name": "food_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
         "name": "energy",
         "type_info": "Int4"
       },
       {
-        "ordinal": 1,
+        "ordinal": 2,
         "name": "protein",
         "type_info": "Int4"
       },
       {
-        "ordinal": 2,
+        "ordinal": 3,
         "name": "carbohydrates",
         "type_info": "Int4"
       },
       {
-        "ordinal": 3,
+        "ordinal": 4,
         "name": "sugar",
         "type_info": "Int4"
       },
       {
-        "ordinal": 4,
+        "ordinal": 5,
         "name": "fat",
         "type_info": "Int4"
       },
       {
-        "ordinal": 5,
+        "ordinal": 6,
         "name": "saturated_fat",
         "type_info": "Int4"
       },
       {
-        "ordinal": 6,
+        "ordinal": 7,
         "name": "salt",
         "type_info": "Int4"
       }
     ],
     "parameters": {
       "Left": [
-        "Uuid"
+        "UuidArray"
       ]
     },
     "nullable": [
@@ -51,8 +56,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "4175898f9899aa8321280631130a4f74e79013ced541e55fd825a38b6a2e8b9f"
+  "hash": "e372ecc29e7f823429a36162dc24162b830eac010af9719a5f24c103ca543022"
 }

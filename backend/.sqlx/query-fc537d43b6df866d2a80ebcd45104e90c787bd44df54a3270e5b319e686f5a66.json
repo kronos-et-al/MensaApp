@@ -1,21 +1,21 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT food_id, name, food_type as \"food_type: FoodType\",\n                price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,\n                new, frequency, last_served, next_served, average_rating, rating_count\n            FROM meal_detail JOIN food_plan USING (food_id)\n            WHERE line_id = $1 AND serve_date = $2\n            ORDER BY price_student DESC, food_type DESC, food_id\n            ",
+  "query": "\n            SELECT food_id as \"food_id!\", name as \"name!\", food_type as \"food_type!: FoodType\",\n                price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,\n                new as \"new!\", frequency as \"frequency!\", last_served, next_served, average_rating as \"average_rating!\", rating_count as \"rating_count!\"\n            FROM meal_detail JOIN food_plan USING (food_id)\n            WHERE ROW(line_id, serve_date) IN (SELECT a, b FROM UNNEST($1::uuid[], $2::date[]) x(a,b))\n            ORDER BY price_student DESC, food_type DESC, food_id\n            ",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "food_id",
+        "name": "food_id!",
         "type_info": "Uuid"
       },
       {
         "ordinal": 1,
-        "name": "name",
+        "name": "name!",
         "type_info": "Text"
       },
       {
         "ordinal": 2,
-        "name": "food_type: FoodType",
+        "name": "food_type!: FoodType",
         "type_info": {
           "Custom": {
             "name": "meal_type",
@@ -67,12 +67,12 @@
       },
       {
         "ordinal": 9,
-        "name": "new",
+        "name": "new!",
         "type_info": "Bool"
       },
       {
         "ordinal": 10,
-        "name": "frequency",
+        "name": "frequency!",
         "type_info": "Int8"
       },
       {
@@ -87,19 +87,19 @@
       },
       {
         "ordinal": 13,
-        "name": "average_rating",
+        "name": "average_rating!",
         "type_info": "Float4"
       },
       {
         "ordinal": 14,
-        "name": "rating_count",
+        "name": "rating_count!",
         "type_info": "Int8"
       }
     ],
     "parameters": {
       "Left": [
-        "Uuid",
-        "Date"
+        "UuidArray",
+        "DateArray"
       ]
     },
     "nullable": [
@@ -120,5 +120,5 @@
       true
     ]
   },
-  "hash": "d3ba2ffec90b5cfc33c94c03b474bd6b02cd0ea603ac890a3f46c204810821d3"
+  "hash": "fc537d43b6df866d2a80ebcd45104e90c787bd44df54a3270e5b319e686f5a66"
 }

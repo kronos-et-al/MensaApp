@@ -40,12 +40,7 @@ impl Meal {
     #[instrument(skip(ctx))]
     async fn allergens(&self, ctx: &Context<'_>) -> Result<Vec<Allergen>> {
         let data_access = ctx.get_data_access();
-        let allergens = data_access
-            .get_allergens(self.id)
-            .await?
-            .into_iter()
-            .map(Into::into)
-            .collect();
+        let allergens = data_access.get_allergens(self.id).await?;
         Ok(allergens)
     }
 
@@ -53,12 +48,7 @@ impl Meal {
     #[instrument(skip(ctx))]
     async fn additives(&self, ctx: &Context<'_>) -> Result<Vec<Additive>> {
         let data_access = ctx.get_data_access();
-        let additives = data_access
-            .get_additives(self.id)
-            .await?
-            .into_iter()
-            .map(Into::into)
-            .collect();
+        let additives = data_access.get_additives(self.id).await?;
         Ok(additives)
     }
 

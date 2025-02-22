@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT line_id as id, name, canteen_id FROM line WHERE line_id = $1",
+  "query": "SELECT line_id as id, name, canteen_id FROM line WHERE canteen_id = ANY($1) ORDER BY position",
   "describe": {
     "columns": [
       {
@@ -21,7 +21,7 @@
     ],
     "parameters": {
       "Left": [
-        "Uuid"
+        "UuidArray"
       ]
     },
     "nullable": [
@@ -30,5 +30,5 @@
       false
     ]
   },
-  "hash": "1f5db495f1d5d1dd098e4a056265ba74b21754ecad52bacdc515db6e2483059d"
+  "hash": "9ae38e1bc9a6dfe446357daffd2da7969d914d51830c08cbec02f4ff05dae628"
 }

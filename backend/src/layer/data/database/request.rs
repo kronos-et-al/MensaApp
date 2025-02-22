@@ -1,6 +1,17 @@
 //! Module responsible for handling database requests for api requests.
+
+mod dataloader;
+
+use async_graphql::dataloader::DataLoader;
+use async_once_cell::OnceCell;
 use async_trait::async_trait;
-use chrono::{Duration, Local};
+use chrono::{Duration, Local, NaiveDate};
+use dataloader::{
+    AdditiveLoader, AllergenLoader, CanteenDataloader, CanteenLinesLoader, DownvoteKey,
+    EnvironmentInfoLoader, ImageLoader, ImageVoteLoader, LineDataLoader, LineDishKey,
+    ManyMealsDataLoader, MealDataLoader, MealKey, NutritionDataLoader, RatingKey, RatingLoader,
+    SidesLoader, UpvoteKey,
+};
 use sqlx::{Pool, Postgres};
 
 use crate::{
@@ -8,100 +19,92 @@ use crate::{
         model::{Canteen, EnvironmentInfo, Image, Line, Meal, Side},
         DataError, RequestDataAccess, Result,
     },
-    null_error,
-    util::{Additive, Allergen, Date, FoodType, NutritionData, Price, Uuid},
+    util::{Additive, Allergen, Date, NutritionData, Uuid},
 };
 
 /// Class implementing all database requests arising from graphql manipulations.
-#[derive(Debug)]
 pub struct PersistentRequestData {
-    pub(super) pool: Pool<Postgres>,
+    pool: Pool<Postgres>,
     /// Number of weeks, including the current week, we get/have data for.
-    pub(super) max_weeks_data: u32,
+    max_weeks_data: u32,
+    /// Date of first meal plan entry, to show "no data" on dates before.
+    first_date: OnceCell<Option<NaiveDate>>,
+    canteen_loader: DataLoader<CanteenDataloader>,
+    line_loader: DataLoader<LineDataLoader>,
+    canteen_line_loader: DataLoader<CanteenLinesLoader>,
+    meal_loader: DataLoader<MealDataLoader>,
+    many_meals_loader: DataLoader<ManyMealsDataLoader>,
+    sides_loader: DataLoader<SidesLoader>,
+    image_loader: DataLoader<ImageLoader>,
+    rating_loader: DataLoader<RatingLoader>,
+    image_vote_loader: DataLoader<ImageVoteLoader>,
+    additive_loader: DataLoader<AdditiveLoader>,
+    allergen_loader: DataLoader<AllergenLoader>,
+    environment_info_loader: DataLoader<EnvironmentInfoLoader>,
+    nutrition_data_loader: DataLoader<NutritionDataLoader>,
+}
+
+impl PersistentRequestData {
+    /// Creates a new [`PersistentRequestData`] object including data loaders.
+    #[must_use]
+    pub fn new(pool: Pool<Postgres>, max_weeks_data: u32) -> Self {
+        Self {
+            max_weeks_data,
+            first_date: OnceCell::new(),
+            canteen_loader: DataLoader::new(CanteenDataloader(pool.clone()), tokio::spawn),
+            line_loader: DataLoader::new(LineDataLoader(pool.clone()), tokio::spawn),
+            canteen_line_loader: DataLoader::new(CanteenLinesLoader(pool.clone()), tokio::spawn),
+            meal_loader: DataLoader::new(MealDataLoader(pool.clone()), tokio::spawn),
+            many_meals_loader: DataLoader::new(ManyMealsDataLoader(pool.clone()), tokio::spawn),
+            sides_loader: DataLoader::new(SidesLoader(pool.clone()), tokio::spawn),
+            image_loader: DataLoader::new(ImageLoader(pool.clone()), tokio::spawn),
+            rating_loader: DataLoader::new(RatingLoader(pool.clone()), tokio::spawn),
+            image_vote_loader: DataLoader::new(ImageVoteLoader(pool.clone()), tokio::spawn),
+            additive_loader: DataLoader::new(AdditiveLoader(pool.clone()), tokio::spawn),
+            allergen_loader: DataLoader::new(AllergenLoader(pool.clone()), tokio::spawn),
+            nutrition_data_loader: DataLoader::new(NutritionDataLoader(pool.clone()), tokio::spawn),
+            environment_info_loader: DataLoader::new(
+                EnvironmentInfoLoader(pool.clone()),
+                tokio::spawn,
+            ),
+            pool,
+        }
+    }
 }
 
 #[async_trait]
 #[allow(clippy::missing_panics_doc)] // necessary because sqlx macro sometimes create unreachable panics?
 impl RequestDataAccess for PersistentRequestData {
     async fn get_canteen(&self, id: Uuid) -> Result<Option<Canteen>> {
-        sqlx::query_as!(
-            Canteen,
-            "SELECT canteen_id as id, name FROM canteen WHERE canteen_id = $1",
-            id
-        )
-        .fetch_optional(&self.pool)
-        .await
-        .map_err(Into::into)
+        self.canteen_loader.load_one(id).await
     }
 
     async fn get_canteens(&self) -> Result<Vec<Canteen>> {
-        sqlx::query_as!(
-            Canteen,
-            "SELECT canteen_id as id, name FROM canteen ORDER BY position"
-        )
-        .fetch_all(&self.pool)
-        .await
-        .map_err(Into::into)
+        self.canteen_loader
+            .load_one(())
+            .await
+            .and_then(|c| c.ok_or(DataError::NoSuchItem))
     }
 
     async fn get_line(&self, id: Uuid) -> Result<Option<Line>> {
-        sqlx::query_as!(
-            Line,
-            "SELECT line_id as id, name, canteen_id FROM line WHERE line_id = $1",
-            id
-        )
-        .fetch_optional(&self.pool)
-        .await
-        .map_err(Into::into)
+        self.line_loader.load_one(id).await
     }
 
     async fn get_lines(&self, canteen_id: Uuid) -> Result<Vec<Line>> {
-        sqlx::query_as!(
-            Line,
-            "SELECT line_id as id, name, canteen_id FROM line WHERE canteen_id = $1 ORDER BY position",
-            canteen_id
-        )
-        .fetch_all(&self.pool)
-        .await
-        .map_err(Into::into)
+        self.canteen_line_loader
+            .load_one(canteen_id)
+            .await
+            .map(Option::unwrap_or_default)
     }
 
     async fn get_meal(&self, id: Uuid, line_id: Uuid, date: Date) -> Result<Option<Meal>> {
-        sqlx::query!(
-            r#"
-            SELECT food_id, name, food_type as "food_type: FoodType",
-                price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,
-                new, frequency, last_served, next_served, average_rating, rating_count
-            FROM meal_detail JOIN food_plan USING (food_id)
-            WHERE food_id = $1 AND line_id = $2 AND serve_date = $3
-            "#,
-            id,
-            line_id,
-            date
-        )
-        .fetch_optional(&self.pool)
-        .await?
-        .map(|m| {
-            Ok(Meal {
-                id: null_error!(m.food_id),
-                line_id: m.line_id,
-                date: m.date,
-                name: null_error!(m.name),
-                food_type: null_error!(m.food_type),
-                price: Price {
-                    price_student: u32::try_from(m.price_student)?,
-                    price_employee: u32::try_from(m.price_employee)?,
-                    price_guest: u32::try_from(m.price_guest)?,
-                    price_pupil: u32::try_from(m.price_pupil)?
-                },
-                frequency: u32::try_from(null_error!(m.frequency))?,
-                new: null_error!(m.new),
-                last_served: m.last_served,
-                next_served: m.next_served,
-                average_rating: null_error!(m.average_rating),
-                rating_count: u32::try_from(null_error!(m.rating_count))?,
+        self.meal_loader
+            .load_one(MealKey {
+                food_id: id,
+                line_id,
+                serve_date: date,
             })
-        }).transpose()
+            .await
     }
 
     async fn get_meals(&self, line_id: Uuid, date: Date) -> Result<Option<Vec<Meal>>> {
@@ -114,82 +117,35 @@ impl RequestDataAccess for PersistentRequestData {
             return Ok(None);
         }
 
-        // If date is to far in the past, return `None`.
-        let first_date = sqlx::query_scalar!("SELECT MIN(serve_date) FROM food_plan")
-            .fetch_one(&self.pool)
+        let first_date = self
+            .first_date
+            .get_or_try_init(
+                sqlx::query_scalar!("SELECT MIN(serve_date) FROM food_plan").fetch_one(&self.pool),
+            )
             .await?;
+
+        // If date is to far in the past, return `None`.
         if first_date.map_or(true, |first_date| first_date > date) {
             return Ok(None);
         }
 
-        sqlx::query!(
-            r#"
-            SELECT food_id, name, food_type as "food_type: FoodType",
-                price_student, price_employee, price_guest, price_pupil, serve_date as date, line_id,
-                new, frequency, last_served, next_served, average_rating, rating_count
-            FROM meal_detail JOIN food_plan USING (food_id)
-            WHERE line_id = $1 AND serve_date = $2
-            ORDER BY price_student DESC, food_type DESC, food_id
-            "#,
-            line_id,
-            date
-        )
-        .fetch_all(&self.pool)
-        .await?
-        .into_iter()
-        .map(|m| {
-            Ok(Meal {
-                id: null_error!(m.food_id),
-                line_id: m.line_id,
-                date: m.date,
-                name: null_error!(m.name),
-                food_type: null_error!(m.food_type),
-                price: Price {
-                    price_student: u32::try_from(m.price_student)?,
-                    price_employee: u32::try_from(m.price_employee)?,
-                    price_guest: u32::try_from(m.price_guest)?,
-                    price_pupil: u32::try_from(m.price_pupil)?
-                },
-                frequency: u32::try_from(null_error!(m.frequency))?,
-                new: null_error!(m.new),
-                last_served: m.last_served,
-                next_served: m.next_served,
-                average_rating: null_error!(m.average_rating),
-                rating_count: u32::try_from(null_error!(m.rating_count))?,
+        self.many_meals_loader
+            .load_one(LineDishKey {
+                line_id,
+                serve_date: date,
             })
-        })
-        .collect::<Result<Vec<_>>>().map(Some)
+            .await
+            .map(|vec| Some(vec.unwrap_or_default())) // returning an empty list instead of none is important here!
     }
 
     async fn get_sides(&self, line_id: Uuid, date: Date) -> Result<Vec<Side>> {
-        sqlx::query!(
-            r#"
-            SELECT food_id, name, food_type as "food_type: FoodType", 
-            price_student, price_employee, price_guest, price_pupil
-            FROM food JOIN food_plan USING (food_id)
-            WHERE line_id = $1 AND serve_date = $2 AND food_id NOT IN (SELECT food_id FROM meal)
-            ORDER BY food_id
-            "#,
-            line_id,
-            date
-        )
-        .fetch_all(&self.pool)
-        .await?
-        .into_iter()
-        .map(|side| {
-            Ok(Side {
-                id: side.food_id,
-                food_type: side.food_type,
-                name: side.name,
-                price: Price {
-                    price_student: u32::try_from(side.price_student)?,
-                    price_employee: u32::try_from(side.price_employee)?,
-                    price_guest: u32::try_from(side.price_guest)?,
-                    price_pupil: u32::try_from(side.price_pupil)?,
-                },
+        self.sides_loader
+            .load_one(LineDishKey {
+                line_id,
+                serve_date: date,
             })
-        })
-        .collect::<Result<Vec<_>>>()
+            .await
+            .map(Option::unwrap_or_default)
     }
 
     async fn get_visible_images(
@@ -197,149 +153,80 @@ impl RequestDataAccess for PersistentRequestData {
         meal_id: Uuid,
         client_id: Option<Uuid>,
     ) -> Result<Vec<Image>> {
-        sqlx::query!(
-            "
-            SELECT image_id, rank, id as hoster_id, url, upvotes, downvotes, 
-                approved, report_count, link_date, food_id
-            FROM (
-                --- not reported by user
-                SELECT image_id 
-                FROM image LEFT JOIN image_report r USING (image_id)
-                GROUP BY image_id
-                HAVING COUNT(*) FILTER (WHERE r.user_id = $2) = 0
-            ) not_reported JOIN image_detail USING (image_id)
-            WHERE currently_visible AND food_id = $1
-            ORDER BY rank DESC, image_id
-            ",
-            meal_id,
-            client_id
-        )
-        .fetch_all(&self.pool)
-        .await?
-        .into_iter()
-        .map(|r| {
-            Ok(Image {
-                id: r.image_id,
-                rank: null_error!(r.rank),
-                downvotes: u32::try_from(null_error!(r.downvotes))?,
-                upvotes: u32::try_from(null_error!(r.upvotes))?,
-                approved: null_error!(r.approved),
-                report_count: u32::try_from(null_error!(r.report_count))?,
-                upload_date: null_error!(r.link_date),
-                meal_id: null_error!(r.food_id),
+        Ok(self
+            .image_loader
+            .load_one(meal_id)
+            .await?
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|im| {
+                im.reporting_users.as_ref().is_none_or(|users| {
+                    let Some(client_id) = client_id else {
+                        return true;
+                    };
+                    !users.contains(&client_id)
+                })
             })
-        })
-        .collect::<Result<Vec<_>>>()
+            .collect())
     }
 
-    async fn get_personal_rating(&self, meal_id: Uuid, client_id: Uuid) -> Result<Option<u32>> {
-        let res = sqlx::query_scalar!(
-            "SELECT rating FROM meal_rating WHERE food_id = $1 AND user_id = $2",
-            meal_id,
-            client_id
-        )
-        .fetch_optional(&self.pool)
-        .await?;
-
-        res.map(u32::try_from).transpose().map_err(Into::into)
+    async fn get_personal_rating(&self, food_id: Uuid, client_id: Uuid) -> Result<Option<u32>> {
+        self.rating_loader
+            .load_one(RatingKey {
+                food_id,
+                user_id: client_id,
+            })
+            .await
     }
 
     async fn get_personal_upvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool> {
-        sqlx::query_scalar!(
-            "SELECT rating FROM image_rating WHERE image_id = $1 AND user_id = $2 AND rating = 1",
-            image_id,
-            client_id
-        )
-        .fetch_optional(&self.pool)
-        .await
-        .map_err(Into::<DataError>::into)
-        .map(|o| o.is_some())
+        self.image_vote_loader
+            .load_one(UpvoteKey {
+                image_id,
+                user_id: client_id,
+            })
+            .await
+            .map(|o| o.is_some())
     }
 
     async fn get_personal_downvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool> {
-        sqlx::query_scalar!(
-            "SELECT rating FROM image_rating WHERE image_id = $1 AND user_id = $2 AND rating = -1",
-            image_id,
-            client_id
-        )
-        .fetch_optional(&self.pool)
-        .await
-        .map_err(Into::<DataError>::into)
-        .map(|o| o.is_some())
+        self.image_vote_loader
+            .load_one(DownvoteKey {
+                image_id,
+                user_id: client_id,
+            })
+            .await
+            .map(|o| o.is_some())
     }
 
     async fn get_additives(&self, food_id: Uuid) -> Result<Vec<Additive>> {
-        let res = sqlx::query_scalar!(
-            r#"SELECT additive as "additive: Additive" FROM food_additive WHERE food_id = $1 ORDER BY additive"#,
-            food_id
-        )
-        .fetch_all(&self.pool)
-        .await?;
-        Ok(res)
+        self.additive_loader
+            .load_one(food_id)
+            .await
+            .map(Option::unwrap_or_default)
     }
 
     async fn get_allergens(&self, food_id: Uuid) -> Result<Vec<Allergen>> {
-        let res = sqlx::query_scalar!(
-            r#"SELECT allergen as "allergen: Allergen" FROM food_allergen WHERE food_id = $1 ORDER BY allergen"#,
-            food_id
-        )
-        .fetch_all(&self.pool)
-        .await?;
-        Ok(res)
+        self.allergen_loader
+            .load_one(food_id)
+            .await
+            .map(Option::unwrap_or_default)
     }
 
     async fn get_nutrition_data(&self, food_id: Uuid) -> Result<Option<NutritionData>> {
-        let res = sqlx::query!(
-            r#"SELECT energy, protein, carbohydrates, sugar, fat, saturated_fat, salt FROM food_nutrition_data WHERE food_id = $1"#,
-            food_id
-        ).fetch_optional(&self.pool)
-        .await?;
-        let result = match res {
-            Some(res) => Some(NutritionData {
-                energy: u32::try_from(res.energy)?,
-                protein: u32::try_from(res.protein)?,
-                carbohydrates: u32::try_from(res.carbohydrates)?,
-                sugar: u32::try_from(res.sugar)?,
-                fat: u32::try_from(res.fat)?,
-                saturated_fat: u32::try_from(res.saturated_fat)?,
-                salt: u32::try_from(res.salt)?,
-            }),
-            None => None,
-        };
-        Ok(result)
+        self.nutrition_data_loader.load_one(food_id).await
     }
 
     async fn get_environment_information(&self, food_id: Uuid) -> Result<Option<EnvironmentInfo>> {
-        let res = sqlx::query!(
-            r#"SELECT co2_rating, co2_value, water_rating, water_value, animal_welfare_rating, rainforest_rating, max_rating FROM food_env_score WHERE food_id = $1"#,
-            food_id
-        ).fetch_optional(&self.pool).await?;
-        if let Some(res) = res {
-            let co2_rating = u32::try_from(res.co2_rating)?;
-            let water_rating = u32::try_from(res.water_rating)?;
-            let animal_welfare_rating = u32::try_from(res.animal_welfare_rating)?;
-            let rainforest_rating = u32::try_from(res.rainforest_rating)?;
-            let average_rating =
-                (co2_rating + water_rating + animal_welfare_rating + rainforest_rating) / 4;
-            Ok(Some(EnvironmentInfo {
-                average_rating,
-                co2_rating,
-                co2_value: u32::try_from(res.co2_value)?,
-                water_rating,
-                water_value: u32::try_from(res.water_value)?,
-                animal_welfare_rating,
-                rainforest_rating,
-                max_rating: u32::try_from(res.max_rating)?,
-            }))
-        } else {
-            Ok(None)
-        }
+        self.environment_info_loader.load_one(food_id).await
     }
 }
 
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used)]
+    use crate::util::{FoodType, Price};
+
     use super::*;
     use chrono::Duration;
     use futures::future;
@@ -350,10 +237,7 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen"))]
     async fn test_get_canteen(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
 
         let canteen_id_strs = [
             "10728cc4-1e07-4e18-a9d9-ca45b9782413",
@@ -380,10 +264,7 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen"))]
     async fn test_get_canteens(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
 
         let canteen = request.get_canteens().await.unwrap();
         assert!(canteen.len() == 3);
@@ -394,10 +275,7 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen", "line"))]
     async fn test_get_line(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
 
         let lines = request
             .get_lines(Uuid::parse_str("10728cc4-1e07-4e18-a9d9-ca45b9782413").unwrap())
@@ -412,10 +290,7 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen", "line"))]
     async fn test_get_lines(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
 
         let line_id_strs = [
             "3e8c11fa-906a-4c6a-bc71-28756c6b00ae",
@@ -438,10 +313,7 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_get_meal(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
 
         let meal_id_strs = [
             "f7337122-b018-48ad-b420-6202dc3cb4ff",
@@ -478,10 +350,7 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_get_meals(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
 
         let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
 
@@ -520,10 +389,7 @@ mod tests {
 
     #[sqlx::test(fixtures("canteen", "line", "meal", "food_plan"))]
     async fn test_get_sides(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let date = Local::now().date_naive();
         let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
 
@@ -538,10 +404,7 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "image"))]
     async fn test_get_visible_images(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         let client_id = Uuid::parse_str("c51d2d81-3547-4f07-af58-ed613c6ece67").unwrap();
 
@@ -558,6 +421,15 @@ mod tests {
                 .unwrap(),
             vec![]
         );
+
+        assert_eq!(
+            request
+                .get_visible_images(meal_id, None)
+                .await
+                .unwrap()
+                .len(),
+            3
+        );
     }
 
     fn provide_dummy_images() -> Vec<Image> {
@@ -570,21 +442,19 @@ mod tests {
             upload_date: Local::now().date_naive(),
             report_count: 0,
             meal_id: Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap(),
+            reporting_users: Some(Vec::new()),
         };
         let image2 = Image {
             id: Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap(),
             approved: false,
-            ..image1
+            ..image1.clone()
         };
         vec![image1, image2]
     }
 
     #[sqlx::test(fixtures("meal", "image", "rating"))]
     async fn test_get_personal_rating(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
         let client_id = Uuid::parse_str("c51d2d81-3547-4f07-af58-ed613c6ece67").unwrap();
 
@@ -602,10 +472,7 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "image", "rating"))]
     async fn test_get_personal_upvote(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
         let client_id = Uuid::parse_str("c51d2d81-3547-4f07-af58-ed613c6ece67").unwrap();
 
@@ -628,10 +495,7 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "image", "rating"))]
     async fn test_get_personal_downvote(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let image_id = Uuid::parse_str("76b904fe-d0f1-4122-8832-d0e21acab86d").unwrap();
         let client_id = Uuid::parse_str("00adb927-8cb9-4d80-ae01-d8f2e8f2d4cf").unwrap();
 
@@ -654,10 +518,7 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "additive"))]
     async fn test_get_additives(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let food_ids = [
             "f7337122-b018-48ad-b420-6202dc3cb4ff",
             "73cf367b-a536-4b49-ad0c-cb984caa9a08",
@@ -689,10 +550,7 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "allergen"))]
     async fn test_get_allergens(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let food_ids = [
             "f7337122-b018-48ad-b420-6202dc3cb4ff",
             "73cf367b-a536-4b49-ad0c-cb984caa9a08",
@@ -724,10 +582,7 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "environment_info"))]
     async fn test_get_environment_info(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let food_ids = [
             "f7337122-b018-48ad-b420-6202dc3cb4ff",
             "73cf367b-a536-4b49-ad0c-cb984caa9a08",
@@ -784,10 +639,7 @@ mod tests {
 
     #[sqlx::test(fixtures("meal", "nutrition_data"))]
     async fn test_get_nutrition_data(pool: PgPool) {
-        let request = PersistentRequestData {
-            pool,
-            max_weeks_data: MAX_WEEKS_DATA,
-        };
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
         let food_ids = [
             "f7337122-b018-48ad-b420-6202dc3cb4ff",
             "73cf367b-a536-4b49-ad0c-cb984caa9a08",
