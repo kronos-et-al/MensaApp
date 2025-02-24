@@ -3,6 +3,7 @@ import 'package:app/view/core/information_display/MealPreviewImage.dart';
 import 'package:app/view/core/input_components/MensaRatingInput.dart';
 import 'package:app/view/detail_view/DetailsPage.dart';
 import 'package:app/view_model/logic/preference/IPreferenceAccess.dart';
+import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:flutter/material.dart';
@@ -34,20 +35,24 @@ class MealListEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var borderColor = _getBorderColor(context);
+
     return Padding(
         padding: EdgeInsets.symmetric(
-            vertical: _meal.isFavorite ? 5.5 : 8,
-            horizontal: _meal.isFavorite ? 9.5 : 12),
+            vertical: borderColor != null ? 5.5 : 8,
+            horizontal: borderColor != null ? 9.5 : 12),
         child: GestureDetector(
-            onTap: () => {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => DetailsPage(
+            onTap: () =>
+            {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) =>
+                    DetailsPage(
                       meal: _meal,
                       line: _line,
                       date: _date,
                     ),
-                  ))
-                },
+              ))
+            },
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
@@ -55,82 +60,136 @@ class MealListEntry extends StatelessWidget {
                     bottomLeft: Radius.circular(10.5),
                     topRight: Radius.circular(8),
                     bottomRight: Radius.circular(8)),
-                color: Theme.of(context).colorScheme.surfaceDim,
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .surfaceDim,
                 border: _enableFavoriteHighlight ? Border.all(
-                    color: _meal.isFavorite
-                        ? Theme.of(context).colorScheme.secondary
-                        : Theme.of(context).colorScheme.surfaceDim,
-                    width: _meal.isFavorite ? 2.5 : 0) : Border.all(width: 0),
+                    color: borderColor ?? Theme
+                        .of(context)
+                        .colorScheme
+                        .surfaceDim,
+                    width: borderColor != null ? 2.5 : 0) : Border.all(
+                    width: 0),
               ),
               child: IntrinsicHeight(
                   child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                    MealPreviewImage(
-                        meal: _meal,
-                        height: 86,
-                        width: 86,
-                        enableFavoriteButton: false,
-                        onImagePressed: () => {
+                        MealPreviewImage(
+                            meal: _meal,
+                            height: 86,
+                            width: 86,
+                            enableFavoriteButton: false,
+                            onImagePressed: () =>
+                            {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => DetailsPage(
+                                  builder: (context) =>
+                                      DetailsPage(
                                         meal: _meal,
                                         line: _line,
                                         date: _date,
                                       )))
                             },
-                        displayFavorite: true,
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(8),
-                            bottomLeft: Radius.circular(8))),
-                    Expanded(
-                        child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 16),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(children: [
-                                  Expanded(
-                                      child: Text(
-                                    _meal.name,
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        height: 1.5),
-                                  ))
-                                ]),
-                                const Spacer(),
-                                const SizedBox(
-                                  height: 4,
-                                ),
-                                Row(children: [
-                                  MealIcon(
-                                      foodType: _meal.foodType,
-                                      width: 24,
-                                      height: 24),
-                                  const SizedBox(width: 4),
-                                  MensaRatingInput(
-                                    size: 20,
-                                    onChanged: (v) => {},
-                                    value: _meal.averageRating,
-                                    disabled: true,
-                                    color:
-                                        Theme.of(context).colorScheme.onSurface,
-                                  ),
-                                  const Spacer(),
-                                  Consumer<IPreferenceAccess>(
-                                      builder: (context, prefs, child) {
-                                    return Text(_priceFormat.format(_meal.price
-                                            .getPrice(
-                                                prefs.getPriceCategory()) /
-                                        100));
-                                  }),
-                                ]),
-                              ],
-                            )))
-                  ])),
+                            displayFavorite: true,
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                bottomLeft: Radius.circular(8))),
+                        Expanded(
+                            child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 16),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(children: [
+                                      Expanded(
+                                          child: Text.rich(
+                                              TextSpan(
+                                                  text: _meal.name + " ",
+                                                  style: const TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight
+                                                          .bold,
+                                                      height: 1.5),
+                                                  children: [
+                                                    if (_meal
+                                                        .relativeFrequency ==
+                                                        Frequency
+                                                            .newMeal) WidgetSpan(
+                                                        child:
+                                                        Badge(
+                                                            label: Text("neu"),
+                                                            backgroundColor: Theme
+                                                                .of(context)
+                                                                .colorScheme
+                                                                .secondary)),
+                                                    if (_meal
+                                                        .relativeFrequency ==
+                                                        Frequency
+                                                            .rare) WidgetSpan(
+                                                        child: Badge(
+                                                            label: Text(
+                                                                "selten"),
+                                                            backgroundColor: Theme
+                                                                .of(context)
+                                                                .colorScheme
+                                                                .tertiary))
+                                                  ]))),
+                                    ]),
+                                    const Spacer(),
+                                    const SizedBox(
+                                      height: 4,
+                                    ),
+                                    Row(children: [
+                                      MealIcon(
+                                          foodType: _meal.foodType,
+                                          width: 24,
+                                          height: 24),
+                                      const SizedBox(width: 4),
+                                      MensaRatingInput(
+                                        size: 20,
+                                        onChanged: (v) => {},
+                                        value: _meal.averageRating,
+                                        disabled: true,
+                                        color:
+                                        Theme
+                                            .of(context)
+                                            .colorScheme
+                                            .onSurface,
+                                      ),
+                                      const Spacer(),
+                                      Consumer<IPreferenceAccess>(
+                                          builder: (context, prefs, child) {
+                                            return Text(
+                                                _priceFormat.format(_meal.price
+                                                    .getPrice(
+                                                    prefs.getPriceCategory()) /
+                                                    100));
+                                          }),
+                                    ]),
+                                  ],
+                                )))
+                      ])),
             )));
   }
+
+  Color? _getBorderColor(BuildContext context) {
+    if (_meal.isFavorite) {
+      return Theme
+          .of(context)
+          .colorScheme
+          .primary;
+    }
+    if (_meal.relativeFrequency == Frequency.newMeal) {
+      return Theme
+          .of(context)
+          .colorScheme
+          .secondary;
+    }
+
+    return null;
+  }
 }
+

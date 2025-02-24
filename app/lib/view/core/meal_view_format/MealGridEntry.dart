@@ -48,7 +48,7 @@ class MealGridEntry extends StatelessWidget {
                         color: Theme.of(context).colorScheme.surfaceDim,
                         border: Border.all(
                             color: _meal.isFavorite
-                                ? Theme.of(context).colorScheme.secondary
+                                ? Theme.of(context).colorScheme.primary
                                 : Theme.of(context).colorScheme.surfaceDim,
                             width: _meal.isFavorite ? 2.5 : 0),
                       ),
