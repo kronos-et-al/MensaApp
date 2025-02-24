@@ -55,11 +55,11 @@ class MealListEntry extends StatelessWidget {
                     bottomLeft: Radius.circular(10.5),
                     topRight: Radius.circular(8),
                     bottomRight: Radius.circular(8)),
-                color: Theme.of(context).colorScheme.surface,
+                color: Theme.of(context).colorScheme.surfaceDim,
                 border: _enableFavoriteHighlight ? Border.all(
                     color: _meal.isFavorite
                         ? Theme.of(context).colorScheme.secondary
-                        : Theme.of(context).colorScheme.surface,
+                        : Theme.of(context).colorScheme.surfaceDim,
                     width: _meal.isFavorite ? 2.5 : 0) : Border.all(width: 0),
               ),
               child: IntrinsicHeight(

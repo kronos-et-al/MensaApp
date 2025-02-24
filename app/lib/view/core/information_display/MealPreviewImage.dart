@@ -76,11 +76,11 @@ class MealPreviewImage extends StatelessWidget {
                           children: [
                             Icon(Icons.favorite,
                                 size: 28,
-                                color: Theme.of(context).colorScheme.onBackground),
+                                color: Theme.of(context).colorScheme.onSurface),
                             Icon(Icons.favorite_border,
                                 size: 28,
                                 color:
-                                    Theme.of(context).colorScheme.background),
+                                    Theme.of(context).colorScheme.surface),
                           ],
                         ),
                       )),
@@ -125,7 +125,7 @@ class MealPreviewImage extends StatelessWidget {
                                           size: 28,
                                           color: Theme.of(context)
                                               .colorScheme
-                                              .surface),
+                                              .surfaceDim),
                                     ],
                                   ),
                                 ))
@@ -157,7 +157,7 @@ class MealPreviewImage extends StatelessWidget {
                                       size: 28,
                                       color: Theme.of(context)
                                           .colorScheme
-                                          .surface),
+                                          .surfaceDim),
                                 ],
                               ),
                             )),

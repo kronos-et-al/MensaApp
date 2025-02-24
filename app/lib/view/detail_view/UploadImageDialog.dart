@@ -121,7 +121,7 @@ class _UploadImageDialogState extends State<UploadImageDialog> {
               RichText(
                 text: TextSpan(
                     style: TextStyle(
-                        fontSize: 12, color: theme.colorScheme.onBackground),
+                        fontSize: 12, color: theme.colorScheme.onSurface),
                     children: [
                       TextSpan(
                           text: FlutterI18n.translate(

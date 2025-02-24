@@ -37,15 +37,15 @@ class MealAccordion extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4.0),
           color: _isExpanded
-              ? _expandedColor ?? Theme.of(context).colorScheme.surface
-              : _backgroundColor ?? Theme.of(context).colorScheme.background,
+              ? _expandedColor ?? Theme.of(context).colorScheme.surfaceDim
+              : _backgroundColor ?? Theme.of(context).colorScheme.surface,
         ),
         child: Material(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(4.0),
           child: InkWell(
               splashColor:
-                  Theme.of(context).colorScheme.background.withOpacity(0.1),
+                  Theme.of(context).colorScheme.surface.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(4.0),
               onTap: _onTap,
               child: Padding(

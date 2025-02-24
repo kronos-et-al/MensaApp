@@ -18,7 +18,7 @@ class MensaDialog extends StatelessWidget {
     return Center(
         child: SingleChildScrollView(
       child: Dialog(
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
           child: Column(children: [
