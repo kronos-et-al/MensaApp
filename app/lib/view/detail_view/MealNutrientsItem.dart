@@ -16,7 +16,7 @@ class MealNutrientsItem extends StatelessWidget {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return Ink(decoration: BoxDecoration(
-      color: _even ? theme.brightness == Brightness.dark ?  theme.colorScheme.surface : theme.colorScheme.background : Colors.transparent
+      color: _even ? theme.brightness == Brightness.dark ?  theme.colorScheme.surfaceDim : theme.colorScheme.surface : Colors.transparent
     ), child: Padding(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2), child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

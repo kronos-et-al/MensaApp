@@ -23,8 +23,8 @@ class MensaFilterIconCheckbox<T> {
             width: 2,
             color: active
                 ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.surface),
-        color: Theme.of(context).colorScheme.background,
+                : Theme.of(context).colorScheme.surfaceDim),
+        color: Theme.of(context).colorScheme.surface,
       ),
       child: Material(
           borderRadius: BorderRadius.circular(4.0),

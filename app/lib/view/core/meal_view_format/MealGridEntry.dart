@@ -45,11 +45,11 @@ class MealGridEntry extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        color: Theme.of(context).colorScheme.surface,
+                        color: Theme.of(context).colorScheme.surfaceDim,
                         border: Border.all(
                             color: _meal.isFavorite
                                 ? Theme.of(context).colorScheme.secondary
-                                : Theme.of(context).colorScheme.surface,
+                                : Theme.of(context).colorScheme.surfaceDim,
                             width: _meal.isFavorite ? 2.5 : 0),
                       ),
                       child: Column(children: [

@@ -34,7 +34,7 @@ class MensaLink extends StatelessWidget {
             ),
             elevation: 0,
             side: BorderSide(
-              color: Theme.of(context).colorScheme.surface,
+              color: Theme.of(context).colorScheme.surfaceDim,
               width: 1,
             ),
           ),
