@@ -38,6 +38,7 @@ class _MainPageState extends State<MainPage> {
             elevation: 2,
             currentIndex: _selectedIndex,
             onTap: (index) => setState(() => _selectedIndex = index),
+            selectedItemColor: Theme.of(context).colorScheme.primary,
             items: [
               BottomNavigationBarItem(
                 icon: const NavigationMealPlanIcon(),
