@@ -10,7 +10,7 @@ use dataloader::{
     AdditiveLoader, AllergenLoader, CanteenDataloader, CanteenLinesLoader, DownvoteKey,
     EnvironmentInfoLoader, ImageLoader, ImageVoteLoader, LineDataLoader, LineDishKey,
     ManyMealsDataLoader, MealDataLoader, MealKey, NutritionDataLoader, RatingKey, RatingLoader,
-    SidesLoader, UpvoteKey,
+    ServeDatesKey, SidesLoader, UpvoteKey,
 };
 use sqlx::{Pool, Postgres};
 
@@ -219,6 +219,13 @@ impl RequestDataAccess for PersistentRequestData {
 
     async fn get_environment_information(&self, food_id: Uuid) -> Result<Option<EnvironmentInfo>> {
         self.environment_info_loader.load_one(food_id).await
+    }
+
+    async fn get_serve_dates(&self, food_id: Uuid, line_id: Uuid) -> Result<Vec<Date>> {
+        self.meal_loader
+            .load_one(ServeDatesKey { food_id, line_id })
+            .await
+            .map(Option::unwrap_or_default)
     }
 }
 
@@ -656,6 +663,16 @@ mod tests {
             nutrition_data.push(request.get_nutrition_data(food_id).await.unwrap());
         }
         assert_eq!(nutrition_data, provide_dummy_nutrition_data());
+    }
+
+    #[sqlx::test(fixtures("canteen", "line", "meal", "statistics"))]
+    async fn test_get_serve_dates(pool: PgPool) {
+        let meal_id = Uuid::parse_str("f7337122-b018-48ad-b420-6202dc3cb4ff").unwrap();
+        let line_id = Uuid::parse_str("3e8c11fa-906a-4c6a-bc71-28756c6b00ae").unwrap();
+
+        let request = PersistentRequestData::new(pool, MAX_WEEKS_DATA);
+        let serve_dates = request.get_serve_dates(meal_id, line_id).await.unwrap();
+        assert_eq!(serve_dates.len(), 4, "{serve_dates:?}");
     }
 
     fn provide_dummy_nutrition_data() -> Vec<Option<NutritionData>> {

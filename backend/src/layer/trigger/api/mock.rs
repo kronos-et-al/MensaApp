@@ -2,6 +2,7 @@
 #![allow(missing_docs)]
 
 use async_trait::async_trait;
+use chrono::Local;
 use uuid::Uuid;
 
 use crate::interface::persistent_data::model::EnvironmentInfo;
@@ -299,6 +300,10 @@ impl RequestDataAccess for RequestDatabaseMock {
             rainforest_rating: 6,
             max_rating: 7,
         }))
+    }
+
+    async fn get_serve_dates(&self, _meal_id: Uuid, _line_id: Uuid) -> DataResult<Vec<Date>> {
+        Ok(vec![Local::now().date_naive()])
     }
 }
 

@@ -152,6 +152,47 @@ impl Loader<MealKey> for MealDataLoader {
     }
 }
 
+#[derive(Clone, PartialEq, Eq, Hash, sqlx::Type)]
+pub(super) struct ServeDatesKey {
+    pub(super) food_id: Uuid,
+    pub(super) line_id: Uuid,
+}
+impl Loader<ServeDatesKey> for MealDataLoader {
+    type Value = Vec<Date>;
+
+    type Error = DataError;
+
+    async fn load(
+        &self,
+        keys: &[ServeDatesKey],
+    ) -> Result<HashMap<ServeDatesKey, Self::Value>, Self::Error> {
+        sqlx::query!(
+            r#"
+            SELECT serve_date, p.food_id, query_line as "query_line!" 
+            FROM food_plan p NATURAL JOIN line l
+                JOIN (UNNEST($1::uuid[], $2::uuid[]) query(food_id,query_line) JOIN line qline ON qline.line_id = query.query_line) 
+                ON p.food_id = query.food_id AND qline.canteen_id = l.canteen_id
+            WHERE serve_date > NOW() - INTERVAL '3 months'
+            ORDER BY serve_date ASC
+            "#,
+            &keys.iter().map(|k| k.food_id).collect::<Vec<_>>(),
+            &keys.iter().map(|k| k.line_id).collect::<Vec<_>>()
+        )
+        .fetch(&self.0)
+        .try_fold(HashMap::<_, Vec<_>>::new(), |mut hmap, stat| async move {
+            hmap.entry(ServeDatesKey {
+                food_id: stat.food_id,
+                line_id: stat.query_line,
+            })
+            .or_default()
+            .push(stat.serve_date);
+            Ok(hmap)
+        })
+        .await
+        .map_err(Into::into)
+    }
+}
+
 pub(super) struct ManyMealsDataLoader(pub Pool<Postgres>);
 #[derive(Clone, PartialEq, Eq, Hash, sqlx::Type)]
 pub(super) struct LineDishKey {

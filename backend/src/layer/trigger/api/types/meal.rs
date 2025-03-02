@@ -141,6 +141,7 @@ impl Ratings {
 }
 
 #[derive(SimpleObject, Debug)]
+#[graphql(complex)]
 struct MealStatistics {
     /// The date of the last time the meal was served.
     last_served: Option<Date>,
@@ -150,6 +151,23 @@ struct MealStatistics {
     frequency: u32,
     /// Whether this meal is new and was never served before.
     new: bool,
+    #[graphql(skip)]
+    meal_id: Uuid,
+    #[graphql(skip)]
+    line_id: Uuid,
+}
+
+#[ComplexObject]
+impl MealStatistics {
+    /// Dates this meal was/will be served in this canteen, no older than and excluding three months ago.
+    #[instrument(skip(ctx))]
+    pub async fn serve_dates(&self, ctx: &Context<'_>) -> Result<Vec<Date>> {
+        let data_access = ctx.get_data_access();
+        let serve_dates = data_access
+            .get_serve_dates(self.meal_id, self.line_id)
+            .await?;
+        Ok(serve_dates)
+    }
 }
 
 impl From<model::Meal> for Meal {
@@ -173,6 +191,8 @@ impl From<model::Meal> for Meal {
                 next_served: value.next_served,
                 frequency: value.frequency,
                 new: value.new,
+                meal_id: value.id,
+                line_id: value.line_id,
             },
             date: value.date,
             line_id: value.line_id,
