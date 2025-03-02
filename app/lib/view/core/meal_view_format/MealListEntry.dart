@@ -7,6 +7,7 @@ import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -160,7 +161,7 @@ class MealListEntry extends StatelessWidget {
       return [ WidgetSpan(
           child:
           Badge(
-              label: Text("neu"),
+              label: Text(FlutterI18n.translate(context, "tag.new")),
               backgroundColor: Theme
                   .of(context)
                   .colorScheme
@@ -171,7 +172,7 @@ class MealListEntry extends StatelessWidget {
         return [ WidgetSpan(
             child:
             Badge(
-                label: Text("selten"),
+                label: Text(FlutterI18n.translate(context, "tag.rare")),
                 backgroundColor: Theme
                     .of(context)
                     .colorScheme
@@ -182,7 +183,7 @@ class MealListEntry extends StatelessWidget {
         return [ WidgetSpan(
             child:
             Badge(
-                label: Text("regelmäßig"),
+                label: Text(FlutterI18n.translate(context, "tag.regular")),
                 backgroundColor: Colors.brown)),
 
         ];
