@@ -1,3 +1,4 @@
+import 'package:app/view/core/Tag.dart';
 import 'package:app/view/core/icons/MealIcon.dart';
 import 'package:app/view/core/information_display/MealPreviewImage.dart';
 import 'package:app/view/core/input_components/MensaRatingInput.dart';
@@ -7,7 +8,6 @@ import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -114,7 +114,7 @@ class MealListEntry extends StatelessWidget {
                                                       fontWeight: FontWeight
                                                           .bold,
                                                       height: 1.5),
-                                                  children: _getBadges(context)))),
+                                                  children: getTags(context, _meal)))),
                                     ]),
                                     const Spacer(),
                                     const SizedBox(
@@ -152,46 +152,8 @@ class MealListEntry extends StatelessWidget {
                       ])),
             )));
   }
-  
-  List<WidgetSpan> _getBadges(BuildContext context) {
-    switch (_meal.relativeFrequency) {
-      case null:
-        break;
-      case Frequency.newMeal:
-      return [ WidgetSpan(
-          child:
-          Badge(
-              label: Text(FlutterI18n.translate(context, "tag.new")),
-              backgroundColor: Theme
-                  .of(context)
-                  .colorScheme
-                  .secondary)),
 
-      ];
-      case Frequency.rare:
-        return [ WidgetSpan(
-            child:
-            Badge(
-                label: Text(FlutterI18n.translate(context, "tag.rare")),
-                backgroundColor: Theme
-                    .of(context)
-                    .colorScheme
-                    .tertiary)),
 
-        ];
-      case Frequency.regular:
-        return [ WidgetSpan(
-            child:
-            Badge(
-                label: Text(FlutterI18n.translate(context, "tag.regular")),
-                backgroundColor: Colors.brown)),
-
-        ];
-      case Frequency.normal:
-        break;
-    }
-    return [];
-  }
 
   Color? _getBorderColor(BuildContext context) {
     if (_meal.isFavorite) {

@@ -1,3 +1,4 @@
+import 'package:app/view/core/Tag.dart';
 import 'package:app/view/core/icons/MealIcon.dart';
 import 'package:app/view_model/logic/preference/IPreferenceAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
@@ -29,9 +30,9 @@ class MealMainEntry extends StatelessWidget {
           MealIcon(foodType: _meal.foodType, width: 24, height: 24),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(_meal.name,
+            child: RichText(text: TextSpan(text: _meal.name + " ",
                 style: const TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 14, height: 1.5)),
+                    fontWeight: FontWeight.bold, fontSize: 14, height: 1.5), children: getTags(context, _meal))),
           ),
           const SizedBox(width: 8),
           Text(
