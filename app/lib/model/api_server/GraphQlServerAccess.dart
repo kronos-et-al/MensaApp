@@ -360,13 +360,16 @@ class GraphQlServerAccess implements IServerAccess {
   }
 }
 
-const int _rareMealLimit = 2;
+const int _rareMealLimit = 1;
+const int _regularMealLimit = 15;
 
 Frequency _specifyFrequency(Fragment$mealInfo$statistics statistics) {
   if (statistics.$new) {
     return Frequency.newMeal;
   } else if (statistics.frequency <= _rareMealLimit) {
     return Frequency.rare;
+  } else if (statistics.frequency >= _regularMealLimit){
+    return Frequency.regular;
   } else {
     return Frequency.normal;
   }

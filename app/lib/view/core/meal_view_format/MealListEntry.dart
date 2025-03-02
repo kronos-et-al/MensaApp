@@ -113,30 +113,7 @@ class MealListEntry extends StatelessWidget {
                                                       fontWeight: FontWeight
                                                           .bold,
                                                       height: 1.5),
-                                                  children: [
-                                                    if (_meal
-                                                        .relativeFrequency ==
-                                                        Frequency
-                                                            .newMeal) WidgetSpan(
-                                                        child:
-                                                        Badge(
-                                                            label: Text("neu"),
-                                                            backgroundColor: Theme
-                                                                .of(context)
-                                                                .colorScheme
-                                                                .secondary)),
-                                                    if (_meal
-                                                        .relativeFrequency ==
-                                                        Frequency
-                                                            .rare) WidgetSpan(
-                                                        child: Badge(
-                                                            label: Text(
-                                                                "selten"),
-                                                            backgroundColor: Theme
-                                                                .of(context)
-                                                                .colorScheme
-                                                                .tertiary))
-                                                  ]))),
+                                                  children: _getBadges(context)))),
                                     ]),
                                     const Spacer(),
                                     const SizedBox(
@@ -173,6 +150,46 @@ class MealListEntry extends StatelessWidget {
                                 )))
                       ])),
             )));
+  }
+  
+  List<WidgetSpan> _getBadges(BuildContext context) {
+    switch (_meal.relativeFrequency) {
+      case null:
+        break;
+      case Frequency.newMeal:
+      return [ WidgetSpan(
+          child:
+          Badge(
+              label: Text("neu"),
+              backgroundColor: Theme
+                  .of(context)
+                  .colorScheme
+                  .secondary)),
+
+      ];
+      case Frequency.rare:
+        return [ WidgetSpan(
+            child:
+            Badge(
+                label: Text("selten"),
+                backgroundColor: Theme
+                    .of(context)
+                    .colorScheme
+                    .tertiary)),
+
+        ];
+      case Frequency.regular:
+        return [ WidgetSpan(
+            child:
+            Badge(
+                label: Text("regelmäßig"),
+                backgroundColor: Colors.brown)),
+
+        ];
+      case Frequency.normal:
+        break;
+    }
+    return [];
   }
 
   Color? _getBorderColor(BuildContext context) {
