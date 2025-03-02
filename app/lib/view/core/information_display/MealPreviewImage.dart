@@ -17,19 +17,20 @@ class MealPreviewImage extends StatelessWidget {
   final double? _width;
   final Function? _onUploadButtonPressed;
   final void Function()? _onImagePressed;
+  final Alignment _favoriteButtonAlignment;
 
   /// Creates a MealPreviewImage.
-  const MealPreviewImage(
-      {super.key,
-      required Meal meal,
-      bool displayFavorite = false,
-      bool enableUploadButton = false,
-      bool enableFavoriteButton = false,
-      BorderRadius? borderRadius,
-      double? height,
-      double? width,
-      Function? onUploadButtonPressed,
-      void Function()? onImagePressed})
+  const MealPreviewImage({super.key,
+    required Meal meal,
+    bool displayFavorite = false,
+    bool enableUploadButton = false,
+    bool enableFavoriteButton = false,
+    Alignment favoriteButtonAlignment = Alignment.topRight,
+    BorderRadius? borderRadius,
+    double? height,
+    double? width,
+    Function? onUploadButtonPressed,
+    void Function()? onImagePressed})
       : _meal = meal,
         _enableUploadButton = enableUploadButton,
         _enableFavoriteButton = enableFavoriteButton,
@@ -37,7 +38,8 @@ class MealPreviewImage extends StatelessWidget {
         _height = height,
         _width = width,
         _onUploadButtonPressed = onUploadButtonPressed,
-        _onImagePressed = onImagePressed;
+        _onImagePressed = onImagePressed,
+        _favoriteButtonAlignment =favoriteButtonAlignment;
 
   @override
   Widget build(BuildContext context) {
@@ -69,14 +71,17 @@ class MealPreviewImage extends StatelessWidget {
                 )),
                 if (_enableFavoriteButton && _meal.isFavorite)
                   Align(
-                      alignment: const Alignment(1.0, -1.0),
+                      alignment: _favoriteButtonAlignment,
                       child: Padding(
                         padding: const EdgeInsets.all(4),
                         child: Stack(
                           children: [
                             Icon(Icons.favorite,
                                 size: 28,
-                                color: Theme.of(context).colorScheme.onSurface),
+                                color: Theme
+                                    .of(context)
+                                    .colorScheme
+                                    .onSurface),
                             Icon(Icons.favorite_border,
                                 size: 28,
                                 color:
@@ -111,14 +116,15 @@ class MealPreviewImage extends StatelessWidget {
                           )),
                           if (_enableFavoriteButton && _meal.isFavorite)
                             Align(
-                                alignment: const Alignment(1.0, -1.0),
+                                alignment: _favoriteButtonAlignment,
                                 child: Padding(
                                   padding: const EdgeInsets.all(4),
                                   child: Stack(
                                     children: [
                                       Icon(Icons.favorite,
                                           size: 28,
-                                          color: Theme.of(context)
+                                          color: Theme
+                                              .of(context)
                                               .colorScheme
                                               .onSurface),
                                       Icon(Icons.favorite_border,
@@ -143,14 +149,15 @@ class MealPreviewImage extends StatelessWidget {
                     child: Stack(children: [
                       if (_enableFavoriteButton && _meal.isFavorite)
                         Align(
-                            alignment: const Alignment(1.0, -1.0),
+                            alignment: _favoriteButtonAlignment,
                             child: Padding(
                               padding: const EdgeInsets.all(4),
                               child: Stack(
                                 children: [
                                   Icon(Icons.favorite,
                                       size: 28,
-                                      color: Theme.of(context)
+                                      color: Theme
+                                          .of(context)
                                           .colorScheme
                                           .primary),
                                   Icon(Icons.favorite_border,

@@ -80,7 +80,8 @@ class MealListEntry extends StatelessWidget {
                             meal: _meal,
                             height: 86,
                             width: 86,
-                            enableFavoriteButton: false,
+                            enableFavoriteButton: _enableFavoriteHighlight,
+                            favoriteButtonAlignment: Alignment.bottomLeft,
                             onImagePressed: () =>
                             {
                               Navigator.of(context).push(MaterialPageRoute(
