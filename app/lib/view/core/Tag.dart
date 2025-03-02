@@ -44,3 +44,20 @@ List<WidgetSpan> getTags(BuildContext context, Meal meal, {TextStyle? style}) {
   }
   return [];
 }
+
+Color? getBorderColor(BuildContext context, Meal meal) {
+  if (meal.isFavorite) {
+    return Theme
+        .of(context)
+        .colorScheme
+        .primary;
+  }
+  if (meal.relativeFrequency == Frequency.newMeal) {
+    return Theme
+        .of(context)
+        .colorScheme
+        .secondary;
+  }
+
+  return null;
+}

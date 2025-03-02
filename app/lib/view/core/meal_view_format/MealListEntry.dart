@@ -4,7 +4,6 @@ import 'package:app/view/core/information_display/MealPreviewImage.dart';
 import 'package:app/view/core/input_components/MensaRatingInput.dart';
 import 'package:app/view/detail_view/DetailsPage.dart';
 import 'package:app/view_model/logic/preference/IPreferenceAccess.dart';
-import 'package:app/view_model/repository/data_classes/filter/Frequency.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +35,7 @@ class MealListEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var borderColor = _getBorderColor(context);
+    var borderColor = getBorderColor(context, _meal);
 
     return Padding(
         padding: EdgeInsets.symmetric(
@@ -151,25 +150,6 @@ class MealListEntry extends StatelessWidget {
                                 )))
                       ])),
             )));
-  }
-
-
-
-  Color? _getBorderColor(BuildContext context) {
-    if (_meal.isFavorite) {
-      return Theme
-          .of(context)
-          .colorScheme
-          .primary;
-    }
-    if (_meal.relativeFrequency == Frequency.newMeal) {
-      return Theme
-          .of(context)
-          .colorScheme
-          .secondary;
-    }
-
-    return null;
   }
 }
 

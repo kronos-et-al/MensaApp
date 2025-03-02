@@ -1,3 +1,4 @@
+import 'package:app/view/core/Tag.dart';
 import 'package:app/view/core/information_display/MealMainEntry.dart';
 import 'package:app/view/core/information_display/MealPreviewImage.dart';
 import 'package:app/view/core/information_display/MealSideEntry.dart';
@@ -28,11 +29,12 @@ class MealGridEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var borderColor = getBorderColor(context, _meal);
     return SizedBox(
             width: _width,
             child: Padding(
                 padding:
-                    EdgeInsets.symmetric(vertical: _meal.isFavorite ? 5.5 : 8, horizontal: _meal.isFavorite ? 9.5 : 12),
+                    EdgeInsets.symmetric(vertical: borderColor != null ? 5.5 : 8, horizontal: borderColor != null ? 9.5 : 12),
                 child: GestureDetector(
                     onTap: () => {
                           Navigator.of(context).push(MaterialPageRoute(
@@ -46,11 +48,12 @@ class MealGridEntry extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: Theme.of(context).colorScheme.surfaceDim,
-                        border: Border.all(
-                            color: _meal.isFavorite
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.surfaceDim,
-                            width: _meal.isFavorite ? 2.5 : 0),
+                        border:  Border.all(
+                      color: borderColor ?? Theme
+                          .of(context)
+                          .colorScheme
+                          .surfaceDim,
+                        width: borderColor != null ? 2.5 : 0),
                       ),
                       child: Column(children: [
                         MealPreviewImage(
