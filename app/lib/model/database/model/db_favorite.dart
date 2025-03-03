@@ -91,10 +91,10 @@ class DBFavorite implements DatabaseModel {
       $columnMealID TEXT PRIMARY KEY,
       $columnLastDate TEXT,
       $columnFoodType TEXT,
-      $columnPriceStudent INTEGER CHECK($columnPriceStudent > 0),
-      $columnPriceEmployee INTEGER CHECK($columnPriceEmployee > 0),
-      $columnPricePupil INTEGER CHECK($columnPricePupil > 0),
-      $columnPriceGuest INTEGER CHECK($columnPriceGuest > 0),
+      $columnPriceStudent INTEGER CHECK($columnPriceStudent >= 0),
+      $columnPriceEmployee INTEGER CHECK($columnPriceEmployee >= 0),
+      $columnPricePupil INTEGER CHECK($columnPricePupil >= 0),
+      $columnPriceGuest INTEGER CHECK($columnPriceGuest >= 0),
       $columnServedDate TEXT NOT NULL,
       $columnServedLineId TEXT NOT NULL
     )

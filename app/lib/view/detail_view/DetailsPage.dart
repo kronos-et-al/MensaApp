@@ -81,8 +81,8 @@ class DetailsPageState extends State<DetailsPage> {
           if (!mealSnapshot.hasData) {
             return Container(
               color: themeData.brightness == Brightness.light
-                  ? themeData.colorScheme.background
-                  : themeData.colorScheme.background,
+                  ? themeData.colorScheme.surface
+                  : themeData.colorScheme.surface,
               child: const Center(
                 child: CircularProgressIndicator(),
               ),
@@ -94,8 +94,8 @@ class DetailsPageState extends State<DetailsPage> {
             Navigator.of(context).pop();
             return Container(
               color: themeData.brightness == Brightness.light
-                  ? themeData.colorScheme.background
-                  : themeData.colorScheme.background,
+                  ? themeData.colorScheme.surface
+                  : themeData.colorScheme.surface,
             );
           }
           switch (mealSnapshot.requireData) {
@@ -104,8 +104,8 @@ class DetailsPageState extends State<DetailsPage> {
                 Meal meal = value.value;
                 return Container(
                     color: themeData.brightness == Brightness.light
-                        ? themeData.colorScheme.background
-                        : themeData.colorScheme.background,
+                        ? themeData.colorScheme.surface
+                        : themeData.colorScheme.surface,
                     child: SafeArea(
                         child: Scaffold(
                       appBar: MensaAppBar(
@@ -188,8 +188,8 @@ class DetailsPageState extends State<DetailsPage> {
                               child: Container(
                                   color:
                                       themeData.brightness == Brightness.light
-                                          ? themeData.colorScheme.background
-                                          : themeData.colorScheme.surface,
+                                          ? themeData.colorScheme.surface
+                                          : themeData.colorScheme.surfaceDim,
                                   child: SingleChildScrollView(
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -241,14 +241,14 @@ class DetailsPageState extends State<DetailsPage> {
                                                         .brightness ==
                                                     Brightness.light
                                                 ? themeData
-                                                    .colorScheme.background
-                                                : themeData.colorScheme.surface,
+                                                    .colorScheme.surface
+                                                : themeData.colorScheme.surfaceDim,
                                             expandedColor: themeData
                                                         .brightness ==
                                                     Brightness.light
-                                                ? themeData.colorScheme.surface
+                                                ? themeData.colorScheme.surfaceDim
                                                 : themeData
-                                                    .colorScheme.background,
+                                                    .colorScheme.surface,
                                             mainEntry:
                                                 MealMainEntry(meal: meal),
                                             info: MealAccordionInfo(
@@ -275,19 +275,19 @@ class DetailsPageState extends State<DetailsPage> {
                                                                 Brightness.light
                                                             ? themeData
                                                                 .colorScheme
-                                                                .background
+                                                                .surface
                                                             : themeData
                                                                 .colorScheme
-                                                                .surface,
+                                                                .surfaceDim,
                                                     expandedColor:
                                                         themeData.brightness ==
                                                                 Brightness.light
                                                             ? themeData
                                                                 .colorScheme
-                                                                .surface
+                                                                .surfaceDim
                                                             : themeData
                                                                 .colorScheme
-                                                                .background,
+                                                                .surface,
                                                     sideEntry:
                                                         MealSideEntry(side: e),
                                                     info: MealAccordionInfo(
@@ -319,9 +319,9 @@ class DetailsPageState extends State<DetailsPage> {
                                             backgroundColor: themeData
                                                         .brightness ==
                                                     Brightness.light
-                                                ? themeData.colorScheme.surface
+                                                ? themeData.colorScheme.surfaceDim
                                                 : themeData
-                                                    .colorScheme.background,
+                                                    .colorScheme.surface,
                                           ),
                                           const SizedBox(height: 16),
                                           Text(
@@ -447,8 +447,8 @@ class DetailsPageState extends State<DetailsPage> {
                 Navigator.of(context).pop();
                 return Container(
                   color: themeData.brightness == Brightness.light
-                      ? themeData.colorScheme.background
-                      : themeData.colorScheme.background,
+                      ? themeData.colorScheme.surface
+                      : themeData.colorScheme.surface,
                 );
               }
           }

@@ -29,7 +29,7 @@ class RatingsOverview extends StatelessWidget {
       Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: _backgroundColor ?? Theme.of(context).colorScheme.surface,
+          color: _backgroundColor ?? Theme.of(context).colorScheme.surfaceDim,
           borderRadius: BorderRadius.circular(4),
         ),
         child: Column(

@@ -22,7 +22,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.surface,
       child: SafeArea(
         child: Scaffold(
           body: IndexedStack(
@@ -38,6 +38,7 @@ class _MainPageState extends State<MainPage> {
             elevation: 2,
             currentIndex: _selectedIndex,
             onTap: (index) => setState(() => _selectedIndex = index),
+            selectedItemColor: Theme.of(context).colorScheme.primary,
             items: [
               BottomNavigationBarItem(
                 icon: const NavigationMealPlanIcon(),

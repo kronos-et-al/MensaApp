@@ -25,7 +25,7 @@ class MensaButtonGroup<T> extends StatelessWidget {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
-              color: Theme.of(context).colorScheme.surface, width: 1)),
+              color: Theme.of(context).colorScheme.surfaceDim, width: 1)),
       child: IntrinsicHeight(
           child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
