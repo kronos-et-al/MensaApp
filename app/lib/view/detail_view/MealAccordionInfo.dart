@@ -58,7 +58,7 @@ class MealAccordionInfo extends StatelessWidget {
                               : theme.colorScheme.surface,
                           width: 2)),
                   child: MealNutrientsList(
-                      nutritionData: _nutritionData!, additives: _additives)))
+                      nutritionData: _nutritionData, additives: _additives)))
         else if (_additives.isNotEmpty)
           Row(children: [
             Column(
@@ -78,7 +78,7 @@ class MealAccordionInfo extends StatelessWidget {
               ],
             )
           ]),
-        Padding(
+        if (_allergens.isNotEmpty) Padding(
             padding: const EdgeInsets.only(right: 8, top: 2),
             child: Text(
               "${FlutterI18n.translate(context, _allergens.isNotEmpty ? "allergen.allergenTitle" : "allergen.allergenTitleEmpty")} ${_allergens.length > 1 ? ([
@@ -96,15 +96,15 @@ class MealAccordionInfo extends StatelessWidget {
             )),
         const SizedBox(height: 8),
         _environmentInfo != null
-            ? MealEnvironmentInfo(environmentInfo: _environmentInfo!)
+            ? MealEnvironmentInfo(environmentInfo: _environmentInfo)
             : const SizedBox(height: 0),
         (_frequency != null && _lastServed != null && _nextServed != null)
             ? Text(
                 FlutterI18n.translate(context, "mealDetails.frequency",
                     translationParams: {
                       "frequency": _frequency.toString(),
-                      "lastServed": _dateFormat.format(_lastServed!),
-                      "nextServed": _dateFormat.format(_nextServed!)
+                      "lastServed": _dateFormat.format(_lastServed),
+                      "nextServed": _dateFormat.format(_nextServed)
                     }),
                 style:
                     const TextStyle(fontWeight: FontWeight.w300, fontSize: 12),
