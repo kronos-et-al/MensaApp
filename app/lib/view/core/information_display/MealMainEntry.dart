@@ -31,8 +31,9 @@ class MealMainEntry extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: RichText(text: TextSpan(text: _meal.name + " ",
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 14, height: 1.5), children: getTags(context, _meal))),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 14, height: 1.5, color: Theme.of(context).colorScheme.onSurface),
+                children: getTags(context, _meal))),
           ),
           const SizedBox(width: 8),
           Text(
