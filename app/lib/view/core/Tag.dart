@@ -60,6 +60,16 @@ List<WidgetSpan> getTags(BuildContext context, Meal meal, {TextStyle? style}) {
     );
   }
 
+  if (meal.individualRating != 0) {
+    tags.add(
+      assembleTag(
+        FlutterI18n.translate(context, "tag.rated"),
+        Colors.deepPurple,
+        style: style,
+      ),
+    );
+  }
+
   return tags;
 }
 
