@@ -11,13 +11,13 @@ class MealMainEntry extends StatelessWidget {
   final Meal _meal;
 
   // TODO use locale
-  final NumberFormat _priceFormat =
-      NumberFormat.currency(locale: 'de_DE', symbol: '€');
+  final NumberFormat _priceFormat = NumberFormat.currency(
+    locale: 'de_DE',
+    symbol: '€',
+  );
 
   /// Creates a MealMainEntry.
-  MealMainEntry({Key? key, required Meal meal})
-      : _meal = meal,
-        super(key: key);
+  MealMainEntry({Key? key, required Meal meal}) : _meal = meal, super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,19 +30,26 @@ class MealMainEntry extends StatelessWidget {
           MealIcon(foodType: _meal.foodType, width: 24, height: 24),
           const SizedBox(width: 8),
           Expanded(
-            child: RichText(text: TextSpan(text: _meal.name + " ",
+            child: RichText(
+              text: TextSpan(
+                text: _meal.name + " ",
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 14, height: 1.5, color: Theme.of(context).colorScheme.onSurface),
-                children: getTags(context, _meal))),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  height: 1.5,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                children: getTags(context, _meal),
+              ),
+            ),
           ),
           const SizedBox(width: 8),
           Text(
-              _priceFormat.format(
-                  _meal.price.getPrice(preferences.getPriceCategory()) / 100),
-              style: const TextStyle(
-                fontSize: 14,
-                height: 1.5,
-              ))
+            _priceFormat.format(
+              _meal.price.getPrice(preferences.getPriceCategory()) / 100,
+            ),
+            style: const TextStyle(fontSize: 14, height: 1.5),
+          ),
         ],
       ),
     );
