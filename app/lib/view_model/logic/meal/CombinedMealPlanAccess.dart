@@ -474,11 +474,17 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       case Sorting.rating:
         sort.sort((a, b) =>
             a.meals[0].averageRating.compareTo(b.meals[0].averageRating));
-      default:
+      case Sorting.frequency:
         sort.sort((a, b) =>
             a.meals[0].numberOfOccurance
                 ?.compareTo(b.meals[0].numberOfOccurance ?? 0) ??
             0);
+      case Sorting.envScore:
+        sort.sort((a, b) =>
+        (a.meals[0].environmentInfo?.averageRating ?? 0)
+            .compareTo(b.meals[0].environmentInfo?.averageRating ?? 0));
+      case Sorting.line:
+        throw "unreachable";
     }
 
     // add same lines after each other to one
