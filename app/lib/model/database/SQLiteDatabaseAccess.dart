@@ -334,11 +334,13 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
 
   @override
   Future<void> updateAll(List<MealPlan> mealPlans) async {
-    for (MealPlan mealPlan in mealPlans) {
-      await _insertCanteen(mealPlan.line.canteen);
-      await _insertLine(mealPlan.line);
-      await _insertMealPlan(mealPlan);
-    }
+    // todo: this function is very slow and slows down updating considerably.
+    await Future.wait(mealPlans.expand((mealPlan) => [
+          _insertCanteen(mealPlan.line.canteen),
+          _insertLine(mealPlan.line),
+          // todo: especially _insertMealPlan
+          _insertMealPlan(mealPlan)
+        ]));
   }
 
   @override
@@ -440,12 +442,14 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   Future<int> _insertMealPlanMeal(Meal meal, DBMealPlan mealPlan) async {
     var db = await database;
 
-    await db.delete(DBMealAllergen.tableName,
-        where: '${DBMealAllergen.columnMealID} = ?', whereArgs: [meal.id]);
-    await db.delete(DBMealAdditive.tableName,
-        where: '${DBMealAdditive.columnMealID} = ?', whereArgs: [meal.id]);
-    await db.delete(DBImage.tableName,
-        where: '${DBImage.columnMealID} = ?', whereArgs: [meal.id]);
+    await Future.wait([
+      db.delete(DBMealAllergen.tableName,
+          where: '${DBMealAllergen.columnMealID} = ?', whereArgs: [meal.id]),
+      db.delete(DBMealAdditive.tableName,
+          where: '${DBMealAdditive.columnMealID} = ?', whereArgs: [meal.id]),
+      db.delete(DBImage.tableName,
+          where: '${DBImage.columnMealID} = ?', whereArgs: [meal.id])
+    ]);
 
     DBMeal dbMeal = DBMeal(meal.id, meal.name, meal.foodType,
         meal.individualRating, meal.numberOfRatings, meal.averageRating);
@@ -460,17 +464,16 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         _dateFormat.format(meal.nextServed ?? DateTime.now()),
         meal.numberOfOccurance,
         meal.relativeFrequency ?? Frequency.normal);
-    await Future.wait(
-        meal.allergens?.map((e) => _insertMealAllergen(e, dbMeal)).toList() ??
-            []);
-    await Future.wait(
-        meal.additives?.map((e) => _insertMealAdditive(e, dbMeal)).toList() ??
-            []);
-    await Future.wait(meal.sides!
-        .map((e) => _insertMealPlanSide(e, dbMeal, mealPlan))
-        .toList());
-    await Future.wait(
-        meal.images?.map((e) => _insertImage(e, dbMeal)).toList() ?? []);
+    await Future.wait([
+      ...(meal.allergens?.map((e) => _insertMealAllergen(e, dbMeal)).toList() ??
+          []),
+      ...(meal.additives?.map((e) => _insertMealAdditive(e, dbMeal)).toList() ??
+          []),
+      ...(meal.sides!
+          .map((e) => _insertMealPlanSide(e, dbMeal, mealPlan))
+          .toList()),
+      ...(meal.images?.map((e) => _insertImage(e, dbMeal)).toList() ?? [])
+    ]);
     if (meal.nutritionData != null) {
       await _insertMealNutritionData(meal.nutritionData!, dbMeal);
     }
@@ -553,16 +556,15 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
       EnvironmentInfo environmentInfo, DBMeal meal) async {
     var db = await database;
     var dbMealEnvironmentInfo = DBMealEnvironmentInfo(
-      meal.mealID,
-      environmentInfo.averageRating,
-      environmentInfo.co2Rating,
-      environmentInfo.co2Value,
-      environmentInfo.waterRating,
-      environmentInfo.waterValue,
-      environmentInfo.animalWelfareRating,
-      environmentInfo.rainforestRating,
-      environmentInfo.maxRating
-    );
+        meal.mealID,
+        environmentInfo.averageRating,
+        environmentInfo.co2Rating,
+        environmentInfo.co2Value,
+        environmentInfo.waterRating,
+        environmentInfo.waterValue,
+        environmentInfo.animalWelfareRating,
+        environmentInfo.rainforestRating,
+        environmentInfo.maxRating);
     return await db.insert(
         DBMealEnvironmentInfo.tableName, dbMealEnvironmentInfo.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
@@ -612,8 +614,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         environmentInfo.waterValue,
         environmentInfo.animalWelfareRating,
         environmentInfo.rainforestRating,
-        environmentInfo.maxRating
-    );
+        environmentInfo.maxRating);
     return await db.insert(
         DBSideEnvironmentInfo.tableName, dbSideEnvironmentInfo.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);

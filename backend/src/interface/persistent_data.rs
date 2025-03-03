@@ -262,4 +262,6 @@ pub trait RequestDataAccess: Send + Sync {
     async fn get_nutrition_data(&self, food_id: Uuid) -> Result<Option<NutritionData>>;
     /// Returns the environmental data related to the given food_id (food_id can be a meal_id or side_id).
     async fn get_environment_information(&self, food_id: Uuid) -> Result<Option<EnvironmentInfo>>;
+    /// Returns the dates this meal was served at in the line's canteen, no earlier and excluding three months ago.
+    async fn get_serve_dates(&self, meal_id: Uuid, line_id: Uuid) -> Result<Vec<Date>>;
 }

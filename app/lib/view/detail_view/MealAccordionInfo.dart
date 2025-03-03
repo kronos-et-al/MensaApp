@@ -54,8 +54,8 @@ class MealAccordionInfo extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5),
                       border: Border.all(
                           color: theme.brightness == Brightness.dark
-                              ? theme.colorScheme.surface
-                              : theme.colorScheme.background,
+                              ? theme.colorScheme.surfaceDim
+                              : theme.colorScheme.surface,
                           width: 2)),
                   child: MealNutrientsList(
                       nutritionData: _nutritionData!, additives: _additives)))

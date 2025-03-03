@@ -34,7 +34,7 @@ class MensaButton extends StatelessWidget {
         label: _semanticLabel,
         child: MaterialButton(
             textColor: Theme.of(context).colorScheme.onSurface,
-            color: Theme.of(context).colorScheme.surface,
+            color: Theme.of(context).colorScheme.surfaceDim,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4.0),
             ),

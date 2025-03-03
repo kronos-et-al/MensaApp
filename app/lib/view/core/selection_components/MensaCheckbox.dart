@@ -25,10 +25,10 @@ class MensaCheckbox extends StatelessWidget {
               width: 18,
               height: 18,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
+                color: Theme.of(context).colorScheme.surfaceDim,
                 borderRadius: BorderRadius.circular(4.0),
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.surface,
+                  color: Theme.of(context).colorScheme.surfaceDim,
                   width: 1,
                 ),
               ),
@@ -37,11 +37,11 @@ class MensaCheckbox extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4.0),
                 ),
                 // Set the border color of the checkbox to the primary color when it is selected and to the surface color when it is not selected, this makes the border invisible
-                fillColor: MaterialStateProperty.resolveWith((states) {
-                  if (states.contains(MaterialState.selected)) {
+                fillColor: WidgetStateProperty.resolveWith((states) {
+                  if (states.contains(WidgetState.selected)) {
                     return Theme.of(context).colorScheme.primary;
                   } else {
-                    return Theme.of(context).colorScheme.surface;
+                    return Theme.of(context).colorScheme.surfaceDim;
                   }
                 }),
                 checkColor: Theme.of(context).colorScheme.onPrimary,
