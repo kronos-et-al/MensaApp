@@ -27,6 +27,7 @@
     "line": "Linie",
     "price": "Preis",
     "rating": "Bewertung",
-    "frequency": "Häufigkeit"
+    "frequency": "Häufigkeit",
+    "envScore": "Umweltscore"
   }
 }

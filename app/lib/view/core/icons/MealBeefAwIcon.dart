@@ -18,7 +18,7 @@ class MealBeefAwIcon extends StatelessWidget {
         height: _height,
         decoration: BoxDecoration(
             border: Border.all(
-                color: Theme.of(context).colorScheme.secondary, width: 2),
+                color: Theme.of(context).colorScheme.primary, width: 2),
             borderRadius: BorderRadius.all(Radius.circular(_width))),
         child: SvgPicture.asset('assets/icons/beef.svg'));
   }
