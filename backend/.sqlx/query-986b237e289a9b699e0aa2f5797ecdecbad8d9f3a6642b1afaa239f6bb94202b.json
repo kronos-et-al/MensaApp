@@ -1,0 +1,35 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT serve_date, p.food_id, query_line as \"query_line!\" \n            FROM food_plan p NATURAL JOIN line l\n                JOIN (UNNEST($1::uuid[], $2::uuid[]) query(food_id,query_line) JOIN line qline ON qline.line_id = query.query_line) \n                ON p.food_id = query.food_id AND qline.canteen_id = l.canteen_id\n            WHERE serve_date > NOW() - INTERVAL '3 months'\n            ORDER BY serve_date ASC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "serve_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 1,
+        "name": "food_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "query_line!",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "UuidArray",
+        "UuidArray"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "986b237e289a9b699e0aa2f5797ecdecbad8d9f3a6642b1afaa239f6bb94202b"
+}
