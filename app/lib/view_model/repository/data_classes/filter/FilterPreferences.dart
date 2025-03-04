@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 
-import 'Sorting.dart';
-import 'Frequency.dart';
 import '../meal/Allergen.dart';
 import '../meal/FoodType.dart';
+import 'Frequency.dart';
+import 'Sorting.dart';
 
 /// This class contains all filter preferences.
 class FilterPreferences {
@@ -18,23 +18,23 @@ class FilterPreferences {
 
   /// Creates a new [FilterPreferences] object.
   /// Initializes all not committed parameters with standard-values that allows all meals to be displayed.
-  FilterPreferences(
-      {List<FoodType>? categories,
-      List<Allergen>? allergens,
-      int? price,
-      int? rating,
-      List<Frequency>? frequency,
-      bool? onlyFavorite,
-      Sorting? sortedBy,
-      bool? ascending})
-      : _categories = categories ?? _getAllFoodTypes(),
-        _allergens = allergens ?? _getAllAllergen(),
-        _price = price ?? 1000,
-        _rating = rating ?? 1,
-        _frequency = frequency ?? _getAllFrequencies(),
-        _onlyFavorite = onlyFavorite ?? false,
-        _sortedBy = sortedBy ?? Sorting.line,
-        _ascending = ascending ?? true;
+  FilterPreferences({
+    List<FoodType>? categories,
+    List<Allergen>? allergens,
+    int? price,
+    int? rating,
+    List<Frequency>? frequency,
+    bool? onlyFavorite,
+    Sorting? sortedBy,
+    bool? ascending,
+  }) : _categories = categories ?? _getAllFoodTypes(),
+       _allergens = allergens ?? _getAllAllergen(),
+       _price = price ?? 1000,
+       _rating = rating ?? 1,
+       _frequency = frequency ?? _getAllFrequencies(),
+       _onlyFavorite = onlyFavorite ?? false,
+       _sortedBy = sortedBy ?? Sorting.line,
+       _ascending = ascending ?? true;
 
   /// Returns the food categories that are displayed.
   List<FoodType> get categories => _categories;
@@ -46,14 +46,24 @@ class FilterPreferences {
 
   /// Adds a special type of meat or the category unknown to the categories that are shown.
   addMeatCategory(FoodType foodType) {
-    if ([FoodType.beef, FoodType.fish, FoodType.pork, FoodType.poultry].contains(foodType)) {
+    if ([
+      FoodType.beef,
+      FoodType.fish,
+      FoodType.pork,
+      FoodType.poultry,
+    ].contains(foodType)) {
       _categories.add(foodType);
     }
   }
 
   /// Removes a special type of meat or the category unknown from the categories that are shown.
   removeMeatCategory(FoodType foodType) {
-    if ([FoodType.beef, FoodType.fish, FoodType.pork, FoodType.poultry].contains(foodType)) {
+    if ([
+      FoodType.beef,
+      FoodType.fish,
+      FoodType.pork,
+      FoodType.poultry,
+    ].contains(foodType)) {
       _categories.remove(foodType);
     }
   }
@@ -126,6 +136,11 @@ class FilterPreferences {
   /// Sets the frequency so all meals are shown.
   setAllFrequencies() {
     _frequency = _getAllFrequencies();
+  }
+
+  /// Sets the frequency so that
+  void setIrregularFrequency() {
+    _frequency = [Frequency.normal, Frequency.rare, Frequency.newMeal];
   }
 
   /// Returns the minimal rating of a meal to be shown.
