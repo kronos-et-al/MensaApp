@@ -6,11 +6,23 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 const _environmentThreshold =
     3; // currently, the api only provides integer values
 
+final _ratingColors = <Color>[
+  Colors.red[800]!,
+  Colors.deepOrange[800]!,
+  Colors.orange[800]!,
+  Colors.lime[800]!,
+  Colors.green[800]!,
+];
+
 WidgetSpan assembleTag(String text, Color color, {TextStyle? style}) {
+  return assembleTagRaw(Text(text, style: style), color);
+}
+
+WidgetSpan assembleTagRaw(Widget child, Color color) {
   return WidgetSpan(
     child: Padding(
       padding: const EdgeInsets.only(right: 4),
-      child: Badge(label: Text(text, style: style), backgroundColor: color),
+      child: Badge(label: child, backgroundColor: color),
     ),
   );
 }
@@ -62,10 +74,29 @@ List<WidgetSpan> getTags(BuildContext context, Meal meal, {TextStyle? style}) {
 
   if (meal.individualRating != 0) {
     tags.add(
-      assembleTag(
-        FlutterI18n.translate(context, "tag.rated"),
-        Colors.deepPurple,
-        style: style,
+      assembleTagRaw(
+        RichText(
+          text: TextSpan(
+            text: "${meal.individualRating}",
+            style: style,
+            children: [
+              WidgetSpan(
+                child: Padding(
+                  padding: const EdgeInsets.all(1),
+                  child: Icon(
+                    Icons.star,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    size: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        // FlutterI18n.translate(context, "tag.rated"),
+        // Colors.deepPurple,
+        _ratingColors[meal.individualRating - 1],
+        // Colors.teal,
       ),
     );
   }
@@ -76,6 +107,9 @@ List<WidgetSpan> getTags(BuildContext context, Meal meal, {TextStyle? style}) {
 Color? getBorderColor(BuildContext context, Meal meal) {
   if (meal.isFavorite) {
     return Theme.of(context).colorScheme.primary;
+  }
+  if (meal.individualRating == 1) {
+    return _ratingColors[0];
   }
   if (meal.relativeFrequency == Frequency.newMeal) {
     return Theme.of(context).colorScheme.secondary;
