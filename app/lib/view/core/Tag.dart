@@ -72,6 +72,15 @@ List<WidgetSpan> getTags(BuildContext context, Meal meal, {TextStyle? style}) {
     );
   }
 
+  if (meal.averageRating >= 4.5 && meal.numberOfRatings >= 100) {
+    tags.add(
+      assembleTag(
+        FlutterI18n.translate(context, "tag.legendary"),
+        Colors.deepPurple,
+      ),
+    );
+  }
+
   if (meal.individualRating != 0) {
     tags.add(
       assembleTagRaw(
