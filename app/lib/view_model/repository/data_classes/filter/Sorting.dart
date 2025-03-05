@@ -10,5 +10,8 @@ enum Sorting {
   rating,
 
   /// sort after frequency
-  frequency
+  frequency,
+
+  /// sort by average environment score
+  envScore,
 }

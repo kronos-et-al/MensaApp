@@ -36,7 +36,7 @@ class SettingsDropdownEntry<T> extends StatelessWidget {
         Row(children: [
           Expanded(
             child: MensaDropdown<T>(
-                backgroundColor: Theme.of(context).colorScheme.surface,
+                backgroundColor: Theme.of(context).colorScheme.surfaceDim,
                 onChanged: _onChanged,
                 value: _value,
                 items: _items),
