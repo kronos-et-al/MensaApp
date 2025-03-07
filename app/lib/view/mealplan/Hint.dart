@@ -3,7 +3,16 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 
-const _hints = ["tempFilter", "reportImages", "imageView", "hint"];
+const _hints = [
+  "tempFilter",
+  "reportImages",
+  "imageView",
+  "hint",
+  "allergens",
+  "rate1",
+  "favorite",
+  "imageVote",
+];
 
 class Hint extends StatefulWidget {
   final bool allowRefresh;

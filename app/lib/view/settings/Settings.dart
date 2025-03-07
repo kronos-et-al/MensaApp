@@ -49,6 +49,7 @@ class Settings extends StatelessWidget {
                   vertical: 8,
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SettingsDropdownEntry<MensaColorScheme>(
                       onChanged: (value) {
@@ -76,7 +77,11 @@ class Settings extends StatelessWidget {
                     const SizedBox(height: 16),
                     SettingsSection(
                       heading: "settings.hint",
-                      children: [Hint(allowRefresh: true)],
+                      children: [
+                        Row(
+                          children: [Expanded(child: Hint(allowRefresh: true))],
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     SettingsSection(

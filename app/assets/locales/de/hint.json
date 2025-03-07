@@ -3,5 +3,9 @@
   "tempFilter": "Filtericon gedrückt halten, um Filter temporär zu deaktivieren.",
   "reportImages": "Unpassende Bilder können in der App gemeldet werden.",
   "imageView": "Tippen auf ein Bild in der Detailansicht öffnet die Galerie zu diesem Gericht.",
-  "hint": "Tipps können auch in den Einstellungen angezeigt werden. Probiere darauf zu tippen!"
+  "hint": "Tipps können auch in den Einstellungen angezeigt werden. Probiere darauf zu tippen!",
+  "allergens": "Gerichte können nach Allergenen gefiltert werden.",
+  "rate1": "Gerichte können mit nur einem Stern bewertet werden, um diese negativ hervorzuheben.",
+  "favorite": "Gerichte können favorisiert werden, um diese positiv hervorzuheben und immer darauf Zugriff zu haben.",
+  "imageVote": "Bilder können bewertet werden, damit das beste Bild das Gericht repräsentiert."
 }
