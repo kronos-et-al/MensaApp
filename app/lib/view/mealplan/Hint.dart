@@ -12,6 +12,11 @@ const _hints = [
   "rate1",
   "favorite",
   "imageVote",
+  "expandMeals",
+  "priceCategories",
+  "openSource",
+  "openAPI",
+  "sort",
 ];
 
 class Hint extends StatefulWidget {
