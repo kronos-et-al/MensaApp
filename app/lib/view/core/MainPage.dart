@@ -27,11 +27,7 @@ class _MainPageState extends State<MainPage> {
         child: Scaffold(
           body: IndexedStack(
             index: _selectedIndex,
-            children: [
-              const MealPlanView(),
-              const Favorites(),
-              Settings(),
-            ],
+            children: [const MealPlanView(), const Favorites(), Settings()],
           ),
           bottomNavigationBar: BottomNavigationBar(
             showUnselectedLabels: false,
