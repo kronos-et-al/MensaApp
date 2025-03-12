@@ -5,6 +5,7 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 
 const _environmentThreshold =
     3; // currently, the api only provides integer values
+const _photogenyThreshold = 5;
 
 final _ratingColors = <Color>[
   Colors.red[800]!,
@@ -81,31 +82,31 @@ List<WidgetSpan> getTags(BuildContext context, Meal meal, {TextStyle? style}) {
     );
   }
 
+  if ((meal.images?.length ?? 0) >= _photogenyThreshold) {
+    tags.add(
+      assembleTag(
+        FlutterI18n.translate(context, "tag.photogenic"),
+        Colors.teal,
+      ),
+    );
+  }
   if (meal.individualRating != 0) {
     tags.add(
       assembleTagRaw(
-        RichText(
-          text: TextSpan(
-            text: "${meal.individualRating}",
-            style: style,
-            children: [
-              WidgetSpan(
-                child: Padding(
-                  padding: const EdgeInsets.all(1),
-                  child: Icon(
-                    Icons.star,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    size: 14,
-                  ),
-                ),
+        Row(
+          children: [
+            Text("${meal.individualRating}", style: style),
+            Padding(
+              padding: const EdgeInsets.all(1),
+              child: Icon(
+                Icons.star,
+                color: Theme.of(context).colorScheme.onPrimary,
+                size: 12,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        // FlutterI18n.translate(context, "tag.rated"),
-        // Colors.deepPurple,
         _ratingColors[meal.individualRating - 1],
-        // Colors.teal,
       ),
     );
   }
