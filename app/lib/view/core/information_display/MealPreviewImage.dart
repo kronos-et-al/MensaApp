@@ -204,7 +204,7 @@ class MealPreviewImage extends StatelessWidget {
                               backgroundColor: Theme.of(
                                 context,
                               ).colorScheme.surfaceDim.withAlpha(150),
-                              padding: EdgeInsets.all(5),
+                              padding: EdgeInsets.all(4),
                               label: Text(
                                 "+${_meal.images!.length - 1}",
                                 style: TextStyle(
