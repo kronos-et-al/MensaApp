@@ -7,6 +7,7 @@ import 'package:app/view/core/icons/navigation/NavigationListOutlinedIcon.dart';
 import 'package:app/view/core/meal_view_format/MealGrid.dart';
 import 'package:app/view/core/meal_view_format/MealList.dart';
 import 'package:app/view/filter/FilterDialog.dart';
+import 'package:app/view/mealplan/Hint.dart';
 import 'package:app/view/mealplan/MealPlanClosed.dart';
 import 'package:app/view/mealplan/MealPlanDateSelect.dart';
 import 'package:app/view/mealplan/MealPlanError.dart';
@@ -37,86 +38,137 @@ class MealPlanView extends StatelessWidget {
   Widget build(BuildContext context) {
     // These provider are necessary for the synchronization of each other. They need to be initialized even if they are unused.
     IImageAccess imageAccess = Provider.of<IImageAccess>(context);
-    IFavoriteMealAccess favoriteMealAccess =
-        Provider.of<IFavoriteMealAccess>(context);
+    IFavoriteMealAccess favoriteMealAccess = Provider.of<IFavoriteMealAccess>(
+      context,
+    );
     ThemeData theme = Theme.of(context);
     return Consumer<IFavoriteMealAccess>(
-        builder: (context, favoriteMealAccess, child) => Consumer<
-                IPreferenceAccess>(
-            builder: (context, preferenceAccess, child) =>
-                Consumer<IMealAccess>(builder: (context, mealAccess, child) {
-                  return FutureBuilder(
+      builder:
+          (context, favoriteMealAccess, child) => Consumer<IPreferenceAccess>(
+            builder:
+                (context, preferenceAccess, child) => Consumer<IMealAccess>(
+                  builder: (context, mealAccess, child) {
+                    return FutureBuilder(
                       future: Future.wait([
                         mealAccess.getCanteen(),
                         mealAccess.getAvailableCanteens(),
                         mealAccess.getDate(),
                         mealAccess.getMealPlan(),
-                        mealAccess.isFilterActive()
+                        mealAccess.isFilterActive(),
                       ], eagerError: true),
                       builder: (context, snapshot) {
                         if (mealAccess.failedInitializing) {
                           return Scaffold(
-                              appBar: MensaAppBar(
-                                  appBarHeight: kToolbarHeight,
-                                  child: Semantics(
-                                    header: true,
-                                    child: Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            16, 16, 16, 0),
-                                        child: Text(
-                                          FlutterI18n.translate(
-                                              context, "common.appTitle"),
-                                          style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                  )),
-                              body: MealPlanInitialisationError());
+                            appBar: MensaAppBar(
+                              appBarHeight: kToolbarHeight,
+                              child: Semantics(
+                                header: true,
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    16,
+                                    16,
+                                    16,
+                                    0,
+                                  ),
+                                  child: Text(
+                                    FlutterI18n.translate(
+                                      context,
+                                      "common.appTitle",
+                                    ),
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            body: MealPlanInitialisationError(),
+                          );
                         }
                         if (!snapshot.hasData) {
                           return Scaffold(
-                              appBar: MensaAppBar(
-                                  appBarHeight: kToolbarHeight,
-                                  child: Semantics(
-                                    header: true,
-                                    child: Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            16, 16, 16, 0),
-                                        child: Text(
-                                          FlutterI18n.translate(
-                                              context, "common.appTitle"),
-                                          style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                  )),
-                              body: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const CircularProgressIndicator(),
-                                    const SizedBox(height: 32),
-                                    Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 64),
-                                        child: Text(
-                                            FlutterI18n.translate(
-                                                context, "common.welcomeTitle"),
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold))),
-                                    const SizedBox(height: 16),
-                                    Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 64),
-                                        child: Text(
-                                            FlutterI18n.translate(
-                                                context, "common.welcomeLabel"),
-                                            textAlign: TextAlign.center))
-                                  ],
+                            appBar: MensaAppBar(
+                              appBarHeight: kToolbarHeight,
+                              child: Semantics(
+                                header: true,
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    16,
+                                    16,
+                                    16,
+                                    0,
+                                  ),
+                                  child: Text(
+                                    FlutterI18n.translate(
+                                      context,
+                                      "common.appTitle",
+                                    ),
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
-                              ));
+                              ),
+                            ),
+                            body: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const CircularProgressIndicator(),
+                                  const SizedBox(height: 32),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 64,
+                                    ),
+                                    child: Text(
+                                      FlutterI18n.translate(
+                                        context,
+                                        "common.welcomeTitle",
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  // const SizedBox(height: 16),
+                                  // Padding(
+                                  //   padding: EdgeInsets.symmetric(
+                                  //     horizontal: 64,
+                                  //   ),
+                                  //   child: Text(
+                                  //     FlutterI18n.translate(
+                                  //       context,
+                                  //       "common.welcomeLabel",
+                                  //     ),
+                                  //     textAlign: TextAlign.center,
+                                  //   ),
+                                  // ),
+                                  const SizedBox(height: 16),
+                                  Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          FlutterI18n.translate(
+                                            context,
+                                            "hint.title",
+                                          ),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Hint(),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
                           return const Center(
                             child: CircularProgressIndicator(),
                           );
@@ -133,143 +185,153 @@ class MealPlanView extends StatelessWidget {
                             snapshot.requireData[3]
                                 as Result<List<MealPlan>, MealPlanException>;
                         bool filterActive = snapshot.requireData[4] as bool;
-                        if (availableCanteens.indexWhere((element) =>
-                                element.id == selectedCanteen.id) ==
+                        if (availableCanteens.indexWhere(
+                              (element) => element.id == selectedCanteen.id,
+                            ) ==
                             -1) {
                           mealAccess.changeCanteen(availableCanteens[0]);
                         }
                         return Scaffold(
-                            appBar: MensaAppBar(
-                                appBarHeight: kToolbarHeight,
-                                bottom: MealPlanToolbar(
-                                    child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8),
-                                        child: Row(
-                                          children: [
-                                            MensaTapable(
-                                                semanticLabel: FlutterI18n.translate(
-                                                    context,
-                                                    mealPlanFormat ==
-                                                            MealPlanFormat.grid
-                                                        ? 'semantics.mealPlanToggleList'
-                                                        : 'semantics.mealPlanToggleGrid'),
-                                                child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            12),
-                                                    child: mealPlanFormat ==
-                                                            MealPlanFormat.grid
-                                                        ? const NavigationListOutlinedIcon()
-                                                        : const NavigationGridOutlinedIcon()),
-                                                onTap: () {
-                                                  preferenceAccess
-                                                      .setMealPlanFormat(
-                                                          mealPlanFormat ==
-                                                                  MealPlanFormat
-                                                                      .grid
-                                                              ? MealPlanFormat
-                                                                  .list
-                                                              : MealPlanFormat
-                                                                  .grid);
-                                                }),
-                                            const Spacer(),
-                                            MealPlanDateSelect(
-                                              date: date,
-                                              onDateChanged: (date) =>
-                                                  mealAccess.changeDate(date),
+                          appBar: MensaAppBar(
+                            appBarHeight: kToolbarHeight,
+                            bottom: MealPlanToolbar(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
+                                child: Row(
+                                  children: [
+                                    MensaTapable(
+                                      semanticLabel: FlutterI18n.translate(
+                                        context,
+                                        mealPlanFormat == MealPlanFormat.grid
+                                            ? 'semantics.mealPlanToggleList'
+                                            : 'semantics.mealPlanToggleGrid',
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12),
+                                        child:
+                                            mealPlanFormat ==
+                                                    MealPlanFormat.grid
+                                                ? const NavigationListOutlinedIcon()
+                                                : const NavigationGridOutlinedIcon(),
+                                      ),
+                                      onTap: () {
+                                        preferenceAccess.setMealPlanFormat(
+                                          mealPlanFormat == MealPlanFormat.grid
+                                              ? MealPlanFormat.list
+                                              : MealPlanFormat.grid,
+                                        );
+                                      },
+                                    ),
+                                    const Spacer(),
+                                    MealPlanDateSelect(
+                                      date: date,
+                                      onDateChanged:
+                                          (date) => mealAccess.changeDate(date),
+                                    ),
+                                    const Spacer(),
+                                    MensaTapable(
+                                      semanticLabel: FlutterI18n.translate(
+                                        context,
+                                        "semantics.mealPlanFilter",
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12),
+                                        child:
+                                            filterActive
+                                                ? const NavigationFilterOutlinedIcon()
+                                                : const NavigationFilterOutlinedDisabledIcon(),
+                                      ),
+                                      onLongPress:
+                                          () => {mealAccess.toggleFilter()},
+                                      onTap:
+                                          () => {
+                                            showDialog(
+                                              context: context,
+                                              builder:
+                                                  (context) =>
+                                                      const FilterDialog(),
                                             ),
-                                            const Spacer(),
-                                            MensaTapable(
-                                                semanticLabel:
-                                                    FlutterI18n.translate(
-                                                        context,
-                                                        "semantics.mealPlanFilter"),
-                                                child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            12),
-                                                    child: filterActive
-                                                        ? const NavigationFilterOutlinedIcon()
-                                                        : const NavigationFilterOutlinedDisabledIcon()),
-                                                onLongPress: () => {
-                                                      mealAccess.toggleFilter(),
-                                                    },
-                                                onTap: () => {
-                                                      showDialog(
-                                                        context: context,
-                                                        builder: (context) =>
-                                                            const FilterDialog(),
-                                                      )
-                                                    })
-                                          ],
-                                        ))),
-                                child: Semantics(
-                                  header: true,
-                                  child: Padding(
-                                      padding:
-                                          const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                                      child: Row(children: [
-                                        Expanded(
-                                            child: MensaCanteenSelect(
-                                                selectedCanteen:
-                                                    selectedCanteen,
-                                                availableCanteens:
-                                                    availableCanteens,
-                                                onCanteenSelected: (canteen) =>
-                                                    mealAccess.changeCanteen(
-                                                        canteen)))
-                                      ])),
-                                )),
-                            body: RefreshIndicator(
-                              onRefresh: () async {
-                                String? error =
-                                    await mealAccess.refreshMealplan();
-                                if (!context.mounted) return;
-                                if (error != null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text(
-                                            FlutterI18n.translate(
-                                                context, error),
-                                            style: TextStyle(
-                                                color:
-                                                    theme.colorScheme.onError),
-                                          ),
-                                          backgroundColor:
-                                              theme.colorScheme.error));
-                                }
-                              },
-                              child: (() {
-                                switch (mealPlans) {
-                                  case Success<List<MealPlan>,
-                                        MealPlanException> value:
-                                    return mealPlanFormat == MealPlanFormat.grid
-                                        ? MealGrid(mealPlans: value.value)
-                                        : MealList(mealPlans: value.value);
-                                  case Failure<List<MealPlan>,
-                                        MealPlanException> exception:
-                                    if (exception.exception
-                                        is NoConnectionException) {
-                                      return const MealPlanError();
-                                    }
-                                    if (exception.exception
-                                        is NoDataException) {
-                                      return const MealPlanNoData();
-                                    }
-                                    if (exception.exception
-                                        is ClosedCanteenException) {
-                                      return const MealPlanClosed();
-                                    }
-                                    if (exception.exception
-                                        is FilteredMealException) {
-                                      return const MealPlanFilter();
-                                    }
+                                          },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            child: Semantics(
+                              header: true,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: MensaCanteenSelect(
+                                        selectedCanteen: selectedCanteen,
+                                        availableCanteens: availableCanteens,
+                                        onCanteenSelected:
+                                            (canteen) => mealAccess
+                                                .changeCanteen(canteen),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          body: RefreshIndicator(
+                            onRefresh: () async {
+                              String? error =
+                                  await mealAccess.refreshMealplan();
+                              if (!context.mounted) return;
+                              if (error != null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      FlutterI18n.translate(context, error),
+                                      style: TextStyle(
+                                        color: theme.colorScheme.onError,
+                                      ),
+                                    ),
+                                    backgroundColor: theme.colorScheme.error,
+                                  ),
+                                );
+                              }
+                            },
+                            child: (() {
+                              switch (mealPlans) {
+                                case Success<List<MealPlan>, MealPlanException>
+                                value:
+                                  return mealPlanFormat == MealPlanFormat.grid
+                                      ? MealGrid(mealPlans: value.value)
+                                      : MealList(mealPlans: value.value);
+                                case Failure<List<MealPlan>, MealPlanException>
+                                exception:
+                                  if (exception.exception
+                                      is NoConnectionException) {
                                     return const MealPlanError();
-                                }
-                              }()),
-                            ));
-                      });
-                })));
+                                  }
+                                  if (exception.exception is NoDataException) {
+                                    return const MealPlanNoData();
+                                  }
+                                  if (exception.exception
+                                      is ClosedCanteenException) {
+                                    return const MealPlanClosed();
+                                  }
+                                  if (exception.exception
+                                      is FilteredMealException) {
+                                    return const MealPlanFilter();
+                                  }
+                                  return const MealPlanError();
+                              }
+                            }()),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+          ),
+    );
   }
 }

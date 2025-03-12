@@ -6,6 +6,10 @@ enum Frequency {
   /// A meal is not offered often.
   rare,
 
+  /// A meal is offered regularly.
+  regular,
+
   /// The meal is not new and is not rare.
-  normal
+  normal,
+
 }

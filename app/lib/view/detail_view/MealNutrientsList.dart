@@ -28,8 +28,8 @@ class MealNutrientsList extends StatelessWidget {
               child: Ink(
             decoration: BoxDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? theme.colorScheme.surface
-                    : theme.colorScheme.background),
+                    ? theme.colorScheme.surfaceDim
+                    : theme.colorScheme.surface),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               child: Text(
@@ -86,8 +86,8 @@ class MealNutrientsList extends StatelessWidget {
                     child: Ink(
                   decoration: BoxDecoration(
                       color: theme.brightness == Brightness.dark
-                          ? theme.colorScheme.surface
-                          : theme.colorScheme.background),
+                          ? theme.colorScheme.surfaceDim
+                          : theme.colorScheme.surface),
                   child: Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
@@ -105,8 +105,8 @@ class MealNutrientsList extends StatelessWidget {
                     child: Ink(
                   decoration: BoxDecoration(
                       color: theme.brightness == Brightness.dark
-                          ? theme.colorScheme.surface
-                          : theme.colorScheme.background),
+                          ? theme.colorScheme.surfaceDim
+                          : theme.colorScheme.surface),
                   child: Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 4, vertical: 2),

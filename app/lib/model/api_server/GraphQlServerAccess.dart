@@ -10,28 +10,23 @@ import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
 import 'package:app/view_model/repository/data_classes/meal/EnvironmentInfo.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
-
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/meal/NutritionData.dart';
 import 'package:app/view_model/repository/data_classes/meal/Price.dart';
 import 'package:app/view_model/repository/data_classes/meal/Side.dart';
-
 import 'package:app/view_model/repository/data_classes/mealplan/Canteen.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
-
 import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
-
 import 'package:app/view_model/repository/data_classes/settings/ReportCategory.dart';
 import 'package:app/view_model/repository/error_handling/ImageUploadException.dart';
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
 import 'package:app/view_model/repository/error_handling/NoMealException.dart';
-
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:crypto/crypto.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import "package:http/http.dart" as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:intl/intl.dart';
-import "package:http/http.dart" as http;
 
 import '../../view_model/repository/interface/IServerAccess.dart';
 import 'requests/mutations.graphql.dart';
@@ -45,7 +40,7 @@ class _MensaClient extends http.BaseClient {
   static const String _authenticationScheme = "Mensa";
 
   _MensaClient(this._clientId, this._apiKey, [http.Client? client])
-      : _client = client ?? http.Client();
+    : _client = client ?? http.Client();
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
@@ -61,7 +56,9 @@ class _MensaClient extends http.BaseClient {
     final hmac = Hmac(sha512, utf8.encode(_apiKey));
     final hash = hmac.convert(bytes);
     final apiIndent = _apiKey.substring(
-        0, min(_apiKeyIdentifierPrefixLength, _apiKey.length));
+      0,
+      min(_apiKeyIdentifierPrefixLength, _apiKey.length),
+    );
 
     final authInfo = "$_clientId:$apiIndent:${base64Encode(hash.bytes)}";
     request.headers["Authorization"] =
@@ -80,12 +77,13 @@ class GraphQlServerAccess implements IServerAccess {
 
   GraphQlServerAccess._(this._clientId, String server, this._apiKey) {
     _client = GraphQLClient(
-        defaultPolicies: DefaultPolicies(
-          query: Policies(fetch: FetchPolicy.networkOnly),
-          mutate: Policies(fetch: FetchPolicy.networkOnly),
-        ),
-        link: HttpLink(server, httpClient: _MensaClient(_clientId, _apiKey)),
-        cache: GraphQLCache());
+      defaultPolicies: DefaultPolicies(
+        query: Policies(fetch: FetchPolicy.networkOnly),
+        mutate: Policies(fetch: FetchPolicy.networkOnly),
+      ),
+      link: HttpLink(server, httpClient: _MensaClient(_clientId, _apiKey)),
+      cache: GraphQLCache(),
+    );
   }
 
   /// This constructor returns an instance of the server access class.
@@ -101,8 +99,10 @@ class GraphQlServerAccess implements IServerAccess {
   @override
   Future<bool> deleteDownvote(ImageData image) async {
     final result = await _client.mutate$RemoveDownvote(
-        Options$Mutation$RemoveDownvote(
-            variables: Variables$Mutation$RemoveDownvote(imageId: image.id)));
+      Options$Mutation$RemoveDownvote(
+        variables: Variables$Mutation$RemoveDownvote(imageId: image.id),
+      ),
+    );
 
     return result.parsedData?.removeDownvote ?? false;
   }
@@ -110,8 +110,10 @@ class GraphQlServerAccess implements IServerAccess {
   @override
   Future<bool> deleteUpvote(ImageData image) async {
     final result = await _client.mutate$RemoveUpvote(
-        Options$Mutation$RemoveUpvote(
-            variables: Variables$Mutation$RemoveUpvote(imageId: image.id)));
+      Options$Mutation$RemoveUpvote(
+        variables: Variables$Mutation$RemoveUpvote(imageId: image.id),
+      ),
+    );
 
     return result.parsedData?.removeUpvote ?? false;
   }
@@ -119,38 +121,57 @@ class GraphQlServerAccess implements IServerAccess {
   @override
   Future<bool> downvoteImage(ImageData image) async {
     final result = await _client.mutate$AddDownvote(
-        Options$Mutation$AddDownvote(
-            variables: Variables$Mutation$AddDownvote(imageId: image.id)));
+      Options$Mutation$AddDownvote(
+        variables: Variables$Mutation$AddDownvote(imageId: image.id),
+      ),
+    );
 
     return result.parsedData?.addDownvote ?? false;
   }
 
   @override
   Future<bool> upvoteImage(ImageData image) async {
-    final result = await _client.mutate$AddUpvote(Options$Mutation$AddUpvote(
-        variables: Variables$Mutation$AddUpvote(imageId: image.id)));
+    final result = await _client.mutate$AddUpvote(
+      Options$Mutation$AddUpvote(
+        variables: Variables$Mutation$AddUpvote(imageId: image.id),
+      ),
+    );
 
     return result.parsedData?.addUpvote ?? false;
   }
 
   @override
   Future<Result<bool, ImageUploadException>> linkImage(
-      Uint8List imageFile, MediaType mimeType, Meal meal) async {
-    final image = http.MultipartFile.fromBytes("", imageFile,
-        filename: "image", contentType: mimeType);
+    Uint8List imageFile,
+    MediaType mimeType,
+    Meal meal,
+  ) async {
+    final image = http.MultipartFile.fromBytes(
+      "",
+      imageFile,
+      filename: "image",
+      contentType: mimeType,
+    );
     final hash = base64Encode(sha512.convert(imageFile).bytes);
     assert(image.filename != null);
 
-    final result = await _client.mutate$LinkImage(Options$Mutation$LinkImage(
+    final result = await _client.mutate$LinkImage(
+      Options$Mutation$LinkImage(
         variables: Variables$Mutation$LinkImage(
-            image: image, mealId: meal.id, hash: hash)));
+          image: image,
+          mealId: meal.id,
+          hash: hash,
+        ),
+      ),
+    );
 
     if (result.hasException) {
       if (result.exception!.linkException != null) {
         return Failure(ImageUploadException("Verbindungsfehler"));
       } else if (result.exception!.graphqlErrors.isNotEmpty) {
         return Failure(
-            ImageUploadException(result.exception!.graphqlErrors[0].message));
+          ImageUploadException(result.exception!.graphqlErrors[0].message),
+        );
       }
       return Failure(ImageUploadException("Unbekannter Fehler"));
     }
@@ -163,9 +184,13 @@ class GraphQlServerAccess implements IServerAccess {
     final convertedReason = _convertToReportReason(reportReason);
 
     final result = await _client.mutate$ReportImage(
-        Options$Mutation$ReportImage(
-            variables: Variables$Mutation$ReportImage(
-                imageId: image.id, reason: convertedReason)));
+      Options$Mutation$ReportImage(
+        variables: Variables$Mutation$ReportImage(
+          imageId: image.id,
+          reason: convertedReason,
+        ),
+      ),
+    );
 
     return result.parsedData?.reportImage ?? false;
   }
@@ -173,9 +198,13 @@ class GraphQlServerAccess implements IServerAccess {
   @override
   Future<bool> updateMealRating(int rating, Meal meal) async {
     final result = await _client.mutate$UpdateRating(
-        Options$Mutation$UpdateRating(
-            variables: Variables$Mutation$UpdateRating(
-                mealId: meal.id, rating: rating)));
+      Options$Mutation$UpdateRating(
+        variables: Variables$Mutation$UpdateRating(
+          mealId: meal.id,
+          rating: rating,
+        ),
+      ),
+    );
 
     return result.parsedData?.setRating ?? false;
   }
@@ -194,18 +223,23 @@ class GraphQlServerAccess implements IServerAccess {
     for (int offset = 0; offset < daysToParse; offset++) {
       final date = today.add(Duration(days: offset));
       final result = await _client.query$GetMealPlanForDay(
-          Options$Query$GetMealPlanForDay(
-              fetchPolicy: FetchPolicy.networkOnly,
-              variables: Variables$Query$GetMealPlanForDay(
-                  date: _dateFormat.format(date))));
+        Options$Query$GetMealPlanForDay(
+          fetchPolicy: FetchPolicy.networkOnly,
+          variables: Variables$Query$GetMealPlanForDay(
+            date: _dateFormat.format(date),
+          ),
+        ),
+      );
 
       final exception = result.exception;
       if (exception != null) {
         return Failure(NoConnectionException(exception.toString()));
       }
 
-      final mealPlan =
-          _convertMealPlan(result.parsedData?.getCanteens ?? [], date);
+      final mealPlan = _convertMealPlan(
+        result.parsedData?.getCanteens ?? [],
+        date,
+      );
 
       switch (mealPlan) {
         case Success(value: final mealPlan):
@@ -221,11 +255,20 @@ class GraphQlServerAccess implements IServerAccess {
 
   @override
   Future<Result<Meal, Exception>> getMeal(
-      Meal meal, Line line, DateTime date) async {
-    final result = await _client.query$GetMeal(Options$Query$GetMeal(
+    Meal meal,
+    Line line,
+    DateTime date,
+  ) async {
+    final result = await _client.query$GetMeal(
+      Options$Query$GetMeal(
         fetchPolicy: FetchPolicy.networkOnly,
         variables: Variables$Query$GetMeal(
-            date: _dateFormat.format(date), mealId: meal.id, lineId: line.id)));
+          date: _dateFormat.format(date),
+          mealId: meal.id,
+          lineId: line.id,
+        ),
+      ),
+    );
 
     final mealData = result.parsedData?.getMeal;
     final exception = result.exception;
@@ -242,12 +285,18 @@ class GraphQlServerAccess implements IServerAccess {
 
   @override
   Future<Result<List<MealPlan>, MealPlanException>> updateCanteen(
-      Canteen canteen, DateTime date) async {
+    Canteen canteen,
+    DateTime date,
+  ) async {
     final result = await _client.query$GetCanteenDate(
-        Options$Query$GetCanteenDate(
-            fetchPolicy: FetchPolicy.networkOnly,
-            variables: Variables$Query$GetCanteenDate(
-                canteenId: canteen.id, date: _dateFormat.format(date))));
+      Options$Query$GetCanteenDate(
+        fetchPolicy: FetchPolicy.networkOnly,
+        variables: Variables$Query$GetCanteenDate(
+          canteenId: canteen.id,
+          date: _dateFormat.format(date),
+        ),
+      ),
+    );
 
     final exception = result.exception;
     if (exception != null) {
@@ -255,14 +304,17 @@ class GraphQlServerAccess implements IServerAccess {
     }
 
     final mealPlan = _convertMealPlan(
-        [result.parsedData?.getCanteen].nonNulls.toList(), date);
+      [result.parsedData?.getCanteen].nonNulls.toList(),
+      date,
+    );
     return mealPlan;
   }
 
   @override
   Future<Canteen?> getDefaultCanteen() async {
-    final result = await _client
-        .query$GetDefaultCanteen(Options$Query$GetDefaultCanteen());
+    final result = await _client.query$GetDefaultCanteen(
+      Options$Query$GetDefaultCanteen(),
+    );
 
     final exception = result.exception;
     if (exception != null) {
@@ -279,8 +331,9 @@ class GraphQlServerAccess implements IServerAccess {
 
   @override
   Future<List<Canteen>?> getCanteens() async {
-    final result = await _client
-        .query$GetDefaultCanteen(Options$Query$GetDefaultCanteen());
+    final result = await _client.query$GetDefaultCanteen(
+      Options$Query$GetDefaultCanteen(),
+    );
 
     final exception = result.exception;
     if (exception != null) {
@@ -297,38 +350,47 @@ class GraphQlServerAccess implements IServerAccess {
         .toList();
   }
 
-// --------------- utility helper methods ---------------
+  // --------------- utility helper methods ---------------
 
   Result<List<MealPlan>, MealPlanException> _convertMealPlan(
-      List<Fragment$mealPlan> mealPlans, DateTime date) {
+    List<Fragment$mealPlan> mealPlans,
+    DateTime date,
+  ) {
     if (mealPlans
         .expand((mealPlan) => mealPlan.lines)
         .any((line) => line.meals == null)) {
       return Failure(NoDataException("No data for a line."));
     }
 
-    return Success(mealPlans
-        .expand(
-          (mealPlan) => mealPlan.lines
-              .asMap()
-              .map((idx, line) => MapEntry(
-                    idx,
-                    MealPlan(
-                      date: date,
-                      line: Line(
-                          id: line.id,
-                          name: line.name,
-                          canteen: _convertCanteen(line.canteen),
-                          position: idx),
-                      // mensa closed when data available but no meals in list
-                      isClosed: line.meals!.isEmpty,
-                      meals: line.meals!.map((e) => _convertMeal(e)).toList(),
-                    ),
-                  ))
-              .values
-              .toList(),
-        )
-        .toList());
+    return Success(
+      mealPlans
+          .expand(
+            (mealPlan) =>
+                mealPlan.lines
+                    .asMap()
+                    .map(
+                      (idx, line) => MapEntry(
+                        idx,
+                        MealPlan(
+                          date: date,
+                          line: Line(
+                            id: line.id,
+                            name: line.name,
+                            canteen: _convertCanteen(line.canteen),
+                            position: idx,
+                          ),
+                          // mensa closed when data available but no meals in list
+                          isClosed: line.meals!.isEmpty,
+                          meals:
+                              line.meals!.map((e) => _convertMeal(e)).toList(),
+                        ),
+                      ),
+                    )
+                    .values
+                    .toList(),
+          )
+          .toList(),
+    );
   }
 
   Meal _convertMeal(Fragment$mealInfo meal) {
@@ -341,12 +403,14 @@ class GraphQlServerAccess implements IServerAccess {
           meal.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
       allergens:
           meal.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
-      nutritionData: meal.nutritionData != null
-          ? _convertNutritionData(meal.nutritionData!)
-          : null,
-      environmentInfo: meal.environmentInfo != null
-          ? _convertEnvironmentInfo(meal.environmentInfo!)
-          : null,
+      nutritionData:
+          meal.nutritionData != null
+              ? _convertNutritionData(meal.nutritionData!)
+              : null,
+      environmentInfo:
+          meal.environmentInfo != null
+              ? _convertEnvironmentInfo(meal.environmentInfo!)
+              : null,
       averageRating: meal.ratings.averageRating,
       individualRating: meal.ratings.personalRating,
       numberOfRatings: meal.ratings.ratingsCount,
@@ -360,13 +424,16 @@ class GraphQlServerAccess implements IServerAccess {
   }
 }
 
-const int _rareMealLimit = 2;
+const int _rareMealLimit = 1;
+const int _regularMealLimit = 20;
 
 Frequency _specifyFrequency(Fragment$mealInfo$statistics statistics) {
   if (statistics.$new) {
     return Frequency.newMeal;
   } else if (statistics.frequency <= _rareMealLimit) {
     return Frequency.rare;
+  } else if (statistics.frequency >= _regularMealLimit) {
+    return Frequency.regular;
   } else {
     return Frequency.normal;
   }
@@ -383,32 +450,37 @@ DateTime? _convertDate(String? date) {
 
 Side _convertSide(Fragment$mealInfo$sides e) {
   return Side(
-      id: e.id,
-      name: e.name,
-      foodType: _convertFoodType(e.mealType),
-      price: _convertPrice(e.price),
-      allergens: e.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
-      additives: e.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
-      environmentInfo: e.environmentInfo != null
-          ? _convertEnvironmentInfo(e.environmentInfo!)
-          : null,
-      nutritionData: e.nutritionData != null
-          ? _convertNutritionData(e.nutritionData!)
-          : null);
+    id: e.id,
+    name: e.name,
+    foodType: _convertFoodType(e.mealType),
+    price: _convertPrice(e.price),
+    allergens: e.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
+    additives: e.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
+    environmentInfo:
+        e.environmentInfo != null
+            ? _convertEnvironmentInfo(e.environmentInfo!)
+            : null,
+    nutritionData:
+        e.nutritionData != null
+            ? _convertNutritionData(e.nutritionData!)
+            : null,
+  );
 }
 
 ImageData _convertImage(Fragment$mealInfo$images e) {
   return ImageData(
-      id: e.id,
-      url: e.url,
-      imageRank: e.rank,
-      positiveRating: e.upvotes,
-      negativeRating: e.downvotes,
-      individualRating: e.personalUpvote
-          ? 1
-          : e.personalDownvote
-              ? -1
-              : 0);
+    id: e.id,
+    url: e.url,
+    imageRank: e.rank,
+    positiveRating: e.upvotes,
+    negativeRating: e.downvotes,
+    individualRating:
+        e.personalUpvote
+            ? 1
+            : e.personalDownvote
+            ? -1
+            : 0,
+  );
 }
 
 Allergen? _convertAllergen(Enum$Allergen e) {
@@ -505,7 +577,8 @@ NutritionData _convertNutritionData(Fragment$nutritionData nutritionData) {
 }
 
 EnvironmentInfo _convertEnvironmentInfo(
-    Fragment$environmentInfo environmentInfo) {
+  Fragment$environmentInfo environmentInfo,
+) {
   return EnvironmentInfo(
     averageRating: environmentInfo.averageRating,
     co2Rating: environmentInfo.co2Rating,
@@ -520,10 +593,11 @@ EnvironmentInfo _convertEnvironmentInfo(
 
 Price _convertPrice(Fragment$price price) {
   return Price(
-      student: price.student,
-      employee: price.employee,
-      pupil: price.pupil,
-      guest: price.guest);
+    student: price.student,
+    employee: price.employee,
+    pupil: price.pupil,
+    guest: price.guest,
+  );
 }
 
 Canteen _convertCanteen(Fragment$canteen canteen) {

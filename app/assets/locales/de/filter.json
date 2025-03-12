@@ -18,6 +18,7 @@
   "frequencySectionAll": "Alles",
   "frequencySectionRare": "Selten",
   "frequencySectionNew": "Neu",
+  "frequencySectionIrregular": "Nicht Regelm.",
   "priceMin": "0€",
   "priceMax": "10€",
   "ratingMin": "1 Stern",
@@ -27,6 +28,7 @@
     "line": "Linie",
     "price": "Preis",
     "rating": "Bewertung",
-    "frequency": "Häufigkeit"
+    "frequency": "Häufigkeit",
+    "envScore": "Umweltscore"
   }
 }

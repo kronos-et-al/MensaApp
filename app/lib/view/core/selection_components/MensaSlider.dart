@@ -32,7 +32,7 @@ class MensaSlider extends StatelessWidget {
         data: SliderThemeData(
           trackHeight: 2,
           showValueIndicator: ShowValueIndicator.always,
-          inactiveTrackColor: Theme.of(context).colorScheme.surface,
+          inactiveTrackColor: Theme.of(context).colorScheme.surfaceDim,
         ),
         child: Slider(
           min: _min,

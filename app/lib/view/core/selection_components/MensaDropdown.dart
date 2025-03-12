@@ -27,14 +27,14 @@ class MensaDropdown<T> extends StatelessWidget {
         // Container is used to give the dropdown a background color.
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4.0),
-          color: _backgroundColor ?? Theme.of(context).colorScheme.surface,
+          color: _backgroundColor ?? Theme.of(context).colorScheme.surfaceDim,
         ),
         child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: DropdownButtonHideUnderline(
                 // DropdownButtonHideUnderline is used to hide the underline of the dropdown.
                 child: DropdownButton<T>(
-              dropdownColor: Theme.of(context).colorScheme.surface,
+              dropdownColor: Theme.of(context).colorScheme.surfaceDim,
               elevation: 0,
               borderRadius: BorderRadius.circular(4.0),
               value: _value,

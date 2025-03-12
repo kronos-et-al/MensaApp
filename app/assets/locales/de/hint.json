@@ -1,0 +1,16 @@
+{
+  "title": "Tipp:",
+  "tempFilter": "Filtericon gedrückt halten, um Filter temporär zu deaktivieren.",
+  "reportImages": "Unpassende Bilder können in der App gemeldet werden.",
+  "imageView": "Tippen auf ein Bild in der Detailansicht öffnet die Galerie zu diesem Gericht.",
+  "hint": "Tipps können auch in den Einstellungen angezeigt werden. Probiere darauf zu tippen!",
+  "allergens": "Gerichte können nach Allergenen gefiltert werden.",
+  "rate1": "Gerichte können mit nur einem Stern bewertet werden, um diese negativ hervorzuheben.",
+  "favorite": "Gerichte können favorisiert werden, um diese positiv hervorzuheben und immer darauf Zugriff zu haben.",
+  "imageVote": "Bilder können bewertet werden, damit das beste Bild das Gericht repräsentiert.",
+  "expandMeals": "In der Detailansicht können Gerichte ausgeklappt werden, um Nährwerte, Umweltscore und Weiteres anzuzeigen.",
+  "priceCategories": "In den Einstellungen kann die Preiskategorie getändert werden.",
+  "openSource": "Der Quellcode der App ist auf GitHub verfügbar. Dort kannst du Features vorschlagen und dich bei der Weiterenwichlung einbringen.",
+  "openAPI": "Du kannst die API der MensaKA-App auch für deine eigenen Projeke verwenden.",
+  "sort": "Du kannst die Reihenfolge der Gerichte in den Filtereinstellungen ändern."
+}

@@ -37,64 +37,77 @@ class FilterDialog extends StatefulWidget {
 class _FilterDialogState extends State<FilterDialog> {
   FilterPreferences preferences = FilterPreferences();
 
-  final TextStyle headingTextStyle =
-      const TextStyle(fontSize: 16, fontWeight: FontWeight.bold);
+  final TextStyle headingTextStyle = const TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+  );
 
   @override
   Widget build(BuildContext context) {
     return MensaFullscreenDialog(
       appBar: MensaAppBar(
-          appBarHeight: kToolbarHeight,
-          child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Row(
-                children: [
-                  MensaIconButton(
-                      semanticLabel: FlutterI18n.translate(
-                          context, "semantics.filterClose"),
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: const NavigationBackIcon()),
-                  Text(
-                    FlutterI18n.translate(context, "filter.filterTitle"),
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const Spacer(),
-                  MensaIconButton(
-                      semanticLabel: FlutterI18n.translate(
-                          context, "semantics.filterRestore"),
-                      onPressed: () {
-                        context.read<IMealAccess>().resetFilterPreferences();
-                        setState(() {
-                          preferences = FilterPreferences();
-                        });
-                      },
-                      icon: const FilterRestoreIcon()),
-                ],
-              ))),
+        appBarHeight: kToolbarHeight,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            children: [
+              MensaIconButton(
+                semanticLabel: FlutterI18n.translate(
+                  context,
+                  "semantics.filterClose",
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const NavigationBackIcon(),
+              ),
+              Text(
+                FlutterI18n.translate(context, "filter.filterTitle"),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Spacer(),
+              MensaIconButton(
+                semanticLabel: FlutterI18n.translate(
+                  context,
+                  "semantics.filterRestore",
+                ),
+                onPressed: () {
+                  context.read<IMealAccess>().resetFilterPreferences();
+                  setState(() {
+                    preferences = FilterPreferences();
+                  });
+                },
+                icon: const FilterRestoreIcon(),
+              ),
+            ],
+          ),
+        ),
+      ),
       content: Consumer<IMealAccess>(
-        builder: (context, mealAccess, child) => FutureBuilder(
-          future: mealAccess.getFilterPreferences(),
-          builder: (BuildContext context, filterPreferences) {
-            if (!filterPreferences.hasData) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (filterPreferences.hasError) {
-              return const Center(child: Text("Error"));
-            }
-            preferences = filterPreferences.requireData;
-            return SingleChildScrollView(
-              child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(FlutterI18n.translate(context, "filter.foodType"),
-                          style: headingTextStyle),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      MensaButtonGroup<int>(
+        builder:
+            (context, mealAccess, child) => FutureBuilder(
+              future: mealAccess.getFilterPreferences(),
+              builder: (BuildContext context, filterPreferences) {
+                if (!filterPreferences.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (filterPreferences.hasError) {
+                  return const Center(child: Text("Error"));
+                }
+                preferences = filterPreferences.requireData;
+                return SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          FlutterI18n.translate(context, "filter.foodType"),
+                          style: headingTextStyle,
+                        ),
+                        const SizedBox(height: 8),
+                        MensaButtonGroup<int>(
                           value: _getValueCategory(preferences.categories),
                           onChanged: (value) {
                             _setValueCategory(value, preferences);
@@ -102,30 +115,37 @@ class _FilterDialogState extends State<FilterDialog> {
                               preferences = preferences;
                             });
                           },
-                          entries: _getAllFoodTypeEntries(context)),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      _getValueCategory(preferences.categories) == 0
-                          ? Column(
+                          entries: _getAllFoodTypeEntries(context),
+                        ),
+                        const SizedBox(height: 8),
+                        _getValueCategory(preferences.categories) == 0
+                            ? Column(
                               children: [
                                 MensaCheckbox(
                                   label: FlutterI18n.translate(
-                                      context, "filter.foodTypeSelectionBeef"),
-                                  value: preferences.categories
-                                          .contains(FoodType.beef) ||
-                                      preferences.categories
-                                          .contains(FoodType.beefAw),
+                                    context,
+                                    "filter.foodTypeSelectionBeef",
+                                  ),
+                                  value:
+                                      preferences.categories.contains(
+                                        FoodType.beef,
+                                      ) ||
+                                      preferences.categories.contains(
+                                        FoodType.beefAw,
+                                      ),
                                   onChanged: (value) {
                                     if (value) {
                                       preferences.categories.add(FoodType.beef);
-                                      preferences.categories
-                                          .add(FoodType.beefAw);
+                                      preferences.categories.add(
+                                        FoodType.beefAw,
+                                      );
                                     } else {
-                                      preferences.categories
-                                          .remove(FoodType.beef);
-                                      preferences.categories
-                                          .remove(FoodType.beefAw);
+                                      preferences.categories.remove(
+                                        FoodType.beef,
+                                      );
+                                      preferences.categories.remove(
+                                        FoodType.beefAw,
+                                      );
                                     }
                                     setState(() {
                                       preferences = preferences;
@@ -134,21 +154,29 @@ class _FilterDialogState extends State<FilterDialog> {
                                 ),
                                 MensaCheckbox(
                                   label: FlutterI18n.translate(
-                                      context, "filter.foodTypeSelectionPork"),
-                                  value: preferences.categories
-                                          .contains(FoodType.pork) ||
-                                      preferences.categories
-                                          .contains(FoodType.porkAw),
+                                    context,
+                                    "filter.foodTypeSelectionPork",
+                                  ),
+                                  value:
+                                      preferences.categories.contains(
+                                        FoodType.pork,
+                                      ) ||
+                                      preferences.categories.contains(
+                                        FoodType.porkAw,
+                                      ),
                                   onChanged: (value) {
                                     if (value) {
                                       preferences.categories.add(FoodType.pork);
-                                      preferences.categories
-                                          .add(FoodType.porkAw);
+                                      preferences.categories.add(
+                                        FoodType.porkAw,
+                                      );
                                     } else {
-                                      preferences.categories
-                                          .remove(FoodType.pork);
-                                      preferences.categories
-                                          .remove(FoodType.porkAw);
+                                      preferences.categories.remove(
+                                        FoodType.pork,
+                                      );
+                                      preferences.categories.remove(
+                                        FoodType.porkAw,
+                                      );
                                     }
                                     setState(() {
                                       preferences = preferences;
@@ -157,15 +185,21 @@ class _FilterDialogState extends State<FilterDialog> {
                                 ),
                                 MensaCheckbox(
                                   label: FlutterI18n.translate(
-                                      context, "filter.foodTypeSelectionPoultry"),
-                                  value: preferences.categories
-                                      .contains(FoodType.poultry),
+                                    context,
+                                    "filter.foodTypeSelectionPoultry",
+                                  ),
+                                  value: preferences.categories.contains(
+                                    FoodType.poultry,
+                                  ),
                                   onChanged: (value) {
                                     if (value) {
-                                      preferences.categories.add(FoodType.poultry);
+                                      preferences.categories.add(
+                                        FoodType.poultry,
+                                      );
                                     } else {
-                                      preferences.categories
-                                          .remove(FoodType.poultry);
+                                      preferences.categories.remove(
+                                        FoodType.poultry,
+                                      );
                                     }
                                     setState(() {
                                       preferences = preferences;
@@ -174,15 +208,19 @@ class _FilterDialogState extends State<FilterDialog> {
                                 ),
                                 MensaCheckbox(
                                   label: FlutterI18n.translate(
-                                      context, "filter.foodTypeSelectionFish"),
-                                  value: preferences.categories
-                                      .contains(FoodType.fish),
+                                    context,
+                                    "filter.foodTypeSelectionFish",
+                                  ),
+                                  value: preferences.categories.contains(
+                                    FoodType.fish,
+                                  ),
                                   onChanged: (value) {
                                     if (value) {
                                       preferences.categories.add(FoodType.fish);
                                     } else {
-                                      preferences.categories
-                                          .remove(FoodType.fish);
+                                      preferences.categories.remove(
+                                        FoodType.fish,
+                                      );
                                     }
                                     setState(() {
                                       preferences = preferences;
@@ -190,60 +228,70 @@ class _FilterDialogState extends State<FilterDialog> {
                                   },
                                 ),
                                 MensaCheckbox(
-                                  label: FlutterI18n.translate(context,
-                                      "filter.foodTypeSelectionUnknown"),
-                                  value: preferences.categories
-                                      .contains(FoodType.unknown),
+                                  label: FlutterI18n.translate(
+                                    context,
+                                    "filter.foodTypeSelectionUnknown",
+                                  ),
+                                  value: preferences.categories.contains(
+                                    FoodType.unknown,
+                                  ),
                                   onChanged: (value) {
                                     if (value) {
-                                      preferences.categories
-                                          .add(FoodType.unknown);
+                                      preferences.categories.add(
+                                        FoodType.unknown,
+                                      );
                                     } else {
-                                      preferences.categories
-                                          .remove(FoodType.unknown);
+                                      preferences.categories.remove(
+                                        FoodType.unknown,
+                                      );
                                     }
                                     setState(() {
                                       preferences = preferences;
                                     });
                                   },
-                                )
+                                ),
                               ],
                             )
-                          : Column(
+                            : Column(
                               children: [
                                 MensaCheckbox(
-                                  label: FlutterI18n.translate(context,
-                                      "filter.foodTypeSelectionUnknown"),
-                                  value: preferences.categories
-                                      .contains(FoodType.unknown),
+                                  label: FlutterI18n.translate(
+                                    context,
+                                    "filter.foodTypeSelectionUnknown",
+                                  ),
+                                  value: preferences.categories.contains(
+                                    FoodType.unknown,
+                                  ),
                                   onChanged: (value) {
                                     if (value) {
-                                      preferences.categories
-                                          .add(FoodType.unknown);
+                                      preferences.categories.add(
+                                        FoodType.unknown,
+                                      );
                                     } else {
-                                      preferences.categories
-                                          .remove(FoodType.unknown);
+                                      preferences.categories.remove(
+                                        FoodType.unknown,
+                                      );
                                     }
                                     setState(() {
                                       preferences = preferences;
                                     });
                                   },
-                                )
+                                ),
                               ],
                             ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Text(
-                        FlutterI18n.translate(context, "filter.allergensTitle"),
-                        style: headingTextStyle,
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      Row(children: [
-                        Expanded(
-                            child: MensaFilterIconCheckboxGroup<Allergen>(
+                        const SizedBox(height: 16),
+                        Text(
+                          FlutterI18n.translate(
+                            context,
+                            "filter.allergensTitle",
+                          ),
+                          style: headingTextStyle,
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: MensaFilterIconCheckboxGroup<Allergen>(
                                 items: _getAllAllergen(context),
                                 selectedValues: preferences.allergens,
                                 onChanged: (value) {
@@ -251,28 +299,29 @@ class _FilterDialogState extends State<FilterDialog> {
                                   setState(() {
                                     preferences = preferences;
                                   });
-                                }))
-                      ]),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Text(
-                        FlutterI18n.translate(context, "filter.priceTitle"),
-                        style: headingTextStyle,
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      Row(
-                        children: [
-                          Text(FlutterI18n.translate(
-                              context, "filter.priceMin")),
-                          const Spacer(),
-                          Text(FlutterI18n.translate(
-                              context, "filter.priceMax")),
-                        ],
-                      ),
-                      MensaSlider(
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          FlutterI18n.translate(context, "filter.priceTitle"),
+                          style: headingTextStyle,
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Text(
+                              FlutterI18n.translate(context, "filter.priceMin"),
+                            ),
+                            const Spacer(),
+                            Text(
+                              FlutterI18n.translate(context, "filter.priceMax"),
+                            ),
+                          ],
+                        ),
+                        MensaSlider(
                           onChanged: (value) {
                             preferences.price = value.round();
                             setState(() {
@@ -280,45 +329,52 @@ class _FilterDialogState extends State<FilterDialog> {
                             });
                           },
                           label: NumberFormat.currency(
-                                  decimalDigits: 2,
-                                  symbol: "€",
-                                  locale: FlutterI18n.currentLocale(context)
-                                      ?.languageCode)
-                              .format(preferences.price / 100),
+                            decimalDigits: 2,
+                            symbol: "€",
+                            locale:
+                                FlutterI18n.currentLocale(
+                                  context,
+                                )?.languageCode,
+                          ).format(preferences.price / 100),
                           value: preferences.price.toDouble(),
                           min: 0,
-                          max: 1000),
-                      Text(
-                        FlutterI18n.translate(context, "filter.ratingTitle"),
-                        style: headingTextStyle,
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      Row(
-                        children: [
-                          Text(FlutterI18n.translate(
-                              context, "filter.ratingMin")),
-                          const Spacer(),
-                          Text(FlutterI18n.translate(
-                              context, "filter.ratingMax")),
-                        ],
-                      ),
-                      MensaSlider(
-                        onChanged: (value) {
-                          preferences.rating = value.round();
-                          setState(() {
-                            preferences = preferences;
-                          });
-                        },
-                        value: preferences.rating.toDouble(),
-                        min: 1,
-                        max: 5,
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      MensaToggle(
+                          max: 1000,
+                        ),
+                        Text(
+                          FlutterI18n.translate(context, "filter.ratingTitle"),
+                          style: headingTextStyle,
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Text(
+                              FlutterI18n.translate(
+                                context,
+                                "filter.ratingMin",
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              FlutterI18n.translate(
+                                context,
+                                "filter.ratingMax",
+                              ),
+                            ),
+                          ],
+                        ),
+                        MensaSlider(
+                          onChanged: (value) {
+                            preferences.rating = value.round();
+                            setState(() {
+                              preferences = preferences;
+                            });
+                          },
+                          value: preferences.rating.toDouble(),
+                          min: 1,
+                          max: 5,
+                        ),
+                        const SizedBox(height: 16),
+                        MensaToggle(
                           onChanged: (value) {
                             preferences.onlyFavorite = value;
                             setState(() {
@@ -327,18 +383,20 @@ class _FilterDialogState extends State<FilterDialog> {
                           },
                           value: preferences.onlyFavorite,
                           label: FlutterI18n.translate(
-                              context, "filter.favoritesOnlyTitle")),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Text(
-                        FlutterI18n.translate(context, "filter.frequencyTitle"),
-                        style: headingTextStyle,
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      MensaButtonGroup(
+                            context,
+                            "filter.favoritesOnlyTitle",
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          FlutterI18n.translate(
+                            context,
+                            "filter.frequencyTitle",
+                          ),
+                          style: headingTextStyle,
+                        ),
+                        const SizedBox(height: 8),
+                        MensaButtonGroup(
                           value: _getValueFrequency(preferences.frequency),
                           onChanged: (value) {
                             _setValueFrequency(value, preferences);
@@ -346,64 +404,75 @@ class _FilterDialogState extends State<FilterDialog> {
                               preferences = preferences;
                             });
                           },
-                          entries: _getAllFrequencyEntries(context)),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Text(
-                        FlutterI18n.translate(context, "filter.sortByTitle"),
-                        style: headingTextStyle,
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      MensaSortSelect(
-                        entries: Sorting.values
-                            .map((e) => MensaSortSelectEntry(
-                                label: FlutterI18n.translate(
-                                    context, "filter.sorting.${e.name}"),
-                                value: e))
-                            .toList(),
-                        selectedEntry: preferences.sortedBy,
-                        sortDirection: preferences.ascending
-                            ? SortDirection.ascending
-                            : SortDirection.descending,
-                        onEntrySelected: (v) => {
-                          setState(() {
-                            preferences.sortedBy = v;
-                          })
-                        },
-                        onSortDirectionSelected: (v) => {
-                          setState(() {
-                            preferences.ascending =
-                                v == SortDirection.ascending;
-                          })
-                        },
-                      ),
-                    ],
-                  )),
-            );
-          },
-        ),
+                          entries: _getAllFrequencyEntries(context),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          FlutterI18n.translate(context, "filter.sortByTitle"),
+                          style: headingTextStyle,
+                        ),
+                        const SizedBox(height: 8),
+                        MensaSortSelect(
+                          entries:
+                              Sorting.values
+                                  .map(
+                                    (e) => MensaSortSelectEntry(
+                                      label: FlutterI18n.translate(
+                                        context,
+                                        "filter.sorting.${e.name}",
+                                      ),
+                                      value: e,
+                                    ),
+                                  )
+                                  .toList(),
+                          selectedEntry: preferences.sortedBy,
+                          sortDirection:
+                              preferences.ascending
+                                  ? SortDirection.ascending
+                                  : SortDirection.descending,
+                          onEntrySelected:
+                              (v) => {
+                                setState(() {
+                                  preferences.sortedBy = v;
+                                }),
+                              },
+                          onSortDirectionSelected:
+                              (v) => {
+                                setState(() {
+                                  preferences.ascending =
+                                      v == SortDirection.ascending;
+                                }),
+                              },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
       ),
       actions: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            children: [
-              Expanded(
-                  child: MensaCtaButton(
-                      semanticLabel: FlutterI18n.translate(
-                          context, "semantics.filterStore"),
-                      onPressed: () {
-                        context
-                            .read<IMealAccess>()
-                            .changeFilterPreferences(preferences);
-                        Navigator.of(context).pop();
-                      },
-                      text: FlutterI18n.translate(
-                          context, "filter.storeButton"))),
-            ],
-          )),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          children: [
+            Expanded(
+              child: MensaCtaButton(
+                semanticLabel: FlutterI18n.translate(
+                  context,
+                  "semantics.filterStore",
+                ),
+                onPressed: () {
+                  context.read<IMealAccess>().changeFilterPreferences(
+                    preferences,
+                  );
+                  Navigator.of(context).pop();
+                },
+                text: FlutterI18n.translate(context, "filter.storeButton"),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -418,10 +487,20 @@ class _FilterDialogState extends State<FilterDialog> {
       return;
     }
 
+    if (frequency == Frequency.regular) {
+      filter.setIrregularFrequency();
+      return;
+    }
+
     filter.setAllFrequencies();
   }
 
   static Frequency _getValueFrequency(List<Frequency> frequencies) {
+    if (frequencies.contains(Frequency.normal) &&
+        !frequencies.contains(Frequency.regular)) {
+      return Frequency.regular;
+    }
+
     if (frequencies.contains(Frequency.normal)) {
       return Frequency.normal;
     }
@@ -434,53 +513,85 @@ class _FilterDialogState extends State<FilterDialog> {
   }
 
   static List<MensaButtonGroupEntry<Frequency>> _getAllFrequencyEntries(
-      BuildContext context) {
+    BuildContext context,
+  ) {
     final List<MensaButtonGroupEntry<Frequency>> entries = [];
 
-    entries.add(MensaButtonGroupEntry(
+    entries.add(
+      MensaButtonGroupEntry(
         title: FlutterI18n.translate(context, "filter.frequencySectionAll"),
-        value: Frequency.normal));
-    entries.add(MensaButtonGroupEntry(
+        value: Frequency.normal,
+      ),
+    );
+    entries.add(
+      MensaButtonGroupEntry(
+        title: FlutterI18n.translate(
+          context,
+          "filter.frequencySectionIrregular",
+        ),
+        value: Frequency.regular,
+      ),
+    );
+    entries.add(
+      MensaButtonGroupEntry(
         title: FlutterI18n.translate(context, "filter.frequencySectionRare"),
-        value: Frequency.rare));
-    entries.add(MensaButtonGroupEntry(
+        value: Frequency.rare,
+      ),
+    );
+    entries.add(
+      MensaButtonGroupEntry(
         title: FlutterI18n.translate(context, "filter.frequencySectionNew"),
-        value: Frequency.newMeal));
+        value: Frequency.newMeal,
+      ),
+    );
 
     return entries;
   }
 
   static List<MensaFilterIconCheckbox<Allergen>> _getAllAllergen(
-      BuildContext context) {
+    BuildContext context,
+  ) {
     List<MensaFilterIconCheckbox<Allergen>> entries = [];
 
     for (final allergen in Allergen.values) {
-      entries.add(MensaFilterIconCheckbox(
-        icon: AllergenIcon(
-          allergen: allergen,
+      entries.add(
+        MensaFilterIconCheckbox(
+          icon: AllergenIcon(allergen: allergen),
+          text: FlutterI18n.translate(context, "allergen.${allergen.name}"),
+          value: allergen,
         ),
-        text: FlutterI18n.translate(context, "allergen.${allergen.name}"),
-        value: allergen,
-      ));
+      );
     }
 
     return entries;
   }
 
   static List<MensaButtonGroupEntry<int>> _getAllFoodTypeEntries(
-      BuildContext context) {
+    BuildContext context,
+  ) {
     final List<MensaButtonGroupEntry<int>> entries = [];
 
-    entries.add(MensaButtonGroupEntry(
+    entries.add(
+      MensaButtonGroupEntry(
         title: FlutterI18n.translate(context, "filter.foodTypeSectionAll"),
-        value: 0));
-    entries.add(MensaButtonGroupEntry(
-        title:
-            FlutterI18n.translate(context, "filter.foodTypeSectionVegetarian"),
-        value: 1));
-    entries.add(MensaButtonGroupEntry(
+        value: 0,
+      ),
+    );
+    entries.add(
+      MensaButtonGroupEntry(
+        title: FlutterI18n.translate(
+          context,
+          "filter.foodTypeSectionVegetarian",
+        ),
+        value: 1,
+      ),
+    );
+    entries.add(
+      MensaButtonGroupEntry(
         title: FlutterI18n.translate(context, "filter.foodTypeSectionVegan"),
-        value: 2));
+        value: 2,
+      ),
+    );
 
     return entries;
   }

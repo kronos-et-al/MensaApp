@@ -9,5 +9,6 @@
   "privacyPolicy": "Datenschutzerklärung",
   "contactDetails": "Kontakt",
   "clientID": "Client ID: {clientID}",
-  "snackBarCopiedToClipboard": "In die Zwischenablage kopiert"
+  "snackBarCopiedToClipboard": "In die Zwischenablage kopiert",
+  "hint": "Tipp"
 }
