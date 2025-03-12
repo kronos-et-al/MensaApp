@@ -93,28 +93,20 @@ List<WidgetSpan> getTags(BuildContext context, Meal meal, {TextStyle? style}) {
   if (meal.individualRating != 0) {
     tags.add(
       assembleTagRaw(
-        RichText(
-          text: TextSpan(
-            text: "${meal.individualRating}",
-            style: style,
-            children: [
-              WidgetSpan(
-                child: Padding(
-                  padding: const EdgeInsets.all(1),
-                  child: Icon(
-                    Icons.star,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    size: 14,
-                  ),
-                ),
+        Row(
+          children: [
+            Text("${meal.individualRating}", style: style),
+            Padding(
+              padding: const EdgeInsets.all(1),
+              child: Icon(
+                Icons.star,
+                color: Theme.of(context).colorScheme.onPrimary,
+                size: 12,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        // FlutterI18n.translate(context, "tag.rated"),
-        // Colors.deepPurple,
         _ratingColors[meal.individualRating - 1],
-        // Colors.teal,
       ),
     );
   }
