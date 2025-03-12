@@ -199,21 +199,15 @@ class MealPreviewImage extends StatelessWidget {
                         Align(
                           alignment: Alignment.bottomRight,
                           child: Container(
-                            padding: EdgeInsets.all(8),
-                            margin: EdgeInsets.only(right: 10, bottom: 4),
+                            padding: EdgeInsets.all(5),
+                            margin: EdgeInsets.only(right: 10, bottom: 8),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  blurRadius: 3,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.inverseSurface.withAlpha(200),
-                                ),
-                              ],
-                              color: Theme.of(context).colorScheme.surfaceDim,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.surfaceDim.withAlpha(150),
                             ),
-                            child: Text(_meal.images?.length.toString() ?? ""),
+                            child: Text("+${_meal.images!.length - 1}"),
                           ),
                         ),
                     ],
