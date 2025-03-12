@@ -1,4 +1,4 @@
-# 🥘 MensaApp
+# 🥘 MensaKa
 
 [![Build-Android](https://github.com/kronos-et-al/MensaApp/actions/workflows/main.yml/badge.svg)](https://github.com/kronos-et-al/MensaApp/actions/workflows/main.yml)[![Build-Rust](https://github.com/kronos-et-al/MensaApp/actions/workflows/rust.yml/badge.svg)](https://github.com/kronos-et-al/MensaApp/actions/workflows/rust.yml) [![Docker](https://ghcr-badge.egpl.dev/kronos-et-al/mensa-app/size?color=%2344cc11&tag=latest&label=docker+image+size&trim=)](https://github.com/kronos-et-al/MensaApp/pkgs/container/mensa-app) [![codecov](https://codecov.io/gh/kronos-et-al/MensaApp/branch/main/graph/badge.svg?token=2CZXSPAP48)](https://codecov.io/gh/kronos-et-al/MensaApp) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/kronos-et-al/MensaApp/blob/main/LICENSE) [![version](https://shields.io/github/v/release/kronos-et-al/MensaApp)](https://github.com/kronos-et-al/MensaApp/releases) [![GitHub Repo stars](https://img.shields.io/github/stars/kronos-et-al/MensaApp)](https://github.com/kronos-et-al/MensaApp/stargazers)
 
@@ -17,8 +17,8 @@ The goal of this application is to provide easy access to the meal plans of the 
 - Access meal plans for all canteens of the Studierendenwerk Karlsruhe in Karlsruhe and Pforzheim (Germany)
 - View and add images to meal to better judge what you want to eat
 - Rate meals to help others decide on their lunch
-- View prices for students, employees, pupils and guests
-- Filter meals by type (vegetarian, vegan, ...), price, allergens and more
+- View prices for students, employees, pupils, and guests
+- Filter meals by type (vegetarian, vegan, ...), price, allergens, and more
 - Choose your way of life: light or dark mode
 - Mark meals as favorites to highlight them locally
 
@@ -30,7 +30,7 @@ This app is available on Google Play for Android and the App Store for iOS.
 
 ## Integrate
 Feel free to integrate our api in your own application. You can access it at [`https://api.mensa-ka.de`](https://api.mensa-ka.de).
-For now, you can only use graphql queries (and no mutations) because they require authentication with an api key (see [here](doc/ApiAuth.md)).
+For now, you can only use GraphQL queries (and no mutations) because they require authentication with an API key (see [here](doc/ApiAuth.md)).
 
 ## Architecture
 ![architecture](doc/img/architecture.svg)
