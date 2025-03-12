@@ -198,16 +198,22 @@ class MealPreviewImage extends StatelessWidget {
                       if (_enableImageCount && (_meal.images?.length ?? 0) > 1)
                         Align(
                           alignment: Alignment.bottomRight,
-                          child: Container(
-                            padding: EdgeInsets.all(5),
-                            margin: EdgeInsets.only(right: 10, bottom: 8),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Theme.of(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Badge(
+                              backgroundColor: Theme.of(
                                 context,
                               ).colorScheme.surfaceDim.withAlpha(150),
+                              padding: EdgeInsets.all(5),
+                              label: Text(
+                                "+${_meal.images!.length - 1}",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
+                              ),
                             ),
-                            child: Text("+${_meal.images!.length - 1}"),
                           ),
                         ),
                     ],
