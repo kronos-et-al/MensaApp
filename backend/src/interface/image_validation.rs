@@ -50,11 +50,18 @@ pub enum ImageValidationError {
 }
 
 /// Structure that contains all information necessary for the image validation component.
+#[derive(Default)]
 pub struct ImageValidationInfo {
+    /// Determines whether the safe search feature is enabled or disabled.
+    pub use_safe_search: bool,
     /// Five numbers from 0 to 5 to set each level of a category.
-    pub acceptance: [u8; 5],
+    pub acceptance: Option<[u8; 5]>,
     /// This information is needed to request authentication tokens.
-    pub service_account_info: String,
+    pub service_account_info: Option<String>,
     /// This project identifier is needed to call image api functions.
-    pub project_id: String,
+    pub project_id: Option<String>,
+    /// Determines whether the gemini api is enabled or disabled.
+    pub use_gemini_api: bool,
+    /// This api key is needed for gemini api requests.
+    pub gemini_api_key: Option<String>,
 }
