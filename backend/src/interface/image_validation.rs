@@ -35,6 +35,9 @@ pub enum ImageValidationError {
     /// Image could not be decoded
     #[error("The provided image could not be decoded to base64: {0}")]
     ImageEncodeFailed(String),
+    /// The Image contains invalid content
+    #[error("The provided image does contain invalid content: {0}")]
+    ImageInvalid(String),
     /// An api related error. Returns the error provided by the api.
     #[error("The api responded with error '{0}'.")]
     ApiResponseError(String),

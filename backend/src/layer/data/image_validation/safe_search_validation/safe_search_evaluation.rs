@@ -1,15 +1,15 @@
 use crate::interface::image_validation::ImageValidationError::InvalidContent;
 use crate::interface::image_validation::Result;
-use crate::layer::data::image_validation::json_structs::SafeSearchJson;
+use crate::layer::data::image_validation::safe_search_validation::json_request::SafeSearchJson;
 
-/// The [`ImageEvaluation`] struct is used to verify and validate the
-/// evaluated results of the [`crate::layer::data::image_validation::api_request::ApiRequest`] class.
-pub struct ImageEvaluation {
+/// The [`SafeSearchEvaluation`] struct is used to verify and validate the
+/// evaluated results of the [`crate::layer::data::image_validation::safe_search_validation::ApiRequest`] class.
+pub struct SafeSearchEvaluation {
     acceptance: [u8; 5],
 }
 
-impl ImageEvaluation {
-    /// This method creates a new instance of the [`ImageEvaluation`] struct
+impl SafeSearchEvaluation {
+    /// This method creates a new instance of the [`SafeSearchEvaluation`] struct
     /// # Params
     /// `acceptance`<br>
     /// The acceptance array contains all allowed value levels
@@ -29,8 +29,8 @@ impl ImageEvaluation {
     }
 
     /// This method checks if the input values are allowed with the max level configuration for each category.
-    /// that is set in the relation [`ImageEvaluation`] struct.
-    /// For more information about levels and categories see [`ImageEvaluation::new`].
+    /// that is set in the relation [`SafeSearchEvaluation`] struct.
+    /// For more information about levels and categories see [`SafeSearchEvaluation::new`].
     /// # Params
     /// `value_json`<br>
     /// This param contains all the evaluated levels for each category.
@@ -90,14 +90,12 @@ fn type_determination(level: usize) -> String {
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used)]
-    use crate::layer::data::image_validation::image_evaluation::{
-        result_to_arr, type_determination, ImageEvaluation,
-    };
-    use crate::layer::data::image_validation::json_structs::SafeSearchJson;
+    use crate::layer::data::image_validation::safe_search_validation::json_request::SafeSearchJson;
+    use crate::layer::data::image_validation::safe_search_validation::safe_search_evaluation::{result_to_arr, type_determination, SafeSearchEvaluation};
 
     #[test]
     fn test_verify() {
-        let invalid_level = ImageEvaluation::new([42_u8, 0_u8, 42_u8, 42_u8, 1_u8]);
+        let invalid_level = SafeSearchEvaluation::new([42_u8, 0_u8, 42_u8, 42_u8, 1_u8]);
         let json1 = SafeSearchJson {
             adult: String::new(),
             spoof: "UNKNOWN".to_string(),
@@ -114,7 +112,7 @@ mod tests {
         };
         assert!(invalid_level.verify(&json1).is_ok());
         assert!(invalid_level.verify(&json2).is_err());
-        let valid_level = ImageEvaluation::new([1_u8, 2_u8, 3_u8, 4_u8, 5_u8]);
+        let valid_level = SafeSearchEvaluation::new([1_u8, 2_u8, 3_u8, 4_u8, 5_u8]);
         assert!(valid_level.verify(&json1).is_err());
         assert!(valid_level.verify(&json2).is_ok());
     }

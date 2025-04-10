@@ -1,6 +1,6 @@
 use crate::interface::image_validation::ImageValidationError::InvalidResponse;
 use crate::interface::image_validation::Result;
-use crate::layer::data::image_validation::json_structs::{SafeSearchJson, SafeSearchResponseJson};
+use crate::layer::data::image_validation::safe_search_validation::json_request::{SafeSearchJson, SafeSearchResponseJson};
 use google_jwt_auth::usage::Usage::CloudVision;
 use google_jwt_auth::AuthConfig;
 
@@ -11,15 +11,15 @@ const CONTENT_TYPE: &str = "application/json";
 const TOKEN_LIFETIME: i64 = 30;
 const CHARSET: &str = "utf-8";
 
-/// The [`ApiRequest`] struct is used to send images and
+/// The [`SafeSearchRequest`] struct is used to send images and
 /// requests safe-search results from the api rest interface.
-pub struct ApiRequest {
+pub struct SafeSearchRequest {
     google_project_id: String,
     auth_config: AuthConfig,
 }
 
-impl ApiRequest {
-    /// This method is used to create a new instance of the [`ApiRequest`] struct.
+impl SafeSearchRequest {
+    /// This method is used to create a new instance of the [`SafeSearchRequest`] struct.
     /// # Params
     /// `service_account_json_path`<br>
     /// This param contains the json as string. The data inside the json is used to
@@ -31,7 +31,7 @@ impl ApiRequest {
     /// If json could not be read or the authentication struct could not be build, an error will be returned.
     /// See [`crate::interface::image_validation::ImageValidationError`] for more info about the errors.
     /// # Return
-    /// The mentioned [`ApiRequest`] struct.
+    /// The mentioned [`SafeSearchRequest`] struct.
     pub fn new(service_account_info: &str, google_project_id: String) -> Result<Self> {
         Ok(Self {
             google_project_id,
@@ -91,9 +91,9 @@ fn build_request_body(b64_image: &str) -> String {
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used)]
-    use crate::layer::data::image_validation::api_request::ApiRequest;
     use dotenvy::dotenv;
     use std::{env, fs};
+    use crate::layer::data::image_validation::safe_search_validation::safe_search_request::SafeSearchRequest;
 
     // Very Small b64 image
     const B64_IMAGE: &str = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";
@@ -104,7 +104,7 @@ mod tests {
         let path = env::var("SERVICE_ACCOUNT_JSON").unwrap();
         let id = env::var("GOOGLE_PROJECT_ID").unwrap();
         let json = fs::read_to_string(path).unwrap();
-        let api_req = ApiRequest::new(&json, id).unwrap();
+        let api_req = SafeSearchRequest::new(&json, id).unwrap();
         let resp = api_req
             .encoded_image_validation(String::from(B64_IMAGE))
             .await;
