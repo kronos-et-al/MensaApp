@@ -2,19 +2,16 @@ use crate::interface::image_validation::ImageValidationError::{ImageInvalid, Inv
 use crate::interface::image_validation::Result;
 
 #[derive(Default)]
-pub struct GeminiEvaluation { }
-
+pub struct GeminiEvaluation {}
 
 impl GeminiEvaluation {
     pub fn evaluate(&self, text_response: String) -> Result<()> {
         match text_response.contains("Ja") {
             true => Ok(()),
-            false => {
-                match text_response.contains("Nein") {
-                    true => Err(ImageInvalid(filter_invalid_reason(text_response))),
-                    false => Err(InvalidResponse),
-                }
-            }
+            false => match text_response.contains("Nein") {
+                true => Err(ImageInvalid(filter_invalid_reason(text_response))),
+                false => Err(InvalidResponse),
+            },
         }
     }
 }

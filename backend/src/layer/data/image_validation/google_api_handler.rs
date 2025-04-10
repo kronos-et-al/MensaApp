@@ -1,16 +1,16 @@
 use crate::interface::image_validation::ImageValidationError::ImageEncodeFailed;
 use crate::interface::image_validation::Result;
 use crate::interface::image_validation::{ImageValidation, ImageValidationInfo};
+use crate::layer::data::image_validation::gemini_validation::gemini_evaluation::GeminiEvaluation;
+use crate::layer::data::image_validation::gemini_validation::gemini_request::GeminiRequest;
+use crate::layer::data::image_validation::safe_search_validation::safe_search_evaluation::SafeSearchEvaluation;
+use crate::layer::data::image_validation::safe_search_validation::safe_search_request::SafeSearchRequest;
 use crate::util::ImageResource;
 use async_trait::async_trait;
 use base64::engine::general_purpose;
 use base64::Engine;
 use image::ImageFormat;
 use std::io::Cursor;
-use crate::layer::data::image_validation::gemini_validation::gemini_request::GeminiRequest;
-use crate::layer::data::image_validation::gemini_validation::gemini_evaluation::GeminiEvaluation;
-use crate::layer::data::image_validation::safe_search_validation::safe_search_evaluation::SafeSearchEvaluation;
-use crate::layer::data::image_validation::safe_search_validation::safe_search_request::SafeSearchRequest;
 
 /// The [`GoogleApiHandler`] struct is used to manage tasks
 /// of the [`crate::layer::data::image_validation`] component.
@@ -51,10 +51,13 @@ impl GoogleApiHandler {
         let mut handler = GoogleApiHandler::default();
         if info.use_safe_search {
             handler.safe_search_handler = Some(SafeSearchHandler {
-                evaluation: SafeSearchEvaluation::new(info.acceptance.expect("safe search is enabled")),
+                evaluation: SafeSearchEvaluation::new(
+                    info.acceptance.expect("safe search is enabled"),
+                ),
                 request: SafeSearchRequest::new(
                     &info.service_account_info.expect("safe search is enabled"),
-                    info.project_id.expect("safe search is enabled"))?,
+                    info.project_id.expect("safe search is enabled"),
+                )?,
             });
         }
         if info.use_gemini_api {
@@ -87,7 +90,11 @@ impl ImageValidation for GoogleApiHandler {
         }
         if safe_search_result.is_ok() && gemini_result.is_ok() {
             Ok(())
-        } else if safe_search_result.is_err() { safe_search_result } else { gemini_result }
+        } else if safe_search_result.is_err() {
+            safe_search_result
+        } else {
+            gemini_result
+        }
     }
 }
 

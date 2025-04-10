@@ -1,6 +1,8 @@
 use crate::interface::image_validation::ImageValidationError::InvalidResponse;
 use crate::interface::image_validation::Result;
-use crate::layer::data::image_validation::safe_search_validation::json_request::{SafeSearchJson, SafeSearchResponseJson};
+use crate::layer::data::image_validation::safe_search_validation::json_request::{
+    SafeSearchJson, SafeSearchResponseJson,
+};
 use google_jwt_auth::usage::Usage::CloudVision;
 use google_jwt_auth::AuthConfig;
 
@@ -91,9 +93,9 @@ fn build_request_body(b64_image: &str) -> String {
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used)]
+    use crate::layer::data::image_validation::safe_search_validation::safe_search_request::SafeSearchRequest;
     use dotenvy::dotenv;
     use std::{env, fs};
-    use crate::layer::data::image_validation::safe_search_validation::safe_search_request::SafeSearchRequest;
 
     // Very Small b64 image
     const B64_IMAGE: &str = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";

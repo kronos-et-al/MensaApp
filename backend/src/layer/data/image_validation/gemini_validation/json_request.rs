@@ -8,7 +8,7 @@ use serde::Deserialize;
 ///     {
 ///       "content": {
 ///         "parts": [
-///             { 
+///             {
 ///                 "text":"Nein. Auf dem Bild ist eine Person zu sehen."
 ///             }
 ///         ]
@@ -19,17 +19,17 @@ use serde::Deserialize;
 /// ```
 #[derive(Debug, Deserialize)]
 pub struct GeminiResponseJson {
-    pub candidates: Vec<ResponseJson>
+    pub candidates: Vec<ResponseJson>,
 }
 #[derive(Debug, Deserialize)]
 pub struct ResponseJson {
-    pub content: PartJson
+    pub content: PartJson,
 }
 #[derive(Debug, Deserialize)]
 pub struct PartJson {
-    pub parts: Vec<MessageJson>
+    pub parts: Vec<MessageJson>,
 }
 #[derive(Debug, Deserialize)]
 pub struct MessageJson {
-    pub(crate) text: String
+    pub(crate) text: String,
 }

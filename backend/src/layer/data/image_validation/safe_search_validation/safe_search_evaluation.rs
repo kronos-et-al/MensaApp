@@ -91,7 +91,9 @@ fn type_determination(level: usize) -> String {
 mod tests {
     #![allow(clippy::unwrap_used)]
     use crate::layer::data::image_validation::safe_search_validation::json_request::SafeSearchJson;
-    use crate::layer::data::image_validation::safe_search_validation::safe_search_evaluation::{result_to_arr, type_determination, SafeSearchEvaluation};
+    use crate::layer::data::image_validation::safe_search_validation::safe_search_evaluation::{
+        result_to_arr, type_determination, SafeSearchEvaluation,
+    };
 
     #[test]
     fn test_verify() {

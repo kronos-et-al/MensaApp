@@ -2,7 +2,8 @@ use crate::interface::image_validation::ImageValidationError::InvalidResponse;
 use crate::interface::image_validation::Result;
 use crate::layer::data::image_validation::gemini_validation::json_request::GeminiResponseJson;
 
-const API_REST_URL: &str = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+const API_REST_URL: &str =
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 const REQUEST_TYPE: &str = "image/jpeg";
 const CONTENT_TYPE: &str = "application/json";
 
@@ -13,7 +14,12 @@ pub struct GeminiRequest {
 
 impl GeminiRequest {
     pub fn new(api_key: String, text_request: String) -> Self {
-        Self { api_key, text_request }
+        Self {
+            api_key,
+            text_request: format!(
+                "{text_request} Antworte mit Ja oder Nein und einer kurzen Begründung wieso."
+            ),
+        }
     }
 
     pub async fn encoded_image_validation(&self, b64_image: String) -> Result<String> {
@@ -22,8 +28,8 @@ impl GeminiRequest {
             None => Err(InvalidResponse),
             Some(mut json) => match json.content.parts.pop() {
                 None => Err(InvalidResponse),
-                Some(part) => Ok(part.text) 
-            }
+                Some(part) => Ok(part.text),
+            },
         }
     }
 
@@ -43,6 +49,6 @@ impl GeminiRequest {
 
 fn build_request_body(text_request: &str, b64_image: &str) -> String {
     format!(
-            r#"{{"contents":[{{"parts":[{{"text":"{text_request}"}},{{"inline_data": {{"mime_type":"{REQUEST_TYPE}","data":"{b64_image}"}}}}]}}]}}"#
+        r#"{{"contents":[{{"parts":[{{"text":"{text_request}"}},{{"inline_data": {{"mime_type":"{REQUEST_TYPE}","data":"{b64_image}"}}}}]}}]}}"#
     )
 }
