@@ -64,4 +64,6 @@ pub struct ImageValidationInfo {
     pub use_gemini_api: bool,
     /// This api key is needed for gemini api requests.
     pub gemini_api_key: Option<String>,
+    /// This string contains the question, that gemini answers for each image validation
+    pub gemini_text_request: Option<String>,
 }
