@@ -15,6 +15,7 @@ services:
       - GOOGLE_PROJECT_ID=<google project id for service account>
       - BASE_URL=<url where api is available>
       - TZ=Europe/Berlin
+      - LOKI_URL=http://loki:3100
     volumes: # please configure accordingly <-----------------------------------------------------------
       - <image_path>:/data/images:rw
       - <service_account json>:/data/service_account.json:ro
@@ -56,8 +57,7 @@ services:
   grafana:
     environment:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_SECURITY_ADMIN_PASSWORD=changeme  # change <-----------------------------------------------------------
       - GF_FEATURE_TOGGLES_ENABLE=alertingSimplifiedRouting,alertingQueryAndExpressionsStepMode
     entrypoint:
       - sh
