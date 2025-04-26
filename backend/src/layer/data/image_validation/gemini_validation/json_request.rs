@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 use serde::Deserialize;
 
-/// Example for a valid `safeSearch` response structure:
+/// Example for a valid `gemini` response structure:
 /// ```json
 ///{
 ///   "candidates": [

@@ -1,25 +1,27 @@
+use tracing_subscriber::fmt::format;
 use crate::interface::image_validation::ImageValidationError::{ImageInvalid, InvalidResponse};
 use crate::interface::image_validation::Result;
+
+const ACCEPT_KEYWORD: &str = "Yes";
+const REJECT_KEYWORD: &str = "No";
 
 #[derive(Default)]
 pub struct GeminiEvaluation {}
 
 impl GeminiEvaluation {
     pub fn evaluate(&self, text_response: String) -> Result<()> {
-        match text_response.contains("Ja") {
-            true => Ok(()),
-            false => match text_response.contains("Nein") {
-                true => Err(ImageInvalid(filter_invalid_reason(text_response))),
-                false => Err(InvalidResponse),
-            },
+        if text_response.contains(ACCEPT_KEYWORD) {
+            Ok(())
+        } else if text_response.contains(REJECT_KEYWORD) {
+            Err(ImageInvalid(filter_invalid_reason(text_response)))
+        } else {
+            Err(InvalidResponse)
         }
     }
 }
 
 fn filter_invalid_reason(text: String) -> String {
-    let mut reason = text.replace("Nein.", "");
-    reason = reason.replace("Nein,", "");
-    reason.replace("Nein", "").trim().to_string()
+    text.replace(&format!("{REJECT_KEYWORD}."), "").replace(&format!("{REJECT_KEYWORD},"), "").replace(REJECT_KEYWORD, "").trim().to_string()
 }
 
 #[cfg(test)]
@@ -30,16 +32,16 @@ mod tests {
 
     #[test]
     fn test_filter_invalid_reason() {
-        let test_s1 = "Nein. Das stimmt nicht.".to_string();
-        let res_s1 = "Das stimmt nicht.".to_string();
-        let test_s2 = "Nein, wie wir wissen!".to_string();
-        let res_s2 = "wie wir wissen!".to_string();
-        let test_s3 = "Nein".to_string();
-        let res_s3 = "".to_string();
-        let test_s4 = "  Nein.  ".to_string();
-        let res_s4 = "".to_string();
-        let test_s5 = "Nein dass gefällt mir nicht.".to_string();
-        let res_s5 = "das gefällt mir nicht.".to_string();
+        let test_s1 = "No. Unacceptable.".to_string();
+        let res_s1 = "Unacceptable.".to_string();
+        let test_s2 = "No, as we know!".to_string();
+        let res_s2 = "as we know!".to_string();
+        let test_s3 = "No".to_string();
+        let res_s3 = String::new();
+        let test_s4 = "  No.  ".to_string();
+        let res_s4 = String::new();
+        let test_s5 = "No I don't like this.".to_string();
+        let res_s5 = "I don't like this.".to_string();
         assert_eq!(filter_invalid_reason(test_s1), res_s1);
         assert_eq!(filter_invalid_reason(test_s2), res_s2);
         assert_eq!(filter_invalid_reason(test_s3), res_s3);

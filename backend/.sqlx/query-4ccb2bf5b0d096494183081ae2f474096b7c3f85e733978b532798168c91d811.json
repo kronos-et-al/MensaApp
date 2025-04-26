@@ -1,0 +1,45 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO food_additive(food_id, additive) VALUES ($1, UNNEST($2::additive[]))",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        {
+          "Custom": {
+            "name": "additive[]",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "additive",
+                  "kind": {
+                    "Enum": [
+                      "COLORANT",
+                      "PRESERVING_AGENTS",
+                      "ANTIOXIDANT_AGENTS",
+                      "FLAVOUR_ENHANCER",
+                      "PHOSPHATE",
+                      "SURFACE_WAXED",
+                      "SULPHUR",
+                      "ARTIFICIALLY_BLACKENED_OLIVES",
+                      "SWEETENER",
+                      "LAXATIVE_IF_OVERUSED",
+                      "PHENYLALANINE",
+                      "ALCOHOL",
+                      "PRESSED_MEAT",
+                      "GLAZING_WITH_CACAO",
+                      "PRESSED_FISH"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "4ccb2bf5b0d096494183081ae2f474096b7c3f85e733978b532798168c91d811"
+}

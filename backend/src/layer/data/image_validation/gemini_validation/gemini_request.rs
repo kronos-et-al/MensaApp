@@ -6,6 +6,7 @@ const API_REST_URL: &str =
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 const REQUEST_TYPE: &str = "image/jpeg";
 const CONTENT_TYPE: &str = "application/json";
+const REQUEST_SPECIFICATION: &str = "Answer yes or no and give a short explanation in English.";
 
 pub struct GeminiRequest {
     api_key: String,
@@ -17,7 +18,7 @@ impl GeminiRequest {
         Self {
             api_key,
             text_request: format!(
-                "{text_request} Antworte mit Ja oder Nein und einer kurzen Begründung wieso."
+                "{text_request} {REQUEST_SPECIFICATION}"
             ),
         }
     }

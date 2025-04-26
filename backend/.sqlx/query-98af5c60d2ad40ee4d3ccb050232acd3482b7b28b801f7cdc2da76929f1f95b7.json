@@ -1,0 +1,70 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT approved, link_date as upload_date, report_count,\n            upvotes, downvotes, image_id, rank, food_id, f.name as meal_name\n            FROM image_detail JOIN food f USING (food_id)\n            WHERE image_id = $1\n            ORDER BY image_id\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "approved",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 1,
+        "name": "upload_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 2,
+        "name": "report_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "upvotes",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "downvotes",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "image_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 6,
+        "name": "rank",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 7,
+        "name": "food_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 8,
+        "name": "meal_name",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "98af5c60d2ad40ee4d3ccb050232acd3482b7b28b801f7cdc2da76929f1f95b7"
+}
