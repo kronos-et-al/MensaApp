@@ -25,10 +25,11 @@ impl Logger {
     ///
     /// # Panics
     /// if the logging config could not be read from the .env file or if the subscriber could not be set
+    #[allow(clippy::cognitive_complexity)] // somehow this has high cognitive complexity...
     pub fn init(info: LogInfo) {
         // env logger
         let env_layer = Self::get_env_fmt_layer(&info.log_config);
-        // graphana loki
+        // grafana loki
         let loki = Self::get_loki_layer(info.loki_url.as_deref());
 
         tracing_subscriber::registry()

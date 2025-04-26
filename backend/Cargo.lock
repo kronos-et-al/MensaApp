@@ -2038,7 +2038,6 @@ dependencies = [
  "hmac",
  "hyper",
  "image",
- "lazy_static",
  "lettre",
  "mime",
  "minijinja",
