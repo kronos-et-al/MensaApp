@@ -70,6 +70,7 @@ multer = { version = "3.1", features = ["tokio-io"] }
 minijinja = "2.0.2"
 axum-extra = { version = "0.10", features = ["typed-header"] }
 async-once-cell = "0.5.4"
+tracing-loki = "0.2.6"
 
 [dev-dependencies]
 serial_test = "3.0.0"

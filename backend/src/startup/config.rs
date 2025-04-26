@@ -68,6 +68,7 @@ impl ConfigReader {
         // note: no logging here because logging is not yet initialized.
         let info = LogInfo {
             log_config: read_var("LOG_CONFIG").unwrap_or_else(|_| DEFAULT_LOG_CONFIG.into()),
+            loki_url: read_var("LOKI_URL").ok(),
         };
         Ok(info)
     }
