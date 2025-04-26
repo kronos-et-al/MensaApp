@@ -47,7 +47,7 @@ impl GeminiRequest {
     /// See [`crate::interface::image_validation::ImageValidationError`] for more info about the errors.
     /// # Return
     /// The assessment of the Gemini api as string.
-    pub async fn encoded_image_validation(&self, b64_image: String) -> Result<String> {
+    pub async fn encoded_image_validation(&self, b64_image: &str) -> Result<String> {
         let json_resp = self.request_api(b64_image).await?.candidates.pop();
         match json_resp {
             None => Err(InvalidResponse),
@@ -58,11 +58,11 @@ impl GeminiRequest {
         }
     }
 
-    async fn request_api(&self, b64_image: String) -> Result<GeminiResponseJson> {
+    async fn request_api(&self, b64_image: &str) -> Result<GeminiResponseJson> {
         let resp = reqwest::Client::new()
             .post(API_REST_URL)
             .query(&[("key", &self.api_key)])
-            .body(build_request_body(&self.text_request, &b64_image).to_string())
+            .body(build_request_body(&self.text_request, b64_image).to_string())
             // JsonValue cannot be serialised by serde as it does not implement serialise...
             .send()
             .await?;
@@ -147,16 +147,16 @@ mod tests {
     
     #[tokio::test]
     async fn test_request_api() {
-        let valid = get_valid_gemini_struct().request_api(String::from(B64_IMAGE)).await;
-        let invalid = get_invalid_gemini_struct().request_api(String::from(B64_IMAGE)).await;
+        let valid = get_valid_gemini_struct().request_api(B64_IMAGE).await;
+        let invalid = get_invalid_gemini_struct().request_api(B64_IMAGE).await;
         assert!(valid.is_ok());
         assert!(invalid.is_err());
     }
 
     #[tokio::test]
     async fn test_encoded_image_validation() {
-        let valid = get_valid_gemini_struct().encoded_image_validation(String::from(B64_IMAGE)).await;
-        let invalid = get_invalid_gemini_struct().encoded_image_validation(String::from(B64_IMAGE)).await;
+        let valid = get_valid_gemini_struct().encoded_image_validation(B64_IMAGE).await;
+        let invalid = get_invalid_gemini_struct().encoded_image_validation(B64_IMAGE).await;
         assert!(valid.is_ok());
         assert!(valid.unwrap().contains("No"));
         assert!(invalid.is_err());

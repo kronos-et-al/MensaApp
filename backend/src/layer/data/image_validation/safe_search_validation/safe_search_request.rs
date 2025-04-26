@@ -51,7 +51,7 @@ impl SafeSearchRequest {
     /// See [`crate::interface::image_validation::ImageValidationError`] for more info about the errors.
     /// # Return
     /// The mentioned json ([`SafeSearchJson`]), containing the evaluated values.
-    pub async fn encoded_image_validation(&self, b64_image: String) -> Result<SafeSearchJson> {
+    pub async fn encoded_image_validation(&self, b64_image: &str) -> Result<SafeSearchJson> {
         let token = self.auth_config.generate_auth_token(TOKEN_LIFETIME).await?;
         let json_resp = self.request_api(b64_image, token).await?.responses.pop();
         match json_resp {
@@ -62,7 +62,7 @@ impl SafeSearchRequest {
 
     async fn request_api(
         &self,
-        b64_image: String,
+        b64_image: &str,
         auth_token: String,
     ) -> Result<SafeSearchResponseJson> {
         let resp = reqwest::Client::new()
@@ -74,7 +74,7 @@ impl SafeSearchRequest {
             .header(PROJECT_ID_HEADER, &self.google_project_id)
             .header(reqwest::header::CONTENT_TYPE, CONTENT_TYPE)
             .header(reqwest::header::ACCEPT_CHARSET, CHARSET)
-            .body(build_request_body(&b64_image))
+            .body(build_request_body(b64_image))
             .send()
             .await?;
         // TODO retry with error json if response could not be decoded.
@@ -108,7 +108,7 @@ mod tests {
         let json = fs::read_to_string(path).unwrap();
         let api_req = SafeSearchRequest::new(&json, id).unwrap();
         let resp = api_req
-            .encoded_image_validation(String::from(B64_IMAGE))
+            .encoded_image_validation(B64_IMAGE)
             .await;
         assert!(resp.is_ok());
     }

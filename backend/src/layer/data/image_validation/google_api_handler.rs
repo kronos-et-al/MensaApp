@@ -25,6 +25,7 @@ pub struct GoogleApiHandler {
     safe_search_handler: Option<SafeSearchHandler>,
     gemini_handler: Option<GeminiHandler>,
 }
+
 struct SafeSearchHandler {
     evaluation: SafeSearchEvaluation,
     request: SafeSearchRequest,
@@ -49,23 +50,18 @@ impl GoogleApiHandler {
     /// The mentioned [`GoogleApiHandler`] struct.
     pub fn new(info: ImageValidationInfo) -> Result<Self> {
         let mut handler = GoogleApiHandler::default();
-        if info.use_safe_search {
+        if let Some(info) = info.safe_search_info {
             handler.safe_search_handler = Some(SafeSearchHandler {
-                evaluation: SafeSearchEvaluation::new(
-                    info.acceptance.expect("safe search is enabled"),
-                ),
-                request: SafeSearchRequest::new(
-                    &info.service_account_info.expect("safe search is enabled"),
-                    info.project_id.expect("safe search is enabled"),
-                )?,
+                evaluation: SafeSearchEvaluation::new(info.acceptance),
+                request: SafeSearchRequest::new(&info.service_account_info, info.project_id)?,
             });
         }
-        if info.use_gemini_api {
+        if let Some(info) = info.gemini_info {
             handler.gemini_handler = Some(GeminiHandler {
                 evaluation: GeminiEvaluation::default(),
                 request: GeminiRequest::new(
-                    info.gemini_api_key.expect("gemini api is enabled"),
-                    info.gemini_text_request.expect("gemini api is enabled"),
+                    info.gemini_api_key,
+                    &info.gemini_text_request,
                 ),
             });
         }
@@ -78,15 +74,15 @@ impl ImageValidation for GoogleApiHandler {
     async fn validate_image(&self, image: &ImageResource) -> Result<()> {
         let mut safe_search_result = Ok(());
         let mut gemini_result = Ok(());
+        let b64_image = image_to_base64(image)?;
+        
         if let Some(handler) = self.safe_search_handler.as_ref() {
-            let b64_image = image_to_base64(image)?;
-            let results = handler.request.encoded_image_validation(b64_image).await?;
+            let results = handler.request.encoded_image_validation(&b64_image).await?;
             safe_search_result = handler.evaluation.verify(&results);
         }
         if let Some(handler) = self.gemini_handler.as_ref() {
-            let b64_image = image_to_base64(image)?;
-            let results = handler.request.encoded_image_validation(b64_image).await?;
-            gemini_result = handler.evaluation.evaluate(results);
+            let results = handler.request.encoded_image_validation(&b64_image).await?;
+            gemini_result = handler.evaluation.evaluate(&results);
         }
         if safe_search_result.is_ok() && gemini_result.is_ok() {
             Ok(())
@@ -109,7 +105,7 @@ fn image_to_base64(img: &ImageResource) -> Result<String> {
 mod tests {
     #![allow(clippy::unwrap_used)]
 
-    use crate::interface::image_validation::{ImageValidation, ImageValidationInfo};
+    use crate::interface::image_validation::{GeminiInfo, ImageValidation, ImageValidationInfo, SafeSearchInfo};
     use crate::layer::data::image_validation::google_api_handler::{
         image_to_base64, GoogleApiHandler,
     };
@@ -118,21 +114,27 @@ mod tests {
     use dotenvy::dotenv;
     use std::{env, fs};
 
-    const J_IMG: &str = "src/layer/data/image_validation/test/test.jpg";
-    const P_IMG: &str = "src/layer/data/image_validation/test/test.png";
+    const J_B64_IMG: &str = "src/layer/data/image_validation/test/b64_test.jpg";
+    const P_B64_IMG: &str = "src/layer/data/image_validation/test/b64_test.png";
+    const VALID_IMG: &str = "src/layer/data/image_validation/test/valid_food.jpg";
+    const INVALID_IMG: &str = "src/layer/data/image_validation/test/invalid_food.jpg";
 
+    // These test can fail if gemini decides to deny the valid image.
+    // The provided images should be an easy task to decide.
+    // Even it is very unusual, it could fail.
     #[tokio::test]
     async fn test_validate_image() {
-        let handler = get_handler(true, true);
-        let image = image::open(P_IMG).unwrap();
-        let res = handler.validate_image(&image).await;
-        assert!(res.is_ok());
+        assert!(get_handler(true, true).validate_image(&image::open(VALID_IMG).unwrap()).await.is_ok());
+        assert!(get_handler(true, true).validate_image(&image::open(INVALID_IMG).unwrap()).await.is_err());
+        assert!(get_handler(false, false).validate_image(&image::open(INVALID_IMG).unwrap()).await.is_ok());
+        assert!(get_handler(false, true).validate_image(&image::open(INVALID_IMG).unwrap()).await.is_err());
+        assert!(get_handler(false, true).validate_image(&image::open(VALID_IMG).unwrap()).await.is_ok());
     }
 
     #[test]
     fn test_image_to_base64() {
-        let j_img = image::open(J_IMG).unwrap();
-        let p_img = image::open(P_IMG).unwrap();
+        let j_img = image::open(J_B64_IMG).unwrap();
+        let p_img = image::open(P_B64_IMG).unwrap();
         assert_eq!(
             j_img,
             image::load_from_memory(
@@ -153,22 +155,31 @@ mod tests {
         );
     }
 
-    fn get_handler(use_safe_search: bool, use_gemini_api: bool) -> GoogleApiHandler {
+    fn get_handler(use_safe_search: bool, use_gemini: bool) -> GoogleApiHandler {
         dotenv().ok();
         let path = env::var("SERVICE_ACCOUNT_JSON").unwrap();
         let id = env::var("GOOGLE_PROJECT_ID").unwrap();
         let json = fs::read_to_string(path).unwrap();
         let key = env::var("GEMINI_API_KEY").unwrap();
         let text = env::var("GEMINI_TEXT_REQUEST").unwrap();
+        
+        let safe_search_info = if use_safe_search { Some(
+            SafeSearchInfo { 
+                acceptance: [2, 2, 2, 2, 2],
+                service_account_info: json,
+                project_id: id 
+            }
+        ) } else { None }; 
+        let gemini_info = if use_gemini { Some(
+            GeminiInfo {
+                gemini_api_key: key,
+                gemini_text_request: text
+            }
+        ) } else { None };
+        
         GoogleApiHandler::new(ImageValidationInfo {
-            use_safe_search,
-            acceptance: Some([1, 1, 1, 1, 1]),
-            service_account_info: Some(json),
-            project_id: Some(id),
-            use_gemini_api,
-            gemini_api_key: Some(key),
-            gemini_text_request: Some(text),
-        })
-        .unwrap()
+            safe_search_info,
+            gemini_info,
+        }).unwrap()
     }
 }
