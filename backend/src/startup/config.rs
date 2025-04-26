@@ -4,7 +4,7 @@ use super::{
     logging::LogInfo,
     server::{Result, ServerError},
 };
-use crate::interface::image_validation::ImageValidationInfo;
+use crate::interface::image_validation::{GeminiInfo, ImageValidationInfo, SafeSearchInfo};
 use crate::layer::{
     data::{
         database::factory::DatabaseInfo, file_handler::FileHandlerInfo, mail::mail_info::MailInfo,
@@ -238,20 +238,21 @@ impl ConfigReader {
         if read_var_to_bool("USE_SAFE_SEARCH")? {
             let project_id = read_var("GOOGLE_PROJECT_ID")?;
             let acceptance = read_acceptance_var("IMAGE_ACCEPTANCE_VALUES")?;
-            info.use_safe_search = true;
-            info.acceptance = Some(acceptance);
-            info.service_account_info =
-                Some(tokio::fs::read_to_string(read_var("SERVICE_ACCOUNT_JSON")?).await?);
-            info.project_id = Some(project_id.clone());
+            info.safe_search_info = Some(SafeSearchInfo {
+                acceptance,
+                service_account_info: tokio::fs::read_to_string(read_var("SERVICE_ACCOUNT_JSON")?).await?,
+                project_id: project_id.clone(),
+            });
             info!("Using google safe search for image verification with cloud project '{project_id}' and category levels '{acceptance:?}'");
         } else {
-            info!("Google safe search feature is disabled");
+            info!("Google safe search api is disabled");
         }
         if read_var_to_bool("USE_GEMINI_API")? {
-            info.use_gemini_api = true;
-            info.gemini_api_key = Some(read_var("GEMINI_API_KEY")?);
-            info.gemini_text_request = Some(read_var("GEMINI_TEXT_REQUEST")?);
-            info!("Using google gemini ai for image verification");
+            info.gemini_info = Some(GeminiInfo {
+                gemini_api_key: read_var("GEMINI_API_KEY")?,
+                gemini_text_request: read_var("GEMINI_TEXT_REQUEST")?,
+            });
+            info!("Using google gemini api for image verification");
         } else {
             info!("Google gemini api is disabled");
         }
@@ -264,15 +265,12 @@ fn read_var(var: &str) -> Result<String> {
 }
 
 fn read_var_to_bool(key: &str) -> Result<bool> {
-    match read_var(key)?.to_lowercase().as_str() {
-        "true" => Ok(true),
-        "false" => Ok(false),
-        any => Err(ServerError::InvalidFormatError {
-            var: key.into(),
-            gotten: any.to_string(),
-            expected_format: "`true` or `false`".into(),
-        }),
-    }
+    let value = read_var(key)?;
+    value.to_lowercase().as_str().trim().parse().map_err(|_| ServerError::InvalidFormatError {
+        var: key.into(),
+        gotten: value,
+        expected_format: "`true` or `false`".into(),
+    })
 }
 
 fn read_acceptance_var(key: &str) -> Result<[u8; 5]> {
