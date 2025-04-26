@@ -14,7 +14,7 @@ const TOKEN_LIFETIME: i64 = 30;
 const CHARSET: &str = "utf-8";
 
 /// The [`SafeSearchRequest`] struct is used to send images and
-/// requests safe-search results from the api rest interface.
+/// requests safe-search results from the Google safe-search api.
 pub struct SafeSearchRequest {
     google_project_id: String,
     auth_config: AuthConfig,
@@ -28,7 +28,7 @@ impl SafeSearchRequest {
     /// establish a connection to the api interface and authenticate the client.<br>
     /// `google_project_id`<br>
     /// This id is needed to verify the client/caller of the request.
-    /// The `project_id` can be obtained in the google console.
+    /// The `project_id` can be obtained in the Google console.
     /// # Errors
     /// If json could not be read or the authentication struct could not be build, an error will be returned.
     /// See [`crate::interface::image_validation::ImageValidationError`] for more info about the errors.
@@ -41,7 +41,7 @@ impl SafeSearchRequest {
         })
     }
 
-    /// This method calls the google api with the provided image. After evaluation, the api sends the results back.
+    /// This method calls the Google api with the provided image. After evaluation, the api sends the results back.
     /// These results are provided in a json, which will be returned if nothing went wrong.
     /// # Params
     /// `b64_image`<br>
