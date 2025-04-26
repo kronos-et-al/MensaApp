@@ -27,12 +27,11 @@ impl GeminiRequest {
     /// See [`crate::interface::image_validation::ImageValidationError`] for more info about the errors.
     /// # Return
     /// The mentioned [`GeminiRequest`] struct.
-    #[must_use] pub fn new(api_key: String, text_request: &str) -> Self {
+    #[must_use]
+    pub fn new(api_key: String, text_request: &str) -> Self {
         Self {
             api_key,
-            text_request: format!(
-                "{text_request} {REQUEST_SPECIFICATION}"
-            ),
+            text_request: format!("{text_request} {REQUEST_SPECIFICATION}"),
         }
     }
 
@@ -69,7 +68,7 @@ impl GeminiRequest {
         // TODO retry with error json if response could not be decoded.
         // TODO For now, this decode error (containing the response error json)..
         // TODO ..will be displayed as decode error and not as api error.
-        
+
         Ok(resp.json::<GeminiResponseJson>().await?)
     }
 }
@@ -78,7 +77,7 @@ impl GeminiRequest {
 ///     {
 ///         "contents": [{
 ///             "parts": [{
-///                 "text":"This is a Question?"   
+///                 "text":"This is a Question?"
 ///             },
 ///             {
 ///                 "inline_data": {
@@ -107,14 +106,18 @@ fn build_request_body(text_request: &str, b64_image: &str) -> JsonValue {
 
 mod tests {
     #![allow(clippy::unwrap_used)]
-
-    use std::env;
+    // Needed as clippy cannot detect used code in tests??
+    #![allow(dead_code)]
+    #![allow(unused_imports)]
+    use crate::layer::data::image_validation::gemini_validation::gemini_request::GeminiRequest;
+    use crate::layer::data::image_validation::gemini_validation::gemini_request::{
+        build_request_body, REQUEST_TYPE,
+    };
     use dotenvy::dotenv;
-    use crate::layer::data::image_validation::gemini_validation::gemini_request::{GeminiRequest, REQUEST_TYPE};
-    use crate::layer::data::image_validation::gemini_validation::gemini_request::build_request_body;
+    use std::env;
 
     const B64_IMAGE: &str = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";
-    
+
     fn get_valid_gemini_struct() -> GeminiRequest {
         dotenv().ok();
         println!("GEMINI_API_KEY:{val:?}", val = env::var("GEMINI_API_KEY"));
@@ -125,26 +128,23 @@ mod tests {
     }
     fn get_invalid_gemini_struct() -> GeminiRequest {
         dotenv().ok();
-        GeminiRequest::new(
-            String::new(),
-            &env::var("GEMINI_TEXT_REQUEST").unwrap(),
-        )
+        GeminiRequest::new(String::new(), &env::var("GEMINI_TEXT_REQUEST").unwrap())
     }
-    
+
     #[test]
     fn text_build_request_body() {
         let text_request = "This is a Question?";
-        
-        let json_string =  format!(
+
+        let json_string = format!(
             r#"{{"contents":[{{"parts":[{{"text":"{text_request}"}},{{"inline_data":{{"mime_type":"{REQUEST_TYPE}","data":"{B64_IMAGE}"}}}}]}}]}}"#
         );
         let parsed = json::parse(json_string.as_str()).unwrap();
         let json = build_request_body(text_request, B64_IMAGE);
-        
+
         assert_eq!(json_string, json.to_string());
         assert_eq!(json, parsed);
     }
-    
+
     #[tokio::test]
     async fn test_request_api() {
         let valid = get_valid_gemini_struct().request_api(B64_IMAGE).await;
@@ -155,8 +155,12 @@ mod tests {
 
     #[tokio::test]
     async fn test_encoded_image_validation() {
-        let valid = get_valid_gemini_struct().encoded_image_validation(B64_IMAGE).await;
-        let invalid = get_invalid_gemini_struct().encoded_image_validation(B64_IMAGE).await;
+        let valid = get_valid_gemini_struct()
+            .encoded_image_validation(B64_IMAGE)
+            .await;
+        let invalid = get_invalid_gemini_struct()
+            .encoded_image_validation(B64_IMAGE)
+            .await;
         assert!(valid.is_ok());
         assert!(valid.unwrap().contains("No"));
         assert!(invalid.is_err());

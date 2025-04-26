@@ -107,9 +107,7 @@ mod tests {
         let id = env::var("GOOGLE_PROJECT_ID").unwrap();
         let json = fs::read_to_string(path).unwrap();
         let api_req = SafeSearchRequest::new(&json, id).unwrap();
-        let resp = api_req
-            .encoded_image_validation(B64_IMAGE)
-            .await;
+        let resp = api_req.encoded_image_validation(B64_IMAGE).await;
         assert!(resp.is_ok());
     }
 }

@@ -9,7 +9,6 @@ const REJECT_KEYWORD: &str = "No";
 pub struct GeminiEvaluation {}
 
 impl GeminiEvaluation {
-
     /// This method evaluates the provided text provided by the gemini api.
     /// # Params
     /// `text_response`<br>
@@ -30,29 +29,48 @@ impl GeminiEvaluation {
 }
 
 fn filter_invalid_reason(text: &str) -> String {
-    text.replace(&format!("{REJECT_KEYWORD}."), "").replace(&format!("{REJECT_KEYWORD},"), "").replace(REJECT_KEYWORD, "").trim().to_string()
+    text.replace(&format!("{REJECT_KEYWORD}."), "")
+        .replace(&format!("{REJECT_KEYWORD},"), "")
+        .replace(REJECT_KEYWORD, "")
+        .trim()
+        .to_string()
 }
 
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used)]
-    use crate::layer::data::image_validation::gemini_validation::gemini_evaluation::{filter_invalid_reason, GeminiEvaluation};
+    use crate::layer::data::image_validation::gemini_validation::gemini_evaluation::{
+        filter_invalid_reason, GeminiEvaluation,
+    };
 
     #[test]
     fn test_evaluate() {
-        assert!(GeminiEvaluation::default().evaluate("Yes, this image shows potatoes.").is_ok());
+        assert!(GeminiEvaluation::default()
+            .evaluate("Yes, this image shows potatoes.")
+            .is_ok());
         assert!(GeminiEvaluation::default().evaluate("Yes").is_ok());
         assert!(GeminiEvaluation::default().evaluate("").is_err());
         assert!(GeminiEvaluation::default().evaluate("No.").is_err());
-        assert!(GeminiEvaluation::default().evaluate("No, there is no meal visible.").is_err());
+        assert!(GeminiEvaluation::default()
+            .evaluate("No, there is no meal visible.")
+            .is_err());
     }
-    
+
     #[test]
     fn test_filter_invalid_reason() {
-        assert_eq!(filter_invalid_reason("No. Unacceptable."), String::from("Unacceptable."));
-        assert_eq!(filter_invalid_reason("No, as we know!"), String::from("as we know!"));
+        assert_eq!(
+            filter_invalid_reason("No. Unacceptable."),
+            String::from("Unacceptable.")
+        );
+        assert_eq!(
+            filter_invalid_reason("No, as we know!"),
+            String::from("as we know!")
+        );
         assert_eq!(filter_invalid_reason("No"), String::new());
         assert_eq!(filter_invalid_reason("  No.  "), String::new());
-        assert_eq!(filter_invalid_reason("No I don't like this."), String::from("I don't like this."));
+        assert_eq!(
+            filter_invalid_reason("No I don't like this."),
+            String::from("I don't like this.")
+        );
     }
 }

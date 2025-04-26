@@ -240,7 +240,8 @@ impl ConfigReader {
             let acceptance = read_acceptance_var("IMAGE_ACCEPTANCE_VALUES")?;
             info.safe_search_info = Some(SafeSearchInfo {
                 acceptance,
-                service_account_info: tokio::fs::read_to_string(read_var("SERVICE_ACCOUNT_JSON")?).await?,
+                service_account_info: tokio::fs::read_to_string(read_var("SERVICE_ACCOUNT_JSON")?)
+                    .await?,
                 project_id: project_id.clone(),
             });
             info!("Using google safe search for image verification with cloud project '{project_id}' and category levels '{acceptance:?}'");
@@ -266,11 +267,16 @@ fn read_var(var: &str) -> Result<String> {
 
 fn read_var_to_bool(key: &str) -> Result<bool> {
     let value = read_var(key)?;
-    value.to_lowercase().as_str().trim().parse().map_err(|_| ServerError::InvalidFormatError {
-        var: key.into(),
-        gotten: value,
-        expected_format: "`true` or `false`".into(),
-    })
+    value
+        .to_lowercase()
+        .as_str()
+        .trim()
+        .parse()
+        .map_err(|_| ServerError::InvalidFormatError {
+            var: key.into(),
+            gotten: value,
+            expected_format: "`true` or `false`".into(),
+        })
 }
 
 fn read_acceptance_var(key: &str) -> Result<[u8; 5]> {
