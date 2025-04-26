@@ -67,8 +67,10 @@ impl Logger {
         loki_url.map(|loki_url| {
             let loki_url_parsed = Url::parse(loki_url).expect("valid loki url");
             let (loki_layer, task) = tracing_loki::builder()
-                // .label("host", "mensa-ka")?
-                // .extra_field("pid", format!("{}", process::id()))?
+                .label("service_name", "mensa-ka")
+                .expect("label `service_name` not yet set")
+                .extra_field("pid", format!("{}", std::process::id()))
+                .expect("field `pid` not yet set")
                 .build_url(loki_url_parsed)
                 .expect("build loki layer and task");
 
