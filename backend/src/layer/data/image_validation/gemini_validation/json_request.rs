@@ -19,16 +19,19 @@ use serde::Deserialize;
 /// ```
 #[derive(Debug, Deserialize)]
 pub struct GeminiResponseJson {
-    pub candidates: Vec<ResponseJson>,
+    pub(crate) candidates: Vec<ResponseJson>,
 }
+/// See [`GeminiResponseJson`]
 #[derive(Debug, Deserialize)]
 pub struct ResponseJson {
-    pub content: PartJson,
+    pub(crate) content: PartJson,
 }
+/// See [`GeminiResponseJson`]
 #[derive(Debug, Deserialize)]
 pub struct PartJson {
-    pub parts: Vec<MessageJson>,
+    pub(crate) parts: Vec<MessageJson>,
 }
+/// See [`GeminiResponseJson`]
 #[derive(Debug, Deserialize)]
 pub struct MessageJson {
     pub(crate) text: String,
