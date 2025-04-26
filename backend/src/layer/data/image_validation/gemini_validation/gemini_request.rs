@@ -162,7 +162,7 @@ mod tests {
             .encoded_image_validation(B64_IMAGE)
             .await;
         assert!(valid.is_ok());
-        assert!(valid.unwrap().contains("No"));
+        assert!(valid.unwrap().contains("No")); // This can fail, but should be rare...
         assert!(invalid.is_err());
     }
 }

@@ -1,4 +1,4 @@
-//! This module contains all components of the safe search validation component.
+//! This module contains all components of the gemini validation component.
 /// See [`gemini_evaluation::GeminiEvaluation`]
 pub mod gemini_evaluation;
 /// See [`gemini_request::GeminiRequest`]

@@ -5,6 +5,7 @@ use crate::layer::data::image_validation::safe_search_validation::json_request::
 };
 use google_jwt_auth::usage::Usage::CloudVision;
 use google_jwt_auth::AuthConfig;
+use json::JsonValue;
 
 const API_REST_URL: &str = "https://vision.googleapis.com/v1/images:annotate";
 const PROJECT_ID_HEADER: &str = "x-goog-user-project";
@@ -74,7 +75,8 @@ impl SafeSearchRequest {
             .header(PROJECT_ID_HEADER, &self.google_project_id)
             .header(reqwest::header::CONTENT_TYPE, CONTENT_TYPE)
             .header(reqwest::header::ACCEPT_CHARSET, CHARSET)
-            .body(build_request_body(b64_image))
+            .body(build_request_body(b64_image).to_string())
+            // JsonValue cannot be serialised by serde as it does not implement serialise...
             .send()
             .await?;
         // TODO retry with error json if response could not be decoded.
@@ -84,21 +86,55 @@ impl SafeSearchRequest {
     }
 }
 
-fn build_request_body(b64_image: &str) -> String {
-    format!(
-        r#"{{"requests":[{{"image":{{"content":"{b64_image}"}},"features":[{{"type":"{REQUEST_TYPE}"}},]}}]}}"#
-    )
+/// ```json
+///     {
+///         "requests": [{
+///             "image": {
+///                 "content":"image as base64",
+///             },
+///             "features": [{
+///                 "type":"SAFE_SEARCH_DETECTION",
+///             }]
+///         }]
+///     }
+/// ```
+fn build_request_body(b64_image: &str) -> JsonValue {
+    json::object! {
+        requests: [{
+            image: {
+                content: b64_image,
+            },
+            features: [{
+                "type": REQUEST_TYPE,
+            }]
+        }]
+    }
 }
 
 #[cfg(test)]
 mod tests {
     #![allow(clippy::unwrap_used)]
     use crate::layer::data::image_validation::safe_search_validation::safe_search_request::SafeSearchRequest;
+    use crate::layer::data::image_validation::safe_search_validation::safe_search_request::{
+        build_request_body, REQUEST_TYPE,
+    };
     use dotenvy::dotenv;
     use std::{env, fs};
 
     // Very Small b64 image
     const B64_IMAGE: &str = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";
+
+    #[test]
+    fn text_build_request_body() {
+        let json_string = format!(
+            r#"{{"requests":[{{"image":{{"content":"{B64_IMAGE}"}},"features":[{{"type":"{REQUEST_TYPE}"}}]}}]}}"#
+        );
+        let parsed = json::parse(json_string.as_str()).unwrap();
+        let json = build_request_body(B64_IMAGE);
+
+        assert_eq!(json_string, json.to_string());
+        assert_eq!(json, parsed);
+    }
 
     #[tokio::test]
     async fn test_encoded_image_validation() {
