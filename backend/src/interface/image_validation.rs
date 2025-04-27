@@ -107,8 +107,8 @@ pub struct ErrorInfo {
     pub(crate) status: String,
 }
 
-/// This method is used after an api request to parse the responded json to [`T`].
-/// Consider: [`T`] needs to be [`serde::de::DeserializeOwned`]!
+/// This method is used after an api request to parse the responded json to struct T.
+/// Consider: Struct T needs to be [`serde::de::DeserializeOwned`]!
 /// # Params
 /// `resp`<br>
 /// This string contains the response.
@@ -116,7 +116,7 @@ pub struct ErrorInfo {
 /// If the api responded with an error, the error response will be deserialized and transformed
 /// into an [`ImageValidationError`].
 /// # Return
-/// The mentioned json struct ([`T`]).
+/// The mentioned json struct (T).
 pub fn parse_request<T>(resp: &str) -> Result<T>
 where
     T: serde::de::DeserializeOwned,

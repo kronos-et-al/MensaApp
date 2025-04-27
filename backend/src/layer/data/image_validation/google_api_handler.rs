@@ -43,7 +43,7 @@ impl GoogleApiHandler {
     /// This struct contains all information :) that is needed to set up this struct like
     /// authentication information and acceptance level for the image evaluation.
     /// # Errors
-    /// It is possible that the [`ApiRequest`] creation fails, as the provided information causes failures.
+    /// It is possible that the [`SafeSearchRequest`] creation fails, as the provided information causes failures.
     /// These failures will be returned as an error.
     /// See [`crate::interface::image_validation::ImageValidationError`] for more info about the errors.
     /// # Return

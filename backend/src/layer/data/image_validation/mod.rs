@@ -1,6 +1,6 @@
-//! This component is responsible for image related api operations
+//! See [`google_api_handler`]
 
-/// This module is used to verify and validate the evaluated results of the [`safe_search_validation::ApiRequest`] class.
+/// This module is used to verify and validate the evaluated results of the request classes.
 pub mod gemini_validation;
 /// This module is used to manage tasks of this component.
 pub mod google_api_handler;

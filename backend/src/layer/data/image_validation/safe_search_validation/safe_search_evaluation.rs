@@ -2,8 +2,8 @@ use crate::interface::image_validation::ImageValidationError::SafeSearchRejectio
 use crate::interface::image_validation::Result;
 use crate::layer::data::image_validation::safe_search_validation::json_request::SafeSearchJson;
 
-/// The [`SafeSearchEvaluation`] struct is used to verify and validate the
-/// evaluated results of the [`crate::layer::data::image_validation::safe_search_validation::ApiRequest`] class.
+/// The [`SafeSearchEvaluation`] struct is used to verify and validate the evaluated results of
+/// the request class.
 pub struct SafeSearchEvaluation {
     acceptance: [u8; 5],
 }

@@ -251,7 +251,7 @@ impl ConfigReader {
         if read_var_to_bool("USE_GEMINI_API")? {
             info.gemini_info = Some(GeminiInfo {
                 gemini_api_key: read_var("GEMINI_API_KEY")?,
-                gemini_text_request: read_var("GEMINI_TEXT_REQUEST")?,
+                gemini_text_request: read_var("GEMINI_TEXT_REQUEST")?.replace('_', " "),
             });
             info!("Using google gemini api for image verification");
         } else {
