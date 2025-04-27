@@ -29,6 +29,8 @@ const DEFAULT_SMTP_PORT: u16 = 465;
 const DEFAULT_PARSE_WEEKS: u32 = 4;
 const DEFAULT_MAX_IMAGE_WIDTH: u32 = 1920;
 const DEFAULT_MAX_IMAGE_HEIGHT: u32 = 1080;
+const DEFAULT_USE_SAFE_SEARCH: bool = false;
+const DEFAULT_USE_GEMINI: bool = false;
 const DEFAULT_IMAGE_ACCEPTANCE_VALUES: &str = "0,0,0,0,0";
 const DEFAULT_UPLOAD_SIZE: u64 = 10 << 20; // 10 MiB
 
@@ -235,7 +237,7 @@ impl ConfigReader {
     /// - when usage could not be parsed
     pub async fn get_image_validation_info(&self) -> Result<ImageValidationInfo> {
         let mut info: ImageValidationInfo = ImageValidationInfo::default();
-        if read_var_to_bool("USE_SAFE_SEARCH")? {
+        if read_var_to_bool("USE_SAFE_SEARCH").unwrap_or(DEFAULT_USE_SAFE_SEARCH) {
             let project_id = read_var("GOOGLE_PROJECT_ID")?;
             let acceptance = read_acceptance_var("IMAGE_ACCEPTANCE_VALUES")?;
             info.safe_search_info = Some(SafeSearchInfo {
@@ -248,7 +250,7 @@ impl ConfigReader {
         } else {
             info!("Google safe search api is disabled");
         }
-        if read_var_to_bool("USE_GEMINI_API")? {
+        if read_var_to_bool("USE_GEMINI_API").unwrap_or(DEFAULT_USE_GEMINI) {
             info.gemini_info = Some(GeminiInfo {
                 gemini_api_key: read_var("GEMINI_API_KEY")?,
                 gemini_text_request: read_var("GEMINI_TEXT_REQUEST")?.replace('_', " "),
