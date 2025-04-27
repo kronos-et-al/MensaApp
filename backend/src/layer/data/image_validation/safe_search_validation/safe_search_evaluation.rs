@@ -1,4 +1,4 @@
-use crate::interface::image_validation::ImageValidationError::InvalidContent;
+use crate::interface::image_validation::ImageValidationError::SafeSearchRejectionError;
 use crate::interface::image_validation::Result;
 use crate::layer::data::image_validation::safe_search_validation::json_request::SafeSearchJson;
 
@@ -43,7 +43,7 @@ impl SafeSearchEvaluation {
         let values = result_to_arr(value_json);
         for (i, value) in values.iter().enumerate() {
             if value > &self.acceptance[i] {
-                return Err(InvalidContent(
+                return Err(SafeSearchRejectionError(
                     type_determination(i),
                     *value,
                     self.acceptance[i],

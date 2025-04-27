@@ -1,4 +1,6 @@
-use crate::interface::image_validation::ImageValidationError::{ImageInvalid, InvalidResponse};
+use crate::interface::image_validation::ImageValidationError::{
+    GeminiRejectionError, InvalidApiResponse,
+};
 use crate::interface::image_validation::Result;
 
 const ACCEPT_KEYWORD: &str = "Yes";
@@ -21,9 +23,9 @@ impl GeminiEvaluation {
         if text_response.contains(ACCEPT_KEYWORD) {
             Ok(())
         } else if text_response.contains(REJECT_KEYWORD) {
-            Err(ImageInvalid(filter_invalid_reason(text_response)))
+            Err(GeminiRejectionError(filter_invalid_reason(text_response)))
         } else {
-            Err(InvalidResponse)
+            Err(InvalidApiResponse)
         }
     }
 }
