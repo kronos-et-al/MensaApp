@@ -157,7 +157,7 @@ where
             self.db
                 .add_meal_to_plan(meal_id, line_id, date, dish.price)
                 .await?;
-        };
+        }
         Ok(())
     }
 

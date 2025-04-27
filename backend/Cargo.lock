@@ -2035,7 +2035,6 @@ dependencies = [
  "hyper",
  "image",
  "json",
- "lazy_static",
  "lettre",
  "mime",
  "minijinja",

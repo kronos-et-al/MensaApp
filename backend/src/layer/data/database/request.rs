@@ -125,7 +125,7 @@ impl RequestDataAccess for PersistentRequestData {
             .await?;
 
         // If date is to far in the past, return `None`.
-        if first_date.map_or(true, |first_date| first_date > date) {
+        if first_date.is_none_or(|first_date| first_date > date) {
             return Ok(None);
         }
 
