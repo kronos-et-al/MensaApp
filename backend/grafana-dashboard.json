@@ -46,7 +46,7 @@
         "showLabels": false,
         "showTime": true,
         "sortOrder": "Ascending",
-        "wrapLogMessage": false
+        "wrapLogMessage": true
       },
       "pluginVersion": "11.6.1",
       "targets": [
@@ -57,7 +57,7 @@
           },
           "direction": "forward",
           "editorMode": "code",
-          "expr": "{service_name=\"mensa-ka\"} | json | level=\"info\" or level=\"warn\" or level=\"error\" or _target=~\"mensa_app_backend.*\" \r\n| label_format color=\"{{if eq .level \\\"info\\\"}}\\033[32;1;4m{{else if eq .level \\\"warn\\\"}}\\033[33;1;4m{{else if eq .level \\\"trace\\\"}}\\033[34;1;4m{{else if eq .level \\\"error\\\"}}\\033[31;1;4m{{end}}\" \r\n| line_format \"  {{printf .color}}[{{.level}}]{{printf \\\"\\033[0m\\\"}} {{.message}}\"\r\n",
+          "expr": "{service_name=\"mensa-ka\"} | json | _target=~\"mensa_app_backend.*\" \r\n| label_format color=\"\\033[{{if eq .level \\\"info\\\"}}32{{else if eq .level \\\"warn\\\"}}33{{else if eq .level \\\"trace\\\"}}35{{else if eq .level \\\"error\\\"}}31{{else if eq .level \\\"debug\\\"}}34{{end}}m\" \r\n| line_format \"  {{printf .color}}{{printf \\\"\\033[1m\\\"}}[{{.level}}]{{printf \\\"\\033[0m\\\"}} {{._target}}: {{.color}}{{.message}}\"\r\n",
           "legendFormat": "",
           "queryType": "range",
           "refId": "A"
@@ -186,5 +186,5 @@
   "timezone": "browser",
   "title": "Logs",
   "uid": "bek2lautjhfk0b",
-  "version": 4
+  "version": 1
 }
