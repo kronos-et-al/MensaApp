@@ -11,9 +11,12 @@ use mensa_app_backend::{
     util::{ReportReason, Uuid},
 };
 
-static MEAL_ID: std::sync::LazyLock<Uuid> = std::sync::LazyLock::new(|| Uuid::try_from("48b0ed7b-8387-46ad-866c-7993f469a9bf").unwrap());
-static IMAGE_ID: std::sync::LazyLock<Uuid> = std::sync::LazyLock::new(|| Uuid::try_from("1b8f373b-7383-4a3a-9818-e0137fd164b7").unwrap());
-static CLIENT_ID: std::sync::LazyLock<Uuid> = std::sync::LazyLock::new(|| Uuid::try_from("6f04a6c7-9723-4a01-ae8c-67baa62fba75").unwrap());
+static MEAL_ID: std::sync::LazyLock<Uuid> =
+    std::sync::LazyLock::new(|| Uuid::try_from("48b0ed7b-8387-46ad-866c-7993f469a9bf").unwrap());
+static IMAGE_ID: std::sync::LazyLock<Uuid> =
+    std::sync::LazyLock::new(|| Uuid::try_from("1b8f373b-7383-4a3a-9818-e0137fd164b7").unwrap());
+static CLIENT_ID: std::sync::LazyLock<Uuid> =
+    std::sync::LazyLock::new(|| Uuid::try_from("6f04a6c7-9723-4a01-ae8c-67baa62fba75").unwrap());
 
 #[tokio::test]
 #[ignore = "manual test"]
