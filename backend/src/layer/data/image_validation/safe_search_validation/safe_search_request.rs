@@ -1,5 +1,5 @@
-use crate::interface::image_validation::ImageValidationError::InvalidResponse;
-use crate::interface::image_validation::Result;
+use crate::interface::image_validation::ImageValidationError::InvalidApiResponse;
+use crate::interface::image_validation::{parse_request, Result};
 use crate::layer::data::image_validation::safe_search_validation::json_request::{
     SafeSearchJson, SafeSearchResponseJson,
 };
@@ -56,7 +56,7 @@ impl SafeSearchRequest {
         let token = self.auth_config.generate_auth_token(TOKEN_LIFETIME).await?;
         let json_resp = self.request_api(b64_image, token).await?.responses.pop();
         match json_resp {
-            None => Err(InvalidResponse),
+            None => Err(InvalidApiResponse),
             Some(json) => Ok(json.safeSearchAnnotation),
         }
     }
@@ -78,11 +78,10 @@ impl SafeSearchRequest {
             .body(build_request_body(b64_image).to_string())
             // JsonValue cannot be serialised by serde as it does not implement serialise...
             .send()
+            .await?
+            .text()
             .await?;
-        // TODO retry with error json if response could not be decoded.
-        // TODO For now, this decode error (containing the response error json)..
-        // TODO ..will be displayed as decode error and not as api error.
-        Ok(resp.json::<SafeSearchResponseJson>().await?)
+        parse_request::<SafeSearchResponseJson>(&resp)
     }
 }
 

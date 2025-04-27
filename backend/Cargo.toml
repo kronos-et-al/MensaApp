@@ -71,13 +71,13 @@ minijinja = "2.0.2"
 axum-extra = { version = "0.10", features = ["typed-header"] }
 async-once-cell = "0.5.4"
 json = "0.12.4"
+serde_json = "1.0.107"
 
 [dev-dependencies]
 serial_test = "3.0.0"
 rand = "0.8.0"
 rusty-fork = "0.3.0"
 tempfile = "3.8.0"
-serde_json = "1.0.107"
 tracing-test = "0.2.5"
 
 [[bin]]

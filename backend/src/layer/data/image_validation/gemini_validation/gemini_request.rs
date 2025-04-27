@@ -1,5 +1,5 @@
-use crate::interface::image_validation::ImageValidationError::InvalidResponse;
-use crate::interface::image_validation::Result;
+use crate::interface::image_validation::ImageValidationError::InvalidApiResponse;
+use crate::interface::image_validation::{parse_request, Result};
 use crate::layer::data::image_validation::gemini_validation::json_request::GeminiResponseJson;
 use json::JsonValue;
 
@@ -49,9 +49,9 @@ impl GeminiRequest {
     pub async fn encoded_image_validation(&self, b64_image: &str) -> Result<String> {
         let json_resp = self.request_api(b64_image).await?.candidates.pop();
         match json_resp {
-            None => Err(InvalidResponse),
+            None => Err(InvalidApiResponse),
             Some(mut json) => match json.content.parts.pop() {
-                None => Err(InvalidResponse),
+                None => Err(InvalidApiResponse),
                 Some(part) => Ok(part.text),
             },
         }
@@ -64,12 +64,10 @@ impl GeminiRequest {
             .body(build_request_body(&self.text_request, b64_image).to_string())
             // JsonValue cannot be serialised by serde as it does not implement serialise...
             .send()
+            .await?
+            .text()
             .await?;
-        // TODO retry with error json if response could not be decoded.
-        // TODO For now, this decode error (containing the response error json)..
-        // TODO ..will be displayed as decode error and not as api error.
-
-        Ok(resp.json::<GeminiResponseJson>().await?)
+        parse_request::<GeminiResponseJson>(&resp)
     }
 }
 
