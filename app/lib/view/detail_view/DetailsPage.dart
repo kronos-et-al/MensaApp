@@ -470,7 +470,9 @@ class DetailsPageState extends State<DetailsPage> {
                                           ),
                                         )
                                         : const SizedBox(height: 0),
-                                    meal.numberOfOccurance != null
+                                    (meal.numberOfOccurance != null &&
+                                            meal.lastServed != null &&
+                                            meal.nextServed != null)
                                         ? Text(
                                           FlutterI18n.translate(
                                             context,
@@ -479,6 +481,12 @@ class DetailsPageState extends State<DetailsPage> {
                                               "frequency":
                                                   meal.numberOfOccurance
                                                       .toString(),
+                                              "lastServed": _dateFormat.format(
+                                                meal.lastServed!,
+                                              ),
+                                              "nextServed": _dateFormat.format(
+                                                meal.nextServed!,
+                                              ),
                                             },
                                           ),
                                         )
