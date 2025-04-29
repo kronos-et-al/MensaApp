@@ -80,7 +80,7 @@ mod tests {
         let handler = get_handler();
         let image = image::open(P_IMG).unwrap();
         let res = handler.validate_image(&image).await;
-        assert!(res.is_ok());
+        assert!(res.is_ok(), "{res:?}");
     }
 
     #[test]
@@ -113,7 +113,7 @@ mod tests {
         let id = env::var("GOOGLE_PROJECT_ID").unwrap();
         let json = fs::read_to_string(path).unwrap();
         GoogleApiHandler::new(ImageValidationInfo {
-            acceptance: [1, 1, 1, 1, 1],
+            acceptance: [2, 2, 2, 2, 2],
             service_account_info: json,
             project_id: id,
         })
