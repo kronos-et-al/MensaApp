@@ -99,8 +99,6 @@ impl Server {
         // logging
         let logger = Logger::init(config.read_log_info()?);
 
-        info!("Starting server...");
-
         // help text
         if config.should_print_help() {
             cli::print_help();
