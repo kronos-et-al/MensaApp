@@ -1,9 +1,11 @@
 //! Module for setting up the logging framework.
 
+use std::time::Duration;
+
 use chrono::Local;
 use time::{format_description::well_known::Rfc2822, UtcOffset};
 use tracing::info;
-use tracing_loki::url::Url;
+use tracing_loki::{url::Url, BackgroundTaskController};
 use tracing_subscriber::{
     fmt::time::OffsetTime, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter, Layer,
     Registry,
@@ -18,7 +20,9 @@ pub struct LogInfo {
 }
 
 /// Class for initializing the logging.
-pub struct Logger;
+pub struct Logger {
+    loki_shutdown: Option<BackgroundTaskController>,
+}
 
 impl Logger {
     /// Initializes the logger.
@@ -26,11 +30,11 @@ impl Logger {
     /// # Panics
     /// if the logging config could not be read from the .env file or if the subscriber could not be set
     #[allow(clippy::cognitive_complexity)] // somehow this has high cognitive complexity...
-    pub fn init(info: LogInfo) {
+    pub fn init(info: LogInfo) -> Self {
         // env logger
         let env_layer = Self::get_env_fmt_layer(&info.log_config);
         // grafana loki
-        let loki = Self::get_loki_layer(info.loki_url.as_deref());
+        let (loki, loki_shutdown) = Self::get_loki_layer(info.loki_url.as_deref()).unzip();
 
         tracing_subscriber::registry()
             .with(env_layer)
@@ -44,6 +48,16 @@ impl Logger {
             info!("Logging to Grafana Loki at `{loki_url}`.",);
         } else {
             info!("Logging to Grafana Loki is disabled.");
+        }
+
+        Self { loki_shutdown }
+    }
+
+    /// Shuts down logger. Required when using external logging to Grafana loki, useless otherwise.
+    pub async fn shutdown(self) {
+        if let Some(s) = self.loki_shutdown {
+            tokio::time::sleep(Duration::from_millis(1)).await; // allow for last log messages to be send
+            s.shutdown().await;
         }
     }
 
@@ -63,19 +77,21 @@ impl Logger {
             .with_filter(env_filter)
     }
 
-    fn get_loki_layer(loki_url: Option<&str>) -> Option<tracing_loki::Layer> {
+    fn get_loki_layer(
+        loki_url: Option<&str>,
+    ) -> Option<(tracing_loki::Layer, BackgroundTaskController)> {
         loki_url.map(|loki_url| {
             let loki_url_parsed = Url::parse(loki_url).expect("valid loki url");
-            let (loki_layer, task) = tracing_loki::builder()
+            let (loki_layer, controller, task) = tracing_loki::builder()
                 .label("service_name", "mensa-ka")
                 .expect("label `service_name` not yet set")
                 .extra_field("pid", format!("{}", std::process::id()))
                 .expect("field `pid` not yet set")
-                .build_url(loki_url_parsed)
+                .build_controller_url(loki_url_parsed)
                 .expect("build loki layer and task");
 
             tokio::spawn(task); // todo graceful shutdown
-            loki_layer
+            (loki_layer, controller)
         })
     }
 }
@@ -94,7 +110,7 @@ mod tests {
                 log_config: "trace".into(),
                 loki_url: None,
             };
-            Logger::init(info);
+            let _ = Logger::init(info);
         }
 
     }

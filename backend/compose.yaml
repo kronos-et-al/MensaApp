@@ -16,6 +16,7 @@ services:
       - BASE_URL=<url where api is available>
       - TZ=Europe/Berlin
       - LOKI_URL=http://loki:3100
+      - LOG_CONFIG=warn,mensa_app_backend=info # only applies for stderr log, not for loki
     volumes: # please configure accordingly <-----------------------------------------------------------
       - <image_path>:/data/images:rw
       - <service_account json>:/data/service_account.json:ro
