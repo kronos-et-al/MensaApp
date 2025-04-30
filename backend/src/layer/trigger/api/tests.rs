@@ -140,7 +140,7 @@ async fn test_gql_request(request: &'static str) {
 async fn test_add_image() {
     let dir = tempdir().unwrap();
     let mut path = dir.path().to_owned();
-    let filename = "test.jpg";
+    let filename = "b64_test.jpg";
     path.push(filename);
     let mut file = tokio::fs::File::create(&path).await.unwrap();
 

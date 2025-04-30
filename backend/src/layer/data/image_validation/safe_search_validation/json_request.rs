@@ -19,28 +19,21 @@ use serde::Deserialize;
 /// ```
 #[derive(Debug, Deserialize)]
 pub struct SafeSearchResponseJson {
-    /// See [`SafeSearchResponseJson`]
-    pub responses: Vec<ResponseJson>,
+    pub(crate) responses: Vec<ResponseJson>,
 }
 
 /// See [`SafeSearchResponseJson`]
 #[derive(Debug, Deserialize)]
 pub struct ResponseJson {
-    /// See [`SafeSearchResponseJson`]
-    pub safeSearchAnnotation: SafeSearchJson,
+    pub(crate) safeSearchAnnotation: SafeSearchJson,
 }
 
 /// See [`SafeSearchResponseJson`]
 #[derive(Debug, Deserialize)]
 pub struct SafeSearchJson {
-    /// See [`SafeSearchResponseJson`]
-    pub adult: String,
-    /// See [`SafeSearchResponseJson`]
-    pub spoof: String,
-    /// See [`SafeSearchResponseJson`]
-    pub medical: String,
-    /// See [`SafeSearchResponseJson`]
-    pub violence: String,
-    /// See [`SafeSearchResponseJson`]
-    pub racy: String,
+    pub(crate) adult: String,
+    pub(crate) spoof: String,
+    pub(crate) medical: String,
+    pub(crate) violence: String,
+    pub(crate) racy: String,
 }

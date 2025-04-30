@@ -6,7 +6,6 @@ use std::fmt::Display;
 
 use async_graphql::Enum;
 use image::DynamicImage;
-use lazy_static::lazy_static;
 use serde::Serialize;
 
 /// Date type used in multiple places.
@@ -202,9 +201,8 @@ pub struct NutritionData {
     pub salt: u32,
 }
 
-lazy_static! {
-    static ref BASE_URL: String = std::env::var("BASE_URL").unwrap_or_else(|_| "localhost".into());
-}
+static BASE_URL: std::sync::LazyLock<String> =
+    std::sync::LazyLock::new(|| std::env::var("BASE_URL").unwrap_or_else(|_| "localhost".into()));
 
 /// Prepends the servers domain to get a global url. Slug should start with a `/`.
 #[must_use]

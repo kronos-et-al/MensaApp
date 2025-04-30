@@ -18,9 +18,13 @@ env:
   SMTP_USERNAME: ${{ vars.SMTP_USERNAME }}
   SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
   ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
+  USE_SAFE_SEARCH: "true"
   GOOGLE_CLIENT_JSON_BASE64: ${{ secrets.GOOGLE_CLIENT_JSON_BASE64 }}
   GOOGLE_PROJECT_ID: ${{ vars.GOOGLE_PROJECT_ID }}
-
+  USE_GEMINI_API: "true"
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+  GEMINI_TEXT_REQUEST: "Is_a_meal_from_a_mensaria_visible_in_the_picture?"
+  
 
 jobs:
   build_rust:

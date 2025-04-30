@@ -344,7 +344,7 @@ mod test {
             .is_err());
 
         // When no format is given, the command may or may not work.
-        // let image_file = include_bytes!("tests/test.jpg").to_vec();
+        // let image_file = include_bytes!("tests/b64_test.jpg").to_vec();
         // assert!(handler
         //     .add_image(meal_id, None, image_file, auth_info)
         //     .await

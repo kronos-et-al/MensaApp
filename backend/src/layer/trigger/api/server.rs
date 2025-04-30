@@ -402,7 +402,7 @@ mod tests {
         let image =
             ImageResource::ImageRgb8(ImageBuffer::from_fn(10, 10, |_, _| image::Rgb([10u8; 3])));
 
-        let image_name = "test.jpg";
+        let image_name = "b64_test.jpg";
         let mut image_path = image_folder.path().to_path_buf();
         image_path.push(image_name);
 
