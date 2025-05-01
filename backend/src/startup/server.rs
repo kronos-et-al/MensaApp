@@ -97,9 +97,7 @@ impl Server {
         let config = ConfigReader::default();
 
         // logging
-        Logger::init(config.read_log_info()?);
-
-        info!("Starting server...");
+        let logger = Logger::init(config.read_log_info()?);
 
         // help text
         if config.should_print_help() {
@@ -111,6 +109,8 @@ impl Server {
             cli::migrate_images(&config).await?;
             return Ok(());
         }
+
+        info!("Starting server...");
 
         // data layer
         let factory =
@@ -154,6 +154,7 @@ impl Server {
         api_server.shutdown().await;
 
         info!("Server stopped.");
+        logger.shutdown().await;
 
         Ok(())
     }

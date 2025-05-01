@@ -85,55 +85,80 @@
 //! <!-- ... -->
 //! ```
 
+use std::sync::LazyLock;
+
 use crate::interface::mensa_parser::{
     model::{Dish, ParseCanteen, ParseEnvironmentInfo, ParseLine},
     ParseError,
 };
 use crate::util::{Additive, Allergen, Date, FoodType, NutritionData, Price};
-use lazy_static::lazy_static;
 use regex::Regex;
 use scraper::element_ref::Text;
 use scraper::{ElementRef, Html, Selector};
 
-lazy_static! {
-    static ref ROOT_NODE_CLASS_SELECTOR: Selector = Selector::parse("div.main-content").expect(SELECTOR_PARSE_E_MSG);
-    static ref CANTEEN_NAME_NODE_CLASS_SELECTOR: Selector = Selector::parse("h1.mensa_fullname").expect(SELECTOR_PARSE_E_MSG);
+static ROOT_NODE_CLASS_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("div.main-content").expect(SELECTOR_PARSE_E_MSG));
+static CANTEEN_NAME_NODE_CLASS_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("h1.mensa_fullname").expect(SELECTOR_PARSE_E_MSG));
 
-    static ref DATE_SUPER_NODE_CLASS_SELECTOR: Selector = Selector::parse("ul.canteen-day-nav").expect(SELECTOR_PARSE_E_MSG);
-    static ref DATE_NODE_CLASS_SELECTOR: Selector = Selector::parse("a").expect(SELECTOR_PARSE_E_MSG);
-    static ref DAY_NODE_CLASS_SELECTOR: Selector = Selector::parse("div.canteen-day").expect(SELECTOR_PARSE_E_MSG);
+static DATE_SUPER_NODE_CLASS_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("ul.canteen-day-nav").expect(SELECTOR_PARSE_E_MSG));
+static DATE_NODE_CLASS_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("a").expect(SELECTOR_PARSE_E_MSG));
+static DAY_NODE_CLASS_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("div.canteen-day").expect(SELECTOR_PARSE_E_MSG));
 
-    static ref LINE_NODE_CLASS_SELECTOR: Selector = Selector::parse("tr.mensatype_rows").expect(SELECTOR_PARSE_E_MSG);
-    static ref LINE_NAME_NODE_CLASS_SELECTOR: Selector = Selector::parse("td.mensatype").expect(SELECTOR_PARSE_E_MSG);
+static LINE_NODE_CLASS_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("tr.mensatype_rows").expect(SELECTOR_PARSE_E_MSG));
+static LINE_NAME_NODE_CLASS_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("td.mensatype").expect(SELECTOR_PARSE_E_MSG));
 
-    static ref DISH_TYPE_NODE_CLASS_SELECTOR: Selector = Selector::parse("img.mealicon_2").expect(SELECTOR_PARSE_E_MSG);
-    static ref DISH_NAME_NODE_CLASS_SELECTOR: Selector = Selector::parse("span.bg").expect(SELECTOR_PARSE_E_MSG);
-    static ref DISH_INFO_NODE_CLASS_SELECTOR: Selector = Selector::parse("sup").expect(SELECTOR_PARSE_E_MSG);
-    static ref ENV_SCORE_NODE_CLASS_SELECTOR: Selector = Selector::parse("div.enviroment_score.average").expect(SELECTOR_PARSE_E_MSG);
+static DISH_TYPE_NODE_CLASS_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("img.mealicon_2").expect(SELECTOR_PARSE_E_MSG));
+static DISH_NAME_NODE_CLASS_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("span.bg").expect(SELECTOR_PARSE_E_MSG));
+static DISH_INFO_NODE_CLASS_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("sup").expect(SELECTOR_PARSE_E_MSG));
+// static ENV_SCORE_NODE_CLASS_SELECTOR: LazyLock<Selector> =
+//     LazyLock::new(|| Selector::parse("div.enviroment_score.average").expect(SELECTOR_PARSE_E_MSG));
 
-    static ref CO2_RATING_SELECTOR: Selector = Selector::parse("div.co2_bewertung").expect(SELECTOR_PARSE_E_MSG);
-    static ref CO2_ALTERNATIVE_RATING_SELECTOR: Selector = Selector::parse("div.co2_bewertung_wolke").expect(SELECTOR_PARSE_E_MSG);
-    static ref WATER_RATING_SELECTOR: Selector = Selector::parse("div.wasser_bewertung").expect(SELECTOR_PARSE_E_MSG);
-    static ref ANIMAL_WELFARE_RATING_SELECTOR: Selector = Selector::parse("div.tierwohl").expect(SELECTOR_PARSE_E_MSG);
-    static ref RAINFOREST_RATING_SELECTOR: Selector = Selector::parse("div.regenwald").expect(SELECTOR_PARSE_E_MSG);
-    static ref VALUE_SELECTOR: Selector = Selector::parse("div.value").expect(SELECTOR_PARSE_E_MSG);
-    static ref RATING_SELECTOR: Selector = Selector::parse("div.enviroment_score.co2-label").expect(SELECTOR_PARSE_E_MSG);
+static CO2_RATING_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("div.co2_bewertung").expect(SELECTOR_PARSE_E_MSG));
+static CO2_ALTERNATIVE_RATING_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("div.co2_bewertung_wolke").expect(SELECTOR_PARSE_E_MSG));
+static WATER_RATING_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("div.wasser_bewertung").expect(SELECTOR_PARSE_E_MSG));
+static ANIMAL_WELFARE_RATING_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("div.tierwohl").expect(SELECTOR_PARSE_E_MSG));
+static RAINFOREST_RATING_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("div.regenwald").expect(SELECTOR_PARSE_E_MSG));
+static VALUE_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("div.value").expect(SELECTOR_PARSE_E_MSG));
+static RATING_SELECTOR: LazyLock<Selector> = LazyLock::new(|| {
+    Selector::parse("div.enviroment_score.co2-label").expect(SELECTOR_PARSE_E_MSG)
+});
 
-    /// A Regex for getting prices in euros. A price consists of 1 or more digits, followed by a comma and then exactly two digits.
-    static ref PRICE_REGEX: Regex = Regex::new(r"([0-9]*),([0-9]{2})").expect(REGEX_PARSE_E_MSG);
-    /// A Regex for getting allergens. An allergen consists of a single Uppercase letter followed by one or more upper- or lowercase letters (indicated by \w+).
-    static ref ALLERGEN_REGEX: Regex = Regex::new(r"[A-Z]\w+").expect(REGEX_PARSE_E_MSG);
-    /// A regex for getting additives. An additive consists of one or two digits.
-    static ref ADDITIVE_REGEX: Regex = Regex::new(r"[0-9]{1,2}").expect(REGEX_PARSE_E_MSG);
+/// A Regex for getting prices in euros. A price consists of 1 or more digits, followed by a comma and then exactly two digits.
+static PRICE_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"([0-9]*),([0-9]{2})").expect(REGEX_PARSE_E_MSG));
+/// A Regex for getting allergens. An allergen consists of a single Uppercase letter followed by one or more upper- or lowercase letters (indicated by \w+).
+static ALLERGEN_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"[A-Z]\w+").expect(REGEX_PARSE_E_MSG));
+/// A regex for getting additives. An additive consists of one or two digits.
+static ADDITIVE_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"[0-9]{1,2}").expect(REGEX_PARSE_E_MSG));
 
-    static ref ENERGY_REGEX: Regex = Regex::new(r"([0-9]+) kcal").expect(REGEX_PARSE_E_MSG);
+static ENERGY_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"([0-9]+) kcal").expect(REGEX_PARSE_E_MSG));
 
-    static ref WEIGHT_REGEX: Regex = Regex::new(r"([0-9]+) g").expect(REGEX_PARSE_E_MSG);
+static WEIGHT_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"([0-9]+) g").expect(REGEX_PARSE_E_MSG));
 
-    static ref VOLUME_REGEX: Regex = Regex::new(r"([0-9]*),([0-9]{2}) l").expect(REGEX_PARSE_E_MSG);
+static VOLUME_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"([0-9]*),([0-9]{2}) l").expect(REGEX_PARSE_E_MSG));
 
-    static ref ID_REGEX: Regex = Regex::new(r"[0-9]{18,}").expect(REGEX_PARSE_E_MSG);
-}
+static ID_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"[0-9]{18,}").expect(REGEX_PARSE_E_MSG));
 
 const DISH_NODE_CLASS_SELECTOR_PREFIX: &str = "tr.mt-";
 const DISH_PRICE_NODE_CLASS_SELECTOR_PREFIX: &str = "span.bgp.price_";
