@@ -33,7 +33,7 @@ jobs:
 
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     container: rust:latest
     defaults:
       run:
@@ -78,7 +78,7 @@ jobs:
 
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     container: rust:latest
     defaults:
       run:
@@ -114,7 +114,7 @@ jobs:
 
 
   coverage:
-    runs-on:                    ubuntu-latest
+    runs-on:                    self-hosted
     defaults:
       run:
         working-directory: ./backend
