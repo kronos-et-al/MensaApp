@@ -24,7 +24,7 @@ env:
 
 jobs:
   build_rust:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [build, test, coverage]
     steps:
     - name: Print success 
