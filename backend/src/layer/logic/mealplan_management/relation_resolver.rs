@@ -269,11 +269,11 @@ mod test {
     #[tokio::test]
     async fn test_resolve_canteens() {
         let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
         for canteen in get_canteens(
-            rng.gen_range(1..=10),
-            rng.gen_range(1..=10),
-            rng.gen_range(1..=10),
+            rng.random_range(1..=10),
+            rng.random_range(1..=10),
+            rng.random_range(1..=10),
         ) {
             assert!(resolver
                 .resolve(canteen, Local::now().date_naive())
@@ -285,10 +285,10 @@ mod test {
     #[tokio::test]
     async fn test_resolve_line_with_rand_dishes() {
         let resolver = RelationResolver::new(MealplanManagementDatabaseMock);
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
         let mut dishes = Vec::new();
         for _ in 0..6 {
-            dishes.push(get_dish_with_price(rng.gen_range(80..=400)));
+            dishes.push(get_dish_with_price(rng.random_range(80..=400)));
         }
         let line = get_line(dishes);
         assert!(resolver
