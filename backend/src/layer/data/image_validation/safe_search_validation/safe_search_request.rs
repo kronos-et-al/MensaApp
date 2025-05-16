@@ -5,7 +5,6 @@ use crate::layer::data::image_validation::safe_search_validation::json_request::
 };
 use google_jwt_auth::usage::Usage::CloudVision;
 use google_jwt_auth::AuthConfig;
-use json::JsonValue;
 
 const API_REST_URL: &str = "https://vision.googleapis.com/v1/images:annotate";
 const PROJECT_ID_HEADER: &str = "x-goog-user-project";
@@ -75,8 +74,7 @@ impl SafeSearchRequest {
             .header(PROJECT_ID_HEADER, &self.google_project_id)
             .header(reqwest::header::CONTENT_TYPE, CONTENT_TYPE)
             .header(reqwest::header::ACCEPT_CHARSET, CHARSET)
-            .body(build_request_body(b64_image).to_string())
-            // JsonValue cannot be serialised by serde as it does not implement serialise...
+            .json(&build_request_body(b64_image))
             .send()
             .await?
             .text()
@@ -97,17 +95,17 @@ impl SafeSearchRequest {
 ///         }]
 ///     }
 /// ```
-fn build_request_body(b64_image: &str) -> JsonValue {
-    json::object! {
-        requests: [{
-            image: {
-                content: b64_image,
+fn build_request_body(b64_image: &str) -> serde_json::Value {
+    serde_json::json!({
+        "requests": [{
+            "image": {
+                "content": b64_image,
             },
-            features: [{
+            "features": [{
                 "type": REQUEST_TYPE,
             }]
         }]
-    }
+    })
 }
 
 #[cfg(test)]
@@ -128,7 +126,7 @@ mod tests {
         let json_string = format!(
             r#"{{"requests":[{{"image":{{"content":"{B64_IMAGE}"}},"features":[{{"type":"{REQUEST_TYPE}"}}]}}]}}"#
         );
-        let parsed = json::parse(json_string.as_str()).unwrap();
+        let parsed = serde_json::json!(json_string.as_str());
         let json = build_request_body(B64_IMAGE);
 
         assert_eq!(json_string, json.to_string());
@@ -143,6 +141,7 @@ mod tests {
         let json = fs::read_to_string(path).unwrap();
         let api_req = SafeSearchRequest::new(&json, id).unwrap();
         let resp = api_req.encoded_image_validation(B64_IMAGE).await;
+        
         assert!(resp.is_ok());
     }
 }

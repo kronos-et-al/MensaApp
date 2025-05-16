@@ -1,8 +1,8 @@
 use crate::interface::image_validation::ImageValidationError::InvalidApiResponse;
 use crate::interface::image_validation::{parse_request, Result};
 use crate::layer::data::image_validation::gemini_validation::json_request::GeminiResponseJson;
-use json::JsonValue;
 
+// Consider: This is the beta version! Change if depreciated.
 const API_REST_URL: &str =
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 const REQUEST_TYPE: &str = "image/jpeg";
@@ -61,8 +61,7 @@ impl GeminiRequest {
         let resp = reqwest::Client::new()
             .post(API_REST_URL)
             .query(&[("key", &self.api_key)])
-            .body(build_request_body(&self.text_request, b64_image).to_string())
-            // JsonValue cannot be serialised by serde as it does not implement serialise...
+            .json(&build_request_body(&self.text_request, b64_image))
             .send()
             .await?
             .text()
@@ -86,20 +85,20 @@ impl GeminiRequest {
 ///         }]
 ///     }
 /// ```
-fn build_request_body(text_request: &str, b64_image: &str) -> JsonValue {
-    json::object! {
-        contents: [{
-            parts: [{
-                text: text_request,
+fn build_request_body(text_request: &str, b64_image: &str) -> serde_json::Value {
+    serde_json::json!({
+        "contents": [{
+            "parts": [{
+                "text": text_request,
             },
             {
-                inline_data: {
-                    mime_type: REQUEST_TYPE,
-                    data: b64_image
+                "inline_data": {
+                    "mime_type": REQUEST_TYPE,
+                    "data": b64_image
                 }
             }]
         }]
-    }
+    })
 }
 
 mod tests {
@@ -112,6 +111,7 @@ mod tests {
         build_request_body, REQUEST_TYPE,
     };
     use dotenvy::dotenv;
+    use serde_json::Value;
     use std::env;
 
     const B64_IMAGE: &str = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";
@@ -134,10 +134,10 @@ mod tests {
         let text_request = "This is a Question?";
 
         let json_string = format!(
-            r#"{{"contents":[{{"parts":[{{"text":"{text_request}"}},{{"inline_data":{{"mime_type":"{REQUEST_TYPE}","data":"{B64_IMAGE}"}}}}]}}]}}"#
+            r#"{{"contents":[{{"parts":[{{"text":"{text_request}"}},{{"inline_data":{{"data":"{B64_IMAGE}","mime_type":"{REQUEST_TYPE}"}}}}]}}]}}"#
         );
-        let parsed = json::parse(json_string.as_str()).unwrap();
-        let json = build_request_body(text_request, B64_IMAGE);
+        let parsed: Value = serde_json::json!(json_string.as_str());
+        let json: Value = build_request_body(text_request, B64_IMAGE);
 
         assert_eq!(json_string, json.to_string());
         assert_eq!(json, parsed);
