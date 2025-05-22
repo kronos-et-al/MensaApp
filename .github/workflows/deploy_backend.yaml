@@ -13,7 +13,7 @@ env:
   IMAGE_NAME: kronos-et-al/mensa-app
 jobs:
   build-and-push-backend:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     defaults:
       run:
         working-directory: ./backend
