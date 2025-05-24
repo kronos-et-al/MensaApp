@@ -112,34 +112,84 @@ mod tests {
     use base64::Engine;
     use dotenvy::dotenv;
     use std::{env, fs};
+    use base64::engine::general_purpose;
+    use uuid::Uuid;
 
     const J_B64_IMG: &str = "src/layer/data/image_validation/test/b64_test.jpg";
     const P_B64_IMG: &str = "src/layer/data/image_validation/test/b64_test.png";
     const VALID_IMG: &str = "src/layer/data/image_validation/test/valid_food.jpg";
     const INVALID_IMG: &str = "src/layer/data/image_validation/test/invalid_food.jpg";
 
+    #[derive(Debug, serde::Deserialize)]
+    struct SampleSet {
+        name: String,
+        uuid: Uuid,
+        url: String,
+        rating: i32,
+        admin_rating: i32,
+    }
+    #[tokio::test]
+    #[ignore = "Evaluation can only be run manually."]
+    async fn evaluate_images() {
+        let mut set: Vec<SampleSet> = vec![];
+        let mut rdr = csv::Reader::from_path("src/layer/data/image_validation/test/image_samples.csv").unwrap();
+        for rec in rdr.deserialize() {
+            set.push(rec.unwrap());
+        }
+        dotenv().ok();
+        let mut score = 0;
+        let mut false_positives = 0;
+        let mut false_negatives = 0;
+        let sum = set.len();
+        let text_request = env::var("GEMINI_TEXT_REQUEST").unwrap().replace('_', "");
+        println!("Starting gemini evaluation test with: '{text_request}' and {sum} samples");
+        let handler = get_handler(false, true, [0,0,0,0,0], text_request);
+        print!("[");
+        for rec in &set {
+            print!("#");
+            let img_bytes = reqwest::get(&rec.url).await.unwrap().bytes().await.unwrap();
+            let b64_img = general_purpose::STANDARD.encode(img_bytes);
+            let gemini_req =  handler.gemini_handler.as_ref().unwrap().request.encoded_image_validation(&b64_img).await.unwrap();
+            let admin_desition = rec.admin_rating < 1;
+            if gemini_req.starts_with("Yes") && admin_desition {
+                score += 1;
+            } else if !admin_desition {
+                false_positives += 1;
+            } else {
+                false_negatives += 1;
+            }
+            print!("-");
+        }
+        println!("]");
+        let rejected = sum - score;
+        println!("Correct: {score}/{sum}");
+        println!("Correct images rejected: {false_negatives}/{rejected}");
+        println!("Incorrect images accepted: {false_positives}/{rejected}");
+    }
+    
     // These test can fail if gemini decides to deny the valid image.
     // The provided images should be an easy task to decide.
     // Even it is very unusual, it could fail.
     #[tokio::test]
     async fn test_validate_image() {
-        assert!(get_handler(true, true)
+        let acceptance = [2,2,2,2,2];
+        assert!(get_handler(true, true, acceptance, String::default())
             .validate_image(&image::open(VALID_IMG).unwrap())
             .await
             .is_ok());
-        assert!(get_handler(true, true)
+        assert!(get_handler(true, true, acceptance, String::default())
             .validate_image(&image::open(INVALID_IMG).unwrap())
             .await
             .is_err());
-        assert!(get_handler(false, false)
+        assert!(get_handler(false, false, acceptance, String::default())
             .validate_image(&image::open(INVALID_IMG).unwrap())
             .await
             .is_ok());
-        assert!(get_handler(false, true)
+        assert!(get_handler(false, true, acceptance, String::default())
             .validate_image(&image::open(INVALID_IMG).unwrap())
             .await
             .is_err());
-        assert!(get_handler(false, true)
+        assert!(get_handler(false, true, acceptance, String::default())
             .validate_image(&image::open(VALID_IMG).unwrap())
             .await
             .is_ok());
@@ -169,28 +219,14 @@ mod tests {
         );
     }
 
-    fn get_handler(use_safe_search: bool, use_gemini: bool) -> GoogleApiHandler {
-        dotenv().ok();
-        let path = env::var("SERVICE_ACCOUNT_JSON").unwrap();
-        let id = env::var("GOOGLE_PROJECT_ID").unwrap();
-        let json = fs::read_to_string(path).unwrap();
-        let key = env::var("GEMINI_API_KEY").unwrap();
-        let text = env::var("GEMINI_TEXT_REQUEST").unwrap();
-
+    fn get_handler(use_safe_search: bool, use_gemini: bool, acceptance: [u8;5], text_request: String) -> GoogleApiHandler {
         let safe_search_info = if use_safe_search {
-            Some(SafeSearchInfo {
-                acceptance: [2, 2, 2, 2, 2],
-                service_account_info: json,
-                project_id: id,
-            })
+            Some(get_safe_search_info(acceptance))
         } else {
             None
         };
         let gemini_info = if use_gemini {
-            Some(GeminiInfo {
-                gemini_api_key: key,
-                gemini_text_request: text,
-            })
+            Some(get_gemini_info(text_request.to_string()))
         } else {
             None
         };
@@ -200,5 +236,27 @@ mod tests {
             gemini_info,
         })
         .unwrap()
+    }
+    fn get_safe_search_info(acceptance: [u8;5]) -> SafeSearchInfo {
+        dotenv().ok();
+        let path = env::var("SERVICE_ACCOUNT_JSON").unwrap();
+        let id = env::var("GOOGLE_PROJECT_ID").unwrap();
+        let json = fs::read_to_string(path).unwrap();
+        SafeSearchInfo {
+            acceptance,
+            service_account_info: json,
+            project_id: id,
+        }
+    }
+    fn get_gemini_info(mut text_request: String) -> GeminiInfo {
+        dotenv().ok();
+        let key = env::var("GEMINI_API_KEY").unwrap();
+        if text_request == String::default() {
+            text_request = env::var("GEMINI_TEXT_REQUEST").unwrap();
+        }
+        GeminiInfo {
+            gemini_api_key: key,
+            gemini_text_request: text_request,
+        }
     }
 }
