@@ -130,9 +130,12 @@ mod tests {
     }
     #[tokio::test]
     #[ignore = "Evaluation can only be run manually."]
-    async fn evaluate_images() {
+    // Consider! Running this test, can influence the api pricing.
+    // As the images are provided by the production api, some images could be deleted and this test will fail.
+    async fn evaluate_images_test() {
         let mut set: Vec<SampleSet> = vec![];
-        let mut rdr = csv::Reader::from_path("src/layer/data/image_validation/test/image_samples.csv").unwrap();
+        let file_data = fs::read_to_string("src/layer/data/image_validation/test/image_samples.csv").unwrap();
+        let mut rdr = csv::ReaderBuilder::new().delimiter(u8::try_from(';').unwrap()).from_reader(file_data.as_bytes());
         for rec in rdr.deserialize() {
             set.push(rec.unwrap());
         }
@@ -141,7 +144,7 @@ mod tests {
         let mut false_positives = 0;
         let mut false_negatives = 0;
         let sum = set.len();
-        let text_request = env::var("GEMINI_TEXT_REQUEST").unwrap().replace('_', "");
+        let text_request = env::var("GEMINI_TEXT_REQUEST").unwrap().replace('_', " ");
         println!("Starting gemini evaluation test with: '{text_request}' and {sum} samples");
         let handler = get_handler(false, true, [0,0,0,0,0], text_request);
         print!("[");
@@ -150,10 +153,11 @@ mod tests {
             let img_bytes = reqwest::get(&rec.url).await.unwrap().bytes().await.unwrap();
             let b64_img = general_purpose::STANDARD.encode(img_bytes);
             let gemini_req =  handler.gemini_handler.as_ref().unwrap().request.encoded_image_validation(&b64_img).await.unwrap();
-            let admin_desition = rec.admin_rating < 1;
-            if gemini_req.starts_with("Yes") && admin_desition {
+            println!("{gemini_req:?}");
+            let admin_decision = rec.admin_rating > 0;
+            if gemini_req.starts_with("Yes") == admin_decision {
                 score += 1;
-            } else if !admin_desition {
+            } else if !admin_decision {
                 false_positives += 1;
             } else {
                 false_negatives += 1;
