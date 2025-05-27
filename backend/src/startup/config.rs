@@ -258,7 +258,7 @@ impl ConfigReader {
             },
             gemini_info: if read_var_to_bool("USE_GEMINI_API").unwrap_or(DEFAULT_USE_GEMINI) {
                 let query = &read_var("GEMINI_TEXT_REQUEST")?;
-                info!("Using google gemini api for image verification with query: '{query}'.");
+                info!("Using google gemini api for image verification with query: '{query}'");
                 Some(GeminiInfo {
                     gemini_api_key: read_var("GEMINI_API_KEY")?,
                     gemini_text_request: query.to_string(),
