@@ -49,20 +49,24 @@ impl GoogleApiHandler {
     /// # Return
     /// The mentioned [`GoogleApiHandler`] struct.
     pub fn new(info: ImageValidationInfo) -> Result<Self> {
-        let mut handler = Self::default();
-        if let Some(info) = info.safe_search_info {
-            handler.safe_search_handler = Some(SafeSearchHandler {
-                evaluation: SafeSearchEvaluation::new(info.acceptance),
-                request: SafeSearchRequest::new(&info.service_account_info, info.project_id)?,
-            });
-        }
-        if let Some(info) = info.gemini_info {
-            handler.gemini_handler = Some(GeminiHandler {
-                evaluation: GeminiEvaluation::default(),
-                request: GeminiRequest::new(info.gemini_api_key, &info.gemini_text_request),
-            });
-        }
-        Ok(handler)
+        Ok(Self {
+            safe_search_handler: if let Some(info) = info.safe_search_info {
+                Some(SafeSearchHandler {
+                    evaluation: SafeSearchEvaluation::new(info.acceptance),
+                    request: SafeSearchRequest::new(&info.service_account_info, info.project_id)?,
+                })
+            } else {
+                None
+            },
+            gemini_handler: if let Some(info) = info.gemini_info {
+                Some(GeminiHandler {
+                    evaluation: GeminiEvaluation::default(),
+                    request: GeminiRequest::new(info.gemini_api_key, &info.gemini_text_request),
+                })
+            } else {
+                None
+            },
+        })
     }
 }
 
@@ -72,7 +76,7 @@ impl ImageValidation for GoogleApiHandler {
         let mut safe_search_result = Ok(());
         let mut gemini_result = Ok(());
         let b64_image = image_to_base64(image)?;
-
+        
         if let Some(handler) = self.safe_search_handler.as_ref() {
             let results = handler.request.encoded_image_validation(&b64_image).await?;
             safe_search_result = handler.evaluation.verify(&results);
@@ -81,6 +85,7 @@ impl ImageValidation for GoogleApiHandler {
             let results = handler.request.encoded_image_validation(&b64_image).await?;
             gemini_result = handler.evaluation.evaluate(&results);
         }
+        
         if safe_search_result.is_ok() && gemini_result.is_ok() {
             Ok(())
         } else if safe_search_result.is_err() {
