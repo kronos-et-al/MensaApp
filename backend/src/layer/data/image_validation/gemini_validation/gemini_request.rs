@@ -1,4 +1,4 @@
-use crate::interface::image_validation::ImageValidationError::InvalidApiResponse;
+use crate::interface::image_validation::ImageValidationError::JsonDecodeFailed;
 use crate::interface::image_validation::{parse_request, Result};
 use crate::layer::data::image_validation::gemini_validation::json_request::GeminiResponseJson;
 
@@ -49,9 +49,9 @@ impl GeminiRequest {
     pub async fn encoded_image_validation(&self, b64_image: &str) -> Result<String> {
         let json_resp = self.request_api(b64_image).await?.candidates.pop();
         match json_resp {
-            None => Err(InvalidApiResponse),
+            None => Err(JsonDecodeFailed),
             Some(mut json) => match json.content.parts.pop() {
-                None => Err(InvalidApiResponse),
+                None => Err(JsonDecodeFailed),
                 Some(part) => Ok(part.text),
             },
         }

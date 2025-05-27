@@ -1,4 +1,4 @@
-use crate::interface::image_validation::ImageValidationError::InvalidApiResponse;
+use crate::interface::image_validation::ImageValidationError::JsonDecodeFailed;
 use crate::interface::image_validation::{parse_request, Result};
 use crate::layer::data::image_validation::safe_search_validation::json_request::{
     SafeSearchJson, SafeSearchResponseJson,
@@ -55,7 +55,7 @@ impl SafeSearchRequest {
         let token = self.auth_config.generate_auth_token(TOKEN_LIFETIME).await?;
         let json_resp = self.request_api(b64_image, token).await?.responses.pop();
         match json_resp {
-            None => Err(InvalidApiResponse),
+            None => Err(JsonDecodeFailed),
             Some(json) => Ok(json.safeSearchAnnotation),
         }
     }
