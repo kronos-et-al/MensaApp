@@ -253,7 +253,7 @@ impl ConfigReader {
                     project_id: project_id.to_string(),
                 })
             } else {
-                info!("Google safe search api is disabled");
+                info!("Google safe search api is disabled.");
                 None
             },
             gemini_info: if read_var_to_bool("USE_GEMINI_API").unwrap_or(DEFAULT_USE_GEMINI) {
