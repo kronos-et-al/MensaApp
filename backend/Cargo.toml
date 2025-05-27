@@ -70,6 +70,7 @@ minijinja = "2.0.2"
 axum-extra = { version = "0.10", features = ["typed-header"] }
 async-once-cell = "0.5.4"
 serde_json = "1.0.107"
+tracing-loki = "0.2.6"
 
 [dev-dependencies]
 serial_test = "3.0.0"

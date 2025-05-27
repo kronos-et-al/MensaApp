@@ -2,7 +2,7 @@
 //!
 //! For a complete list and explanations you can see [here](https://www.sw-ka.de/media/?file=4458listeallergesetzlichausweisungspflichtigenzusatzstoffeundallergenefuerwebsite160218.pdf&download).
 
-use std::fmt::Display;
+use std::{fmt::Display, sync::LazyLock};
 
 use async_graphql::Enum;
 use image::DynamicImage;
@@ -201,8 +201,8 @@ pub struct NutritionData {
     pub salt: u32,
 }
 
-static BASE_URL: std::sync::LazyLock<String> =
-    std::sync::LazyLock::new(|| std::env::var("BASE_URL").unwrap_or_else(|_| "localhost".into()));
+static BASE_URL: LazyLock<String> =
+    LazyLock::new(|| std::env::var("BASE_URL").unwrap_or_else(|_| "localhost".into()));
 
 /// Prepends the servers domain to get a global url. Slug should start with a `/`.
 #[must_use]

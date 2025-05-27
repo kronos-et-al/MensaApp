@@ -215,6 +215,10 @@ mod tests {
             .validate_image(&image::open(VALID_IMG).unwrap())
             .await
             .is_ok());
+        let handler = get_handler();
+        let image = image::open(P_IMG).unwrap();
+        let res = handler.validate_image(&image).await;
+        assert!(res.is_ok(), "{res:?}");
     }
 
     #[test]

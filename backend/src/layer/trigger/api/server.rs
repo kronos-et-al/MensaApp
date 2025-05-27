@@ -258,7 +258,15 @@ async fn graphql_handler(
     async {
         let response = schema.execute(request).await;
         if response.is_err() {
-            debug!(errors = ?response.errors, "Error handling request");
+            debug!(
+                "Error handling request: {}",
+                response
+                    .errors
+                    .iter()
+                    .map(|e| e.message.to_string())
+                    .collect::<Vec<_>>()
+                    .join("\n")
+            );
         }
         response.into()
     }
