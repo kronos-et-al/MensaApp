@@ -236,30 +236,37 @@ impl ConfigReader {
     /// - when the acceptance values could not be parsed
     /// - when usage could not be parsed
     pub async fn get_image_validation_info(&self) -> Result<ImageValidationInfo> {
-        let mut info: ImageValidationInfo = ImageValidationInfo::default();
-        if read_var_to_bool("USE_SAFE_SEARCH").unwrap_or(DEFAULT_USE_SAFE_SEARCH) {
-            let project_id = read_var("GOOGLE_PROJECT_ID")?;
-            let acceptance = read_acceptance_var("IMAGE_ACCEPTANCE_VALUES")?;
-            info.safe_search_info = Some(SafeSearchInfo {
-                acceptance,
-                service_account_info: tokio::fs::read_to_string(read_var("SERVICE_ACCOUNT_JSON")?)
+        Ok(ImageValidationInfo {
+            safe_search_info: if read_var_to_bool("USE_SAFE_SEARCH")
+                .unwrap_or(DEFAULT_USE_SAFE_SEARCH)
+            {
+                let project_id = &read_var("GOOGLE_PROJECT_ID")?;
+                let acceptance = read_acceptance_var("IMAGE_ACCEPTANCE_VALUES")?;
+                info!("Using google safe search for image verification with cloud project '{project_id}' and category levels '{acceptance:?}'");
+                Some(SafeSearchInfo {
+                    acceptance,
+                    service_account_info: tokio::fs::read_to_string(read_var(
+                        "SERVICE_ACCOUNT_JSON",
+                    )?)
                     .await?,
-                project_id: project_id.clone(),
-            });
-            info!("Using google safe search for image verification with cloud project '{project_id}' and category levels '{acceptance:?}'");
-        } else {
-            info!("Google safe search api is disabled");
-        }
-        if read_var_to_bool("USE_GEMINI_API").unwrap_or(DEFAULT_USE_GEMINI) {
-            info.gemini_info = Some(GeminiInfo {
-                gemini_api_key: read_var("GEMINI_API_KEY")?,
-                gemini_text_request: read_var("GEMINI_TEXT_REQUEST")?.replace('_', " "),
-            });
-            info!("Using google gemini api for image verification");
-        } else {
-            info!("Google gemini api is disabled");
-        }
-        Ok(info)
+                    project_id: project_id.to_string(),
+                })
+            } else {
+                info!("Google safe search api is disabled");
+                None
+            },
+            gemini_info: if read_var_to_bool("USE_GEMINI_API").unwrap_or(DEFAULT_USE_GEMINI) {
+                let query = &read_var("GEMINI_TEXT_REQUEST")?;
+                info!("Using google gemini api for image verification with query: '{query}'.");
+                Some(GeminiInfo {
+                    gemini_api_key: read_var("GEMINI_API_KEY")?,
+                    gemini_text_request: query.to_string(),
+                })
+            } else {
+                info!("Google gemini api is disabled");
+                None
+            },
+        })
     }
 }
 
