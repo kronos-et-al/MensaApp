@@ -73,25 +73,26 @@ impl GoogleApiHandler {
 #[async_trait]
 impl ImageValidation for GoogleApiHandler {
     async fn validate_image(&self, image: &ImageResource) -> Result<()> {
-        let mut safe_search_result = Ok(());
-        let mut gemini_result = Ok(());
         let b64_image = image_to_base64(image)?;
 
-        if let Some(handler) = self.safe_search_handler.as_ref() {
-            let results = handler.request.encoded_image_validation(&b64_image).await?;
-            safe_search_result = handler.evaluation.verify(&results);
-        }
-        if let Some(handler) = self.gemini_handler.as_ref() {
-            let results = handler.request.encoded_image_validation(&b64_image).await?;
-            gemini_result = handler.evaluation.evaluate(&results);
-        }
+        let safe_search_result = match self.safe_search_handler.as_ref() {
+            Some(handler) => {
+                let results = handler.request.encoded_image_validation(&b64_image).await?;
+                handler.evaluation.verify(&results)
+            }
+            None => Ok(()),
+        };
 
-        if safe_search_result.is_ok() && gemini_result.is_ok() {
-            Ok(())
-        } else if safe_search_result.is_err() {
-            safe_search_result
+        if safe_search_result.is_ok() {
+            match self.gemini_handler.as_ref() {
+                Some(handler) => {
+                    let results = handler.request.encoded_image_validation(&b64_image).await?;
+                    handler.evaluation.evaluate(&results)
+                }
+                None => Ok(()),
+            }
         } else {
-            gemini_result
+            safe_search_result
         }
     }
 }
@@ -127,21 +128,26 @@ mod tests {
 
     #[derive(Debug, serde::Deserialize)]
     struct SampleSet {
-        _name: String,
-        _uuid: Uuid,
+        #[allow(dead_code)]
+        name: String,
+        #[allow(dead_code)]
+        uuid: Uuid,
         url: String,
-        _rating: i32,
+        #[allow(dead_code)]
+        rating: i32,
         admin_rating: i32,
     }
     #[tokio::test]
     #[ignore = "Evaluation can only be run manually."]
-    async fn test_evaluate_images() {
     // Consider! Running this test, can influence the api pricing.
     // As the images are provided by the production api, some images could be deleted and this test will fail.
-    async fn evaluate_images_test() {
+    async fn test_evaluate_images() {
         let mut set: Vec<SampleSet> = vec![];
-        let file_data = fs::read_to_string("src/layer/data/image_validation/test/image_samples.csv").unwrap();
-        let mut rdr = csv::ReaderBuilder::new().delimiter(u8::try_from(';').unwrap()).from_reader(file_data.as_bytes());
+        let file_data =
+            fs::read_to_string("src/layer/data/image_validation/test/image_samples.csv").unwrap();
+        let mut rdr = csv::ReaderBuilder::new()
+            .delimiter(u8::try_from(';').unwrap())
+            .from_reader(file_data.as_bytes());
         for rec in rdr.deserialize() {
             set.push(rec.unwrap());
         }
@@ -158,8 +164,14 @@ mod tests {
             print!("#");
             let img_bytes = reqwest::get(&rec.url).await.unwrap().bytes().await.unwrap();
             let b64_img = general_purpose::STANDARD.encode(img_bytes);
-            let gemini_req =  handler.gemini_handler.as_ref().unwrap().request.encoded_image_validation(&b64_img).await.unwrap();
-            println!("{gemini_req:?}");
+            let gemini_req = handler
+                .gemini_handler
+                .as_ref()
+                .unwrap()
+                .request
+                .encoded_image_validation(&b64_img)
+                .await
+                .unwrap();
             let admin_decision = rec.admin_rating > 0;
             if gemini_req.starts_with("Yes") == admin_decision {
                 score += 1;
@@ -176,7 +188,7 @@ mod tests {
         println!("Correct images rejected: {false_negatives}/{rejected}");
         println!("Incorrect images accepted: {false_positives}/{rejected}");
     }
-    
+
     // These test can fail if gemini decides to deny the valid image.
     // The provided images should be an easy task to decide.
     // Even it is very unusual, it could fail.
