@@ -264,7 +264,7 @@ impl ConfigReader {
                     gemini_text_request: query.to_string(),
                 })
             } else {
-                info!("Google gemini api is disabled");
+                info!("Google gemini api is disabled.");
                 None
             },
         })
