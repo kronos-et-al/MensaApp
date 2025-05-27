@@ -1,4 +1,4 @@
-use crate::interface::image_validation::ImageValidationError::InvalidApiResponse;
+use crate::interface::image_validation::ImageValidationError::JsonDecodeFailed;
 use crate::interface::image_validation::{parse_request, Result};
 use crate::layer::data::image_validation::safe_search_validation::json_request::{
     SafeSearchJson, SafeSearchResponseJson,
@@ -55,7 +55,7 @@ impl SafeSearchRequest {
         let token = self.auth_config.generate_auth_token(TOKEN_LIFETIME).await?;
         let json_resp = self.request_api(b64_image, token).await?.responses.pop();
         match json_resp {
-            None => Err(InvalidApiResponse),
+            None => Err(JsonDecodeFailed),
             Some(json) => Ok(json.safeSearchAnnotation),
         }
     }
@@ -124,13 +124,11 @@ mod tests {
     #[test]
     fn text_build_request_body() {
         let json_string = format!(
-            r#"{{"requests":[{{"image":{{"content":"{B64_IMAGE}"}},"features":[{{"type":"{REQUEST_TYPE}"}}]}}]}}"#
+            r#"{{"requests":[{{"features":[{{"type":"{REQUEST_TYPE}"}}],"image":{{"content":"{B64_IMAGE}"}}}}]}}"#
         );
-        let parsed = serde_json::json!(json_string.as_str());
-        let json = build_request_body(B64_IMAGE);
+        let json: serde_json::Value = build_request_body(B64_IMAGE);
 
         assert_eq!(json_string, json.to_string());
-        assert_eq!(json, parsed);
     }
 
     #[tokio::test]
@@ -141,7 +139,7 @@ mod tests {
         let json = fs::read_to_string(path).unwrap();
         let api_req = SafeSearchRequest::new(&json, id).unwrap();
         let resp = api_req.encoded_image_validation(B64_IMAGE).await;
-        
+
         assert!(resp.is_ok());
     }
 }

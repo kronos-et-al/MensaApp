@@ -49,20 +49,24 @@ impl GoogleApiHandler {
     /// # Return
     /// The mentioned [`GoogleApiHandler`] struct.
     pub fn new(info: ImageValidationInfo) -> Result<Self> {
-        let mut handler = Self::default();
-        if let Some(info) = info.safe_search_info {
-            handler.safe_search_handler = Some(SafeSearchHandler {
-                evaluation: SafeSearchEvaluation::new(info.acceptance),
-                request: SafeSearchRequest::new(&info.service_account_info, info.project_id)?,
-            });
-        }
-        if let Some(info) = info.gemini_info {
-            handler.gemini_handler = Some(GeminiHandler {
-                evaluation: GeminiEvaluation::default(),
-                request: GeminiRequest::new(info.gemini_api_key, &info.gemini_text_request),
-            });
-        }
-        Ok(handler)
+        Ok(Self {
+            safe_search_handler: if let Some(info) = info.safe_search_info {
+                Some(SafeSearchHandler {
+                    evaluation: SafeSearchEvaluation::new(info.acceptance),
+                    request: SafeSearchRequest::new(&info.service_account_info, info.project_id)?,
+                })
+            } else {
+                None
+            },
+            gemini_handler: if let Some(info) = info.gemini_info {
+                Some(GeminiHandler {
+                    evaluation: GeminiEvaluation::default(),
+                    request: GeminiRequest::new(info.gemini_api_key, &info.gemini_text_request),
+                })
+            } else {
+                None
+            },
+        })
     }
 }
 
@@ -81,6 +85,7 @@ impl ImageValidation for GoogleApiHandler {
             let results = handler.request.encoded_image_validation(&b64_image).await?;
             gemini_result = handler.evaluation.evaluate(&results);
         }
+
         if safe_search_result.is_ok() && gemini_result.is_ok() {
             Ok(())
         } else if safe_search_result.is_err() {
@@ -108,11 +113,11 @@ mod tests {
     use crate::layer::data::image_validation::google_api_handler::{
         image_to_base64, GoogleApiHandler,
     };
+    use base64::engine::general_purpose;
     use base64::prelude::BASE64_STANDARD;
     use base64::Engine;
     use dotenvy::dotenv;
     use std::{env, fs};
-    use base64::engine::general_purpose;
     use uuid::Uuid;
 
     const J_B64_IMG: &str = "src/layer/data/image_validation/test/b64_test.jpg";
@@ -122,14 +127,15 @@ mod tests {
 
     #[derive(Debug, serde::Deserialize)]
     struct SampleSet {
-        name: String,
-        uuid: Uuid,
+        _name: String,
+        _uuid: Uuid,
         url: String,
-        rating: i32,
+        _rating: i32,
         admin_rating: i32,
     }
     #[tokio::test]
     #[ignore = "Evaluation can only be run manually."]
+    async fn test_evaluate_images() {
     // Consider! Running this test, can influence the api pricing.
     // As the images are provided by the production api, some images could be deleted and this test will fail.
     async fn evaluate_images_test() {
@@ -144,9 +150,9 @@ mod tests {
         let mut false_positives = 0;
         let mut false_negatives = 0;
         let sum = set.len();
-        let text_request = env::var("GEMINI_TEXT_REQUEST").unwrap().replace('_', " ");
+        let text_request = &env::var("GEMINI_TEXT_REQUEST").unwrap();
         println!("Starting gemini evaluation test with: '{text_request}' and {sum} samples");
-        let handler = get_handler(false, true, [0,0,0,0,0], text_request);
+        let handler = get_handler(false, true, [0, 0, 0, 0, 0], text_request);
         print!("[");
         for rec in &set {
             print!("#");
@@ -176,24 +182,24 @@ mod tests {
     // Even it is very unusual, it could fail.
     #[tokio::test]
     async fn test_validate_image() {
-        let acceptance = [2,2,2,2,2];
-        assert!(get_handler(true, true, acceptance, String::default())
+        let acceptance = [2, 2, 2, 2, 2];
+        assert!(get_handler(true, true, acceptance, &String::default())
             .validate_image(&image::open(VALID_IMG).unwrap())
             .await
             .is_ok());
-        assert!(get_handler(true, true, acceptance, String::default())
+        assert!(get_handler(true, true, acceptance, &String::default())
             .validate_image(&image::open(INVALID_IMG).unwrap())
             .await
             .is_err());
-        assert!(get_handler(false, false, acceptance, String::default())
+        assert!(get_handler(false, false, acceptance, &String::default())
             .validate_image(&image::open(INVALID_IMG).unwrap())
             .await
             .is_ok());
-        assert!(get_handler(false, true, acceptance, String::default())
+        assert!(get_handler(false, true, acceptance, &String::default())
             .validate_image(&image::open(INVALID_IMG).unwrap())
             .await
             .is_err());
-        assert!(get_handler(false, true, acceptance, String::default())
+        assert!(get_handler(false, true, acceptance, &String::default())
             .validate_image(&image::open(VALID_IMG).unwrap())
             .await
             .is_ok());
@@ -223,7 +229,12 @@ mod tests {
         );
     }
 
-    fn get_handler(use_safe_search: bool, use_gemini: bool, acceptance: [u8;5], text_request: String) -> GoogleApiHandler {
+    fn get_handler(
+        use_safe_search: bool,
+        use_gemini: bool,
+        acceptance: [u8; 5],
+        text_request: &str,
+    ) -> GoogleApiHandler {
         let safe_search_info = if use_safe_search {
             Some(get_safe_search_info(acceptance))
         } else {
@@ -241,7 +252,7 @@ mod tests {
         })
         .unwrap()
     }
-    fn get_safe_search_info(acceptance: [u8;5]) -> SafeSearchInfo {
+    fn get_safe_search_info(acceptance: [u8; 5]) -> SafeSearchInfo {
         dotenv().ok();
         let path = env::var("SERVICE_ACCOUNT_JSON").unwrap();
         let id = env::var("GOOGLE_PROJECT_ID").unwrap();

@@ -4,7 +4,7 @@ use crate::util::ImageResource;
 use std::io;
 
 use crate::interface::image_validation::ImageValidationError::{
-    ApiResponseError, InvalidApiResponse,
+    ApiResponseError, JsonDecodeFailed,
 };
 use async_trait::async_trait;
 use serde::Deserialize;
@@ -40,11 +40,11 @@ pub enum ImageValidationError {
     #[error("The provided image does contain invalid content: {0}")]
     GeminiRejectionError(String),
     /// An api related error. Returns the error provided by the api.
-    #[error("the api responded with an error: {1} ({0}), {2}")]
+    #[error("An api responded with an error: {1} ({0}), {2}")]
     ApiResponseError(u32, String, String),
-    /// The response could not be determined or decoded.
-    #[error("The api responded with errors.")]
-    InvalidApiResponse,
+    /// The gemini api responded with an unknown phrase.
+    #[error("Gemini text response could not be decoded: '{0}'")]
+    GeminiPhraseDecodeFailed(String),
     /// Something during the token generation went wrong.
     #[error("An error occurred during the token generation: {0}")]
     TokenGenerationError(#[from] google_jwt_auth::error::TokenGenerationError),
@@ -131,7 +131,7 @@ where
                 } = json.error;
                 Err(ApiResponseError(code, status, message))
             }
-            Err(_) => Err(InvalidApiResponse),
+            Err(_) => Err(JsonDecodeFailed),
         },
         |json| Ok(json),
     )

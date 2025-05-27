@@ -1,5 +1,5 @@
 use crate::interface::image_validation::ImageValidationError::{
-    GeminiRejectionError, InvalidApiResponse,
+    GeminiPhraseDecodeFailed, GeminiRejectionError,
 };
 use crate::interface::image_validation::Result;
 
@@ -22,10 +22,10 @@ impl GeminiEvaluation {
     pub fn evaluate(&self, text_response: &str) -> Result<()> {
         if text_response.contains(ACCEPT_KEYWORD) {
             Ok(())
-        } else if text_response.contains(REJECT_KEYWORD) {
+        } else if text_response.starts_with(REJECT_KEYWORD) {
             Err(GeminiRejectionError(filter_invalid_reason(text_response)))
         } else {
-            Err(InvalidApiResponse)
+            Err(GeminiPhraseDecodeFailed(text_response.to_string()))
         }
     }
 }

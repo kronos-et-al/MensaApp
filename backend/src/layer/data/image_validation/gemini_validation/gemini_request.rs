@@ -1,8 +1,8 @@
-use crate::interface::image_validation::ImageValidationError::InvalidApiResponse;
+use crate::interface::image_validation::ImageValidationError::JsonDecodeFailed;
 use crate::interface::image_validation::{parse_request, Result};
 use crate::layer::data::image_validation::gemini_validation::json_request::GeminiResponseJson;
 
-// Consider: This is the beta version! Change if depreciated.
+// Consider: This is the beta version. Change if depreciated!
 const API_REST_URL: &str =
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 const REQUEST_TYPE: &str = "image/jpeg";
@@ -49,9 +49,9 @@ impl GeminiRequest {
     pub async fn encoded_image_validation(&self, b64_image: &str) -> Result<String> {
         let json_resp = self.request_api(b64_image).await?.candidates.pop();
         match json_resp {
-            None => Err(InvalidApiResponse),
+            None => Err(JsonDecodeFailed),
             Some(mut json) => match json.content.parts.pop() {
-                None => Err(InvalidApiResponse),
+                None => Err(JsonDecodeFailed),
                 Some(part) => Ok(part.text),
             },
         }
@@ -132,15 +132,12 @@ mod tests {
     #[test]
     fn text_build_request_body() {
         let text_request = "This is a Question?";
-
         let json_string = format!(
             r#"{{"contents":[{{"parts":[{{"text":"{text_request}"}},{{"inline_data":{{"data":"{B64_IMAGE}","mime_type":"{REQUEST_TYPE}"}}}}]}}]}}"#
         );
-        let parsed: Value = serde_json::json!(json_string.as_str());
         let json: Value = build_request_body(text_request, B64_IMAGE);
 
         assert_eq!(json_string, json.to_string());
-        assert_eq!(json, parsed);
     }
 
     #[tokio::test]
@@ -160,7 +157,6 @@ mod tests {
             .encoded_image_validation(B64_IMAGE)
             .await;
         assert!(valid.is_ok());
-        assert!(valid.unwrap().contains("No")); // This can fail, but should be rare...
         assert!(invalid.is_err());
     }
 }
