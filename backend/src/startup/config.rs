@@ -243,7 +243,7 @@ impl ConfigReader {
             {
                 let project_id = &read_var("GOOGLE_PROJECT_ID")?;
                 let acceptance = read_acceptance_var("IMAGE_ACCEPTANCE_VALUES")?;
-                info!("Using google safe search for image verification with cloud project '{project_id}' and category levels '{acceptance:?}'");
+                info!("Using google safe search for image verification with cloud project '{project_id}' and category levels '{acceptance:?}'.");
                 Some(SafeSearchInfo {
                     acceptance,
                     service_account_info: tokio::fs::read_to_string(read_var(
