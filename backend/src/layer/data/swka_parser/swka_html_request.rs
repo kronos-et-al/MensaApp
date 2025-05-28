@@ -85,7 +85,7 @@ mod test {
     #[tokio::test]
     async fn test_get_html_response_no_fail() {
         let result = test_util::get_request().get_html(&get_valid_url()).await;
-        assert!(result.is_ok());
+        assert!(result.is_ok(), "result: {result:?}");
     }
 
     #[tokio::test]
