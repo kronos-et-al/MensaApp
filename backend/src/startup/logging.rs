@@ -34,7 +34,11 @@ impl Logger {
         // env logger
         let env_layer = Self::get_env_fmt_layer(&info.log_config);
         // grafana loki
-        let (loki, loki_shutdown) = Self::get_loki_layer(info.loki_url.as_deref()).unzip();
+        let (loki, loki_shutdown) = info
+            .loki_url
+            .as_ref()
+            .map(|url| Self::get_loki_layer(url))
+            .unzip();
 
         tracing_subscriber::registry()
             .with(env_layer)
@@ -77,22 +81,18 @@ impl Logger {
             .with_filter(env_filter)
     }
 
-    fn get_loki_layer(
-        loki_url: Option<&str>,
-    ) -> Option<(tracing_loki::Layer, BackgroundTaskController)> {
-        loki_url.map(|loki_url| {
-            let loki_url_parsed = Url::parse(loki_url).expect("valid loki url");
-            let (loki_layer, controller, task) = tracing_loki::builder()
-                .label("service_name", "mensa-ka")
-                .expect("label `service_name` not yet set")
-                .extra_field("pid", format!("{}", std::process::id()))
-                .expect("field `pid` not yet set")
-                .build_controller_url(loki_url_parsed)
-                .expect("build loki layer and task");
+    fn get_loki_layer(loki_url: &str) -> (tracing_loki::Layer, BackgroundTaskController) {
+        let loki_url_parsed = Url::parse(loki_url).expect("valid loki url");
+        let (loki_layer, controller, task) = tracing_loki::builder()
+            .label("service_name", "mensa-ka")
+            .expect("label `service_name` not yet set")
+            .extra_field("pid", format!("{}", std::process::id()))
+            .expect("field `pid` not yet set")
+            .build_controller_url(loki_url_parsed)
+            .expect("build loki layer and task");
 
-            tokio::spawn(task); // todo graceful shutdown
-            (loki_layer, controller)
-        })
+        tokio::spawn(task); // todo graceful shutdown
+        (loki_layer, controller)
     }
 }
 
