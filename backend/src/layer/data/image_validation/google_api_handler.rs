@@ -141,6 +141,7 @@ mod tests {
     #[ignore = "Evaluation can only be run manually."]
     // Consider! Running this test, can influence the api pricing.
     // As the images are provided by the production api, some images could be deleted and this test will fail.
+    // Runtime: ~ 4min.
     async fn test_evaluate_images() {
         let mut set: Vec<SampleSet> = vec![];
         let file_data =
@@ -152,10 +153,12 @@ mod tests {
             set.push(rec.unwrap());
         }
         dotenv().ok();
-        let mut score = 0;
-        let mut false_positives = 0;
-        let mut false_negatives = 0;
-        let sum = set.len();
+        let mut true_positives: f32 = 0.0;
+        let mut true_negatives: f32 = 0.0;
+        let mut false_positives: f32 = 0.0;
+        let mut false_negatives: f32 = 0.0;
+        #[allow(clippy::cast_precision_loss)]
+        let mut sum: f32 = set.len() as f32;
         let text_request = &env::var("GEMINI_TEXT_REQUEST").unwrap();
         println!("Starting gemini evaluation test with: '{text_request}' and {sum} samples");
         let handler = get_handler(false, true, [0, 0, 0, 0, 0], text_request);
@@ -164,29 +167,55 @@ mod tests {
             print!("#");
             let img_bytes = reqwest::get(&rec.url).await.unwrap().bytes().await.unwrap();
             let b64_img = general_purpose::STANDARD.encode(img_bytes);
-            let gemini_req = handler
+            if let Ok(gemini_req) = handler
                 .gemini_handler
                 .as_ref()
                 .unwrap()
                 .request
                 .encoded_image_validation(&b64_img)
                 .await
-                .unwrap();
-            let admin_decision = rec.admin_rating > 0;
-            if gemini_req.starts_with("Yes") == admin_decision {
-                score += 1;
-            } else if !admin_decision {
-                false_positives += 1;
+            {
+                let admin_decision = rec.admin_rating > 0;
+                if gemini_req.starts_with("Yes") == admin_decision {
+                    if admin_decision {
+                        true_positives += 1.0;
+                    } else {
+                        true_negatives += 1.0;
+                    }
+                } else if !admin_decision {
+                    false_positives += 1.0;
+                } else {
+                    false_negatives += 1.0;
+                }
+                print!("-");
             } else {
-                false_negatives += 1;
+                sum -= 1.0;
+                print!("=");
             }
-            print!("-");
         }
         println!("]");
-        let rejected = sum - score;
-        println!("Correct: {score}/{sum}");
-        println!("Correct images rejected: {false_negatives}/{rejected}");
-        println!("Incorrect images accepted: {false_positives}/{rejected}");
+        let score = true_positives + true_negatives;
+        let n_score = false_positives + false_negatives;
+        println!("--- Results: ---");
+        println!(
+            "Correct decisions: {score}/{sum} ({p}%).",
+            p = score / sum * 100.0
+        );
+        println!(
+            "Wrong decisions: {n_score}/{sum} ({p}%).\n",
+            p = n_score / sum * 100.0
+        );
+        println!("Images that got accepted but should not (FP): {false_positives}/{sum}.");
+        println!(
+            "False positive rate (FPR): {rate}%.\n",
+            rate = false_positives / (false_positives + true_negatives) * 100.0
+        );
+        println!("Images that got not accepted but should be (FN): {false_negatives}/{sum}.");
+        println!(
+            "False negative rate (FNR): {rate}%.",
+            rate = false_negatives / (false_negatives + true_positives) * 100.0
+        );
+        println!("----------------");
     }
 
     // These test can fail if gemini decides to deny the valid image.
