@@ -4,7 +4,7 @@ use super::{
     logging::LogInfo,
     server::{Result, ServerError},
 };
-use crate::interface::image_validation::ImageValidationInfo;
+use crate::interface::image_validation::{GeminiInfo, ImageValidationInfo, SafeSearchInfo};
 use crate::layer::{
     data::{
         database::factory::DatabaseInfo, file_handler::FileHandlerInfo, mail::mail_info::MailInfo,
@@ -29,6 +29,8 @@ const DEFAULT_SMTP_PORT: u16 = 465;
 const DEFAULT_PARSE_WEEKS: u32 = 4;
 const DEFAULT_MAX_IMAGE_WIDTH: u32 = 1920;
 const DEFAULT_MAX_IMAGE_HEIGHT: u32 = 1080;
+const DEFAULT_USE_SAFE_SEARCH: bool = false;
+const DEFAULT_USE_GEMINI: bool = false;
 const DEFAULT_IMAGE_ACCEPTANCE_VALUES: &str = "0,0,0,0,0";
 const DEFAULT_UPLOAD_SIZE: u64 = 10 << 20; // 10 MiB
 
@@ -233,16 +235,38 @@ impl ConfigReader {
     /// # Errors
     /// - when an environment variable is not set
     /// - when the acceptance values could not be parsed
+    /// - when usage could not be parsed
     pub async fn get_image_validation_info(&self) -> Result<ImageValidationInfo> {
-        let project_id = read_var("GOOGLE_PROJECT_ID")?;
-        let acceptance = read_acceptence_var("IMAGE_ACCEPTANCE_VALUES")?;
-        let service_account_info =
-            tokio::fs::read_to_string(read_var("SERVICE_ACCOUNT_JSON")?).await?;
-        info!("Using google cloud project '{project_id}' for image verification with the category levels '{acceptance:?}'");
         Ok(ImageValidationInfo {
-            acceptance,
-            service_account_info,
-            project_id,
+            safe_search_info: if read_var_to_bool("USE_SAFE_SEARCH")
+                .unwrap_or(DEFAULT_USE_SAFE_SEARCH)
+            {
+                let project_id = &read_var("GOOGLE_PROJECT_ID")?;
+                let acceptance = read_acceptance_var("IMAGE_ACCEPTANCE_VALUES")?;
+                info!("Using google safe search for image verification with cloud project '{project_id}' and category levels '{acceptance:?}'.");
+                Some(SafeSearchInfo {
+                    acceptance,
+                    service_account_info: tokio::fs::read_to_string(read_var(
+                        "SERVICE_ACCOUNT_JSON",
+                    )?)
+                    .await?,
+                    project_id: project_id.to_string(),
+                })
+            } else {
+                info!("Google safe search api is disabled.");
+                None
+            },
+            gemini_info: if read_var_to_bool("USE_GEMINI_API").unwrap_or(DEFAULT_USE_GEMINI) {
+                let query = &read_var("GEMINI_TEXT_REQUEST")?;
+                info!("Using google gemini api for image verification with query: '{query}'");
+                Some(GeminiInfo {
+                    gemini_api_key: read_var("GEMINI_API_KEY")?,
+                    gemini_text_request: query.to_string(),
+                })
+            } else {
+                info!("Google gemini api is disabled.");
+                None
+            },
         })
     }
 }
@@ -251,7 +275,21 @@ fn read_var(var: &str) -> Result<String> {
     env::var(var).map_err(|e| ServerError::MissingEnvVar(var.to_string(), e))
 }
 
-fn read_acceptence_var(key: &str) -> Result<[u8; 5]> {
+fn read_var_to_bool(key: &str) -> Result<bool> {
+    let value = read_var(key)?;
+    value
+        .to_lowercase()
+        .as_str()
+        .trim()
+        .parse()
+        .map_err(|_| ServerError::InvalidFormatError {
+            var: key.into(),
+            gotten: value,
+            expected_format: "`true` or `false`".into(),
+        })
+}
+
+fn read_acceptance_var(key: &str) -> Result<[u8; 5]> {
     let str_arr = read_var(key).unwrap_or_else(|_| DEFAULT_IMAGE_ACCEPTANCE_VALUES.into());
 
     str_arr
@@ -280,14 +318,14 @@ fn get_max_weeks_data() -> u32 {
 mod tests {
     use tracing_test::traced_test;
 
-    use super::{read_acceptence_var, ConfigReader};
+    use super::{read_acceptance_var, ConfigReader};
 
     #[test]
-    fn test_read_acceptence_var() {
+    fn test_read_acceptance_var() {
         let var = "TEST";
         std::env::set_var(var, "1,2, 3 ,4,05");
 
-        let res = read_acceptence_var(var).expect("should parse");
+        let res = read_acceptance_var(var).expect("should parse");
         assert_eq!([1, 2, 3, 4, 5], res);
     }
 
