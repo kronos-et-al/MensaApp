@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 3,
   "links": [],
   "panels": [
     {
@@ -48,7 +48,7 @@
         "sortOrder": "Ascending",
         "wrapLogMessage": true
       },
-      "pluginVersion": "11.6.1",
+      "pluginVersion": "12.0.1",
       "targets": [
         {
           "datasource": {
@@ -57,7 +57,7 @@
           },
           "direction": "forward",
           "editorMode": "code",
-          "expr": "{service_name=\"mensa-ka\"} | json | _target=~\"mensa_app_backend.*\" \r\n| label_format color=\"\\033[{{if eq .level \\\"info\\\"}}32{{else if eq .level \\\"warn\\\"}}33{{else if eq .level \\\"trace\\\"}}35{{else if eq .level \\\"error\\\"}}31{{else if eq .level \\\"debug\\\"}}34{{end}}m\" \r\n| line_format \"  {{printf .color}}{{printf \\\"\\033[1m\\\"}}[{{.level}}]{{printf \\\"\\033[0m\\\"}} {{._target}}: {{.color}}{{.message}}\"\r\n",
+          "expr": "{service_name=\"mensa-ka\"} | json | _target=~\"mensa_app_backend.*\" AND level =~ \"$visible_level\"\r\n| label_format color=\"\\033[{{if eq .level \\\"info\\\"}}32{{else if eq .level \\\"warn\\\"}}33{{else if eq .level \\\"trace\\\"}}35{{else if eq .level \\\"error\\\"}}31{{else if eq .level \\\"debug\\\"}}34{{end}}m\" \r\n| line_format \"  {{printf .color}}{{printf \\\"\\033[1m\\\"}}[{{.level}}]{{printf \\\"\\033[0m\\\"}} {{._target}}: {{.color}}{{.message}}\"\r\n",
           "legendFormat": "",
           "queryType": "range",
           "refId": "A"
@@ -79,6 +79,42 @@
       "type": "logs"
     },
     {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 5,
+        "x": 19,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "alertInstanceLabelFilter": "",
+        "alertName": "",
+        "dashboardAlerts": false,
+        "datasource": "Loki",
+        "groupBy": [],
+        "groupMode": "default",
+        "maxItems": 20,
+        "showInactiveAlerts": false,
+        "sortOrder": 1,
+        "stateFilter": {
+          "error": true,
+          "firing": true,
+          "noData": false,
+          "normal": false,
+          "pending": true,
+          "recovering": true
+        },
+        "viewMode": "list"
+      },
+      "pluginVersion": "12.0.1",
+      "title": "Alerts",
+      "type": "alertlist"
+    },
+    {
       "datasource": {
         "type": "loki",
         "uid": "P8E80F9AEF21F6940"
@@ -96,7 +132,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
-            "drawStyle": "points",
+            "drawStyle": "bars",
             "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
@@ -135,7 +171,32 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "{_target=\"mensa_app_backend::layer::data::file_handler\"}"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 9,
@@ -157,7 +218,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.6.1",
+      "pluginVersion": "12.0.1",
       "targets": [
         {
           "direction": "backward",
@@ -167,8 +228,97 @@
           "refId": "A"
         }
       ],
-      "title": "Panel Title",
+      "title": "Logs by Component",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "P8E80F9AEF21F6940"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 19,
+        "x": 0,
+        "y": 28
+      },
+      "id": 3,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "sum(count_over_time({service_name=\"mensa-ka\", level=~\"error|warn\"} | json |= \"mensa_app_backend\" [$__auto])) by (level)",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Errors and Warnings",
+      "type": "barchart"
     }
   ],
   "preload": false,
@@ -176,7 +326,34 @@
   "schemaVersion": 41,
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "text": [
+            "debug"
+          ],
+          "value": [
+            "debug"
+          ]
+        },
+        "definition": "",
+        "description": "Levels shown",
+        "includeAll": true,
+        "label": "Level",
+        "multi": true,
+        "name": "visible_level",
+        "options": [],
+        "query": {
+          "label": "level",
+          "refId": "LokiVariableQueryEditor-VariableQuery",
+          "stream": "",
+          "type": 1
+        },
+        "refresh": 2,
+        "regex": "",
+        "type": "query"
+      }
+    ]
   },
   "time": {
     "from": "now-6h",
@@ -184,7 +361,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Logs",
-  "uid": "bek2lautjhfk0b",
-  "version": 1
+  "title": "Logs Copy",
+  "uid": "ceklaos9yemm8e",
+  "version": 18
 }
