@@ -147,12 +147,18 @@ impl CommandDataAccess for PersistentCommandData {
         Ok(())
     }
 
-    async fn link_image(&self, meal_id: Uuid, user_id: Uuid) -> Result<Uuid> {
+    async fn link_image(
+        &self,
+        meal_id: Uuid,
+        user_id: Uuid,
+        approval_message: Option<&str>,
+    ) -> Result<Uuid> {
         sqlx::query_scalar!(
-            "INSERT INTO image (user_id, food_id) VALUES ($1, $2)
+            "INSERT INTO image (user_id, food_id, approval_message) VALUES ($1, $2, $3)
             RETURNING (image_id)",
             user_id,
             meal_id,
+            approval_message
         )
         .fetch_one(&self.pool)
         .await
@@ -402,7 +408,7 @@ mod test {
         let meal_id = Uuid::parse_str("25cb8c50-75a4-48a2-b4cf-8ab2566d8bec").unwrap();
 
         let images = number_of_images(&pool).await;
-        assert!(command.link_image(meal_id, user_id).await.is_ok());
+        assert!(command.link_image(meal_id, user_id, None).await.is_ok());
         assert_eq!(number_of_images(&pool).await, images + 1);
         // TBD is it allowed to link an image multiple times?
         // assert!(command
@@ -414,7 +420,7 @@ mod test {
         //     )
         //     .await
         //     .is_ok());
-        assert!(command.link_image(WRONG_UUID, user_id).await.is_err());
+        assert!(command.link_image(WRONG_UUID, user_id, None).await.is_err());
         assert_eq!(number_of_images(&pool).await, images + 1);
     }
 

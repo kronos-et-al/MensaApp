@@ -72,28 +72,22 @@ impl GoogleApiHandler {
 
 #[async_trait]
 impl ImageValidation for GoogleApiHandler {
-    async fn validate_image(&self, image: &ImageResource) -> Result<()> {
+    async fn validate_image(&self, image: &ImageResource) -> Result<Option<String>> {
         let b64_image = image_to_base64(image)?;
 
-        let safe_search_result = match self.safe_search_handler.as_ref() {
-            Some(handler) => {
-                let results = handler.request.encoded_image_validation(&b64_image).await?;
-                handler.evaluation.verify(&results)
-            }
-            None => Ok(()),
+        if let Some(handler) = self.safe_search_handler.as_ref() {
+            let results = handler.request.encoded_image_validation(&b64_image).await?;
+            handler.evaluation.verify(&results)?;
+        }
+
+        let message = if let Some(handler) = self.gemini_handler.as_ref() {
+            let results = handler.request.encoded_image_validation(&b64_image).await?;
+            handler.evaluation.evaluate(&results).map(Option::Some)?
+        } else {
+            None
         };
 
-        if safe_search_result.is_ok() {
-            match self.gemini_handler.as_ref() {
-                Some(handler) => {
-                    let results = handler.request.encoded_image_validation(&b64_image).await?;
-                    handler.evaluation.evaluate(&results)
-                }
-                None => Ok(()),
-            }
-        } else {
-            safe_search_result
-        }
+        Ok(message)
     }
 }
 

@@ -19,20 +19,23 @@ impl GeminiEvaluation {
     /// This method returns an error if the evaluation decides to deny the image or the response could not be determined.
     /// # Return
     /// Nothing, what means the evaluation decided to accept the image.
-    pub fn evaluate(&self, text_response: &str) -> Result<()> {
+    pub fn evaluate(&self, text_response: &str) -> Result<String> {
         if text_response.contains(ACCEPT_KEYWORD) {
-            Ok(())
+            Ok(filter_reason(text_response))
         } else if text_response.starts_with(REJECT_KEYWORD) {
-            Err(GeminiRejectionError(filter_invalid_reason(text_response)))
+            Err(GeminiRejectionError(filter_reason(text_response)))
         } else {
             Err(GeminiPhraseDecodeFailed(text_response.to_string()))
         }
     }
 }
 
-fn filter_invalid_reason(text: &str) -> String {
+fn filter_reason(text: &str) -> String {
     text.replace(&format!("{REJECT_KEYWORD}."), "")
         .replace(&format!("{REJECT_KEYWORD},"), "")
+        .replace(&format!("{ACCEPT_KEYWORD},"), "")
+        .replace(&format!("{ACCEPT_KEYWORD}."), "")
+        .replace(ACCEPT_KEYWORD, "")
         .replace(REJECT_KEYWORD, "")
         .trim()
         .to_string()
@@ -42,7 +45,7 @@ fn filter_invalid_reason(text: &str) -> String {
 mod tests {
     #![allow(clippy::unwrap_used)]
     use crate::layer::data::image_validation::gemini_validation::gemini_evaluation::{
-        filter_invalid_reason, GeminiEvaluation,
+        filter_reason, GeminiEvaluation,
     };
 
     #[test]
@@ -61,17 +64,17 @@ mod tests {
     #[test]
     fn test_filter_invalid_reason() {
         assert_eq!(
-            filter_invalid_reason("No. Unacceptable."),
+            filter_reason("No. Unacceptable."),
             String::from("Unacceptable.")
         );
         assert_eq!(
-            filter_invalid_reason("No, as we know!"),
+            filter_reason("No, as we know!"),
             String::from("as we know!")
         );
-        assert_eq!(filter_invalid_reason("No"), String::new());
-        assert_eq!(filter_invalid_reason("  No.  "), String::new());
+        assert_eq!(filter_reason("No"), String::new());
+        assert_eq!(filter_reason("  No.  "), String::new());
         assert_eq!(
-            filter_invalid_reason("No I don't like this."),
+            filter_reason("No I don't like this."),
             String::from("I don't like this.")
         );
     }

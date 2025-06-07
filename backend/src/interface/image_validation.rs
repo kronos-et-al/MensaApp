@@ -18,7 +18,8 @@ pub type Result<T> = std::result::Result<T, ImageValidationError>;
 #[async_trait]
 pub trait ImageValidation: Send + Sync {
     /// Validates if an image does not contain any inappropriate (explicit, etc.) content.
-    async fn validate_image(&self, image: &ImageResource) -> Result<()>;
+    /// Possibly returns a message describing why the image got approved.
+    async fn validate_image(&self, image: &ImageResource) -> Result<Option<String>>;
 }
 
 /// Enum describing possible ways an image validation can go wrong

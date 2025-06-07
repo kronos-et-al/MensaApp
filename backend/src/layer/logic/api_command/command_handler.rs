@@ -170,10 +170,13 @@ where
             .preprocess_image(image_file, image_type)?;
 
         // verify with api
-        self.image_validation.validate_image(&image).await?;
+        let message = self.image_validation.validate_image(&image).await?;
 
         // link in database
-        let image_id = self.command_data.link_image(meal_id, client_id).await?;
+        let image_id = self
+            .command_data
+            .link_image(meal_id, client_id, message.as_deref())
+            .await?;
 
         // store to disk
         if let Err(e) = self.image_storage.save_image(image_id, image).await {
