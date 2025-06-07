@@ -40,7 +40,7 @@ async fn test_update_mensa_parse_scheduling() {
 
 async fn setup(info: ScheduleInfo) -> Scheduler {
     let reader = ConfigReader::default();
-    let database_factory = DataAccessFactory::new(reader.read_database_info().unwrap(), false)
+    let database_factory = DataAccessFactory::new(reader.read_database_info().unwrap())
         .await
         .unwrap();
     let mealplan_management_data = database_factory.get_mealplan_management_data_access();

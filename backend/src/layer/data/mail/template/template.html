@@ -7,7 +7,7 @@
     <title>Mensa KA Image Report</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
 
-    <!-- <link rel="stylesheet" href="./output.css"> -->
+    <link rel="stylesheet" href="./output.css">
     {{ "<style>
         " ~ css ~ "
     </style>" }}
@@ -104,7 +104,8 @@
 
         <div>
             <h2 class="text-2xl mb-2">More Information</h2>
-            <div class="table w-full bg-light-grey rounded-xl p-4 m-0 border-separate border-spacing-y-1">
+            <div
+                class="table w-full bg-light-grey rounded-xl p-4 m-0 border-separate border-spacing-1">
                 <div class="table-row-group">
                     <div class=table-row>
                         <div class="table-cell w-1/2">Report Date</div>
@@ -130,6 +131,12 @@
                         <div class="table-cell">Rank</div>
                         <div class="table-cell"> {{ image_rank|round(3) }}</div>
                     </div>
+                    {% if approval_message is not none %}
+                    <div class=table-row>
+                        <div class="table-cell">Acceptance Reason</div>
+                        <div class="table-cell"> {{ approval_message }}</div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -202,7 +202,12 @@ pub trait CommandDataAccess: Sync + Send {
     /// Removes a downvote from the given image.
     async fn remove_downvote(&self, image_id: Uuid, user_id: Uuid) -> Result<()>;
     /// Adds an image link to the database. The image will be related to the given meal.
-    async fn link_image(&self, meal_id: Uuid, user_id: Uuid) -> Result<Uuid>;
+    async fn link_image(
+        &self,
+        meal_id: Uuid,
+        user_id: Uuid,
+        approval_message: Option<&str>,
+    ) -> Result<Uuid>;
 
     /// Reverts the linking of the given image by deleting the link.
     /// Useful if an error ocurred with the image itself.

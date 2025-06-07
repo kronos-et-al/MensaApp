@@ -41,6 +41,7 @@ impl CommandDataAccess for CommandDatabaseMock {
             },
             meal_name: "Happy Meal".into(),
             other_image_urls: vec![],
+            approval_message: Some("approved".into()),
         };
         Ok(info)
     }
@@ -105,7 +106,12 @@ impl CommandDataAccess for CommandDatabaseMock {
     }
 
     /// Adds an image link to the database. The image will be related to the given meal.
-    async fn link_image(&self, meal_id: Uuid, _user_id: Uuid) -> DataResult<Uuid> {
+    async fn link_image(
+        &self,
+        meal_id: Uuid,
+        _user_id: Uuid,
+        _message: Option<&str>,
+    ) -> DataResult<Uuid> {
         if MEAL_ID_TO_FAIL == meal_id {
             Err(DataError::NoSuchItem)
         } else {
@@ -158,8 +164,8 @@ impl ImageValidation for CommandImageValidationMock {
     async fn validate_image(
         &self,
         _image: &ImageResource,
-    ) -> crate::interface::image_validation::Result<()> {
-        Ok(())
+    ) -> crate::interface::image_validation::Result<Option<String>> {
+        Ok(Some("Good image".into()))
     }
 }
 

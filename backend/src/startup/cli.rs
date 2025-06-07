@@ -38,8 +38,6 @@ pub enum SubcommandError {
 
 /// Command arguments to show the help page.
 pub const HELP: &[&str] = &["--help", "-h", "-?"];
-/// Command argument to run database migrations.
-pub const MIGRATE: &str = "--migrate";
 
 /// Command arguments to igrate images from image hoster (flickr) to local storage.
 pub const MIGRATE_IMAGES: &str = "--migrate-images";
@@ -77,14 +75,6 @@ pub fn print_help() {
         HELP.join(" ").as_str().bright_black()
     );
     println!("          shows this page");
-    println!();
-    println!(
-        "{:<COMMAND_WIDTH$} {}",
-        "migrate".bold(),
-        MIGRATE.bright_black()
-    );
-    println!("          runs the database migrations");
-    println!("          before continuing like normal");
     println!();
     println!(
         "{:<COMMAND_WIDTH$} {}",

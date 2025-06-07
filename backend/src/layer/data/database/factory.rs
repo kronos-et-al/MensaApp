@@ -35,16 +35,14 @@ impl DataAccessFactory {
     /// # Errors
     /// if a migrations should, but could not run
     /// if the connection to the database could not be established
-    pub async fn new(info: DatabaseInfo, should_migrate: bool) -> Result<Self> {
+    pub async fn new(info: DatabaseInfo) -> Result<Self> {
         let pool = PgPoolOptions::new()
             .max_connections(MAX_DB_CONNECTIONS)
             .connect(&info.connection)
             .await?;
 
-        if should_migrate {
-            sqlx::migrate!().run(&pool).await?;
-            info!("Successfully run database migrations");
-        }
+        sqlx::migrate!().run(&pool).await?;
+        info!("Successfully run database migrations.");
 
         Ok(Self {
             pool,
@@ -105,7 +103,7 @@ mod tests {
             connection: connection.clone(),
             max_weeks_data: 4,
         };
-        let factory = DataAccessFactory::new(info, true)
+        let factory = DataAccessFactory::new(info)
             .await
             .expect("failed to access test database");
         let _ = factory.get_command_data_access();

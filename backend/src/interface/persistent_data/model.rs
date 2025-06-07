@@ -107,6 +107,8 @@ pub struct ExtendedImage {
     pub meal_name: String,
     /// List of urls of other images of the same meal.
     pub other_image_urls: Vec<String>,
+    /// Reason why image was accepted (e.g., from AI).
+    pub approval_message: Option<String>,
 }
 
 /// This struct contains all environmental information. co2 in grams, water in litres

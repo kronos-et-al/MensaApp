@@ -68,7 +68,8 @@ impl ImagePreprocessor {
         }
 
         // read image
-        let image = reader.decode()?;
+        let image = reader.decode()?.into_rgb8();
+        let image = DynamicImage::ImageRgb8(image);
 
         // downscale
         if image.width() > max_width || image.height() > max_height {

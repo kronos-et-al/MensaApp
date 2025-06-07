@@ -99,7 +99,7 @@ async fn setup_cmd() -> impl Command {
     let file_handler = FileHandler::new(reader.read_file_handler_info().await.unwrap());
     let image_validation = CommandImageValidationMock; // todo
 
-    let factory = DataAccessFactory::new(reader.read_database_info().unwrap(), true)
+    let factory = DataAccessFactory::new(reader.read_database_info().unwrap())
         .await
         .unwrap();
     let data = factory.get_command_data_access();

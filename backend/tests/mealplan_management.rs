@@ -10,7 +10,7 @@ async fn setup() -> MealPlanManager<SwKaParseManager, PersistentMealplanManageme
     let reader = ConfigReader::default();
     let mensa_parser = SwKaParseManager::new(reader.read_swka_info().unwrap()).unwrap();
 
-    let factory = DataAccessFactory::new(reader.read_database_info().unwrap(), true)
+    let factory = DataAccessFactory::new(reader.read_database_info().unwrap())
         .await
         .unwrap();
     let data = factory.get_mealplan_management_data_access();
