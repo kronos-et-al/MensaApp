@@ -52,7 +52,7 @@ To pass configuration options to the backend application environment variables a
 The following options are available:
 
 | Name                                     | Description                                                                                                                                                                                                                                                                                   | Default / Required                                                                                                           |
-|------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | `LOG_CONFIG`                             | Configure which messages are logged. For more information on the used syntax, see [here](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html#directives). You may want to set this to `warn,mensa_app_backend=trace` to enable all messages we produce. | `warn,mensa_app_backend=info`                                                                                                |
 | `DATABASE_URL`                           | Connection information to for the database. Format: `postgres://[<username>[:<password>]@]<host>[:<port>]/<database>`. Must be a [postgresql](https://www.postgresql.org/) database.                                                                                                          | required                                                                                                                     |
 | `ADMIN_EMAIL`                            | Email address to send notifications to (when images are reported)                                                                                                                                                                                                                             | required                                                                                                                     |
@@ -81,7 +81,7 @@ The following options are available:
 | `RATE_LIMIT`                             | Limit the number of API requests per second. `0` means disabled.                                                                                                                                                                                                                              | `0`  (disabled)                                                                                                              |
 | `MAX_UPLOAD_SIZE`                        | Maximal size (in bytes) an http body can have to get accepted. This implies a maximal size an image upload can have.                                                                                                                                                                          | `10485760`  (10 MiB)                                                                                                         |
 | `ADMIN_KEY`                              | Key to access admin api commands. Must be entered for http basic auth, username "admin".                                                                                                                                                                                                      | required                                                                                                                     |
-| `LOKI_URL`                               | URL to [Grafana Loki](https://grafana.com/docs/loki/latest/) instance, e.g. `http://loki:3100` (optional).                                                                                                                                                                                                                                                      | disabled                                                                                                                     |
+| `LOKI_URL`                               | URL to [Grafana Loki](https://grafana.com/docs/loki/latest/) instance, e.g. `http://loki:3100` (optional).                                                                                                                                                                                    | disabled                                                                                                                     |
 
 ### Notes
 - The **timezone** of log messages and the chron schedule is only queried once at backend startup from the host os because of technical limitations. For changes in timezone (e.g. summer time) the server has to be restarted.
@@ -98,7 +98,7 @@ You need to install rust and cargo.
 #### Command line arguments
 ```
 ==================================================
-   MensaApp Backend v0.3.0 🥘
+   MensaApp Backend v1.5.0 🥘
 ==================================================
 This binary runs the backend to for the mensa app,
 including a graphql server.
@@ -111,10 +111,6 @@ Licensed under the MIT license.
 Available commands:
 help                 --help -h -?
           shows this page
-
-migrate              --migrate
-          runs the database migrations
-          before continuing like normal
 
 migrate images       --migrate-images
           migrates images from hoster

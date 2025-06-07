@@ -1,6 +1,6 @@
 //! See [`ConfigReader`].
 use super::{
-    cli::{HELP, MIGRATE, MIGRATE_IMAGES},
+    cli::{HELP, MIGRATE_IMAGES},
     logging::LogInfo,
     server::{Result, ServerError},
 };
@@ -45,12 +45,6 @@ impl Default for ConfigReader {
 }
 
 impl ConfigReader {
-    /// Checks program arguments whether a migration should get run.
-    #[must_use]
-    pub fn should_migrate(&self) -> bool {
-        env::args().any(|arg| arg == MIGRATE)
-    }
-
     /// Queries the program arguments to check whether the help page should be shown.
     #[must_use]
     pub fn should_print_help(&self) -> bool {
@@ -342,7 +336,6 @@ mod tests {
         reader.read_file_handler_info().await.ok();
         reader.get_image_validation_info().await.ok();
         let _ = reader.read_image_preprocessing_info();
-        let _ = reader.should_migrate();
         let _ = reader.should_print_help();
     }
 }
