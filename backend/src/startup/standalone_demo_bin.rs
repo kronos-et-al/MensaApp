@@ -55,8 +55,7 @@ async fn run() -> Result<()> {
     }
 
     // data layer
-    let factory =
-        DataAccessFactory::new(config.read_database_info()?).await?;
+    let factory = DataAccessFactory::new(config.read_database_info()?).await?;
     let command_data = factory.get_command_data_access();
     let mealplan_management_data = factory.get_mealplan_management_data_access();
     let request_data = factory.get_request_data_access();
