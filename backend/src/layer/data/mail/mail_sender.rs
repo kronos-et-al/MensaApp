@@ -250,6 +250,10 @@ mod test {
             "the template must contain all of the information from the report info"
         );
         assert!(
+            report.contains(info.approval_message.unwrap_or_default().as_str()),
+            "the template must contain all of the information from the report info"
+        );
+        assert!(
             report.contains(REPORT_CSS), "Report css must be included. maybe auto-formatting destroyed the braces in template.html?"
         );
     }
@@ -326,6 +330,7 @@ mod test {
                 "https://picsum.photos/400/350".into(),
                 "https://picsum.photos/300/350".into(),
             ],
+            approval_message: Some("good image".into()),
         }
     }
 

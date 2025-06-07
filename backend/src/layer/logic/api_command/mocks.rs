@@ -41,6 +41,7 @@ impl CommandDataAccess for CommandDatabaseMock {
             },
             meal_name: "Happy Meal".into(),
             other_image_urls: vec![],
+            approval_message: Some("approved".into()),
         };
         Ok(info)
     }

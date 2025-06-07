@@ -66,6 +66,8 @@ pub struct ImageReportInfo {
     pub meal_id: Uuid,
     /// Date and time this image got reported.
     pub report_date: Date,
-    /// list of urls of other images of the same meal.
+    /// List of urls of other images of the same meal.
     pub other_image_urls: Vec<String>,
+    /// Message why image was accepted (e.g., by AI).
+    pub approval_message: Option<String>,
 }

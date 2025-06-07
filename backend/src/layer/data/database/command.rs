@@ -24,7 +24,7 @@ impl CommandDataAccess for PersistentCommandData {
         let record = sqlx::query!(
             r#"
             SELECT approved, link_date as upload_date, report_count,
-            upvotes, downvotes, image_id, rank, food_id, f.name as meal_name
+            upvotes, downvotes, image_id, rank, food_id, f.name as meal_name, approval_message
             FROM image_detail JOIN food f USING (food_id)
             WHERE image_id = $1
             ORDER BY image_id
@@ -36,7 +36,7 @@ impl CommandDataAccess for PersistentCommandData {
 
         let other_image_urls = sqlx::query_scalar!(
             "
-            SELECT image_id FROM image_detail 
+            SELECT image_id FROM image_detail
             WHERE currently_visible AND food_id = $1 AND image_id <> $2
             ORDER BY rank DESC
             ",
@@ -63,6 +63,7 @@ impl CommandDataAccess for PersistentCommandData {
             },
             meal_name: record.meal_name,
             other_image_urls,
+            approval_message: record.approval_message,
         })
     }
 
@@ -96,9 +97,9 @@ impl CommandDataAccess for PersistentCommandData {
     async fn add_upvote(&self, image_id: Uuid, user_id: Uuid) -> Result<()> {
         sqlx::query!(
             "
-            INSERT INTO image_rating (user_id, image_id, rating) 
-            VALUES ($1, $2, 1) 
-            ON CONFLICT (user_id, image_id) 
+            INSERT INTO image_rating (user_id, image_id, rating)
+            VALUES ($1, $2, 1)
+            ON CONFLICT (user_id, image_id)
             DO UPDATE SET rating = 1
             ",
             user_id,
@@ -112,9 +113,9 @@ impl CommandDataAccess for PersistentCommandData {
     async fn add_downvote(&self, image_id: Uuid, user_id: Uuid) -> Result<()> {
         sqlx::query!(
             "
-            INSERT INTO image_rating (user_id, image_id, rating) 
+            INSERT INTO image_rating (user_id, image_id, rating)
             VALUES ($1, $2, -1)
-            ON CONFLICT (user_id, image_id) 
+            ON CONFLICT (user_id, image_id)
             DO UPDATE SET rating = -1
             ",
             user_id,
@@ -175,9 +176,9 @@ impl CommandDataAccess for PersistentCommandData {
     async fn add_rating(&self, meal_id: Uuid, user_id: Uuid, rating: u32) -> Result<()> {
         sqlx::query!(
             "
-            INSERT INTO meal_rating (user_id, food_id, rating) 
+            INSERT INTO meal_rating (user_id, food_id, rating)
             VALUES ($1, $2, $3::smallint)
-            ON CONFLICT (user_id, food_id) 
+            ON CONFLICT (user_id, food_id)
             DO UPDATE SET rating = $3::smallint
             ",
             user_id,
@@ -246,6 +247,7 @@ mod test {
                 image_id_to_url(Uuid::parse_str("ea8cce48-a3c7-4f8e-a222-5f3891c13804").unwrap()),
                 image_id_to_url(Uuid::parse_str("1aa73d5d-1701-4975-aa3c-1422a8bc10e8").unwrap()),
             ],
+            approval_message: Some("some reason".to_string()),
         }
     }
 

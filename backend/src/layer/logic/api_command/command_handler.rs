@@ -127,6 +127,7 @@ where
                 meal_id: info.image.meal_id,
                 meal_name: info.meal_name,
                 other_image_urls: info.other_image_urls,
+                approval_message: info.approval_message,
             };
 
             self.admin_notification
