@@ -65,6 +65,24 @@ android {
         }
     }
 
+    flavorDimensions "deploy"
+
+    productFlavors {
+        fdroid {
+            dimension "deploy"
+            signingConfig null
+        }
+    }
+
+    android.applicationVariants.all { variant ->
+        if (variant.flavorName == "fdroid") {
+            variant.outputs.all { output ->
+                output.outputFileName = "app-fdroid-release.apk"
+            }
+        }
+    }
+
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
