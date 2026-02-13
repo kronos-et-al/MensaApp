@@ -27,6 +27,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import "package:http/http.dart" as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../view_model/repository/interface/IServerAccess.dart';
 import 'requests/mutations.graphql.dart';
@@ -66,6 +67,19 @@ class _MensaClient extends http.BaseClient {
 
     return _client.send(request);
   }
+}
+
+// Initialize storage
+final storage = FlutterSecureStorage();
+
+// Store the API key (e.g., after login or app initialization)
+Future<void> saveApiKey(String key) async {
+  await storage.write(key: 'my_api_key', value: key);
+}
+ 
+// Retrieve the key when making API calls
+Future<String?> getApiKey() async {
+  return await storage.read(key: 'my_api_key');
 }
 
 /// This class is responsible for communicating with the server through the graphql api.

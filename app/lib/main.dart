@@ -25,9 +25,12 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
+late final String apiKey;
+
 /// The main function of the app.
 void main() async {
   await dotenv.load(fileName: ".env");
+  apiKey = (await getApiKey())!;
   final FlutterI18nDelegate delegate = FlutterI18nDelegate(
     translationLoader: NamespaceFileTranslationLoader(
       namespaces: [
@@ -98,7 +101,7 @@ class MensaApp extends StatelessWidget {
         IDatabaseAccess db = SQLiteDatabaseAccess();
         IServerAccess api = GraphQlServerAccess(
           dotenv.env["API_URL"] ?? "",
-          dotenv.env["API_KEY"] ?? "",
+          apiKey,
           sharedPreferencesAccess.getClientIdentifier() ?? "",
         );
         return MultiProvider(
