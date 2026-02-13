@@ -39,7 +39,7 @@ dependencies:
 
   # Internationalization
   flutter_i18n: ^0.36.2
-  intl: ^0.19.0
+  intl: ^0.20.2
   path_provider:
   flutter_localizations:
     sdk: flutter
@@ -67,6 +67,8 @@ dependencies:
   cached_network_image: ^3.3.0
 
   flutter_dotenv: ^5.1.0
+
+  flutter_secure_storage: ^8.0.0
 
 dev_dependencies:
   integration_test:
