@@ -144,8 +144,8 @@ mod tests {
     async fn test_request_api() {
         let valid = get_valid_gemini_struct().request_api(B64_IMAGE).await;
         let invalid = get_invalid_gemini_struct().request_api(B64_IMAGE).await;
-        assert!(valid.is_ok());
-        assert!(invalid.is_err());
+        assert!(valid.is_ok(), "{}", valid.unwrap_err());
+        assert!(invalid.is_err(), "{:?}", invalid.unwrap());
     }
 
     #[tokio::test]
