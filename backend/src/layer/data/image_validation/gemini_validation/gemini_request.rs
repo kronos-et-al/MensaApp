@@ -6,7 +6,8 @@ use crate::layer::data::image_validation::gemini_validation::json_request::Gemin
 const API_REST_URL: &str =
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 const REQUEST_TYPE: &str = "image/jpeg";
-const REQUEST_SPECIFICATION: &str = "Answer yes or no and give a short explanation in English. In case of doubt, answer with yes.";
+const REQUEST_SPECIFICATION: &str =
+    "Answer yes or no and give a short explanation in English. In case of doubt, answer with yes.";
 
 /// The [`GeminiRequest`] struct is used to send an images with a question and
 /// requests gemini for assessment via rest.
@@ -118,7 +119,6 @@ mod tests {
 
     fn get_valid_gemini_struct() -> GeminiRequest {
         dotenv().ok();
-        println!("GEMINI_API_KEY:{val:?}", val = env::var("GEMINI_API_KEY"));
         GeminiRequest::new(
             env::var("GEMINI_API_KEY").unwrap(),
             &env::var("GEMINI_TEXT_REQUEST").unwrap(),
@@ -156,7 +156,7 @@ mod tests {
         let invalid = get_invalid_gemini_struct()
             .encoded_image_validation(B64_IMAGE)
             .await;
-        assert!(valid.is_ok());
-        assert!(invalid.is_err());
+        assert!(valid.is_ok(), "{}", valid.unwrap_err());
+        assert!(invalid.is_err(), "{}", invalid.unwrap());
     }
 }

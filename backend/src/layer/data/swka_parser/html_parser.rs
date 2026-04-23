@@ -231,7 +231,7 @@ impl HTMLParser {
         Ok(dates.into_iter().zip(canteen_for_all_days).collect())
     }
 
-    fn get_root_node(document: &Html) -> Result<ElementRef, ParseError> {
+    fn get_root_node(document: &Html) -> Result<ElementRef<'_>, ParseError> {
         document
             .select(&ROOT_NODE_CLASS_SELECTOR)
             .next()
