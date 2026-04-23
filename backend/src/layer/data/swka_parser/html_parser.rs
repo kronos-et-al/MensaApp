@@ -602,7 +602,7 @@ mod tests {
     }
 
     #[tokio::test]
-    /// Tests an html page, that is not from the Studierendenwerk Karlsruhe. (Source: https://cbracco.github.io/html5-test-page/)
+    /// Tests an html page, that is not from the Studierendenwerk Karlsruhe. (Source: <https://cbracco.github.io/html5-test-page>/)
     async fn test_invalid() {
         let path = "src/layer/data/swka_parser/test_data/test_invalid.html";
         let file_contents = read_from_file(path).unwrap();

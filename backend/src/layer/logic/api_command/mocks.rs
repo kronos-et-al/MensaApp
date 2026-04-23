@@ -25,7 +25,7 @@ pub struct CommandDatabaseMock;
 
 #[async_trait]
 impl CommandDataAccess for CommandDatabaseMock {
-    /// Returns the ImageInfo struct of image.
+    /// Returns the [`ExtendedImage`] struct of image.
     async fn get_image_info(&self, _image_id: Uuid) -> DataResult<ExtendedImage> {
         let info = ExtendedImage {
             image: Image {
