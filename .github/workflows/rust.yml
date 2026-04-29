@@ -72,7 +72,7 @@ jobs:
     - name: Check docs
       run: RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
     - name: Build
-      run: cargo build --verbose
+      run: cargo build
     - name: Check linter warnings
       run: | 
           rustup component add clippy
@@ -114,7 +114,7 @@ jobs:
         base64 --decode secret.base64 > secret.json
         echo "SERVICE_ACCOUNT_JSON=$(realpath secret.json)" >> $GITHUB_ENV
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo test
 
 
   coverage:

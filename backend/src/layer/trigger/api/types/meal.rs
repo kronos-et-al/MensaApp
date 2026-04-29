@@ -128,7 +128,7 @@ struct Ratings {
 #[ComplexObject]
 impl Ratings {
     /// Provides this user's rating for the meal.
-    /// Therefor a client id must be provided in the authorization header (see https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md).
+    /// Therefor a client id must be provided in the authorization header (see <https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md>).
     #[instrument(skip(ctx))]
     async fn personal_rating(&self, ctx: &Context<'_>) -> Result<Option<u32>> {
         let data_access = ctx.get_data_access();

@@ -263,7 +263,7 @@ async fn graphql_handler(
                 response
                     .errors
                     .iter()
-                    .map(|e| e.message.to_string())
+                    .map(|e| e.message.clone())
                     .collect::<Vec<_>>()
                     .join("\n")
             );

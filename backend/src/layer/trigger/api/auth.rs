@@ -84,7 +84,9 @@ impl Display for AuthInfo {
         write!(
             f,
             "AuthInfo for client `{}`: {}, api_indent: `{}`, hash: `{}`",
-            self.client_id.as_ref().map_or("-".into(), Uuid::to_string),
+            self.client_id
+                .as_ref()
+                .map_or_else(|| "-".into(), Uuid::to_string),
             auth_status,
             self.api_ident,
             self.hash

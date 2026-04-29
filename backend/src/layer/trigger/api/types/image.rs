@@ -24,7 +24,7 @@ pub(in super::super) struct Image {
 #[ComplexObject]
 impl Image {
     /// This attribute specifies whether or not the user upvoted the image.
-    /// Therefor a client id must be provided in the authorization header (see https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md).
+    /// Therefor a client id must be provided in the authorization header (see <https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md>).
     #[instrument(skip(ctx))]
     async fn personal_upvote(&self, ctx: &Context<'_>) -> Result<bool> {
         let data = ctx.get_data_access();
@@ -33,7 +33,7 @@ impl Image {
         Ok(upvote)
     }
     /// This attribute specifies whether or not the user downvoted the image.
-    /// Therefor a client id must be provided in the authorization header (see https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md).
+    /// Therefor a client id must be provided in the authorization header (see <https://github.com/kronos-et-al/MensaApp/blob/main/doc/ApiAuth.md>).
     #[instrument(skip(ctx))]
     async fn personal_downvote(&self, ctx: &Context<'_>) -> Result<bool> {
         let data = ctx.get_data_access();
