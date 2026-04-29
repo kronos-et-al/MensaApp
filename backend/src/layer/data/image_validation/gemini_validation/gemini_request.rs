@@ -4,7 +4,7 @@ use crate::layer::data::image_validation::gemini_validation::json_request::Gemin
 
 // Consider: This is the beta version. Change if depreciated!
 const API_REST_URL: &str =
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
 const REQUEST_TYPE: &str = "image/jpeg";
 const REQUEST_SPECIFICATION: &str =
     "Answer yes or no and give a short explanation in English. In case of doubt, answer with yes.";
