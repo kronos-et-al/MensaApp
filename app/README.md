@@ -1,6 +1,7 @@
 # Mensa KA - Flutter App
 
-A modern Flutter application to view and interact with meal plan data from the canteens of the [Studierendenwerk Karlsruhe](https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/).
+A modern Flutter application to view and interact with meal plan data from the canteens of
+the [Studierendenwerk Karlsruhe](https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/).
 
 ## 🚀 Features
 
@@ -25,6 +26,7 @@ A modern Flutter application to view and interact with meal plan data from the c
 ### 1. Prerequisites
 
 Ensure you have the following installed:
+
 - **Flutter SDK**: `3.29.0` or newer.
 - **Java JDK**: `25` (Required for modern Gradle compatibility).
 - **Android Gradle Plugin**: `9.3.0` (Configured in the project).
@@ -32,9 +34,11 @@ Ensure you have the following installed:
 ### 2. Environment Setup
 
 Create a `.env` file in the root directory based on `.env.example`:
+
 ```bash
 cp .env.example .env
 ```
+
 Fill in your `API_URL` and `API_KEY` accordingly.
 
 ### 3. Dependencies & Code Generation
@@ -46,8 +50,7 @@ This project relies heavily on code generation for both GraphQL and the ObjectBo
 flutter pub get
 
 # Generate code (GraphQL wrappers and ObjectBox models)
-dart run build_runner build --delete-conflicting-outputs
-```
+dart run build_runner build
 
 ### 4. Running the App
 
@@ -57,9 +60,11 @@ flutter run
 ```
 
 **Release Build (Android APK):**
+
 ```bash
 flutter build apk --release
 ```
+
 *Note: To target specific architectures (e.g., arm64), use `--target-platform android-arm64`.*
 
 ---
@@ -74,6 +79,7 @@ flutter test
 ```
 
 To run integration tests on a connected device:
+
 ```bash
 flutter test test/integrity_test/allTests.dart
 ```
@@ -82,17 +88,21 @@ flutter test test/integrity_test/allTests.dart
 
 ## 📝 Changelog Management
 
-When updating the app version, please add a new entry to the changelog to inform users of the changes.
+When updating the app version, please add a new entry to the changelog to inform users of the
+changes.
 
-1.  Increment the `version` in `pubspec.yaml`.
-2.  Add the release notes to `assets/locales/de/update.json` and `assets/locales/en/update.json` under the `changes` key. **Use underscores instead of dots for the version key** (e.g., `"1_4_0"` instead of `"1.4.0"`).
-3.  Use a sequential list starting from `"0"`.
+1. Increment the `version` in `pubspec.yaml`.
+2. Add the release notes to `assets/locales/de/update.json` and `assets/locales/en/update.json`
+   under the `changes` key. **Use underscores instead of dots for the version key** (e.g., `"1_4_0"`
+   instead of `"1.4.0"`).
+3. Use a sequential list starting from `"0"`.
 
 Example:
+
 ```json
 "1_4_0": {
-  "0": "New feature description",
-  "1": "Bug fix description"
+"0": "New feature description",
+"1": "Bug fix description"
 }
 ```
 
