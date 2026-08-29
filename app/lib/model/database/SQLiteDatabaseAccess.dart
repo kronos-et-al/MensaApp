@@ -118,20 +118,22 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   Future<int> addFavorite(
       Meal meal, DateTime servedDate, Line servedLine) async {
     var db = await database;
-    var favorite = DBFavorite(
-      meal.id,
-      meal.lastServed != null ? _dateFormat.format(meal.lastServed!) : null,
-      meal.foodType,
-      meal.price.student,
-      meal.price.employee,
-      meal.price.pupil,
-      meal.price.guest,
-      servedDate,
-      servedLine.id,
-    );
-    await _insertMeal(meal);
-    return await db.insert(DBFavorite.tableName, favorite.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    return await db.transaction((txn) async {
+      var favorite = DBFavorite(
+        meal.id,
+        meal.lastServed != null ? _dateFormat.format(meal.lastServed!) : null,
+        meal.foodType,
+        meal.price.student,
+        meal.price.employee,
+        meal.price.pupil,
+        meal.price.guest,
+        servedDate,
+        servedLine.id,
+      );
+      await _insertMeal(txn, meal);
+      return await txn.insert(DBFavorite.tableName, favorite.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace);
+    });
   }
 
   @override
@@ -334,18 +336,22 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
 
   @override
   Future<void> updateAll(List<MealPlan> mealPlans) async {
-    // todo: this function is very slow and slows down updating considerably.
-    await Future.wait(mealPlans.expand((mealPlan) => [
-          _insertCanteen(mealPlan.line.canteen),
-          _insertLine(mealPlan.line),
-          // todo: especially _insertMealPlan
-          _insertMealPlan(mealPlan)
-        ]));
+    var db = await database;
+    await db.transaction((txn) async {
+      for (var mealPlan in mealPlans) {
+        await _insertCanteen(txn, mealPlan.line.canteen);
+        await _insertLine(txn, mealPlan.line);
+        await _insertMealPlan(txn, mealPlan);
+      }
+    });
   }
 
   @override
   Future<void> updateMeal(Meal meal) async {
-    await _insertMeal(meal);
+    var db = await database;
+    await db.transaction((txn) async {
+      await _insertMeal(txn, meal);
+    });
   }
 
   @override
@@ -360,22 +366,19 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
     }
   }
 
-  Future<int> _insertLine(Line line) async {
-    var db = await database;
+  Future<int> _insertLine(DatabaseExecutor db, Line line) async {
     var dbLine = DBLine(line.id, line.canteen.id, line.name, line.position);
     return db.insert(DBLine.tableName, dbLine.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<int> _insertCanteen(Canteen canteen) async {
-    var db = await database;
+  Future<int> _insertCanteen(DatabaseExecutor db, Canteen canteen) async {
     var dbCanteen = DBCanteen(canteen.id, canteen.name);
     return db.insert(DBCanteen.tableName, dbCanteen.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<int> _insertMealPlan(MealPlan mealPlan) async {
-    var db = await database;
+  Future<int> _insertMealPlan(DatabaseExecutor db, MealPlan mealPlan) async {
     var result = await db.query(DBMealPlan.tableName,
         where:
             '${DBMealPlan.columnLineID} = ? AND ${DBMealPlan.columnDate} = ?',
@@ -399,13 +402,11 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         where: '${DBMealPlanSide.columnMealPlanID} = ?',
         whereArgs: [dbMealPlan.mealPlanID]);
     await Future.wait(
-        mealPlan.meals.map((e) => _insertMealPlanMeal(e, dbMealPlan!)));
+        mealPlan.meals.map((e) => _insertMealPlanMeal(db, e, dbMealPlan!)));
     return id;
   }
 
-  Future<int> _insertMeal(Meal meal) async {
-    var db = await database;
-
+  Future<int> _insertMeal(DatabaseExecutor db, Meal meal) async {
     await db.delete(DBMealAllergen.tableName,
         where: '${DBMealAllergen.columnMealID} = ?', whereArgs: [meal.id]);
     await db.delete(DBMealAdditive.tableName,
@@ -420,28 +421,26 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         meal.individualRating, meal.numberOfRatings, meal.averageRating);
 
     await Future.wait(
-        meal.allergens?.map((e) => _insertMealAllergen(e, dbMeal)).toList() ??
+        meal.allergens?.map((e) => _insertMealAllergen(db, e, dbMeal)).toList() ??
             []);
     await Future.wait(
-        meal.additives?.map((e) => _insertMealAdditive(e, dbMeal)).toList() ??
+        meal.additives?.map((e) => _insertMealAdditive(db, e, dbMeal)).toList() ??
             []);
     await Future.wait(
-        meal.images?.map((e) => _insertImage(e, dbMeal)).toList() ?? []);
+        meal.images?.map((e) => _insertImage(db, e, dbMeal)).toList() ?? []);
 
     if (meal.nutritionData != null) {
-      await _insertMealNutritionData(meal.nutritionData!, dbMeal);
+      await _insertMealNutritionData(db, meal.nutritionData!, dbMeal);
     }
     if (meal.environmentInfo != null) {
-      await _insertMealEnvironmentInfo(meal.environmentInfo!, dbMeal);
+      await _insertMealEnvironmentInfo(db, meal.environmentInfo!, dbMeal);
     }
 
     return await db.insert(DBMeal.tableName, dbMeal.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<int> _insertMealPlanMeal(Meal meal, DBMealPlan mealPlan) async {
-    var db = await database;
-
+  Future<int> _insertMealPlanMeal(DatabaseExecutor db, Meal meal, DBMealPlan mealPlan) async {
     await Future.wait([
       db.delete(DBMealAllergen.tableName,
           where: '${DBMealAllergen.columnMealID} = ?', whereArgs: [meal.id]),
@@ -465,20 +464,20 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         meal.numberOfOccurance,
         meal.relativeFrequency ?? Frequency.normal);
     await Future.wait([
-      ...(meal.allergens?.map((e) => _insertMealAllergen(e, dbMeal)).toList() ??
+      ...(meal.allergens?.map((e) => _insertMealAllergen(db, e, dbMeal)).toList() ??
           []),
-      ...(meal.additives?.map((e) => _insertMealAdditive(e, dbMeal)).toList() ??
+      ...(meal.additives?.map((e) => _insertMealAdditive(db, e, dbMeal)).toList() ??
           []),
       ...(meal.sides!
-          .map((e) => _insertMealPlanSide(e, dbMeal, mealPlan))
+          .map((e) => _insertMealPlanSide(db, e, dbMeal, mealPlan))
           .toList()),
-      ...(meal.images?.map((e) => _insertImage(e, dbMeal)).toList() ?? [])
+      ...(meal.images?.map((e) => _insertImage(db, e, dbMeal)).toList() ?? [])
     ]);
     if (meal.nutritionData != null) {
-      await _insertMealNutritionData(meal.nutritionData!, dbMeal);
+      await _insertMealNutritionData(db, meal.nutritionData!, dbMeal);
     }
     if (meal.environmentInfo != null) {
-      await _insertMealEnvironmentInfo(meal.environmentInfo!, dbMeal);
+      await _insertMealEnvironmentInfo(db, meal.environmentInfo!, dbMeal);
     }
     await db.insert(DBMeal.tableName, dbMeal.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
@@ -487,8 +486,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   }
 
   Future<int> _insertMealPlanSide(
-      Side side, DBMeal meal, DBMealPlan mealPlan) async {
-    var db = await database;
+      DatabaseExecutor db, Side side, DBMeal meal, DBMealPlan mealPlan) async {
     await db.delete(DBSideAllergen.tableName,
         where: '${DBSideAllergen.columnSideID} = ?', whereArgs: [side.id]);
     await db.delete(DBSideAdditive.tableName,
@@ -506,37 +504,34 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         side.price.pupil,
         side.price.guest);
     await Future.wait(
-        side.allergens.map((e) => _insertSideAllergen(e, dbSide)));
+        side.allergens.map((e) => _insertSideAllergen(db, e, dbSide)));
     await Future.wait(
-        side.additives.map((e) => _insertSideAdditive(e, dbSide)));
+        side.additives.map((e) => _insertSideAdditive(db, e, dbSide)));
     if (side.nutritionData != null) {
-      await _insertSideNutritionData(side.nutritionData!, dbSide);
+      await _insertSideNutritionData(db, side.nutritionData!, dbSide);
     }
     if (side.environmentInfo != null) {
-      await _insertSideEnvironmentInfo(side.environmentInfo!, dbSide);
+      await _insertSideEnvironmentInfo(db, side.environmentInfo!, dbSide);
     }
     await db.insert(DBSide.tableName, dbSide.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
     return await db.insert(DBMealPlanSide.tableName, mealPlanSide.toMap());
   }
 
-  Future<int> _insertMealAllergen(Allergen allergen, DBMeal meal) async {
-    var db = await database;
+  Future<int> _insertMealAllergen(DatabaseExecutor db, Allergen allergen, DBMeal meal) async {
     var dbMealAllergen = DBMealAllergen(meal.mealID, allergen);
     return await db.insert(DBMealAllergen.tableName, dbMealAllergen.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<int> _insertMealAdditive(Additive additive, DBMeal meal) async {
-    var db = await database;
+  Future<int> _insertMealAdditive(DatabaseExecutor db, Additive additive, DBMeal meal) async {
     var dbMealAdditive = DBMealAdditive(meal.mealID, additive);
     return await db.insert(DBMealAdditive.tableName, dbMealAdditive.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<int> _insertMealNutritionData(
-      NutritionData nutritionData, DBMeal meal) async {
-    var db = await database;
+      DatabaseExecutor db, NutritionData nutritionData, DBMeal meal) async {
     var dbMealNutritionData = DBMealNutritionData(
       meal.mealID,
       nutritionData.energy,
@@ -553,8 +548,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   }
 
   Future<int> _insertMealEnvironmentInfo(
-      EnvironmentInfo environmentInfo, DBMeal meal) async {
-    var db = await database;
+      DatabaseExecutor db, EnvironmentInfo environmentInfo, DBMeal meal) async {
     var dbMealEnvironmentInfo = DBMealEnvironmentInfo(
         meal.mealID,
         environmentInfo.averageRating,
@@ -570,23 +564,20 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<int> _insertSideAllergen(Allergen allergen, DBSide side) async {
-    var db = await database;
+  Future<int> _insertSideAllergen(DatabaseExecutor db, Allergen allergen, DBSide side) async {
     var dbSideAllergen = DBSideAllergen(side.sideID, allergen);
     return await db.insert(DBSideAllergen.tableName, dbSideAllergen.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<int> _insertSideAdditive(Additive additive, DBSide side) async {
-    var db = await database;
+  Future<int> _insertSideAdditive(DatabaseExecutor db, Additive additive, DBSide side) async {
     var dbSideAdditive = DBSideAdditive(side.sideID, additive);
     return await db.insert(DBSideAdditive.tableName, dbSideAdditive.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<int> _insertSideNutritionData(
-      NutritionData nutritionData, DBSide side) async {
-    var db = await database;
+      DatabaseExecutor db, NutritionData nutritionData, DBSide side) async {
     var dbSideNutritionData = DBSideNutritionData(
       side.sideID,
       nutritionData.energy,
@@ -603,8 +594,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
   }
 
   Future<int> _insertSideEnvironmentInfo(
-      EnvironmentInfo environmentInfo, DBSide side) async {
-    var db = await database;
+      DatabaseExecutor db, EnvironmentInfo environmentInfo, DBSide side) async {
     var dbSideEnvironmentInfo = DBMealEnvironmentInfo(
         side.sideID,
         environmentInfo.averageRating,
@@ -620,8 +610,7 @@ class SQLiteDatabaseAccess implements IDatabaseAccess {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<int> _insertImage(ImageData image, DBMeal meal) async {
-    var db = await database;
+  Future<int> _insertImage(DatabaseExecutor db, ImageData image, DBMeal meal) async {
     var dbImage = DBImage(image.id, meal.mealID, image.url, image.imageRank,
         image.positiveRating, image.negativeRating, image.individualRating);
     return await db.insert(DBImage.tableName, dbImage.toMap(),
