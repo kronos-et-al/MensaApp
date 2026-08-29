@@ -60,6 +60,7 @@ class MensaIcon extends StatelessWidget {
   final MensaIcons icon;
   final double? size;
   final Color? color;
+  final bool useOriginalColor;
 
   /// Creates a new [MensaIcon].
   const MensaIcon(
@@ -67,6 +68,7 @@ class MensaIcon extends StatelessWidget {
     super.key,
     this.size = 24,
     this.color,
+    this.useOriginalColor = false,
   });
 
   @override
@@ -75,10 +77,12 @@ class MensaIcon extends StatelessWidget {
       icon.path,
       width: size,
       height: size,
-      colorFilter: ColorFilter.mode(
-        color ?? Theme.of(context).colorScheme.onSurface,
-        BlendMode.srcIn,
-      ),
+      colorFilter: useOriginalColor
+          ? null
+          : ColorFilter.mode(
+              color ?? Theme.of(context).colorScheme.onSurface,
+              BlendMode.srcIn,
+            ),
     );
   }
 }
