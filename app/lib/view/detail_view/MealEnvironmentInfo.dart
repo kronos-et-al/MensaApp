@@ -76,14 +76,14 @@ class _MealEnvironmentInfoItem extends StatelessWidget {
                   children: [
                     switch (_type) {
                       _MealEnvironmentInfoType.co2 =>
-                        const MensaIcon(MensaIcons.environmentCo2, size: 48),
+                        const MensaIcon(MensaIcons.environmentCo2, size: 48, useOriginalColor: true),
                       _MealEnvironmentInfoType.water =>
-                        const MensaIcon(MensaIcons.environmentWater, size: 48),
+                        const MensaIcon(MensaIcons.environmentWater, size: 48, useOriginalColor: true),
                       _MealEnvironmentInfoType.animalWelfare =>
                         const MensaIcon(MensaIcons.environmentAnimalWelfare,
-                            size: 48),
+                            size: 48, useOriginalColor: true),
                       _MealEnvironmentInfoType.rainforest =>
-                      const MensaIcon(MensaIcons.environmentRainforest, size: 48),
+                      const MensaIcon(MensaIcons.environmentRainforest, size: 48, useOriginalColor: true),
                     },
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       MensaRatingInput(

@@ -36,15 +36,15 @@ enum MensaIcons {
   thumbDownOutlined('assets/icons/image/thumb_down_outlined.svg'),
 
   // Environment Info
-  environmentCo2('assets/icons/environment_info/environment_co2.svg'),
-  environmentWater('assets/icons/environment_info/environment_water.svg'),
-  environmentRainforest('assets/icons/environment_info/environment_rainforest.svg'),
-  environmentAnimalWelfare('assets/icons/environment_info/environment_animal_welfare.svg'),
+  environmentCo2('assets/icons/environment_info/co2.svg'),
+  environmentWater('assets/icons/environment_info/water.svg'),
+  environmentRainforest('assets/icons/environment_info/rainforest.svg'),
+  environmentAnimalWelfare('assets/icons/environment_info/animal_welfare.svg'),
 
   // Exceptions
-  errorException('assets/icons/exceptions/error_exception.svg'),
-  filterException('assets/icons/exceptions/filter_exception.svg'),
-  noDataException('assets/icons/exceptions/no_data_exception.svg'),
+  errorException('assets/icons/exceptions/error.svg'),
+  filterException('assets/icons/exceptions/filter.svg'),
+  noDataException('assets/icons/exceptions/no_data.svg'),
   canteenClosedException('assets/icons/exceptions/canteen_closed.svg'),
 
   // Misc
