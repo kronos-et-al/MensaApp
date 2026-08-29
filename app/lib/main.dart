@@ -1,5 +1,6 @@
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
 import 'package:app/model/database/ObjectBoxDatabaseAccess.dart';
+import 'package:app/model/database/SQLiteMigration.dart';
 import 'package:app/model/local_storage/SharedPreferenceAccess.dart';
 import 'package:app/model/database/objectbox.g.dart';
 import 'package:app/view/core/MainPage.dart';
@@ -47,6 +48,7 @@ void main() async {
         "environmentInfo",
         "tag",
         "hint",
+        "update",
       ],
       useCountryCode: false,
       basePath: 'assets/locales',
@@ -61,6 +63,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final store = await openStore();
+
+  // Migrate legacy SQLite favorites to ObjectBox
+  await SQLiteMigration(store).migrateFavorites();
 
   runApp(MensaApp(delegate: delegate, store: store));
 }

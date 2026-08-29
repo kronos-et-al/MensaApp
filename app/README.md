@@ -80,6 +80,24 @@ flutter test test/integrity_test/allTests.dart
 
 ---
 
+## 📝 Changelog Management
+
+When updating the app version, please add a new entry to the changelog to inform users of the changes.
+
+1.  Increment the `version` in `pubspec.yaml`.
+2.  Add the release notes to `assets/locales/de/update.json` and `assets/locales/en/update.json` under the `changes` key. **Use underscores instead of dots for the version key** (e.g., `"1_4_0"` instead of `"1.4.0"`).
+3.  Use a sequential list starting from `"0"`.
+
+Example:
+```json
+"1_4_0": {
+  "0": "New feature description",
+  "1": "Bug fix description"
+}
+```
+
+---
+
 ## 📂 Project Structure
 
 - `lib/model/database/`: ObjectBox entities and database access logic.

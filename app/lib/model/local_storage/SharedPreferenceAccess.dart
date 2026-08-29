@@ -145,4 +145,24 @@ class SharedPreferenceAccess implements ILocalStorage {
   Future<void> setCanteen(String canteen) async {
     await _pref.setString('canteen', canteen);
   }
+
+  @override
+  String? getLastSeenVersion() {
+    return _pref.getString('lastSeenVersion');
+  }
+
+  @override
+  Future<void> setLastSeenVersion(String version) async {
+    await _pref.setString('lastSeenVersion', version);
+  }
+
+  @override
+  bool shouldShowUpdatePopup() {
+    return _pref.getBool('shouldShowUpdatePopup') ?? true;
+  }
+
+  @override
+  Future<void> setShouldShowUpdatePopup(bool show) async {
+    await _pref.setBool('shouldShowUpdatePopup', show);
+  }
 }

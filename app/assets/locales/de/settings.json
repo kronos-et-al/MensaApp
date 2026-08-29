@@ -10,5 +10,7 @@
   "contactDetails": "Kontakt",
   "clientID": "Client ID: {clientID}",
   "snackBarCopiedToClipboard": "In die Zwischenablage kopiert",
-  "hint": "Tipp"
+  "hint": "Tipp",
+  "notifications": "Benachrichtigungen",
+  "showUpdatePopup": "Update-Informationen anzeigen"
 }

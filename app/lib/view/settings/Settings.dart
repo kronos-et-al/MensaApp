@@ -1,4 +1,5 @@
 import 'package:app/view/core/MensaAppBar.dart';
+import 'package:app/view/core/NewVersionDialog.dart';
 import 'package:app/view/core/buttons/MensaLink.dart';
 import 'package:app/view/core/selection_components/MensaDropdownEntry.dart';
 import 'package:app/view/mealplan/Hint.dart';
@@ -76,6 +77,30 @@ class Settings extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     SettingsSection(
+                      heading: "settings.notifications",
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                FlutterI18n.translate(
+                                  context,
+                                  "settings.showUpdatePopup",
+                                ),
+                              ),
+                            ),
+                            Switch(
+                              value: storage.shouldShowUpdatePopup(),
+                              onChanged: (value) {
+                                storage.setShouldShowUpdatePopup(value);
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    SettingsSection(
                       heading: "settings.hint",
                       children: [
                         Row(
@@ -106,6 +131,39 @@ class Settings extends StatelessWidget {
                                     snapshot.requireData[0];
                                 return Text(info.version);
                               },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: MensaLink(
+                                semanticLabel: FlutterI18n.translate(
+                                  context,
+                                  "update.title",
+                                ),
+                                onPressed: () async {
+                                  final info = await PackageInfo.fromPlatform();
+                                  if (!context.mounted) return;
+                                  final changes = NewVersionDialog.getChanges(
+                                    context,
+                                    info.version,
+                                  );
+                                  showDialog(
+                                    context: context,
+                                    builder:
+                                        (context) => NewVersionDialog(
+                                          version: info.version,
+                                          changes: changes,
+                                        ),
+                                  );
+                                },
+                                text: FlutterI18n.translate(
+                                  context,
+                                  "update.title",
+                                ),
+                              ),
                             ),
                           ],
                         ),

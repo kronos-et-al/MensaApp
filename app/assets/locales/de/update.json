@@ -1,0 +1,10 @@
+{
+  "title": "Neu in Version",
+  "message": "Im neusten Update ist folgendes enthalten:",
+  "changes": {
+    "1_3_0": {
+      "0": "Eine neue Cachinglösung sorgt für **deutlich kürzere Ladezeiten**.",
+      "1": "Das Wechseln zwischen Tagen ist jetzt responsiver."
+    }
+  }
+}

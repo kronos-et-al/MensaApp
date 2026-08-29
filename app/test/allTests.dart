@@ -18,6 +18,7 @@ import './view-model/PreferenceAccessTest.dart' as preference;
 import './model/SharedPreferencesTest.dart' as storage;
 import './model/api_server/GraphQlServerAccess_test.dart' as api;
 import './model/ObjectBoxDatabaseAccessTest.dart' as database;
+import './model/SQLiteMigrationTest.dart' as migration;
 
 void main() async {
   group("canteen", () => canteen.main());
@@ -37,5 +38,6 @@ void main() async {
 
   api.main();
   group("database", () => database.main());
+  group("migration", () => migration.main());
   await storage.main();
 }

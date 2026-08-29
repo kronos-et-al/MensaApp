@@ -4,14 +4,15 @@ import 'package:app/view/core/icons/mensa_icons.dart';
 import 'package:app/view/core/meal_view_format/MealGrid.dart';
 import 'package:app/view_model/logic/meal/IMealAccess.dart';
 import 'package:app/view_model/logic/preference/IPreferenceAccess.dart';
-import 'package:app/view_model/repository/data_classes/mealplan/MealPlan.dart';
 import 'package:app/view_model/repository/data_classes/settings/MealPlanFormat.dart';
 import 'package:app/view_model/repository/error_handling/MealPlanException.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
+import '../core/NewVersionDialog.dart';
 import '../core/meal_view_format/MealList.dart';
 import '../filter/FilterDialog.dart';
 import 'Hint.dart';
@@ -25,9 +26,51 @@ import 'MealPlanToolbar.dart';
 import 'MensaCanteenSelect.dart';
 
 /// This class is the view for the meal plan.
-class MealPlanView extends StatelessWidget {
+class MealPlanView extends StatefulWidget {
   /// Creates a new meal plan view.
   const MealPlanView({super.key});
+
+  @override
+  State<MealPlanView> createState() => _MealPlanViewState();
+}
+
+class _MealPlanViewState extends State<MealPlanView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkVersion();
+    });
+  }
+
+  Future<void> _checkVersion() async {
+    if (!mounted) return;
+
+    final prefs = Provider.of<IPreferenceAccess>(context, listen: false);
+    final packageInfo = await PackageInfo.fromPlatform();
+    final currentVersion = packageInfo.version;
+    final lastSeenVersion = prefs.getLastSeenVersion();
+
+    if (lastSeenVersion != currentVersion && prefs.shouldShowUpdatePopup()) {
+      // Small delay to ensure translations are loaded and UI is ready
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
+
+      final changes = NewVersionDialog.getChanges(context, currentVersion);
+
+      if (changes.isNotEmpty) {
+        showDialog(
+          context: context,
+          builder: (context) => NewVersionDialog(
+            version: currentVersion,
+            changes: changes,
+          ),
+        );
+      }
+
+      await prefs.setLastSeenVersion(currentVersion);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
