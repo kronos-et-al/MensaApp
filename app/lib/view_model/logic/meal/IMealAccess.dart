@@ -92,6 +92,9 @@ abstract class IMealAccess with ChangeNotifier {
   /// Returns true if the meal plan is currently loading.
   bool get isLoading;
 
+  /// Returns the current meal plan result.
+  Result<List<MealPlan>, MealPlanException> get mealPlanResult;
+
   /// Returns true if the app has finished initializing.
   bool get initialized;
 }

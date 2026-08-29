@@ -143,6 +143,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   @override
   Future<void> changeCanteen(Canteen canteen) async {
     await _doneInitialization;
+    _isLoading = true;
     _activeCanteen = canteen;
     _preferences.setCanteen(_activeCanteen.id);
     notifyListeners();
@@ -156,6 +157,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   @override
   Future<void> changeDate(DateTime date) async {
     await _doneInitialization;
+    _isLoading = true;
     _displayedDate = date;
     notifyListeners();
 
@@ -174,26 +176,23 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     _filter = filterPreferences;
     await _preferences.setFilterPreferences(_filter);
-    await _filterMealPlans();
+    _filterMealPlans();
 
     notifyListeners();
   }
 
   @override
-  Future<Result<List<MealPlan>, MealPlanException>> getMealPlan() async {
-    await _doneInitialization;
-
-    await _updateFavorites();
-    await _filterMealPlans();
+  Result<List<MealPlan>, MealPlanException> get mealPlanResult {
+    _filterMealPlans();
 
     // no data for date
     if (_noDataYet) {
-      return Future.value(Failure(NoDataException("no data to date")));
+      return Failure(NoDataException("no data to date"));
     }
 
     // no connection to server and no data
     if (_mealPlans.isEmpty) {
-      return Future.value(Failure(NoConnectionException("no connection")));
+      return Failure(NoConnectionException("no connection"));
     }
 
     // canteen is closed
@@ -206,20 +205,25 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     }
 
     if (closed) {
-      return Future.value(Failure(ClosedCanteenException("canteen closed")));
+      return Failure(ClosedCanteenException("canteen closed"));
     }
 
     if (!_activeFilter) {
-      return Future.value(Success(_mealPlans));
+      return Success(_mealPlans);
     }
 
     // everything is filtered
     if (_filteredMealPlan.isEmpty) {
-      return Future.value(Failure(FilteredMealException("all filtered")));
+      return Failure(FilteredMealException("all filtered"));
     }
 
     // success
-    return Future.value(Success(_filteredMealPlan));
+    return Success(_filteredMealPlan);
+  }
+
+  @override
+  Future<Result<List<MealPlan>, MealPlanException>> getMealPlan() {
+    return Future.value(mealPlanResult);
   }
 
   @override
@@ -255,7 +259,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     await _updateFavorites();
 
-    await _filterMealPlans();
+    _filterMealPlans();
     _removeUselessLines();
 
     notifyListeners();
@@ -317,7 +321,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     _filter = FilterPreferences();
     await _preferences.setFilterPreferences(_filter);
-    await _filterMealPlans();
+    _filterMealPlans();
     notifyListeners();
   }
 
@@ -336,7 +340,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     // refresh if changed
     if (changed) {
-      await _filterMealPlans();
+      _filterMealPlans();
       notifyListeners();
     }
   }
@@ -410,7 +414,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     notifyListeners();
   }
 
-  Future<void> _filterMealPlans() async {
+  void _filterMealPlans() {
     _filteredMealPlan = [];
     // any kind of failure so no data is present
     if (_mealPlans.isEmpty || _noDataYet) {
@@ -424,13 +428,13 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
       for (final meal in mealPlan.meals) {
         // check if meal would be displayed
-        if (await _filterMeal(meal)) {
+        if (_filterMeal(meal)) {
           // add meal if displayed
           Meal filteredMeal = Meal.copy(meal: meal, sides: []);
           filteredMealPlan.meals.add(filteredMeal);
 
           // filter sides of copied meal
-          await _filterSides(filteredMeal, meal.sides);
+          _filterSides(filteredMeal, meal.sides);
         }
       }
 
@@ -532,19 +536,19 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     return List.from(reversed.reversed);
   }
 
-  Future<void> _filterSides(Meal meal, List<Side>? sides) async {
+  void _filterSides(Meal meal, List<Side>? sides) {
     if (sides == null) {
-      return Future.value();
+      return;
     }
 
     for (final side in sides) {
-      if (await _filterSide(side)) {
+      if (_filterSide(side)) {
         meal.sides!.add(side);
       }
     }
   }
 
-  Future<bool> _filterSide(Side side) async {
+  bool _filterSide(Side side) {
     // check categories
     if (!_filter.categories.contains(side.foodType)) {
       return false;
@@ -558,7 +562,8 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     }
 
     // check price
-    final price = side.price.getPrice(_priceCategory);
+    final price = side.price.getPrice(
+        _preferences.getPriceCategory() ?? PriceCategory.student);
     if (price > _filter.price) {
       return false;
     }
@@ -566,7 +571,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     return true;
   }
 
-  Future<bool> _filterMeal(Meal meal) async {
+  bool _filterMeal(Meal meal) {
     // check categories
     if (!_filter.categories.contains(meal.foodType)) {
       return false;
@@ -622,7 +627,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     await _updateFavorites();
 
-    await _filterMealPlans();
+    _filterMealPlans();
     
     _isLoading = false;
     notifyListeners();

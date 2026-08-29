@@ -139,43 +139,42 @@ class MealPlanView extends StatelessWidget {
                         );
                       }
                     },
-                    child: FutureBuilder<Result<List<MealPlan>, MealPlanException>>(
-                      future: mealAccess.getMealPlan(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData || mealAccess.isLoading) {
-                          return const Center(child: CircularProgressIndicator());
-                        }
-
-                        if (snapshot.hasError) return const MealPlanError();
-
-                        final mealPlansResult = snapshot.data!;
-                        switch (mealPlansResult) {
-                          case Success(value: final plans):
-                            return mealPlanFormat == MealPlanFormat.grid
-                                ? MealGrid(mealPlans: plans)
-                                : MealList(mealPlans: plans);
-                          case Failure(exception: final exception):
-                            if (exception is NoConnectionException) {
-                              return const MealPlanError();
-                            }
-                            if (exception is NoDataException) {
-                              return const MealPlanNoData();
-                            }
-                            if (exception is ClosedCanteenException) {
-                              return const MealPlanClosed();
-                            }
-                            if (exception is FilteredMealException) {
-                              return const MealPlanFilter();
-                            }
+                    child: (() {
+                      final mealPlansResult = mealAccess.mealPlanResult;
+                      switch (mealPlansResult) {
+                        case Success(value: final plans):
+                          return mealPlanFormat == MealPlanFormat.grid
+                              ? MealGrid(mealPlans: plans)
+                              : MealList(mealPlans: plans);
+                        case Failure(exception: final exception):
+                          if (exception is NoConnectionException) {
                             return const MealPlanError();
-                        }
-                      },
-                    ),
+                          }
+                          if (exception is NoDataException) {
+                            return const MealPlanNoData();
+                          }
+                          if (exception is ClosedCanteenException) {
+                            return const MealPlanClosed();
+                          }
+                          if (exception is FilteredMealException) {
+                            return const MealPlanFilter();
+                          }
+                          return const MealPlanError();
+                      }
+                    }()),
                   ),
                   if (mealAccess.isLoading)
-                    Container(
-                      color: Colors.black.withAlpha(20),
-                      child: const Center(child: CircularProgressIndicator()),
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: LinearProgressIndicator(
+                        minHeight: 2,
+                        backgroundColor: Colors.transparent,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          theme.colorScheme.primary.withAlpha(120),
+                        ),
+                      ),
                     ),
                 ],
               ),
