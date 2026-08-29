@@ -13,3 +13,14 @@ To generate the dart wrappers from `*.graphql` files run `dart run build_runner 
 
 ## Tests
 
+### GraphQL Code Generation
+
+To generate the Dart wrappers from `*.graphql` files, run the following command:
+
+```bash
+flutter run build_runner build
+```
+
+This will create the necessary `*.graphql.dart` files in the `lib/model/api_server/requests/`
+directory.
+
