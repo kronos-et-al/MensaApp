@@ -56,6 +56,9 @@ secret.json
 # Android build artifacts
 android/app/.cxx/
 
+# ObjectBox generated code
+objectbox.g.dart
+
 # Flutter devtools
 devtools_options.yaml
 

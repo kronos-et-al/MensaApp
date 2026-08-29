@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
-import 'package:app/model/database/SQLiteDatabaseAccess.dart';
+import 'package:app/model/database/ObjectBoxDatabaseAccess.dart';
 import 'package:app/model/local_storage/SharedPreferenceAccess.dart';
+import 'package:app/model/database/objectbox.g.dart';
 import 'package:app/view/core/MainPage.dart';
 import 'package:app/view_model/logic/favorite/FavoriteMealAccess.dart';
 import 'package:app/view_model/logic/favorite/IFavoriteMealAccess.dart';
@@ -23,7 +22,6 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 /// The main function of the app.
 void main() async {
@@ -62,23 +60,22 @@ void main() async {
   );
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (Platform.isWindows || Platform.isLinux) {
-    sqfliteFfiInit();
-  }
+  final store = await openStore();
 
-  runApp(MensaApp(delegate: delegate));
+  runApp(MensaApp(delegate: delegate, store: store));
 }
 
 /// The main app widget.
 class MensaApp extends StatelessWidget {
   final FlutterI18nDelegate _delegate;
+  final Store _store;
 
   /// Creates a new [MensaApp]
   ///
   /// [delegate] is the [FlutterI18nDelegate] used for localization.
   /// [key] is the key of the widget.
-  const MensaApp({super.key, required FlutterI18nDelegate delegate})
-    : _delegate = delegate;
+  const MensaApp({super.key, required FlutterI18nDelegate delegate, required Store store})
+    : _delegate = delegate, _store = store;
 
   // This widget is the root of your application.
   @override
@@ -95,7 +92,7 @@ class MensaApp extends StatelessWidget {
         ILocalStorage sharedPreferencesAccess = SharedPreferenceAccess(
           sharedPreferences.requireData,
         );
-        IDatabaseAccess db = SQLiteDatabaseAccess();
+        IDatabaseAccess db = ObjectBoxDatabaseAccess(_store);
         IServerAccess api = GraphQlServerAccess(
           dotenv.env["API_URL"] ?? "",
           dotenv.env["API_KEY"] ?? "",

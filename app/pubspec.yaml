@@ -45,8 +45,8 @@ dependencies:
     sdk: flutter
 
   flutter_svg: ^2.0.7
-  sqflite: ^2.2.8+4
-  sqflite_common_ffi: ^2.3.0
+  objectbox: any
+  objectbox_flutter_libs: any
   path: ^1.8.3
   shared_preferences: ^2.2.0
   image_picker: ^1.0.4
@@ -80,6 +80,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  objectbox_generator: any
   graphql_codegen: ^3.0.2
   build_runner: ^2.4.6
   lints: ^6.1.0

@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
-import 'package:app/model/database/SQLiteDatabaseAccess.dart';
+import 'package:app/model/database/ObjectBoxDatabaseAccess.dart';
+import 'package:app/model/database/objectbox.g.dart';
 import 'package:app/view_model/logic/image/ImageAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
@@ -15,10 +16,11 @@ import 'package:http_parser/http_parser.dart';
 
 import '../model/api_server/config.dart';
 
-void main() {
+Future<void> main() async {
+  final store = await openStore(directory: 'memory:image-test');
   final GraphQlServerAccess api = GraphQlServerAccess(
       testServer, testApiKey, "1f16dcca-963e-4ceb-a8ca-843a7c9277a5");
-  final SQLiteDatabaseAccess database = SQLiteDatabaseAccess();
+  final ObjectBoxDatabaseAccess database = ObjectBoxDatabaseAccess(store);
 
   final ImageAccess access = ImageAccess(api, database);
 
@@ -31,7 +33,7 @@ void main() {
       Failure(exception: _) => []
     };
 
-    database.updateAll(mealPlan);
+    await database.updateAll(mealPlan);
     meal = mealPlan.map((e) => e.meals).first.first;
 
     if (meal.images == null || meal.images!.isEmpty) {

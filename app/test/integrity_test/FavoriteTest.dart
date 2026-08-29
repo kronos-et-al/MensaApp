@@ -1,5 +1,6 @@
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
-import 'package:app/model/database/SQLiteDatabaseAccess.dart';
+import 'package:app/model/database/ObjectBoxDatabaseAccess.dart';
+import 'package:app/model/database/objectbox.g.dart';
 import 'package:app/view_model/logic/favorite/FavoriteMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
@@ -11,8 +12,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../model/api_server/config.dart';
 
-void main() {
-  SQLiteDatabaseAccess database = SQLiteDatabaseAccess();
+Future<void> main() async {
+  final store = await openStore(directory: 'memory:favorite-test');
+  ObjectBoxDatabaseAccess database = ObjectBoxDatabaseAccess(store);
   GraphQlServerAccess api = GraphQlServerAccess(
       testServer, testApiKey, "1f16dcca-963e-4ceb-a8ca-843a7c9277a5");
   FavoriteMealAccess access = FavoriteMealAccess(database, api);
