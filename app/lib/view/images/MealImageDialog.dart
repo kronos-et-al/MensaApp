@@ -4,12 +4,7 @@ import 'package:app/view/core/MensaAppBar.dart';
 import 'package:app/view/core/buttons/MensaButton.dart';
 import 'package:app/view/core/buttons/MensaIconButton.dart';
 import 'package:app/view/core/dialogs/MensaFullscreenDialog.dart';
-import 'package:app/view/core/icons/image/ImageReportIcon.dart';
-import 'package:app/view/core/icons/image/ThumbDownFilledIcon.dart';
-import 'package:app/view/core/icons/image/ThumbDownOutlinedIcon.dart';
-import 'package:app/view/core/icons/image/ThumbUpFilledIcon.dart';
-import 'package:app/view/core/icons/image/ThumbUpOutlinedIcon.dart';
-import 'package:app/view/core/icons/navigation/NavigationCloseIcon.dart';
+import 'package:app/view/core/icons/mensa_icons.dart';
 import 'package:app/view/detail_view/UploadImageDialog.dart';
 import 'package:app/view/images/ImageReportDialog.dart';
 import 'package:app/view/images/MealImageView.dart';
@@ -89,7 +84,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                   semanticLabel: FlutterI18n.translate(
                                       context, "semantics.imageClose"),
                                   onPressed: () => Navigator.of(context).pop(),
-                                  icon: const NavigationCloseIcon()),
+                                  icon: const MensaIcon(MensaIcons.navClose)),
                               const Spacer(),
                             ],
                           ),
@@ -165,8 +160,8 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                   }
                                 },
                                 icon: currentImage?.individualRating == 1
-                                    ? const ThumbUpFilledIcon()
-                                    : const ThumbUpOutlinedIcon()),
+                                    ? const MensaIcon(MensaIcons.thumbUpFilled)
+                                    : const MensaIcon(MensaIcons.thumbUpOutlined)),
                             MensaIconButton(
                                 semanticLabel: FlutterI18n.translate(
                                     context,
@@ -199,8 +194,8 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                   }
                                 },
                                 icon: currentImage?.individualRating == -1
-                                    ? const ThumbDownFilledIcon()
-                                    : const ThumbDownOutlinedIcon()),
+                                    ? const MensaIcon(MensaIcons.thumbDownFilled)
+                                    : const MensaIcon(MensaIcons.thumbDownOutlined)),
                             Text(meal.images![currentPage].negativeRating
                                 .toString()),
                             const Spacer(),
@@ -216,7 +211,7 @@ class _MealImageDialogState extends State<MealImageDialog> {
                                             image: meal.images![currentPage]),
                                   );
                                 },
-                                icon: const ImageReportIcon()),
+                                icon: const MensaIcon(MensaIcons.imageReport)),
                           ],
                         )));
               case Failure<Meal, NoMealException> _:

@@ -1,6 +1,5 @@
 import 'package:app/view/core/buttons/MensaTapable.dart';
-import 'package:app/view/core/icons/navigation/NavigationArrowLeftIcon.dart';
-import 'package:app/view/core/icons/navigation/NavigationArrowRightIcon.dart';
+import 'package:app/view/core/icons/mensa_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:intl/intl.dart';
@@ -26,7 +25,7 @@ class MealPlanDateSelect extends StatelessWidget {
       MensaTapable(
         semanticLabel: FlutterI18n.translate(context, 'semantics.mealPlanPrevDay'),
         child: const Padding(
-            padding: EdgeInsets.all(12), child: NavigationArrowLeftIcon()),
+            padding: EdgeInsets.all(12), child: MensaIcon(MensaIcons.arrowLeft)),
         onTap: () {
           DateTime before = _date.subtract(const Duration(days: 1));
           _onDateChanged(before.isBefore(DateTime(1923)) ? _date : before);
@@ -54,7 +53,7 @@ class MealPlanDateSelect extends StatelessWidget {
       MensaTapable(
         semanticLabel: FlutterI18n.translate(context, 'semantics.mealPlanNextDay'),
         child: const Padding(
-            padding: EdgeInsets.all(12), child: NavigationArrowRightIcon()),
+            padding: EdgeInsets.all(12), child: MensaIcon(MensaIcons.arrowRight)),
         onTap: () {
           DateTime after = _date.add(const Duration(days: 1));
           _onDateChanged(

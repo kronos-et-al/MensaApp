@@ -1,13 +1,6 @@
-import 'package:app/view/core/icons/MealBeefAwIcon.dart';
-import 'package:app/view/core/icons/MealBeefIcon.dart';
-import 'package:app/view/core/icons/MealFishIcon.dart';
-import 'package:app/view/core/icons/MealPorkAwIcon.dart';
-import 'package:app/view/core/icons/MealPorkIcon.dart';
-import 'package:app/view/core/icons/MealPoultryIcon.dart';
-import 'package:app/view/core/icons/MealVeganIcon.dart';
-import 'package:app/view/core/icons/MealVegetarianIcon.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// This widget is used to display the icon for a meal.
 class MealIcon extends StatelessWidget {
@@ -28,25 +21,54 @@ class MealIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String? assetPath;
+    bool hasBorder = false;
+
     switch (_foodType) {
       case FoodType.beef:
-        return MealBeefIcon(width: _width, height: _height);
+        assetPath = 'assets/icons/beef.svg';
+        break;
       case FoodType.beefAw:
-        return MealBeefAwIcon(width: _width, height: _height);
+        assetPath = 'assets/icons/beef.svg';
+        hasBorder = true;
+        break;
       case FoodType.pork:
-        return MealPorkIcon(width: _width, height: _height);
+        assetPath = 'assets/icons/pork.svg';
+        break;
       case FoodType.porkAw:
-        return MealPorkAwIcon(width: _width, height: _height);
+        assetPath = 'assets/icons/pork.svg';
+        hasBorder = true;
+        break;
       case FoodType.fish:
-        return MealFishIcon(width: _width, height: _height);
+        assetPath = 'assets/icons/fish.svg';
+        break;
       case FoodType.vegetarian:
-        return MealVegetarianIcon(width: _width, height: _height);
+        assetPath = 'assets/icons/vegetarian.svg';
+        break;
       case FoodType.vegan:
-        return MealVeganIcon(width: _width, height: _height);
+        assetPath = 'assets/icons/vegan.svg';
+        break;
       case FoodType.poultry:
-        return MealPoultryIcon(width: _width, height: _height);
+        assetPath = 'assets/icons/poultry.svg';
+        break;
       default:
         return SizedBox(width: _width, height: _height);
+    }
+
+    if (hasBorder) {
+      return Container(
+          width: _width,
+          height: _height,
+          decoration: BoxDecoration(
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.primary, width: 2),
+              borderRadius: BorderRadius.all(Radius.circular(_width))),
+          child: SvgPicture.asset(assetPath));
+    } else {
+      return Padding(
+          padding: const EdgeInsets.all(2),
+          child: SvgPicture.asset(assetPath,
+              width: _width - 4, height: _height - 4));
     }
   }
 }

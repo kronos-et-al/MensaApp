@@ -1,7 +1,4 @@
-import 'package:app/view/core/icons/environment_info/EnvironmentAnimalWelfareIcon.dart';
-import 'package:app/view/core/icons/environment_info/EnvironmentCo2Icon.dart';
-import 'package:app/view/core/icons/environment_info/EnvironmentRainforestIcon.dart';
-import 'package:app/view/core/icons/environment_info/EnvironmentWaterIcon.dart';
+import 'package:app/view/core/icons/mensa_icons.dart';
 import 'package:app/view/core/input_components/MensaRatingInput.dart';
 import 'package:app/view_model/repository/data_classes/meal/EnvironmentInfo.dart';
 import 'package:flutter/material.dart';
@@ -79,14 +76,14 @@ class _MealEnvironmentInfoItem extends StatelessWidget {
                   children: [
                     switch (_type) {
                       _MealEnvironmentInfoType.co2 =>
-                        const EnvironmentCo2Icon(width: 48, height: 48),
+                        const MensaIcon(MensaIcons.environmentCo2, size: 48),
                       _MealEnvironmentInfoType.water =>
-                        const EnvironmentWaterIcon(width: 48, height: 48),
+                        const MensaIcon(MensaIcons.environmentWater, size: 48),
                       _MealEnvironmentInfoType.animalWelfare =>
-                        const EnvironmentAnimalWelfareIcon(
-                            width: 48, height: 48),
+                        const MensaIcon(MensaIcons.environmentAnimalWelfare,
+                            size: 48),
                       _MealEnvironmentInfoType.rainforest =>
-                      const EnvironmentRainforestIcon(width: 48, height: 48),
+                      const MensaIcon(MensaIcons.environmentRainforest, size: 48),
                     },
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       MensaRatingInput(

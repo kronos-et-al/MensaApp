@@ -1,4 +1,4 @@
-import 'package:app/view/core/icons/exceptions/CanteenClosedExceptionIcon.dart';
+import 'package:app/view/core/icons/mensa_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 
@@ -14,7 +14,7 @@ class MealPlanClosed extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-          const CanteenClosedExceptionIcon(size: 48),
+          const MensaIcon(MensaIcons.canteenClosedException, size: 48),
           const SizedBox(height: 16),
           Text(
             FlutterI18n.translate(

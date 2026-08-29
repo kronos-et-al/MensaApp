@@ -1,33 +1,6 @@
-import 'package:app/view/core/icons/allergens/AllergenAlmondsIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenBarleyIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenBrazilNutsIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenCashewsIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenCeleryIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenCrustaceansIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenEggsIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenFishIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenGelatineIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenHazelnutsIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenKamutIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenLoafIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenLupinIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenMacadamiaIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenMilkIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenMolluscsIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenMustardIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenOatsIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenPeanutsIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenPecansIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenPistachiosIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenRyeIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenSesameIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenSoyaIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenSpeltIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenSulphiteIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenWalnutsIcon.dart';
-import 'package:app/view/core/icons/allergens/AllergenWheatIcon.dart';
 import 'package:app/view_model/repository/data_classes/meal/Allergen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'IAllergenIcon.dart';
 
@@ -48,150 +21,94 @@ class AllergenIcon extends IAllergenIcon {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveColor = _color ?? Theme.of(context).colorScheme.onSurface;
+
     switch (_allergen) {
       case Allergen.ca:
-        return AllergenCashewsIcon(
-          width: width,
-          height: height,
-          color: _color ?? Theme.of(context).colorScheme.onSurface,
-        );
+        return _buildTextIcon('CA', effectiveColor);
       case Allergen.di:
-        return AllergenSpeltIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildTextIcon('DI', effectiveColor);
       case Allergen.ei:
-        return AllergenEggsIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('ei', effectiveColor);
       case Allergen.er:
-        return AllergenPeanutsIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('er', effectiveColor);
       case Allergen.fi:
-        return AllergenFishIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('fi', effectiveColor);
       case Allergen.ge:
-        return AllergenBarleyIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('ge', effectiveColor);
       case Allergen.ha:
-        return AllergenHazelnutsIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('ha', effectiveColor);
       case Allergen.hf:
-        return AllergenOatsIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('hf', effectiveColor);
       case Allergen.ka:
-        return AllergenKamutIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildTextIcon('KA', effectiveColor);
       case Allergen.kr:
-        return AllergenCrustaceansIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('kr', effectiveColor);
       case Allergen.lu:
-        return AllergenLupinIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildTextIcon('LU', effectiveColor);
       case Allergen.ma:
-        return AllergenAlmondsIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('ma', effectiveColor);
       case Allergen.ml:
-        return AllergenMilkIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('ml', effectiveColor);
       case Allergen.pa:
-        return AllergenBrazilNutsIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('pa', effectiveColor);
       case Allergen.pe:
-        return AllergenPecansIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('pe', effectiveColor);
       case Allergen.pi:
-        return AllergenPistachiosIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildTextIcon('PI', effectiveColor);
       case Allergen.qu:
-        return AllergenMacadamiaIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildTextIcon('QU', effectiveColor);
       case Allergen.ro:
-        return AllergenRyeIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildTextIcon('RO', effectiveColor);
       case Allergen.sa:
-        return AllergenSesameIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('sa', effectiveColor);
       case Allergen.se:
-        return AllergenCeleryIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('se', effectiveColor);
       case Allergen.sf:
-        return AllergenSulphiteIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildTextIcon('SF', effectiveColor);
       case Allergen.sn:
-        return AllergenMustardIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('sn', effectiveColor);
       case Allergen.so:
-        return AllergenSoyaIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('so', effectiveColor);
       case Allergen.wa:
-        return AllergenWalnutsIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('wa', effectiveColor);
       case Allergen.we:
-        return AllergenWheatIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('we', effectiveColor);
       case Allergen.wt:
-        return AllergenMolluscsIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('wt', effectiveColor);
       case Allergen.la:
-        return AllergenLoafIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildSvgIcon('la', effectiveColor);
       case Allergen.gl:
-        return AllergenGelatineIcon(
-            width: width,
-            height: height,
-            color: _color ?? Theme.of(context).colorScheme.onSurface);
+        return _buildTextIcon('GL', effectiveColor);
       default:
         return SizedBox(width: width, height: height);
     }
+  }
+
+  Widget _buildSvgIcon(String name, Color color) {
+    return SvgPicture.asset(
+      'assets/icons/allergens/$name.svg',
+      width: width,
+      height: height,
+      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+    );
+  }
+
+  Widget _buildTextIcon(String text, Color color) {
+    return SizedBox(
+      width: width,
+      height: height,
+      child: Center(
+        child: Text(
+          text,
+          style: TextStyle(
+            height: 1,
+            fontSize: height / 1.5,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+      ),
+    );
   }
 }

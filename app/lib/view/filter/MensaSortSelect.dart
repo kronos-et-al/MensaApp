@@ -1,6 +1,5 @@
 import 'package:app/view/core/buttons/MensaTapable.dart';
-import 'package:app/view/core/icons/filter/SortAscendingIcon.dart';
-import 'package:app/view/core/icons/filter/SortDecendingIcon.dart';
+import 'package:app/view/core/icons/mensa_icons.dart';
 import 'package:app/view/core/selection_components/MensaDropdown.dart';
 import 'package:app/view/core/selection_components/MensaDropdownEntry.dart';
 import 'package:app/view/filter/MensaSortSelectEntry.dart';
@@ -55,8 +54,8 @@ class MensaSortSelect<T> extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: _sortDirection == SortDirection.ascending
-                ? const SortAscendingIcon()
-                : const SortDescendingIcon(),
+                ? const MensaIcon(MensaIcons.sortAscending)
+                : const MensaIcon(MensaIcons.sortDescending),
           ),
           onTap: () => _onSortDirectionSelected(
               _sortDirection == SortDirection.ascending

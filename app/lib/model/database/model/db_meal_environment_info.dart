@@ -1,6 +1,5 @@
 import 'package:app/model/database/model/database_model.dart';
 import 'package:app/model/database/model/environment_info_mixin.dart';
-import 'package:app/model/database/model/nutrition_data_mixin.dart';
 
 /// This class represents a meal's environment info in the database.
 class DBMealEnvironmentInfo with EnvironmentInfoMixin implements DatabaseModel {

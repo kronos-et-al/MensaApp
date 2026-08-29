@@ -1,9 +1,6 @@
 import 'package:app/view/core/MensaAppBar.dart';
 import 'package:app/view/core/buttons/MensaTapable.dart';
-import 'package:app/view/core/icons/navigation/NavigationFilterOutlinedDisabledIcon.dart';
-import 'package:app/view/core/icons/navigation/NavigationFilterOutlinedIcon.dart';
-import 'package:app/view/core/icons/navigation/NavigationGridOutlinedIcon.dart';
-import 'package:app/view/core/icons/navigation/NavigationListOutlinedIcon.dart';
+import 'package:app/view/core/icons/mensa_icons.dart';
 import 'package:app/view/core/meal_view_format/MealGrid.dart';
 import 'package:app/view/core/meal_view_format/MealList.dart';
 import 'package:app/view/filter/FilterDialog.dart';
@@ -208,14 +205,11 @@ class MealPlanView extends StatelessWidget {
                                             ? 'semantics.mealPlanToggleList'
                                             : 'semantics.mealPlanToggleGrid',
                                       ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12),
                                         child:
                                             mealPlanFormat ==
                                                     MealPlanFormat.grid
-                                                ? const NavigationListOutlinedIcon()
-                                                : const NavigationGridOutlinedIcon(),
-                                      ),
+                                                ? const MensaIcon(MensaIcons.listOutlined)
+                                                : const MensaIcon(MensaIcons.gridOutlined),
                                       onTap: () {
                                         preferenceAccess.setMealPlanFormat(
                                           mealPlanFormat == MealPlanFormat.grid
@@ -236,13 +230,10 @@ class MealPlanView extends StatelessWidget {
                                         context,
                                         "semantics.mealPlanFilter",
                                       ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12),
                                         child:
                                             filterActive
-                                                ? const NavigationFilterOutlinedIcon()
-                                                : const NavigationFilterOutlinedDisabledIcon(),
-                                      ),
+                                                ? const MensaIcon(MensaIcons.filterOutlined)
+                                                : const MensaIcon(MensaIcons.filterOutlinedDisabled),
                                       onLongPress:
                                           () => {mealAccess.toggleFilter()},
                                       onTap:

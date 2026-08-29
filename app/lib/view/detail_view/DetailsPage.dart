@@ -1,11 +1,7 @@
 import 'package:app/view/core/MensaAppBar.dart';
 import 'package:app/view/core/buttons/MensaButton.dart';
 import 'package:app/view/core/buttons/MensaIconButton.dart';
-import 'package:app/view/core/icons/favorites/FavoriteFilledIcon.dart';
-import 'package:app/view/core/icons/favorites/FavoriteOutlinedIcon.dart';
-import 'package:app/view/core/icons/meal/MealLineIcon.dart';
-import 'package:app/view/core/icons/navigation/NavigationAddImageIcon.dart';
-import 'package:app/view/core/icons/navigation/NavigationBackIcon.dart';
+import 'package:app/view/core/icons/mensa_icons.dart';
 import 'package:app/view/core/information_display/MealMainEntry.dart';
 import 'package:app/view/core/information_display/MealPreviewImage.dart';
 import 'package:app/view/core/information_display/MealSideEntry.dart';
@@ -126,7 +122,7 @@ class DetailsPageState extends State<DetailsPage> {
                                   "semantics.mealClose",
                                 ),
                                 onPressed: () => Navigator.of(context).pop(),
-                                icon: const NavigationBackIcon(),
+                                icon: const MensaIcon(MensaIcons.navBack),
                               ),
                               const Spacer(),
                               Consumer<IFavoriteMealAccess>(
@@ -161,13 +157,14 @@ class DetailsPageState extends State<DetailsPage> {
                                           },
                                       icon:
                                           meal.isFavorite
-                                              ? FavoriteFilledIcon(
+                                              ? MensaIcon(
+                                                MensaIcons.favoriteFilled,
                                                 color:
                                                     themeData
                                                         .colorScheme
                                                         .primary,
                                               )
-                                              : const FavoriteOutlinedIcon(),
+                                              : const MensaIcon(MensaIcons.favoriteOutlined),
                                     ),
                               ),
                               MensaIconButton(
@@ -184,7 +181,7 @@ class DetailsPageState extends State<DetailsPage> {
                                                 UploadImageDialog(meal: meal),
                                       ),
                                     },
-                                icon: const NavigationAddImageIcon(),
+                                icon: const MensaIcon(MensaIcons.navAddImage),
                               ),
                             ],
                           ),
@@ -230,7 +227,7 @@ class DetailsPageState extends State<DetailsPage> {
                                       children: [
                                         const Padding(
                                           padding: EdgeInsets.all(8),
-                                          child: MealLineIcon(),
+                                          child: MensaIcon(MensaIcons.mealLine),
                                         ),
                                         Text(
                                           widget._line.name,

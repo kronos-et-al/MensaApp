@@ -1,15 +1,11 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:app/view/core/buttons/MensaButton.dart';
 import 'package:app/view/core/buttons/MensaTapable.dart';
 import 'package:app/view/core/dialogs/MensaDialog.dart';
-import 'package:app/view/core/icons/image/CameraIcon.dart';
-import 'package:app/view/core/icons/navigation/NavigationAddImageIcon.dart';
-import 'package:app/view/core/input_components/MensaTextField.dart';
+import 'package:app/view/core/icons/mensa_icons.dart';
 import 'package:app/view_model/logic/image/IImageAccess.dart';
-import 'package:app/view_model/logic/image/ImageAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/error_handling/ImageUploadException.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
@@ -113,7 +109,7 @@ class _UploadImageDialogState extends State<UploadImageDialog> {
                           semanticLabel: FlutterI18n.translate(
                               context, "image.labelTakeImage"),
                           child: const Padding(
-                              padding: EdgeInsets.all(2), child: CameraIcon()))
+                              padding: EdgeInsets.all(2), child: MensaIcon(MensaIcons.camera)))
                       : Container(),
                 ],
               ),

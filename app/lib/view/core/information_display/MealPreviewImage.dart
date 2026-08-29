@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:app/view/core/buttons/MensaButton.dart';
-import 'package:app/view/core/icons/LogoIcon.dart';
+import 'package:app/view/core/icons/mensa_icons.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +66,7 @@ class MealPreviewImage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    LogoIcon(size: min(96, _height! - 16)),
+                    MensaIcon(MensaIcons.logo, size: min(96, _height! - 16)),
                     if (_enableUploadButton) const SizedBox(height: 16),
                     if (_enableUploadButton)
                       MensaButton(
@@ -128,7 +128,7 @@ class MealPreviewImage extends StatelessWidget {
                         Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [LogoIcon(size: min(96, _height! - 16))],
+                            children: [MensaIcon(MensaIcons.logo, size: min(96, _height! - 16))],
                           ),
                         ),
                         if (_enableFavoriteButton && _meal.isFavorite)

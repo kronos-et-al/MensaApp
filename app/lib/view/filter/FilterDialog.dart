@@ -3,8 +3,7 @@ import 'package:app/view/core/buttons/MensaCtaButton.dart';
 import 'package:app/view/core/buttons/MensaIconButton.dart';
 import 'package:app/view/core/dialogs/MensaFullscreenDialog.dart';
 import 'package:app/view/core/icons/allergens/AllergenIcon.dart';
-import 'package:app/view/core/icons/filter/FilterRestoreIcon.dart';
-import 'package:app/view/core/icons/navigation/NavigationBackIcon.dart';
+import 'package:app/view/core/icons/mensa_icons.dart';
 import 'package:app/view/core/selection_components/MensaCheckbox.dart';
 import 'package:app/view/core/selection_components/MensaSlider.dart';
 import 'package:app/view/core/selection_components/MensaToggle.dart';
@@ -57,7 +56,7 @@ class _FilterDialogState extends State<FilterDialog> {
                   "semantics.filterClose",
                 ),
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const NavigationBackIcon(),
+                icon: const MensaIcon(MensaIcons.navBack),
               ),
               Text(
                 FlutterI18n.translate(context, "filter.filterTitle"),
@@ -78,7 +77,7 @@ class _FilterDialogState extends State<FilterDialog> {
                     preferences = FilterPreferences();
                   });
                 },
-                icon: const FilterRestoreIcon(),
+                icon: const MensaIcon(MensaIcons.filterRestore),
               ),
             ],
           ),

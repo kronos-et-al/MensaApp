@@ -18,7 +18,6 @@ import 'db_line.dart';
 import 'db_meal.dart';
 import 'db_meal_plan.dart';
 import 'db_side.dart';
-import 'db_side_nutrition_data.dart';
 
 /// This class represents a model in the database.
 abstract class DatabaseModel {
