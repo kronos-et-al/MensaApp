@@ -76,4 +76,22 @@ abstract class IMealAccess with ChangeNotifier {
 
   /// Returns true if the filter is active.
   Future<bool> isFilterActive();
+
+  /// Returns true if the filter is active.
+  bool get filterActive;
+
+  /// Returns the currently selected [Canteen].
+  Canteen get canteen;
+
+  /// Returns all available canteens.
+  List<Canteen> get availableCanteens;
+
+  /// Returns the currently displayed date.
+  DateTime get date;
+
+  /// Returns true if the meal plan is currently loading.
+  bool get isLoading;
+
+  /// Returns true if the app has finished initializing.
+  bool get initialized;
 }

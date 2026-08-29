@@ -23,12 +23,15 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   final IDatabaseAccess _database;
 
   late Canteen _activeCanteen;
+  late List<Canteen> _availableCanteens;
   late DateTime _displayedDate;
   late List<MealPlan> _filteredMealPlan;
   late FilterPreferences _filter;
   List<MealPlan> _mealPlans = List<MealPlan>.empty(growable: true);
   bool _noDataYet = false;
   bool _activeFilter = true;
+  bool _isLoading = false;
+  bool _initialized = false;
 
   late PriceCategory _priceCategory;
 
@@ -89,6 +92,9 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     }
 
     _activeCanteen = canteen;
+    _availableCanteens = (await _database.getCanteens()) ??
+        (await _api.getCanteens()) ??
+        List<Canteen>.empty();
 
     // get meal plans from database
     // new if update was successful
@@ -104,9 +110,11 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
       print("loading initial day");
       await refreshMealplan();
       print("initial day loaded");
+      _initialized = true;
       refreshAll();
     } else {
       await _setNewMealPlan();
+      _initialized = true;
       refreshAll();
     }
   }
@@ -137,24 +145,24 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
     await _doneInitialization;
     _activeCanteen = canteen;
     _preferences.setCanteen(_activeCanteen.id);
+    notifyListeners();
 
     // requests and stores the new meal plan
     // filters meal plan
     // notifies listener
     await _setNewMealPlan();
-    notifyListeners();
   }
 
   @override
   Future<void> changeDate(DateTime date) async {
     await _doneInitialization;
     _displayedDate = date;
+    notifyListeners();
 
     // requests and stores the new meal plan
     // filters meal plan
     // notifies listener
     await _setNewMealPlan();
-    notifyListeners();
   }
 
   @override
@@ -606,12 +614,17 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   /// It also notifies the listeners
   /// Therefore it checks first the database and if there is no data, it requests it from the server.
   Future<void> _setNewMealPlan() async {
+    _isLoading = true;
+    notifyListeners();
+
     _noDataYet = false;
     _mealPlans = await _getMealPlanFromDatabaseAndServer();
 
     await _updateFavorites();
 
     await _filterMealPlans();
+    
+    _isLoading = false;
     notifyListeners();
   }
 
@@ -712,6 +725,24 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
   Future<bool> isFilterActive() async {
     return Future.value(_activeFilter);
   }
+
+  @override
+  bool get isLoading => _isLoading;
+
+  @override
+  bool get initialized => _initialized;
+
+  @override
+  Canteen get canteen => _activeCanteen;
+
+  @override
+  List<Canteen> get availableCanteens => _availableCanteens;
+
+  @override
+  DateTime get date => _displayedDate;
+
+  @override
+  bool get filterActive => _activeFilter;
 
   @override
   bool failedInitializing = false;
