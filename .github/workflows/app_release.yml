@@ -72,6 +72,8 @@ jobs:
           releaseFiles: app/build/app/outputs/bundle/release/app-release.aab
           track: ${{ github.event.inputs.track || 'internal' }}
           status: completed
+          mappingFile: app/build/app/outputs/mapping/release/mapping.txt
+          debugSymbols: app/build/app/outputs/symbols/
 
       - name: Upload artifacts to Action run
         uses: actions/upload-artifact@v4
