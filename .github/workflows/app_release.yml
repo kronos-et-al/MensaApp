@@ -23,6 +23,7 @@ jobs:
       run:
         working-directory: app
     steps:
+      - uses: actions/checkout@v4
       - name: Setup Project
         uses: ./.github/actions/setup-mensa-app
         with:
@@ -95,6 +96,7 @@ jobs:
       run:
         working-directory: app
     steps:
+      - uses: actions/checkout@v4
       - name: Setup Project
         uses: ./.github/actions/setup-mensa-app
 
