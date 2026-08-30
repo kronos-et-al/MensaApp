@@ -96,7 +96,15 @@ jobs:
 
       - name: Build APK (Release)
         if: always()
-        run: flutter build apk --release --no-pub
+        run: flutter build apk --release
         env:
           ALLOW_DEBUG_SIGNING_FOR_RELEASE: 'true'
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=512m"
+
+      - name: Upload APK artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: warn
