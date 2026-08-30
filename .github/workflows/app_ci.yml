@@ -37,7 +37,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           git fetch origin ${{ github.base_ref }} --depth=1
-          BASE_VERSION=$(git show origin/${{ github.base_ref }}:app/pubspec.yaml | grep "^version:" | cut -d' ' -f2)
+          BASE_VERSION=$(git show origin/${{ github.base_ref }}:app/pubspec.yaml | grep "^version:" | cut -d' ' -85f2)
           NEW_VERSION=$(grep "^version:" pubspec.yaml | cut -d' ' -f2)
           
           echo "Base version: $BASE_VERSION"
@@ -52,6 +52,22 @@ jobs:
         run: |
           echo "API_URL=https://api.mensa-ka.de" > .env
           echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+
+      - name: Decode Keystore
+        if: env.HAS_KEYSTORE == 'true'
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+        env:
+          HAS_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 != '' }}
+
+      - name: Create key.properties
+        if: env.HAS_KEYSTORE == 'true'
+        run: |
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=upload-keystore.jks" >> android/key.properties
+        env:
+          HAS_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 != '' }}
 
       - name: Install dependencies
         run: flutter pub get
@@ -68,5 +84,7 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      - name: Build APK (Debug)
-        run: flutter build apk --debug
+      - name: Build APK (Release)
+        run: flutter build apk --release --no-pub
+        env:
+          ALLOW_DEBUG_SIGNING_FOR_RELEASE: 'true'
