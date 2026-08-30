@@ -74,6 +74,14 @@ jobs:
         env:
           HAS_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 != '' }}
 
+      - name: Ensure debug keystore exists (for release fallback)
+        if: env.HAS_KEYSTORE == 'false'
+        run: |
+          mkdir -p ~/.android
+          keytool -genkey -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+        env:
+          HAS_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 != '' }}
+
       - name: Install dependencies
         run: flutter pub get
 
