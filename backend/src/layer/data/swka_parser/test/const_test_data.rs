@@ -25,7 +25,7 @@ pub(in super::super) fn get_base_url() -> String {
 
 #[must_use]
 pub(in super::super) const fn get_client_timeout() -> Duration {
-    Duration::from_millis(6000)
+    Duration::from_secs(6)
 }
 
 #[must_use]

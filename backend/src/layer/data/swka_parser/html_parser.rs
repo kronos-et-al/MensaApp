@@ -231,7 +231,7 @@ impl HTMLParser {
         Ok(dates.into_iter().zip(canteen_for_all_days).collect())
     }
 
-    fn get_root_node(document: &Html) -> Result<ElementRef, ParseError> {
+    fn get_root_node(document: &Html) -> Result<ElementRef<'_>, ParseError> {
         document
             .select(&ROOT_NODE_CLASS_SELECTOR)
             .next()
@@ -602,7 +602,7 @@ mod tests {
     }
 
     #[tokio::test]
-    /// Tests an html page, that is not from the Studierendenwerk Karlsruhe. (Source: https://cbracco.github.io/html5-test-page/)
+    /// Tests an html page, that is not from the Studierendenwerk Karlsruhe. (Source: <https://cbracco.github.io/html5-test-page>/)
     async fn test_invalid() {
         let path = "src/layer/data/swka_parser/test_data/test_invalid.html";
         let file_contents = read_from_file(path).unwrap();

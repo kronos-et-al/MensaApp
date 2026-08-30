@@ -68,7 +68,7 @@ macro_rules! null_error {
 }
 
 #[async_trait]
-/// An interface for checking relations and inserting data structures. The MealPlanManagement component uses this interface for database access.
+/// An interface for checking relations and inserting data structures. The `MealPlanManagement` component uses this interface for database access.
 pub trait MealplanManagementDataAccess: Send + Sync {
     /// Removes all relations to the meal plan at the given date and the given canteen.
     /// Without removing changes in the meal plan couldn't be updated.
@@ -186,7 +186,7 @@ pub trait MealplanManagementDataAccess: Send + Sync {
 #[async_trait]
 /// An interface for api actions. The Command component uses this interface for database access.
 pub trait CommandDataAccess: Sync + Send {
-    /// Returns the ImageInfo struct of image.
+    /// Returns the [`ExtendedImage`] struct of image.
     async fn get_image_info(&self, image_id: Uuid) -> Result<ExtendedImage>;
     /// Marks an image as hidden. Hidden images cant be seen by users.
     async fn hide_image(&self, image_id: Uuid) -> Result<()>;
@@ -221,7 +221,7 @@ pub trait CommandDataAccess: Sync + Send {
 /// An interface for database access necessary for the authentication process.
 #[async_trait]
 pub trait AuthDataAccess: Sync + Send {
-    /// Loads all api_keys from the database.
+    /// Loads all `api_keys` from the database.
     async fn get_api_keys(&self) -> Result<Vec<ApiKey>>;
 }
 
@@ -254,12 +254,12 @@ pub trait RequestDataAccess: Send + Sync {
     async fn get_personal_upvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool>;
     /// Checks if the given image got an downvote by the given user
     async fn get_personal_downvote(&self, image_id: Uuid, client_id: Uuid) -> Result<bool>;
-    /// Returns all additives related to the given food_id (food_id can be a meal_id or side_id).
+    /// Returns all additives related to the given `food_id` (`food_id` can be a `meal_id` or `side_id`).
     async fn get_additives(&self, food_id: Uuid) -> Result<Vec<Additive>>;
-    /// Returns all allergens related to the given food_id (food_id can be a meal_id or side_id).
+    /// Returns all allergens related to the given `food_id` (`food_id` can be a `meal_id` or `side_id`).
     async fn get_allergens(&self, food_id: Uuid) -> Result<Vec<Allergen>>;
-    /// Returns the nutritionial data related to the given food_id (food_id can be a meal_id or side_id).
+    /// Returns the nutritionial data related to the given `food_id` (`food_id` can be a `meal_id` or `side_id`).
     async fn get_nutrition_data(&self, food_id: Uuid) -> Result<Option<NutritionData>>;
-    /// Returns the environmental data related to the given food_id (food_id can be a meal_id or side_id).
+    /// Returns the environmental data related to the given `food_id` (`food_id` can be a `meal_id` or `side_id`).
     async fn get_environment_information(&self, food_id: Uuid) -> Result<Option<EnvironmentInfo>>;
 }

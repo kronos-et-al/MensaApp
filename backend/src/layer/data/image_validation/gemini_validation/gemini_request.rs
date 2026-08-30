@@ -4,7 +4,7 @@ use crate::layer::data::image_validation::gemini_validation::json_request::Gemin
 
 // Consider: This is the beta version. Change if depreciated!
 const API_REST_URL: &str =
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
 const REQUEST_TYPE: &str = "image/jpeg";
 const REQUEST_SPECIFICATION: &str = "Answer yes or no and give a short explanation in English.";
 
@@ -118,7 +118,6 @@ mod tests {
 
     fn get_valid_gemini_struct() -> GeminiRequest {
         dotenv().ok();
-        println!("GEMINI_API_KEY:{val:?}", val = env::var("GEMINI_API_KEY"));
         GeminiRequest::new(
             env::var("GEMINI_API_KEY").unwrap(),
             &env::var("GEMINI_TEXT_REQUEST").unwrap(),
@@ -144,8 +143,8 @@ mod tests {
     async fn test_request_api() {
         let valid = get_valid_gemini_struct().request_api(B64_IMAGE).await;
         let invalid = get_invalid_gemini_struct().request_api(B64_IMAGE).await;
-        assert!(valid.is_ok());
-        assert!(invalid.is_err());
+        assert!(valid.is_ok(), "{}", valid.unwrap_err());
+        assert!(invalid.is_err(), "{:?}", invalid.unwrap());
     }
 
     #[tokio::test]
@@ -156,7 +155,7 @@ mod tests {
         let invalid = get_invalid_gemini_struct()
             .encoded_image_validation(B64_IMAGE)
             .await;
-        assert!(valid.is_ok());
-        assert!(invalid.is_err());
+        assert!(valid.is_ok(), "{}", valid.unwrap_err());
+        assert!(invalid.is_err(), "{}", invalid.unwrap());
     }
 }

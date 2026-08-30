@@ -36,7 +36,7 @@ impl AdminNotification for MailSender {
         }
     }
     async fn notify_admin_image_deleted(&self, image_id: Uuid) -> Result<()> {
-        let subject = format!("❌ Image {}… deleted", &image_id.to_string()[..6],);
+        let subject = format!("❌ Image {}… deleted", &image_id.to_string()[..6]);
 
         let body = Self::get_notification_body("deleted", image_id);
 
@@ -44,7 +44,7 @@ impl AdminNotification for MailSender {
     }
 
     async fn notify_admin_image_verified(&self, image_id: Uuid) -> Result<()> {
-        let subject = format!("✅ Image {}… verified", &image_id.to_string()[..6],);
+        let subject = format!("✅ Image {}… verified", &image_id.to_string()[..6]);
 
         let body = Self::get_notification_body("verified", image_id);
 
@@ -174,7 +174,7 @@ mod test {
     const ADMIN_EMAIL_ENV_NAME: &str = "ADMIN_EMAIL";
 
     #[tokio::test]
-    #[ignore]
+    #[ignore = "Only prints stuff"]
     async fn test_print_report() {
         let info = get_report_info();
         let report = MailSender::get_report(&info);

@@ -250,7 +250,7 @@ impl ConfigReader {
                         "SERVICE_ACCOUNT_JSON",
                     )?)
                     .await?,
-                    project_id: project_id.to_string(),
+                    project_id: project_id.clone(),
                 })
             } else {
                 info!("Google safe search api is disabled.");
@@ -261,7 +261,7 @@ impl ConfigReader {
                 info!("Using google gemini api for image verification with query: '{query}'");
                 Some(GeminiInfo {
                     gemini_api_key: read_var("GEMINI_API_KEY")?,
-                    gemini_text_request: query.to_string(),
+                    gemini_text_request: query.clone(),
                 })
             } else {
                 info!("Google gemini api is disabled.");
