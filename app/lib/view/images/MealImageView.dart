@@ -11,13 +11,13 @@ class MealImageView extends StatefulWidget {
   final double doubleTapScale = 3.5;
   final Curve curve = Curves.fastLinearToSlowEaseIn;
 
-  const MealImageView(
-      {Key? key,
-      required this.imageData,
-      this.minScale = 1.0,
-      this.maxScale = 5.0,
-      this.onScaleChanged})
-      : super(key: key);
+  const MealImageView({
+    Key? key,
+    required this.imageData,
+    this.minScale = 1.0,
+    this.maxScale = 5.0,
+    this.onScaleChanged,
+  }) : super(key: key);
 
   @override
   State<MealImageView> createState() => _MealImageViewState();
@@ -34,11 +34,13 @@ class _MealImageViewState extends State<MealImageView>
   void initState() {
     super.initState();
     _transformationController = TransformationController();
-    _animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 200))
-      ..addListener(() {
-        _transformationController.value = _zoomAnimation!.value;
-      });
+    _animationController =
+        AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 200),
+        )..addListener(() {
+          _transformationController.value = _zoomAnimation!.value;
+        });
   }
 
   @override
@@ -56,15 +58,13 @@ class _MealImageViewState extends State<MealImageView>
     final newValue = _transformationController.value.isIdentity()
         ? _applyZoom()
         : _revertZoom();
-    _zoomAnimation = Matrix4Tween(
-      begin: _transformationController.value,
-      end: newValue,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: widget.curve,
-      ),
-    );
+    _zoomAnimation =
+        Matrix4Tween(
+          begin: _transformationController.value,
+          end: newValue,
+        ).animate(
+          CurvedAnimation(parent: _animationController, curve: widget.curve),
+        );
     _animationController.forward(from: 0.0);
   }
 
@@ -90,38 +90,36 @@ class _MealImageViewState extends State<MealImageView>
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-        imageUrl: widget.imageData.url,
-        progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-              child:
-                  CircularProgressIndicator(value: downloadProgress.progress),
+      imageUrl: widget.imageData.url,
+      progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+        child: CircularProgressIndicator(value: downloadProgress.progress),
+      ),
+      imageBuilder: (context, imageProvider) => GestureDetector(
+        onDoubleTapDown: _handleDoubleTapDown,
+        onDoubleTap: _handleDoubleTap,
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: InteractiveViewer(
+            boundaryMargin: const EdgeInsets.symmetric(
+              horizontal: 0,
+              vertical: 0,
             ),
-        imageBuilder: (context, imageProvider) => GestureDetector(
-              onDoubleTapDown: _handleDoubleTapDown,
-              onDoubleTap: _handleDoubleTap,
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: InteractiveViewer(
-                  boundaryMargin: const EdgeInsets.symmetric(
-                      horizontal: 0,
-                      vertical: 0),
-                  transformationController: _transformationController,
-                  minScale: widget.minScale,
-                  maxScale: widget.maxScale,
-                  onInteractionEnd: (details) {
-                    double scale =
-                        _transformationController.value.getMaxScaleOnAxis();
+            transformationController: _transformationController,
+            minScale: widget.minScale,
+            maxScale: widget.maxScale,
+            onInteractionEnd: (details) {
+              double scale = _transformationController.value
+                  .getMaxScaleOnAxis();
 
-                    if (widget.onScaleChanged != null) {
-                      widget.onScaleChanged!(scale);
-                    }
-                  },
-                  child: Image(
-                    image: imageProvider,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ));
+              if (widget.onScaleChanged != null) {
+                widget.onScaleChanged!(scale);
+              }
+            },
+            child: Image(image: imageProvider, fit: BoxFit.contain),
+          ),
+        ),
+      ),
+    );
   }
 }

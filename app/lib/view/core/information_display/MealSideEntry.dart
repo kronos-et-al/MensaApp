@@ -10,13 +10,13 @@ class MealSideEntry extends StatelessWidget {
   final Side _side;
 
   // TODO use locale
-  final NumberFormat _priceFormat =
-      NumberFormat.currency(locale: 'de_DE', symbol: '€');
+  final NumberFormat _priceFormat = NumberFormat.currency(
+    locale: 'de_DE',
+    symbol: '€',
+  );
 
   /// Creates a MealSideEntry.
-  MealSideEntry({Key? key, required Side side})
-      : _side = side,
-        super(key: key);
+  MealSideEntry({Key? key, required Side side}) : _side = side, super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,18 +29,22 @@ class MealSideEntry extends StatelessWidget {
           MealIcon(foodType: _side.foodType, width: 24, height: 24),
           const SizedBox(width: 8),
           Expanded(
-            child: Text('+ ${_side.name}',
-                style: const TextStyle(
-                    fontWeight: FontWeight.normal, fontSize: 14, height: 1.5)),
+            child: Text(
+              '+ ${_side.name}',
+              style: const TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
           ),
           const SizedBox(width: 8),
           Text(
-              _priceFormat.format(
-                  _side.price.getPrice(preferences.getPriceCategory()) / 100),
-              style: const TextStyle(
-                fontSize: 14,
-                height: 1.5,
-              ))
+            _priceFormat.format(
+              _side.price.getPrice(preferences.getPriceCategory()) / 100,
+            ),
+            style: const TextStyle(fontSize: 14, height: 1.5),
+          ),
         ],
       ),
     );

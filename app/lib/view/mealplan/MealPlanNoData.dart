@@ -10,10 +10,10 @@ class MealPlanNoData extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
           const MensaIcon(MensaIcons.noDataException, size: 48),
           const SizedBox(height: 16),
           Text(
@@ -21,6 +21,8 @@ class MealPlanNoData extends StatelessWidget {
             style: const TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
-        ]));
+        ],
+      ),
+    );
   }
 }

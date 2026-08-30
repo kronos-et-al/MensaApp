@@ -16,7 +16,9 @@ enum MensaIcons {
   gridOutlined('assets/icons/navigation/grid_outlined.svg'),
   listOutlined('assets/icons/navigation/list_outlined.svg'),
   filterOutlined('assets/icons/navigation/filter_outlined.svg'),
-  filterOutlinedDisabled('assets/icons/navigation/filter_outlined_disabled.svg'),
+  filterOutlinedDisabled(
+    'assets/icons/navigation/filter_outlined_disabled.svg',
+  ),
 
   // Filter
   filterRestore('assets/icons/filter/filter_restore.svg'),

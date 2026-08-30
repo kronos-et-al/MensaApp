@@ -30,7 +30,7 @@ class BoxMeal {
   final environmentInfo = ToOne<BoxEnvironmentInfo>();
   final images = ToMany<BoxImage>();
   final sides = ToMany<BoxMeal>(); // Self-relation for meals that have sides
-  
+
   @Backlink('meals')
   final plans = ToMany<BoxMealPlan>();
 

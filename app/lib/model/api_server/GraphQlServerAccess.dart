@@ -365,29 +365,27 @@ class GraphQlServerAccess implements IServerAccess {
     return Success(
       mealPlans
           .expand(
-            (mealPlan) =>
-                mealPlan.lines
-                    .asMap()
-                    .map(
-                      (idx, line) => MapEntry(
-                        idx,
-                        MealPlan(
-                          date: date,
-                          line: Line(
-                            id: line.id,
-                            name: line.name,
-                            canteen: _convertCanteen(line.canteen),
-                            position: idx,
-                          ),
-                          // mensa closed when data available but no meals in list
-                          isClosed: line.meals!.isEmpty,
-                          meals:
-                              line.meals!.map((e) => _convertMeal(e)).toList(),
-                        ),
+            (mealPlan) => mealPlan.lines
+                .asMap()
+                .map(
+                  (idx, line) => MapEntry(
+                    idx,
+                    MealPlan(
+                      date: date,
+                      line: Line(
+                        id: line.id,
+                        name: line.name,
+                        canteen: _convertCanteen(line.canteen),
+                        position: idx,
                       ),
-                    )
-                    .values
-                    .toList(),
+                      // mensa closed when data available but no meals in list
+                      isClosed: line.meals!.isEmpty,
+                      meals: line.meals!.map((e) => _convertMeal(e)).toList(),
+                    ),
+                  ),
+                )
+                .values
+                .toList(),
           )
           .toList(),
     );
@@ -399,18 +397,20 @@ class GraphQlServerAccess implements IServerAccess {
       name: meal.name,
       foodType: _convertFoodType(meal.mealType),
       price: _convertPrice(meal.price),
-      additives:
-          meal.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
-      allergens:
-          meal.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
-      nutritionData:
-          meal.nutritionData != null
-              ? _convertNutritionData(meal.nutritionData!)
-              : null,
-      environmentInfo:
-          meal.environmentInfo != null
-              ? _convertEnvironmentInfo(meal.environmentInfo!)
-              : null,
+      additives: meal.additives
+          .map((e) => _convertAdditive(e))
+          .nonNulls
+          .toList(),
+      allergens: meal.allergens
+          .map((e) => _convertAllergen(e))
+          .nonNulls
+          .toList(),
+      nutritionData: meal.nutritionData != null
+          ? _convertNutritionData(meal.nutritionData!)
+          : null,
+      environmentInfo: meal.environmentInfo != null
+          ? _convertEnvironmentInfo(meal.environmentInfo!)
+          : null,
       averageRating: meal.ratings.averageRating,
       individualRating: meal.ratings.personalRating,
       numberOfRatings: meal.ratings.ratingsCount,
@@ -456,14 +456,12 @@ Side _convertSide(Fragment$mealInfo$sides e) {
     price: _convertPrice(e.price),
     allergens: e.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
     additives: e.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
-    environmentInfo:
-        e.environmentInfo != null
-            ? _convertEnvironmentInfo(e.environmentInfo!)
-            : null,
-    nutritionData:
-        e.nutritionData != null
-            ? _convertNutritionData(e.nutritionData!)
-            : null,
+    environmentInfo: e.environmentInfo != null
+        ? _convertEnvironmentInfo(e.environmentInfo!)
+        : null,
+    nutritionData: e.nutritionData != null
+        ? _convertNutritionData(e.nutritionData!)
+        : null,
   );
 }
 
@@ -474,12 +472,11 @@ ImageData _convertImage(Fragment$mealInfo$images e) {
     imageRank: e.rank,
     positiveRating: e.upvotes,
     negativeRating: e.downvotes,
-    individualRating:
-        e.personalUpvote
-            ? 1
-            : e.personalDownvote
-            ? -1
-            : 0,
+    individualRating: e.personalUpvote
+        ? 1
+        : e.personalDownvote
+        ? -1
+        : 0,
   );
 }
 

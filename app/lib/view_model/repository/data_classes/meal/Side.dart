@@ -28,14 +28,14 @@ class Side {
     required List<Additive> additives,
     NutritionData? nutritionData,
     EnvironmentInfo? environmentInfo,
-  })  : _id = id,
-        _name = name,
-        _foodType = foodType,
-        _price = price,
-        _allergens = allergens,
-        _additives = additives,
-        _nutritionData = nutritionData,
-        _environmentInfo = environmentInfo;
+  }) : _id = id,
+       _name = name,
+       _foodType = foodType,
+       _price = price,
+       _allergens = allergens,
+       _additives = additives,
+       _nutritionData = nutritionData,
+       _environmentInfo = environmentInfo;
 
   /// Constructor that creates a new side with the committed values.
   /// If any values are not committed these values are replaced with the values of [side].
@@ -49,14 +49,14 @@ class Side {
     List<Additive>? additives,
     NutritionData? nutritionData,
     EnvironmentInfo? environmentInfo,
-  })  : _id = id ?? side.id,
-        _name = name ?? side.name,
-        _foodType = foodType ?? side.foodType,
-        _price = price ?? side.price,
-        _allergens = allergens ?? side.allergens,
-        _additives = additives ?? side.additives,
-        _nutritionData = nutritionData ?? side.nutritionData,
-        _environmentInfo = environmentInfo ?? side.environmentInfo;
+  }) : _id = id ?? side.id,
+       _name = name ?? side.name,
+       _foodType = foodType ?? side.foodType,
+       _price = price ?? side.price,
+       _allergens = allergens ?? side.allergens,
+       _additives = additives ?? side.additives,
+       _nutritionData = nutritionData ?? side.nutritionData,
+       _environmentInfo = environmentInfo ?? side.environmentInfo;
 
   /// Returns the id of the side.
   String get id => _id;

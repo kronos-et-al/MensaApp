@@ -10,14 +10,14 @@ class AllergenIcon extends IAllergenIcon {
   final Color? _color;
 
   /// Creates an new allergen icon.
-  const AllergenIcon(
-      {super.key,
-      required Allergen allergen,
-      super.width,
-      super.height,
-      Color? color})
-      : _allergen = allergen,
-        _color = color;
+  const AllergenIcon({
+    super.key,
+    required Allergen allergen,
+    super.width,
+    super.height,
+    Color? color,
+  }) : _allergen = allergen,
+       _color = color;
 
   @override
   Widget build(BuildContext context) {

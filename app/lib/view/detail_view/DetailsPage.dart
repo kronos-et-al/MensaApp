@@ -76,10 +76,9 @@ class DetailsPageState extends State<DetailsPage> {
       builder: (context, mealSnapshot) {
         if (!mealSnapshot.hasData) {
           return Container(
-            color:
-                themeData.brightness == Brightness.light
-                    ? themeData.colorScheme.surface
-                    : themeData.colorScheme.surface,
+            color: themeData.brightness == Brightness.light
+                ? themeData.colorScheme.surface
+                : themeData.colorScheme.surface,
             child: const Center(child: CircularProgressIndicator()),
           );
         }
@@ -89,10 +88,9 @@ class DetailsPageState extends State<DetailsPage> {
           );
           Navigator.of(context).pop();
           return Container(
-            color:
-                themeData.brightness == Brightness.light
-                    ? themeData.colorScheme.surface
-                    : themeData.colorScheme.surface,
+            color: themeData.brightness == Brightness.light
+                ? themeData.colorScheme.surface
+                : themeData.colorScheme.surface,
           );
         }
         switch (mealSnapshot.requireData) {
@@ -100,10 +98,9 @@ class DetailsPageState extends State<DetailsPage> {
             {
               Meal meal = value.value;
               return Container(
-                color:
-                    themeData.brightness == Brightness.light
-                        ? themeData.colorScheme.surface
-                        : themeData.colorScheme.surface,
+                color: themeData.brightness == Brightness.light
+                    ? themeData.colorScheme.surface
+                    : themeData.colorScheme.surface,
                 child: SafeArea(
                   child: Scaffold(
                     appBar: MensaAppBar(
@@ -126,45 +123,38 @@ class DetailsPageState extends State<DetailsPage> {
                               ),
                               const Spacer(),
                               Consumer<IFavoriteMealAccess>(
-                                builder:
-                                    (
-                                      context,
-                                      favoriteMealAccess,
-                                      child,
-                                    ) => MensaIconButton(
+                                builder: (context, favoriteMealAccess, child) =>
+                                    MensaIconButton(
                                       semanticLabel: FlutterI18n.translate(
                                         context,
                                         meal.isFavorite
                                             ? "semantics.mealFavoriteRemove"
                                             : "semantics.mealFavoriteAdd",
                                       ),
-                                      onPressed:
-                                          () => {
-                                            if (meal.isFavorite)
-                                              {
-                                                favoriteMealAccess
-                                                    .removeFavoriteMeal(meal),
-                                              }
-                                            else
-                                              {
-                                                favoriteMealAccess
-                                                    .addFavoriteMeal(
-                                                      meal,
-                                                      widget._date,
-                                                      widget._line,
-                                                    ),
-                                              },
+                                      onPressed: () => {
+                                        if (meal.isFavorite)
+                                          {
+                                            favoriteMealAccess
+                                                .removeFavoriteMeal(meal),
+                                          }
+                                        else
+                                          {
+                                            favoriteMealAccess.addFavoriteMeal(
+                                              meal,
+                                              widget._date,
+                                              widget._line,
+                                            ),
                                           },
-                                      icon:
-                                          meal.isFavorite
-                                              ? MensaIcon(
-                                                MensaIcons.favoriteFilled,
-                                                color:
-                                                    themeData
-                                                        .colorScheme
-                                                        .primary,
-                                              )
-                                              : const MensaIcon(MensaIcons.favoriteOutlined),
+                                      },
+                                      icon: meal.isFavorite
+                                          ? MensaIcon(
+                                              MensaIcons.favoriteFilled,
+                                              color:
+                                                  themeData.colorScheme.primary,
+                                            )
+                                          : const MensaIcon(
+                                              MensaIcons.favoriteOutlined,
+                                            ),
                                     ),
                               ),
                               MensaIconButton(
@@ -172,15 +162,13 @@ class DetailsPageState extends State<DetailsPage> {
                                   context,
                                   "semantics.imageUpload",
                                 ),
-                                onPressed:
-                                    () => {
-                                      showDialog(
-                                        context: context,
-                                        builder:
-                                            (context) =>
-                                                UploadImageDialog(meal: meal),
-                                      ),
-                                    },
+                                onPressed: () => {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        UploadImageDialog(meal: meal),
+                                  ),
+                                },
                                 icon: const MensaIcon(MensaIcons.navAddImage),
                               ),
                             ],
@@ -209,10 +197,9 @@ class DetailsPageState extends State<DetailsPage> {
                         const SizedBox(height: 16),
                         Expanded(
                           child: Container(
-                            color:
-                                themeData.brightness == Brightness.light
-                                    ? themeData.colorScheme.surface
-                                    : themeData.colorScheme.surfaceDim,
+                            color: themeData.brightness == Brightness.light
+                                ? themeData.colorScheme.surface
+                                : themeData.colorScheme.surfaceDim,
                             child: SingleChildScrollView(
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
@@ -240,21 +227,16 @@ class DetailsPageState extends State<DetailsPage> {
                                     MealPreviewImage(
                                       enableUploadButton: true,
                                       enableImageCount: true,
-                                      onUploadButtonPressed:
-                                          () => showDialog(
-                                            context: context,
-                                            builder:
-                                                (context) => UploadImageDialog(
-                                                  meal: meal,
-                                                ),
-                                          ),
-                                      onImagePressed:
-                                          () => showDialog(
-                                            context: context,
-                                            builder:
-                                                (context) =>
-                                                    MealImageDialog(meal: meal),
-                                          ),
+                                      onUploadButtonPressed: () => showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            UploadImageDialog(meal: meal),
+                                      ),
+                                      onImagePressed: () => showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            MealImageDialog(meal: meal),
+                                      ),
                                       borderRadius: BorderRadius.circular(4),
                                       meal: meal,
                                       height: 250,
@@ -263,16 +245,14 @@ class DetailsPageState extends State<DetailsPage> {
                                     MealAccordion(
                                       backgroundColor:
                                           themeData.brightness ==
-                                                  Brightness.light
-                                              ? themeData.colorScheme.surface
-                                              : themeData
-                                                  .colorScheme
-                                                  .surfaceDim,
+                                              Brightness.light
+                                          ? themeData.colorScheme.surface
+                                          : themeData.colorScheme.surfaceDim,
                                       expandedColor:
                                           themeData.brightness ==
-                                                  Brightness.light
-                                              ? themeData.colorScheme.surfaceDim
-                                              : themeData.colorScheme.surface,
+                                              Brightness.light
+                                          ? themeData.colorScheme.surfaceDim
+                                          : themeData.colorScheme.surface,
                                       mainEntry: MealMainEntry(meal: meal),
                                       info: MealAccordionInfo(
                                         lastServed: meal.lastServed,
@@ -284,36 +264,30 @@ class DetailsPageState extends State<DetailsPage> {
                                         environmentInfo: meal.environmentInfo,
                                       ),
                                       isExpanded: expandedAccordionIndex == 0,
-                                      onTap:
-                                          () => setState(
-                                            () =>
-                                                expandedAccordionIndex =
-                                                    expandedAccordionIndex == 0
-                                                        ? null
-                                                        : 0,
-                                          ),
+                                      onTap: () => setState(
+                                        () => expandedAccordionIndex =
+                                            expandedAccordionIndex == 0
+                                            ? null
+                                            : 0,
+                                      ),
                                     ),
                                     ...?meal.sides
                                         ?.map(
                                           (e) => MealAccordion(
                                             backgroundColor:
                                                 themeData.brightness ==
-                                                        Brightness.light
-                                                    ? themeData
-                                                        .colorScheme
-                                                        .surface
-                                                    : themeData
-                                                        .colorScheme
-                                                        .surfaceDim,
+                                                    Brightness.light
+                                                ? themeData.colorScheme.surface
+                                                : themeData
+                                                      .colorScheme
+                                                      .surfaceDim,
                                             expandedColor:
                                                 themeData.brightness ==
-                                                        Brightness.light
-                                                    ? themeData
-                                                        .colorScheme
-                                                        .surfaceDim
-                                                    : themeData
-                                                        .colorScheme
-                                                        .surface,
+                                                    Brightness.light
+                                                ? themeData
+                                                      .colorScheme
+                                                      .surfaceDim
+                                                : themeData.colorScheme.surface,
                                             sideEntry: MealSideEntry(side: e),
                                             info: MealAccordionInfo(
                                               additives: e.additives,
@@ -325,23 +299,13 @@ class DetailsPageState extends State<DetailsPage> {
                                             isExpanded:
                                                 expandedAccordionIndex ==
                                                 meal.sides!.indexOf(e) + 1,
-                                            onTap:
-                                                () => setState(
-                                                  () =>
-                                                      expandedAccordionIndex =
-                                                          expandedAccordionIndex ==
-                                                                  meal.sides!
-                                                                          .indexOf(
-                                                                            e,
-                                                                          ) +
-                                                                      1
-                                                              ? null
-                                                              : meal.sides!
-                                                                      .indexOf(
-                                                                        e,
-                                                                      ) +
-                                                                  1,
-                                                ),
+                                            onTap: () => setState(
+                                              () => expandedAccordionIndex =
+                                                  expandedAccordionIndex ==
+                                                      meal.sides!.indexOf(e) + 1
+                                                  ? null
+                                                  : meal.sides!.indexOf(e) + 1,
+                                            ),
                                           ),
                                         )
                                         .toList(),
@@ -350,9 +314,9 @@ class DetailsPageState extends State<DetailsPage> {
                                       meal: meal,
                                       backgroundColor:
                                           themeData.brightness ==
-                                                  Brightness.light
-                                              ? themeData.colorScheme.surfaceDim
-                                              : themeData.colorScheme.surface,
+                                              Brightness.light
+                                          ? themeData.colorScheme.surfaceDim
+                                          : themeData.colorScheme.surface,
                                     ),
                                     const SizedBox(height: 16),
                                     Text(
@@ -362,10 +326,9 @@ class DetailsPageState extends State<DetailsPage> {
                                       ),
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
-                                        color:
-                                            Theme.of(
-                                              context,
-                                            ).colorScheme.onSurface,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -376,10 +339,9 @@ class DetailsPageState extends State<DetailsPage> {
                                           value:
                                               _changedRating?.toDouble() ??
                                               meal.individualRating.toDouble(),
-                                          color:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.onSurface,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
                                           size: 20,
                                           max: 5,
                                           onChanged: (value) async {
@@ -405,8 +367,8 @@ class DetailsPageState extends State<DetailsPage> {
                                           onPressed: () {
                                             showDialog(
                                               context: context,
-                                              builder:
-                                                  (context) => MealRatingDialog(
+                                              builder: (context) =>
+                                                  MealRatingDialog(
                                                     onRatingChanged: (meal) {
                                                       setState(() {
                                                         localMeal = meal;
@@ -428,10 +390,9 @@ class DetailsPageState extends State<DetailsPage> {
                                       ),
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
-                                        color:
-                                            Theme.of(
-                                              context,
-                                            ).colorScheme.onSurface,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -443,50 +404,46 @@ class DetailsPageState extends State<DetailsPage> {
                                         : const SizedBox(height: 0),
                                     meal.lastServed != null
                                         ? Text(
-                                          FlutterI18n.translate(
-                                            context,
-                                            "mealDetails.lastServed",
-                                            translationParams: {
-                                              "lastServed": _dateFormat.format(
-                                                meal.lastServed!,
-                                              ),
-                                            },
-                                          ),
-                                        )
+                                            FlutterI18n.translate(
+                                              context,
+                                              "mealDetails.lastServed",
+                                              translationParams: {
+                                                "lastServed": _dateFormat
+                                                    .format(meal.lastServed!),
+                                              },
+                                            ),
+                                          )
                                         : const SizedBox(height: 0),
                                     meal.nextServed != null
                                         ? Text(
-                                          FlutterI18n.translate(
-                                            context,
-                                            "mealDetails.nextServed",
-                                            translationParams: {
-                                              "nextServed": _dateFormat.format(
-                                                meal.nextServed!,
-                                              ),
-                                            },
-                                          ),
-                                        )
+                                            FlutterI18n.translate(
+                                              context,
+                                              "mealDetails.nextServed",
+                                              translationParams: {
+                                                "nextServed": _dateFormat
+                                                    .format(meal.nextServed!),
+                                              },
+                                            ),
+                                          )
                                         : const SizedBox(height: 0),
                                     (meal.numberOfOccurance != null &&
                                             meal.lastServed != null &&
                                             meal.nextServed != null)
                                         ? Text(
-                                          FlutterI18n.translate(
-                                            context,
-                                            "mealDetails.frequency",
-                                            translationParams: {
-                                              "frequency":
-                                                  meal.numberOfOccurance
-                                                      .toString(),
-                                              "lastServed": _dateFormat.format(
-                                                meal.lastServed!,
-                                              ),
-                                              "nextServed": _dateFormat.format(
-                                                meal.nextServed!,
-                                              ),
-                                            },
-                                          ),
-                                        )
+                                            FlutterI18n.translate(
+                                              context,
+                                              "mealDetails.frequency",
+                                              translationParams: {
+                                                "frequency": meal
+                                                    .numberOfOccurance
+                                                    .toString(),
+                                                "lastServed": _dateFormat
+                                                    .format(meal.lastServed!),
+                                                "nextServed": _dateFormat
+                                                    .format(meal.nextServed!),
+                                              },
+                                            ),
+                                          )
                                         : const SizedBox(height: 0),
                                   ],
                                 ),
@@ -507,10 +464,9 @@ class DetailsPageState extends State<DetailsPage> {
               );
               Navigator.of(context).pop();
               return Container(
-                color:
-                    themeData.brightness == Brightness.light
-                        ? themeData.colorScheme.surface
-                        : themeData.colorScheme.surface,
+                color: themeData.brightness == Brightness.light
+                    ? themeData.colorScheme.surface
+                    : themeData.colorScheme.surface,
               );
             }
         }

@@ -9,15 +9,15 @@ class MealIcon extends StatelessWidget {
   final double _height;
 
   /// This widget is used to display the icon for a meal.
-  const MealIcon(
-      {Key? key,
-      required FoodType foodType,
-      double width = 24,
-      double height = 24})
-      : _foodType = foodType,
-        _width = width,
-        _height = height,
-        super(key: key);
+  const MealIcon({
+    Key? key,
+    required FoodType foodType,
+    double width = 24,
+    double height = 24,
+  }) : _foodType = foodType,
+       _width = width,
+       _height = height,
+       super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -57,18 +57,26 @@ class MealIcon extends StatelessWidget {
 
     if (hasBorder) {
       return Container(
-          width: _width,
-          height: _height,
-          decoration: BoxDecoration(
-              border: Border.all(
-                  color: Theme.of(context).colorScheme.primary, width: 2),
-              borderRadius: BorderRadius.all(Radius.circular(_width))),
-          child: SvgPicture.asset(assetPath));
+        width: _width,
+        height: _height,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.all(Radius.circular(_width)),
+        ),
+        child: SvgPicture.asset(assetPath),
+      );
     } else {
       return Padding(
-          padding: const EdgeInsets.all(2),
-          child: SvgPicture.asset(assetPath,
-              width: _width - 4, height: _height - 4));
+        padding: const EdgeInsets.all(2),
+        child: SvgPicture.asset(
+          assetPath,
+          width: _width - 4,
+          height: _height - 4,
+        ),
+      );
     }
   }
 }

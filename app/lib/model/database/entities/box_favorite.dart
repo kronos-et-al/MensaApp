@@ -11,7 +11,5 @@ class BoxFavorite {
   final line = ToOne<BoxLine>();
   final meal = ToOne<BoxMeal>();
 
-  BoxFavorite({
-    required this.servedDate,
-  });
+  BoxFavorite({required this.servedDate});
 }

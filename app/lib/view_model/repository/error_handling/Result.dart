@@ -1,7 +1,6 @@
 /// These classes are responsible for error-handling.
 /// This happens with functional programming.
 
-
 /// This class is the superclass of all results.
 sealed class Result<S, E extends Exception> {
   /// Constructor that maps the result to a new result.

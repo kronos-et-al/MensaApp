@@ -7,14 +7,14 @@ abstract class IAllergenIcon extends StatelessWidget {
   final Color _color;
 
   /// Creates an allergen icon.
-  const IAllergenIcon(
-      {super.key,
-      double width = 24,
-      double height = 24,
-      Color color = Colors.black})
-      : _width = width,
-        _height = height,
-        _color = color;
+  const IAllergenIcon({
+    super.key,
+    double width = 24,
+    double height = 24,
+    Color color = Colors.black,
+  }) : _width = width,
+       _height = height,
+       _color = color;
 
   /// Returns the color of the icon.
   Color get color => _color;

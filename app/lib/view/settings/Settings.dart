@@ -26,269 +26,247 @@ class Settings extends StatelessWidget {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return Consumer<IPreferenceAccess>(
-      builder:
-          (context, storage, child) => Scaffold(
-            appBar: MensaAppBar(
-              appBarHeight: kToolbarHeight,
-              child: Semantics(
-                header: true,
-                child: Center(
-                  child: Text(
-                    FlutterI18n.translate(context, "common.settings"),
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+      builder: (context, storage, child) => Scaffold(
+        appBar: MensaAppBar(
+          appBarHeight: kToolbarHeight,
+          child: Semantics(
+            header: true,
+            child: Center(
+              child: Text(
+                FlutterI18n.translate(context, "common.settings"),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            body: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SettingsDropdownEntry<MensaColorScheme>(
+                  onChanged: (value) {
+                    if (value != null && value != storage.getColorScheme()) {
+                      storage.setColorScheme(value);
+                    }
+                  },
+                  value: storage.getColorScheme(),
+                  items: _getColorSchemeEntries(context),
+                  heading: "settings.colorScheme",
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(height: 16),
+                SettingsDropdownEntry<PriceCategory>(
+                  onChanged: (value) {
+                    if (value != null && value != storage.getPriceCategory()) {
+                      storage.setPriceCategory(value);
+                    }
+                  },
+                  value: storage.getPriceCategory(),
+                  items: _getPriceCategoryEntries(context),
+                  heading: "settings.priceCategory",
+                ),
+                const SizedBox(height: 16),
+                SettingsSection(
+                  heading: "settings.notifications",
                   children: [
-                    SettingsDropdownEntry<MensaColorScheme>(
-                      onChanged: (value) {
-                        if (value != null &&
-                            value != storage.getColorScheme()) {
-                          storage.setColorScheme(value);
-                        }
-                      },
-                      value: storage.getColorScheme(),
-                      items: _getColorSchemeEntries(context),
-                      heading: "settings.colorScheme",
-                    ),
-                    const SizedBox(height: 16),
-                    SettingsDropdownEntry<PriceCategory>(
-                      onChanged: (value) {
-                        if (value != null &&
-                            value != storage.getPriceCategory()) {
-                          storage.setPriceCategory(value);
-                        }
-                      },
-                      value: storage.getPriceCategory(),
-                      items: _getPriceCategoryEntries(context),
-                      heading: "settings.priceCategory",
-                    ),
-                    const SizedBox(height: 16),
-                    SettingsSection(
-                      heading: "settings.notifications",
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                FlutterI18n.translate(
-                                  context,
-                                  "settings.showUpdatePopup",
-                                ),
-                              ),
-                            ),
-                            Switch(
-                              value: storage.shouldShowUpdatePopup(),
-                              onChanged: (value) {
-                                storage.setShouldShowUpdatePopup(value);
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    SettingsSection(
-                      heading: "settings.hint",
-                      children: [
-                        Row(
-                          children: [Expanded(child: Hint(allowRefresh: true))],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    SettingsSection(
-                      heading: "settings.about",
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              FlutterI18n.translate(
-                                context,
-                                "settings.version",
-                              ),
-                            ),
-                            const Spacer(),
-                            FutureBuilder(
-                              future: Future.wait([PackageInfo.fromPlatform()]),
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData || snapshot.hasError) {
-                                  return const Text("42.3.141");
-                                }
-                                final PackageInfo info =
-                                    snapshot.requireData[0];
-                                return Text(info.version);
-                              },
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: MensaLink(
-                                semanticLabel: FlutterI18n.translate(
-                                  context,
-                                  "update.title",
-                                ),
-                                onPressed: () async {
-                                  final info = await PackageInfo.fromPlatform();
-                                  if (!context.mounted) return;
-                                  final changes = NewVersionDialog.getChanges(
-                                    context,
-                                    info.version,
-                                  );
-                                  showDialog(
-                                    context: context,
-                                    builder:
-                                        (context) => NewVersionDialog(
-                                          version: info.version,
-                                          changes: changes,
-                                        ),
-                                  );
-                                },
-                                text: FlutterI18n.translate(
-                                  context,
-                                  "update.title",
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          FlutterI18n.translate(context, "settings.licence"),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: MensaLink(
-                                semanticLabel: FlutterI18n.translate(
-                                  context,
-                                  "semantics.settingsGithub",
-                                ),
-                                onPressed:
-                                    () => _launchUrl(
-                                      Uri.parse(
-                                        'https://github.com/kronos-et-al/MensaApp',
-                                      ),
-                                    ),
-                                text: FlutterI18n.translate(
-                                  context,
-                                  "settings.gitHubLink",
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    SettingsSection(
-                      heading: "settings.legalInformation",
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: MensaLink(
-                                semanticLabel: FlutterI18n.translate(
-                                  context,
-                                  "semantics.settingsPrivacy",
-                                ),
-                                onPressed:
-                                    () => _launchUrl(
-                                      Uri.parse(
-                                        'https://mensa-ka.de/privacy.html',
-                                      ),
-                                    ),
-                                text: FlutterI18n.translate(
-                                  context,
-                                  "settings.privacyPolicy",
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: MensaLink(
-                                semanticLabel: FlutterI18n.translate(
-                                  context,
-                                  "semantics.settingsContact",
-                                ),
-                                onPressed:
-                                    () => _launchUrl(
-                                      Uri.parse('mailto:contact@mensa-ka.de'),
-                                    ),
-                                text: FlutterI18n.translate(
-                                  context,
-                                  "settings.contactDetails",
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
                     Row(
                       children: [
-                        GestureDetector(
-                          onLongPress: () async {
-                            await Clipboard.setData(
-                              ClipboardData(
-                                text: storage.getClientIdentifier(),
-                              ),
-                            );
-                            if (!context.mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                backgroundColor: theme.colorScheme.primary,
-                                content: Text(
-                                  FlutterI18n.translate(
-                                    context,
-                                    "settings.snackBarCopiedToClipboard",
-                                  ),
-                                  style: TextStyle(
-                                    color: theme.colorScheme.onPrimary,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
+                        Expanded(
                           child: Text(
                             FlutterI18n.translate(
                               context,
-                              "settings.clientID",
-                              translationParams: {
-                                "clientID": storage.getClientIdentifier(),
-                              },
+                              "settings.showUpdatePopup",
                             ),
-                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        Switch(
+                          value: storage.shouldShowUpdatePopup(),
+                          onChanged: (value) {
+                            storage.setShouldShowUpdatePopup(value);
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                SettingsSection(
+                  heading: "settings.hint",
+                  children: [
+                    Row(children: [Expanded(child: Hint(allowRefresh: true))]),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                SettingsSection(
+                  heading: "settings.about",
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          FlutterI18n.translate(context, "settings.version"),
+                        ),
+                        const Spacer(),
+                        FutureBuilder(
+                          future: Future.wait([PackageInfo.fromPlatform()]),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData || snapshot.hasError) {
+                              return const Text("42.3.141");
+                            }
+                            final PackageInfo info = snapshot.requireData[0];
+                            return Text(info.version);
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: MensaLink(
+                            semanticLabel: FlutterI18n.translate(
+                              context,
+                              "update.title",
+                            ),
+                            onPressed: () async {
+                              final info = await PackageInfo.fromPlatform();
+                              if (!context.mounted) return;
+                              final changes = NewVersionDialog.getChanges(
+                                context,
+                                info.version,
+                              );
+                              showDialog(
+                                context: context,
+                                builder: (context) => NewVersionDialog(
+                                  version: info.version,
+                                  changes: changes,
+                                ),
+                              );
+                            },
+                            text: FlutterI18n.translate(
+                              context,
+                              "update.title",
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(FlutterI18n.translate(context, "settings.licence")),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: MensaLink(
+                            semanticLabel: FlutterI18n.translate(
+                              context,
+                              "semantics.settingsGithub",
+                            ),
+                            onPressed: () => _launchUrl(
+                              Uri.parse(
+                                'https://github.com/kronos-et-al/MensaApp',
+                              ),
+                            ),
+                            text: FlutterI18n.translate(
+                              context,
+                              "settings.gitHubLink",
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: 16),
+                SettingsSection(
+                  heading: "settings.legalInformation",
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: MensaLink(
+                            semanticLabel: FlutterI18n.translate(
+                              context,
+                              "semantics.settingsPrivacy",
+                            ),
+                            onPressed: () => _launchUrl(
+                              Uri.parse('https://mensa-ka.de/privacy.html'),
+                            ),
+                            text: FlutterI18n.translate(
+                              context,
+                              "settings.privacyPolicy",
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: MensaLink(
+                            semanticLabel: FlutterI18n.translate(
+                              context,
+                              "semantics.settingsContact",
+                            ),
+                            onPressed: () => _launchUrl(
+                              Uri.parse('mailto:contact@mensa-ka.de'),
+                            ),
+                            text: FlutterI18n.translate(
+                              context,
+                              "settings.contactDetails",
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    GestureDetector(
+                      onLongPress: () async {
+                        await Clipboard.setData(
+                          ClipboardData(text: storage.getClientIdentifier()),
+                        );
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: theme.colorScheme.primary,
+                            content: Text(
+                              FlutterI18n.translate(
+                                context,
+                                "settings.snackBarCopiedToClipboard",
+                              ),
+                              style: TextStyle(
+                                color: theme.colorScheme.onPrimary,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        FlutterI18n.translate(
+                          context,
+                          "settings.clientID",
+                          translationParams: {
+                            "clientID": storage.getClientIdentifier(),
+                          },
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
+        ),
+      ),
     );
   }
 

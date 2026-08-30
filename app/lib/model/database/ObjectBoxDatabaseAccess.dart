@@ -69,23 +69,37 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
 
   @override
   Future<Result<List<MealPlan>, MealPlanException>> getMealPlan(
-      DateTime date, Canteen canteen) async {
+    DateTime date,
+    Canteen canteen,
+  ) async {
     final boxCanteen = _getBoxCanteen(canteen.id);
     if (boxCanteen == null) {
       return Failure(NoDataException("Canteen not found in database."));
     }
 
-    final dateMs = DateTime(date.year, date.month, date.day).millisecondsSinceEpoch;
-    
+    final dateMs = DateTime(
+      date.year,
+      date.month,
+      date.day,
+    ).millisecondsSinceEpoch;
+
     // Find lines for this canteen
-    final linesQuery = _store.box<BoxLine>().query(BoxLine_.canteen.equals(boxCanteen.id)).build();
+    final linesQuery = _store
+        .box<BoxLine>()
+        .query(BoxLine_.canteen.equals(boxCanteen.id))
+        .build();
     final lines = linesQuery.find();
     linesQuery.close();
 
     final resultPlans = <MealPlan>[];
     for (final line in lines) {
-      final planQuery = _store.box<BoxMealPlan>()
-          .query(BoxMealPlan_.date.equals(dateMs).and(BoxMealPlan_.line.equals(line.id)))
+      final planQuery = _store
+          .box<BoxMealPlan>()
+          .query(
+            BoxMealPlan_.date
+                .equals(dateMs)
+                .and(BoxMealPlan_.line.equals(line.id)),
+          )
           .build();
       final boxPlan = planQuery.findFirst();
       planQuery.close();
@@ -116,7 +130,10 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
     final boxMealId = _getInternalBoxMealId(id);
     if (boxMealId == 0) return Failure(Exception("Meal not found."));
 
-    final query = _store.box<BoxFavorite>().query(BoxFavorite_.meal.equals(boxMealId)).build();
+    final query = _store
+        .box<BoxFavorite>()
+        .query(BoxFavorite_.meal.equals(boxMealId))
+        .build();
     final favorite = query.findFirst();
     query.close();
 
@@ -128,10 +145,14 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
   }
 
   @override
-  Future<void> addFavorite(Meal meal, DateTime servedDate, Line servedLine) async {
+  Future<void> addFavorite(
+    Meal meal,
+    DateTime servedDate,
+    Line servedLine,
+  ) async {
     final boxFav = _store.box<BoxFavorite>();
     final boxMealId = _getInternalBoxMealId(meal.id);
-    
+
     if (boxMealId != 0) {
       final query = boxFav.query(BoxFavorite_.meal.equals(boxMealId)).build();
       if (query.findFirst() != null) {
@@ -174,11 +195,13 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
     final result = <FavoriteMeal>[];
     for (final fav in favorites) {
       if (fav.meal.target != null && fav.line.target != null) {
-        result.add(FavoriteMeal(
-          _mapToDomainMeal(fav.meal.target!),
-          fav.servedDate,
-          _mapToDomainLine(fav.line.target!),
-        ));
+        result.add(
+          FavoriteMeal(
+            _mapToDomainMeal(fav.meal.target!),
+            fav.servedDate,
+            _mapToDomainLine(fav.line.target!),
+          ),
+        );
       }
     }
     return result;
@@ -212,9 +235,11 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
   Future<void> cleanUp() async {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    
+
     final planBox = _store.box<BoxMealPlan>();
-    final oldPlansQuery = planBox.query(BoxMealPlan_.date.lessThan(today.millisecondsSinceEpoch)).build();
+    final oldPlansQuery = planBox
+        .query(BoxMealPlan_.date.lessThan(today.millisecondsSinceEpoch))
+        .build();
     final oldPlans = oldPlansQuery.find();
     oldPlansQuery.close();
 
@@ -228,8 +253,10 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
           final count = qb.build().count();
 
           if (count == 0) {
-            _store.box<BoxImage>().removeMany(meal.images.map((i) => i.id).toList());
-            
+            _store.box<BoxImage>().removeMany(
+              meal.images.map((i) => i.id).toList(),
+            );
+
             final price = meal.price.target;
             if (price != null) {
               _store.box<BoxPrice>().remove(price.id);
@@ -275,7 +302,11 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
     query.close();
 
     if (boxLine == null) {
-      boxLine = BoxLine(lineId: line.id, name: line.name, position: line.position);
+      boxLine = BoxLine(
+        lineId: line.id,
+        name: line.name,
+        position: line.position,
+      );
     } else {
       boxLine.name = line.name;
       boxLine.position = line.position;
@@ -287,11 +318,20 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
 
   void _putMealPlan(MealPlan plan, BoxLine boxLine) {
     final box = _store.box<BoxMealPlan>();
-    final normalizedDate = DateTime(plan.date.year, plan.date.month, plan.date.day);
+    final normalizedDate = DateTime(
+      plan.date.year,
+      plan.date.month,
+      plan.date.day,
+    );
     final dateMs = normalizedDate.millisecondsSinceEpoch;
-    
-    final query = box.query(BoxMealPlan_.date.equals(dateMs)
-        .and(BoxMealPlan_.line.equals(boxLine.id))).build();
+
+    final query = box
+        .query(
+          BoxMealPlan_.date
+              .equals(dateMs)
+              .and(BoxMealPlan_.line.equals(boxLine.id)),
+        )
+        .build();
     var boxPlan = query.findFirst();
     query.close();
 
@@ -342,7 +382,7 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
       boxMeal.allergens = meal.allergens?.map((e) => e.name).toList() ?? [];
       boxMeal.additives = meal.additives?.map((e) => e.name).toList() ?? [];
       boxMeal.isSide = isSide;
-      
+
       boxMeal.images.clear();
       boxMeal.sides.clear();
     }
@@ -421,7 +461,9 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
       _store.box<BoxEnvironmentInfo>().put(boxEnv);
       boxMeal.environmentInfo.target = boxEnv;
     } else if (boxMeal.environmentInfo.target != null) {
-      _store.box<BoxEnvironmentInfo>().remove(boxMeal.environmentInfo.target!.id);
+      _store.box<BoxEnvironmentInfo>().remove(
+        boxMeal.environmentInfo.target!.id,
+      );
       boxMeal.environmentInfo.target = null;
     }
 
@@ -465,7 +507,7 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
       boxMeal.isSide = true;
       boxMeal.allergens = side.allergens.map((e) => e.name).toList();
       boxMeal.additives = side.additives.map((e) => e.name).toList();
-      
+
       boxMeal.images.clear();
       boxMeal.sides.clear();
     }
@@ -544,7 +586,9 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
       _store.box<BoxEnvironmentInfo>().put(boxEnv);
       boxMeal.environmentInfo.target = boxEnv;
     } else if (boxMeal.environmentInfo.target != null) {
-      _store.box<BoxEnvironmentInfo>().remove(boxMeal.environmentInfo.target!.id);
+      _store.box<BoxEnvironmentInfo>().remove(
+        boxMeal.environmentInfo.target!.id,
+      );
       boxMeal.environmentInfo.target = null;
     }
 
@@ -579,7 +623,10 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
   }
 
   BoxMeal? _getBoxMeal(String mealId) {
-    final query = _store.box<BoxMeal>().query(BoxMeal_.mealId.equals(mealId)).build();
+    final query = _store
+        .box<BoxMeal>()
+        .query(BoxMeal_.mealId.equals(mealId))
+        .build();
     final boxMeal = query.findFirst();
     query.close();
     return boxMeal;
@@ -590,7 +637,10 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
   }
 
   BoxCanteen? _getBoxCanteen(String canteenId) {
-    final query = _store.box<BoxCanteen>().query(BoxCanteen_.canteenId.equals(canteenId)).build();
+    final query = _store
+        .box<BoxCanteen>()
+        .query(BoxCanteen_.canteenId.equals(canteenId))
+        .build();
     final boxCanteen = query.findFirst();
     query.close();
     return boxCanteen;
@@ -644,8 +694,12 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
         pupil: price.pupil,
         guest: price.guest,
       ),
-      allergens: boxMeal.allergens.map((e) => Allergen.values.byName(e)).toList(),
-      additives: boxMeal.additives.map((e) => Additive.values.byName(e)).toList(),
+      allergens: boxMeal.allergens
+          .map((e) => Allergen.values.byName(e))
+          .toList(),
+      additives: boxMeal.additives
+          .map((e) => Additive.values.byName(e))
+          .toList(),
       sides: boxMeal.sides.map(_mapToDomainSide).toList(),
       nutritionData: nutrition != null
           ? NutritionData(
@@ -675,7 +729,9 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
       averageRating: boxMeal.averageRating,
       lastServed: boxMeal.lastServed,
       nextServed: boxMeal.nextServed,
-      relativeFrequency: boxMeal.relativeFrequency != null ? Frequency.values.byName(boxMeal.relativeFrequency!) : null,
+      relativeFrequency: boxMeal.relativeFrequency != null
+          ? Frequency.values.byName(boxMeal.relativeFrequency!)
+          : null,
       images: boxMeal.images.map(_mapToDomainImage).toList(),
       isFavorite: _isFavorite(boxMeal.mealId),
     );
@@ -696,8 +752,12 @@ class ObjectBoxDatabaseAccess implements IDatabaseAccess {
         pupil: price.pupil,
         guest: price.guest,
       ),
-      allergens: boxMeal.allergens.map((e) => Allergen.values.byName(e)).toList(),
-      additives: boxMeal.additives.map((e) => Additive.values.byName(e)).toList(),
+      allergens: boxMeal.allergens
+          .map((e) => Allergen.values.byName(e))
+          .toList(),
+      additives: boxMeal.additives
+          .map((e) => Additive.values.byName(e))
+          .toList(),
       nutritionData: nutrition != null
           ? NutritionData(
               energy: nutrition.energy,

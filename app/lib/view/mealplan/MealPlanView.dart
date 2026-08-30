@@ -61,10 +61,8 @@ class _MealPlanViewState extends State<MealPlanView> {
       if (changes.isNotEmpty) {
         showDialog(
           context: context,
-          builder: (context) => NewVersionDialog(
-            version: currentVersion,
-            changes: changes,
-          ),
+          builder: (context) =>
+              NewVersionDialog(version: currentVersion, changes: changes),
         );
       }
 
@@ -92,7 +90,7 @@ class _MealPlanViewState extends State<MealPlanView> {
         return Consumer<IPreferenceAccess>(
           builder: (context, preferenceAccess, child) {
             final mealPlanFormat = preferenceAccess.getMealPlanFormat();
-            
+
             return Scaffold(
               appBar: MensaAppBar(
                 appBarHeight: kToolbarHeight,
@@ -132,7 +130,9 @@ class _MealPlanViewState extends State<MealPlanView> {
                           ),
                           child: mealAccess.filterActive
                               ? const MensaIcon(MensaIcons.filterOutlined)
-                              : const MensaIcon(MensaIcons.filterOutlinedDisabled),
+                              : const MensaIcon(
+                                  MensaIcons.filterOutlinedDisabled,
+                                ),
                           onLongPress: () => mealAccess.toggleFilter(),
                           onTap: () {
                             showDialog(
@@ -175,7 +175,9 @@ class _MealPlanViewState extends State<MealPlanView> {
                           SnackBar(
                             content: Text(
                               FlutterI18n.translate(context, error),
-                              style: TextStyle(color: theme.colorScheme.onError),
+                              style: TextStyle(
+                                color: theme.colorScheme.onError,
+                              ),
                             ),
                             backgroundColor: theme.colorScheme.error,
                           ),
@@ -237,10 +239,7 @@ class _MealPlanViewState extends State<MealPlanView> {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           child: Text(
             FlutterI18n.translate(context, "common.appTitle"),
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
       ),

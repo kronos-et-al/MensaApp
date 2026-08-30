@@ -48,7 +48,7 @@ class MealPreviewImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    
+
     Widget placeholderWidget = Container(
       width: _width,
       height: _height,
@@ -64,7 +64,11 @@ class MealPreviewImage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  MensaIcon(MensaIcons.logo, size: min(96, (_height ?? 100) - 16), useOriginalColor: true),
+                  MensaIcon(
+                    MensaIcons.logo,
+                    size: min(96, (_height ?? 100) - 16),
+                    useOriginalColor: true,
+                  ),
                   if (_enableUploadButton) const SizedBox(height: 16),
                   if (_enableUploadButton)
                     MensaButton(
@@ -118,65 +122,59 @@ class MealPreviewImage extends StatelessWidget {
             imageUrl: _meal.images!.first.url,
             placeholder: (context, url) => placeholderWidget,
             errorWidget: (context, url, error) => placeholderWidget,
-            imageBuilder:
-                (context, imageProvider) => Container(
-                  width: _width,
-                  height: _height,
-                  decoration: BoxDecoration(
-                    borderRadius: _borderRadius,
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
+            imageBuilder: (context, imageProvider) => Container(
+              width: _width,
+              height: _height,
+              decoration: BoxDecoration(
+                borderRadius: _borderRadius,
+                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+              ),
+              child: Stack(
+                children: [
+                  if (_enableFavoriteButton && _meal.isFavorite)
+                    Align(
+                      alignment: _favoriteButtonAlignment,
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: Stack(
+                          children: [
+                            Icon(
+                              Icons.favorite,
+                              size: 28,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            Icon(
+                              Icons.favorite_border,
+                              size: 28,
+                              color: Theme.of(context).colorScheme.surfaceDim,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                  child: Stack(
-                    children: [
-                      if (_enableFavoriteButton && _meal.isFavorite)
-                        Align(
-                          alignment: _favoriteButtonAlignment,
-                          child: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: Stack(
-                              children: [
-                                Icon(
-                                  Icons.favorite,
-                                  size: 28,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                Icon(
-                                  Icons.favorite_border,
-                                  size: 28,
-                                  color:
-                                      Theme.of(context).colorScheme.surfaceDim,
-                                ),
-                              ],
+                  if (_enableImageCount && (_meal.images?.length ?? 0) > 1)
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Badge(
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.surfaceDim.withAlpha(150),
+                          padding: EdgeInsets.all(4),
+                          label: Text(
+                            "+${_meal.images!.length - 1}",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ),
-                      if (_enableImageCount && (_meal.images?.length ?? 0) > 1)
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Badge(
-                              backgroundColor: Theme.of(
-                                context,
-                              ).colorScheme.surfaceDim.withAlpha(150),
-                              padding: EdgeInsets.all(4),
-                              label: Text(
-                                "+${_meal.images!.length - 1}",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
         ),
       );

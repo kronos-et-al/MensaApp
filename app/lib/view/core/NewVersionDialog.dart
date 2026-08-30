@@ -16,9 +16,9 @@ class NewVersionDialog extends StatelessWidget {
   static List<String> getChanges(BuildContext context, String version) {
     final baseVersion = version.split('+')[0];
     final versionKey = baseVersion.replaceAll('.', '_');
-    
+
     final List<String> changes = [];
-    
+
     for (int i = 0; i < 10; i++) {
       final key = "update.changes.$versionKey.$i";
       final translation = FlutterI18n.translate(context, key);
@@ -41,10 +41,12 @@ class NewVersionDialog extends StatelessWidget {
       if (match.start > lastMatchEnd) {
         spans.add(TextSpan(text: text.substring(lastMatchEnd, match.start)));
       }
-      spans.add(TextSpan(
-        text: match.group(1),
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ));
+      spans.add(
+        TextSpan(
+          text: match.group(1),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      );
       lastMatchEnd = match.end;
     }
 
@@ -70,9 +72,7 @@ class NewVersionDialog extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-            decoration: BoxDecoration(
-              color: colorScheme.primary,
-            ),
+            decoration: BoxDecoration(color: colorScheme.primary),
             child: Column(
               children: [
                 const MensaIcon(
@@ -93,7 +93,7 @@ class NewVersionDialog extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Content
           Flexible(
             child: SingleChildScrollView(
@@ -108,32 +108,34 @@ class NewVersionDialog extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  ...changes.map((change) => Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Icon(
-                              Icons.auto_awesome,
-                              size: 20,
-                              color: colorScheme.primary,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: RichText(
-                                text: TextSpan(
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontSize: 15,
-                                    height: 1.4,
-                                    color: theme.colorScheme.onSurface,
-                                  ),
-                                  children: _parseInlineStyles(change),
+                  ...changes.map(
+                    (change) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.auto_awesome,
+                            size: 20,
+                            color: colorScheme.primary,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: RichText(
+                              text: TextSpan(
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontSize: 15,
+                                  height: 1.4,
+                                  color: theme.colorScheme.onSurface,
                                 ),
+                                children: _parseInlineStyles(change),
                               ),
                             ),
-                          ],
-                        ),
-                      )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

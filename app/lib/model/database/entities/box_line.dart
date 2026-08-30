@@ -13,9 +13,5 @@ class BoxLine {
 
   final canteen = ToOne<BoxCanteen>();
 
-  BoxLine({
-    required this.lineId,
-    required this.name,
-    required this.position,
-  });
+  BoxLine({required this.lineId, required this.name, required this.position});
 }

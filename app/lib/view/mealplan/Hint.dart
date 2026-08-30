@@ -42,22 +42,21 @@ class _HintState extends State<Hint> {
 
     return widget.allowRefresh
         ? InkWell(
-          onTap:
-              () => {
-                if (widget.allowRefresh)
-                  {
-                    setState(() {
-                      var newIdx = Random().nextInt(_hints.length);
-                      if (newIdx == _hintIndex) {
-                        newIdx = (newIdx + 1) % _hints.length;
-                      }
-                      _hintIndex = newIdx;
-                    }),
-                  },
-              },
-          borderRadius: BorderRadius.circular(4),
-          child: text,
-        )
+            onTap: () => {
+              if (widget.allowRefresh)
+                {
+                  setState(() {
+                    var newIdx = Random().nextInt(_hints.length);
+                    if (newIdx == _hintIndex) {
+                      newIdx = (newIdx + 1) % _hints.length;
+                    }
+                    _hintIndex = newIdx;
+                  }),
+                },
+            },
+            borderRadius: BorderRadius.circular(4),
+            child: text,
+          )
         : text;
   }
 }

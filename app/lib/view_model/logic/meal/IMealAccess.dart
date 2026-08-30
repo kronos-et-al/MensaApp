@@ -10,7 +10,6 @@ import '../../repository/error_handling/Result.dart';
 
 /// This class is the interface for the access to the meal data. The access can be done via the database or the server.
 abstract class IMealAccess with ChangeNotifier {
-
   bool failedInitializing = false;
 
   Future<void> reInit();

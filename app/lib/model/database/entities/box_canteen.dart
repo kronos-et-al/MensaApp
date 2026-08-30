@@ -9,8 +9,5 @@ class BoxCanteen {
 
   String name;
 
-  BoxCanteen({
-    required this.canteenId,
-    required this.name,
-  });
+  BoxCanteen({required this.canteenId, required this.name});
 }

@@ -3,7 +3,7 @@ import 'package:objectbox/objectbox.dart';
 @Entity()
 class BoxPrice {
   int id = 0;
-  
+
   int student;
   int employee;
   int pupil;

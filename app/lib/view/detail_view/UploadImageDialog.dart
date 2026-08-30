@@ -22,8 +22,8 @@ class UploadImageDialog extends StatefulWidget {
 
   /// Creates a new UploadImageDialog.
   const UploadImageDialog({Key? key, required Meal meal})
-      : _meal = meal,
-        super(key: key);
+    : _meal = meal,
+      super(key: key);
 
   @override
   State<UploadImageDialog> createState() => _UploadImageDialogState();
@@ -63,151 +63,188 @@ class _UploadImageDialogState extends State<UploadImageDialog> {
     return MensaDialog(
       title: FlutterI18n.translate(context, "image.linkImageTitle"),
       content: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(FlutterI18n.translate(context, "image.linkDescription")),
-              const SizedBox(height: 8),
-              _image != null ? Image.memory(_imageBytes!) : Container(),
-              const SizedBox(height: 8),
-              Row(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(FlutterI18n.translate(context, "image.linkDescription")),
+            const SizedBox(height: 8),
+            _image != null ? Image.memory(_imageBytes!) : Container(),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: MensaButton(
+                    onPressed: () async {
+                      final ImagePicker picker = ImagePicker();
+                      final XFile? image = await picker.pickImage(
+                        source: ImageSource.gallery,
+                        imageQuality: 90,
+                      );
+                      Uint8List bytes = await image!.readAsBytes();
+                      setState(() {
+                        _image = image;
+                        _imageBytes = bytes;
+                      });
+                    },
+                    text: FlutterI18n.translate(
+                      context,
+                      "image.labelSelectImage",
+                    ),
+                    semanticLabel: FlutterI18n.translate(
+                      context,
+                      "image.labelSelectImage",
+                    ),
+                  ),
+                ),
+                (Platform.isAndroid || Platform.isIOS)
+                    ? const SizedBox(width: 8)
+                    : Container(),
+                (Platform.isAndroid || Platform.isIOS)
+                    ? MensaTapable(
+                        onTap: () async {
+                          final ImagePicker picker = ImagePicker();
+                          final XFile? image = await picker.pickImage(
+                            source: ImageSource.camera,
+                            imageQuality: 90,
+                          );
+                          Uint8List bytes = await image!.readAsBytes();
+                          setState(() {
+                            _image = image;
+                            _imageBytes = bytes;
+                          });
+                        },
+                        semanticLabel: FlutterI18n.translate(
+                          context,
+                          "image.labelTakeImage",
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(2),
+                          child: MensaIcon(MensaIcons.camera),
+                        ),
+                      )
+                    : Container(),
+              ],
+            ),
+            const SizedBox(height: 16),
+            RichText(
+              text: TextSpan(
+                style: TextStyle(
+                  fontSize: 12,
+                  color: theme.colorScheme.onSurface,
+                ),
                 children: [
-                  Expanded(
-                      child: MensaButton(
-                          onPressed: () async {
-                            final ImagePicker picker = ImagePicker();
-                            final XFile? image = await picker.pickImage(
-                                source: ImageSource.gallery, imageQuality: 90);
-                            Uint8List bytes = await image!.readAsBytes();
-                            setState(() {
-                              _image = image;
-                              _imageBytes = bytes;
-                            });
-                          },
-                          text: FlutterI18n.translate(
-                              context, "image.labelSelectImage"),
-                          semanticLabel: FlutterI18n.translate(
-                              context, "image.labelSelectImage"))),
-                  (Platform.isAndroid || Platform.isIOS)
-                      ? const SizedBox(
-                          width: 8,
-                        )
-                      : Container(),
-                  (Platform.isAndroid || Platform.isIOS)
-                      ? MensaTapable(
-                          onTap: () async {
-                            final ImagePicker picker = ImagePicker();
-                            final XFile? image = await picker.pickImage(
-                                source: ImageSource.camera, imageQuality: 90);
-                            Uint8List bytes = await image!.readAsBytes();
-                            setState(() {
-                              _image = image;
-                              _imageBytes = bytes;
-                            });
-                          },
-                          semanticLabel: FlutterI18n.translate(
-                              context, "image.labelTakeImage"),
-                          child: const Padding(
-                              padding: EdgeInsets.all(2), child: MensaIcon(MensaIcons.camera)))
-                      : Container(),
+                  TextSpan(
+                    text: FlutterI18n.translate(
+                      context,
+                      "image.linkFirstPoint",
+                    ),
+                  ),
+                  TextSpan(
+                    text: FlutterI18n.translate(context, "image.linkFirstLink"),
+                    style: TextStyle(
+                      color: theme.colorScheme.primary,
+                      decoration: TextDecoration.underline,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        _launchURL();
+                      },
+                  ),
+                  TextSpan(
+                    text: FlutterI18n.translate(
+                      context,
+                      "image.linkFirstPointSecondText",
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 16),
-              RichText(
-                text: TextSpan(
-                    style: TextStyle(
-                        fontSize: 12, color: theme.colorScheme.onSurface),
-                    children: [
-                      TextSpan(
-                          text: FlutterI18n.translate(
-                              context, "image.linkFirstPoint")),
-                      TextSpan(
-                        text: FlutterI18n.translate(
-                            context, "image.linkFirstLink"),
-                        style: TextStyle(
-                            color: theme.colorScheme.primary,
-                            decoration: TextDecoration.underline),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            _launchURL();
-                          },
-                      ),
-                      TextSpan(
-                          text: FlutterI18n.translate(
-                              context, "image.linkFirstPointSecondText"))
-                    ]),
-              ),
-            ],
-          )),
+            ),
+          ],
+        ),
+      ),
       actions: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          child: Row(
-            children: [
-              const Spacer(),
-              MensaButton(
-                  disabled: _loading || _image == null,
-                  loading: _loading,
-                  semanticLabel: FlutterI18n.translate(
-                      context, "semantics.imageSubmitUpload"),
-                  onPressed: () async {
-                    if (_image != null && _imageBytes != null) {
-                      setState(() {
-                        _loading = true;
-                      });
-                      final result = await context
-                          .read<IImageAccess>()
-                          .linkImage(
-                              _imageBytes!,
-                              MediaType.parse(parseMimeType(_image!)),
-                              widget._meal);
-                      if (!context.mounted) return;
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        child: Row(
+          children: [
+            const Spacer(),
+            MensaButton(
+              disabled: _loading || _image == null,
+              loading: _loading,
+              semanticLabel: FlutterI18n.translate(
+                context,
+                "semantics.imageSubmitUpload",
+              ),
+              onPressed: () async {
+                if (_image != null && _imageBytes != null) {
+                  setState(() {
+                    _loading = true;
+                  });
+                  final result = await context.read<IImageAccess>().linkImage(
+                    _imageBytes!,
+                    MediaType.parse(parseMimeType(_image!)),
+                    widget._meal,
+                  );
+                  if (!context.mounted) return;
 
-                      setState(() {
-                        _loading = false;
-                      });
-                      Navigator.pop(context);
+                  setState(() {
+                    _loading = false;
+                  });
+                  Navigator.pop(context);
 
-                      switch (result) {
-                        case Success<bool, ImageUploadException> value:
-                          if (value.value) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(
-                                FlutterI18n.translate(
-                                    context, "snackbar.linkImageSuccess"),
-                                style: TextStyle(
-                                    color: theme.colorScheme.onPrimary),
-                              ),
-                              backgroundColor: theme.colorScheme.primary,
-                            ));
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(
-                                FlutterI18n.translate(
-                                    context, "snackbar.linkImageError"),
-                                style:
-                                    TextStyle(color: theme.colorScheme.onError),
-                              ),
-                              backgroundColor: theme.colorScheme.error,
-                            ));
-                          }
-                          break;
-                        case Failure<bool, ImageUploadException> value:
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  switch (result) {
+                    case Success<bool, ImageUploadException> value:
+                      if (value.value) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
                             content: Text(
-                              value.exception.message,
-                              style:
-                                  TextStyle(color: theme.colorScheme.onError),
+                              FlutterI18n.translate(
+                                context,
+                                "snackbar.linkImageSuccess",
+                              ),
+                              style: TextStyle(
+                                color: theme.colorScheme.onPrimary,
+                              ),
+                            ),
+                            backgroundColor: theme.colorScheme.primary,
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              FlutterI18n.translate(
+                                context,
+                                "snackbar.linkImageError",
+                              ),
+                              style: TextStyle(
+                                color: theme.colorScheme.onError,
+                              ),
                             ),
                             backgroundColor: theme.colorScheme.error,
-                          ));
-                          break;
+                          ),
+                        );
                       }
-                    }
-                  },
-                  text: FlutterI18n.translate(context, "image.linkButton"))
-            ],
-          )),
+                      break;
+                    case Failure<bool, ImageUploadException> value:
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            value.exception.message,
+                            style: TextStyle(color: theme.colorScheme.onError),
+                          ),
+                          backgroundColor: theme.colorScheme.error,
+                        ),
+                      );
+                      break;
+                  }
+                }
+              },
+              text: FlutterI18n.translate(context, "image.linkButton"),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

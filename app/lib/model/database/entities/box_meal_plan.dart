@@ -12,8 +12,5 @@ class BoxMealPlan {
   final line = ToOne<BoxLine>();
   final meals = ToMany<BoxMeal>();
 
-  BoxMealPlan({
-    required this.date,
-    required this.isClosed,
-  });
+  BoxMealPlan({required this.date, required this.isClosed});
 }

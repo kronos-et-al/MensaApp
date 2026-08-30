@@ -45,16 +45,14 @@ class MealListEntry extends StatelessWidget {
         horizontal: borderColor != null ? 9.5 : 12,
       ),
       child: GestureDetector(
-        onTap:
-            () => {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder:
-                      (context) =>
-                          DetailsPage(meal: _meal, line: _line, date: _date),
-                ),
-              ),
-            },
+        onTap: () => {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) =>
+                  DetailsPage(meal: _meal, line: _line, date: _date),
+            ),
+          ),
+        },
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
@@ -64,15 +62,13 @@ class MealListEntry extends StatelessWidget {
               bottomRight: Radius.circular(8),
             ),
             color: Theme.of(context).colorScheme.surfaceDim,
-            border:
-                _enableFavoriteHighlight
-                    ? Border.all(
-                      color:
-                          borderColor ??
-                          Theme.of(context).colorScheme.surfaceDim,
-                      width: borderColor != null ? 2.5 : 0,
-                    )
-                    : Border.all(width: 0),
+            border: _enableFavoriteHighlight
+                ? Border.all(
+                    color:
+                        borderColor ?? Theme.of(context).colorScheme.surfaceDim,
+                    width: borderColor != null ? 2.5 : 0,
+                  )
+                : Border.all(width: 0),
           ),
           child: IntrinsicHeight(
             child: Row(
@@ -84,19 +80,14 @@ class MealListEntry extends StatelessWidget {
                   width: 86,
                   enableFavoriteButton: _enableFavoriteHighlight,
                   favoriteButtonAlignment: Alignment.bottomLeft,
-                  onImagePressed:
-                      () => {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder:
-                                (context) => DetailsPage(
-                                  meal: _meal,
-                                  line: _line,
-                                  date: _date,
-                                ),
-                          ),
-                        ),
-                      },
+                  onImagePressed: () => {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DetailsPage(meal: _meal, line: _line, date: _date),
+                      ),
+                    ),
+                  },
                   displayFavorite: true,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(8),

@@ -6,19 +6,22 @@ class MealPlanToolbar extends StatelessWidget implements PreferredSizeWidget {
   final double _toolBarHeight;
 
   /// Creates a new meal plan toolbar.
-  MealPlanToolbar(
-      {super.key, double toolBarHeight = kToolbarHeight, required Widget child})
-      : _toolBarHeight = toolBarHeight,
-        preferredSize = _PreferredAppBarSize(toolBarHeight),
-        _child = child;
+  MealPlanToolbar({
+    super.key,
+    double toolBarHeight = kToolbarHeight,
+    required Widget child,
+  }) : _toolBarHeight = toolBarHeight,
+       preferredSize = _PreferredAppBarSize(toolBarHeight),
+       _child = child;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: preferredSize.height,
-        child: Column(children: [
-          SizedBox(height: _toolBarHeight, child: _child),
-        ]));
+      height: preferredSize.height,
+      child: Column(
+        children: [SizedBox(height: _toolBarHeight, child: _child)],
+      ),
+    );
   }
 
   @override
