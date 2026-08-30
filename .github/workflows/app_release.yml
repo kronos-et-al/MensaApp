@@ -3,6 +3,18 @@ name: App Release
 on:
   release:
     types: [created]
+  workflow_dispatch:
+    inputs:
+      track:
+        description: 'Google Play track (internal, alpha, beta, production)'
+        required: true
+        default: 'internal'
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
 
 jobs:
   build-and-deploy:
@@ -58,10 +70,19 @@ jobs:
           serviceAccountJsonKey: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
           packageName: de.mensa_ka.app
           releaseFiles: app/build/app/outputs/bundle/release/app-release.aab
-          track: internal
+          track: ${{ github.event.inputs.track || 'internal' }}
           status: completed
 
+      - name: Upload artifacts to Action run
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-assets
+          path: |
+            app/build/app/outputs/bundle/release/app-release.aab
+            app/build/app/outputs/flutter-apk/app-release.apk
+
       - name: Upload AAB to GitHub Release
+        if: github.event_name == 'release'
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -71,6 +92,7 @@ jobs:
           overwrite: true
 
       - name: Upload APK to GitHub Release
+        if: github.event_name == 'release'
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
