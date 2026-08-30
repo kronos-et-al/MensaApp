@@ -121,3 +121,10 @@ jobs:
           name: app-release-ios
           path: app/build/ios/iphoneos/Runner.app
           if-no-files-found: warn
+
+  app-ci-final-check:
+    needs: [lint-and-test, build-android, build-ios]
+    runs-on: ubuntu-latest
+    steps:
+      - name: All checks passed
+        run: echo "The CI pipeline finished successfully."
