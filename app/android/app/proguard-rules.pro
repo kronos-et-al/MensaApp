@@ -14,3 +14,6 @@
 
 # If you have custom Java/Kotlin code in your app
 -keep class de.mensa_ka.app.** { *; }
+
+# Flutter Play Store Split compatibility (ignore if not using deferred components)
+-dontwarn com.google.android.play.core.**
