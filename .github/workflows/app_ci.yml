@@ -37,7 +37,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           git fetch origin ${{ github.base_ref }} --depth=1
-          BASE_VERSION=$(git show origin/${{ github.base_ref }}:app/pubspec.yaml | grep "^version:" | cut -d' ' -85f2)
+          BASE_VERSION=$(git show origin/${{ github.base_ref }}:app/pubspec.yaml | grep "^version:" | cut -d' ' -f2)
           NEW_VERSION=$(grep "^version:" pubspec.yaml | cut -d' ' -f2)
           
           echo "Base version: $BASE_VERSION"
