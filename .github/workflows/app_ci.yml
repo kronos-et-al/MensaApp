@@ -57,6 +57,8 @@ jobs:
     defaults:
       run:
         working-directory: app
+    env:
+      HAS_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 != '' }}
     steps:
       - name: Setup Project
         uses: ./.github/actions/setup-mensa-app
@@ -64,11 +66,11 @@ jobs:
           java-version: '25'
 
       - name: Decode Keystore
-        if: secrets.KEYSTORE_BASE64 != ''
+        if: env.HAS_KEYSTORE == 'true'
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
 
       - name: Create key.properties
-        if: secrets.KEYSTORE_BASE64 != ''
+        if: env.HAS_KEYSTORE == 'true'
         run: |
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
@@ -76,7 +78,7 @@ jobs:
           echo "storeFile=upload-keystore.jks" >> android/key.properties
 
       - name: Ensure debug keystore exists (for release fallback)
-        if: secrets.KEYSTORE_BASE64 == ''
+        if: env.HAS_KEYSTORE != 'true'
         run: |
           mkdir -p ~/.android
           keytool -genkey -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
