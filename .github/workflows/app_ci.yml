@@ -84,30 +84,19 @@ jobs:
         run: dart run build_runner build
 
       - name: Check formatting
-        id: format
         run: dart format --output=none --set-exit-if-changed .
-        continue-on-error: true
 
       - name: Analyze code
-        id: analyze
+        if: always()
         run: flutter analyze
-        continue-on-error: true
 
       - name: Run tests
-        id: test
+        if: always()
         run: flutter test
-        continue-on-error: true
 
       - name: Build APK (Release)
-        id: build
+        if: always()
         run: flutter build apk --release --no-pub
         env:
           ALLOW_DEBUG_SIGNING_FOR_RELEASE: 'true'
-        continue-on-error: true
-
-      - name: CI Status Check
-        run: |
-          if [[ "${{ steps.format.outcome }}" != "success" || "${{ steps.analyze.outcome }}" != "success" || "${{ steps.test.outcome }}" != "success" || "${{ steps.build.outcome }}" != "success" ]]; then
-            echo "CI failed: Formatting, Analysis, Tests, or Build failed."
-            exit 1
-          fi
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=512m"

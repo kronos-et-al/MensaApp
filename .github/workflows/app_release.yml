@@ -49,9 +49,13 @@ jobs:
 
       - name: Build App Bundle (AAB)
         run: flutter build appbundle --release
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=512m"
 
       - name: Build APK
         run: flutter build apk --release
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=512m"
 
       - name: Upload to Play Store
         uses: r0adkll/upload-google-play@v1
