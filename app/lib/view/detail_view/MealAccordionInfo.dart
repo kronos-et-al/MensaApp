@@ -43,7 +43,6 @@ class MealAccordionInfo extends StatelessWidget {
       FlutterI18n.currentLocale(context)?.languageCode ?? "de-DE",
     );
     ThemeData theme = Theme.of(context);
-    print(_environmentInfo);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

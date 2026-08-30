@@ -31,7 +31,6 @@ class UploadImageDialog extends StatefulWidget {
 class _UploadImageDialogState extends State<UploadImageDialog> {
   String parseMimeType(XFile image) {
     if (image.mimeType == null) {
-      print(image.name);
       if (image.name.endsWith(".jpg")) return "image/jpg";
       if (image.name.endsWith(".jpeg")) return "image/jpeg";
       if (image.name.endsWith(".png")) return "image/png";

@@ -33,13 +33,19 @@ Ensure you have the following installed:
 
 ### 2. Environment Setup
 
-Create a `.env` file in the root directory based on `.env.example`:
+The app requires an API URL and optionally an API key. To keep these secure and avoid leaking them in your terminal history, use a local JSON file.
 
-```bash
-cp .env.example .env
-```
+1. Create a `local_config.json` in the `app/` directory by copying the example:
+   ```bash
+   cp local_config.example.json local_config.json
+   ```
 
-Fill in your `API_URL` and `API_KEY` accordingly.
+2. Fill in your `API_KEY` in `local_config.json`.
+
+3. Configure your IDE (Android Studio or VS Code) to use this file by adding the following to your "Additional run args":
+   ```bash
+   --dart-define-from-file=local_config.json
+   ```
 
 ### 3. Dependencies & Code Generation
 
@@ -56,13 +62,13 @@ dart run build_runner build
 
 **Debug Mode:**
 ```bash
-flutter run
+flutter run --dart-define-from-file=local_config.json
 ```
 
 **Release Build (Android APK):**
 
 ```bash
-flutter build apk --release
+flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols --dart-define-from-file=local_config.json
 ```
 
 *Note: To target specific architectures (e.g., arm64), use `--target-platform android-arm64`.*

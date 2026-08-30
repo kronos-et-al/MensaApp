@@ -53,11 +53,6 @@ jobs:
             exit 1
           fi
 
-      - name: Create .env file
-        run: |
-          echo "API_URL=https://api.mensa-ka.de" > .env
-          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
-
       - name: Decode Keystore
         if: env.HAS_KEYSTORE == 'true'
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
@@ -104,7 +99,7 @@ jobs:
 
       - name: Build APK (Release)
         if: always()
-        run: flutter build apk --release
+        run: flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols --dart-define=API_URL=https://api.mensa-ka.de --dart-define=API_KEY=${{ secrets.API_KEY }}
         env:
           ALLOW_DEBUG_SIGNING_FOR_RELEASE: 'true'
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=512m"

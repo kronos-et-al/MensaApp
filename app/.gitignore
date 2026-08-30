@@ -49,6 +49,7 @@ app.*.map.json
 secret.json
 /android/app/src/main/java/de/mensa_ka/app/MainActivity.java
 /.env
+local_config.json
 
 
 **/*.graphql.dart

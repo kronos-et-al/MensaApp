@@ -1,7 +1,7 @@
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
 import 'package:app/model/database/ObjectBoxDatabaseAccess.dart';
-import 'package:app/model/local_storage/SharedPreferenceAccess.dart';
 import 'package:app/model/database/objectbox.g.dart';
+import 'package:app/model/local_storage/SharedPreferenceAccess.dart';
 import 'package:app/view/core/MainPage.dart';
 import 'package:app/view_model/logic/favorite/FavoriteMealAccess.dart';
 import 'package:app/view_model/logic/favorite/IFavoriteMealAccess.dart';
@@ -17,7 +17,6 @@ import 'package:app/view_model/repository/interface/ILocalStorage.dart';
 import 'package:app/view_model/repository/interface/IServerAccess.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +24,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// The main function of the app.
 void main() async {
-  await dotenv.load(fileName: ".env");
   final FlutterI18nDelegate delegate = FlutterI18nDelegate(
     translationLoader: NamespaceFileTranslationLoader(
       namespaces: [
@@ -99,8 +97,11 @@ class MensaApp extends StatelessWidget {
         );
         IDatabaseAccess db = ObjectBoxDatabaseAccess(_store);
         IServerAccess api = GraphQlServerAccess(
-          dotenv.env["API_URL"] ?? "",
-          dotenv.env["API_KEY"] ?? "",
+          const String.fromEnvironment(
+            "API_URL",
+            defaultValue: "https://api.mensa-ka.de",
+          ),
+          const String.fromEnvironment("API_KEY"),
           sharedPreferencesAccess.getClientIdentifier() ?? "",
         );
         return MultiProvider(

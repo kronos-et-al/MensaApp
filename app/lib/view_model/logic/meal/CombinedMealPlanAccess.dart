@@ -108,9 +108,7 @@ class CombinedMealPlanAccess extends ChangeNotifier implements IMealAccess {
 
     // get meal plans form server
     if (_mealPlans.isEmpty) {
-      print("loading initial day");
       await refreshMealplan();
-      print("initial day loaded");
       _initialized = true;
       refreshAll();
     } else {

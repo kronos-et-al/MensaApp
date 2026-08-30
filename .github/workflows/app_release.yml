@@ -26,11 +26,6 @@ jobs:
           flutter-version-file: app/pubspec.yaml
           cache: true
 
-      - name: Create .env file
-        run: |
-          echo "API_URL=https://api.mensa-ka.de" > .env
-          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
-
       - name: Decode Keystore
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
 
@@ -48,12 +43,12 @@ jobs:
         run: dart run build_runner build
 
       - name: Build App Bundle (AAB)
-        run: flutter build appbundle --release
+        run: flutter build appbundle --release --obfuscate --split-debug-info=build/app/outputs/symbols --dart-define=API_URL=https://api.mensa-ka.de --dart-define=API_KEY=${{ secrets.API_KEY }}
         env:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=512m"
 
       - name: Build APK
-        run: flutter build apk --release
+        run: flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols --dart-define=API_URL=https://api.mensa-ka.de --dart-define=API_KEY=${{ secrets.API_KEY }}
         env:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=512m"
 
