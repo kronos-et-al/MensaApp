@@ -37,6 +37,10 @@ android {
         targetCompatibility JavaVersion.VERSION_25
     }
 
+    kotlinOptions {
+        jvmTarget = '25'
+    }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
