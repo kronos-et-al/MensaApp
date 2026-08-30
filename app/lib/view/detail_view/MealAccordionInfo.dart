@@ -19,7 +19,7 @@ class MealAccordionInfo extends StatelessWidget {
   final int? _frequency;
 
   /// Creates a MealAccordionInfo widget.
-  MealAccordionInfo({
+  const MealAccordionInfo({
     super.key,
     required List<Allergen> allergens,
     required List<Additive> additives,
@@ -38,7 +38,7 @@ class MealAccordionInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DateFormat _dateFormat = DateFormat(
+    final DateFormat dateFormat = DateFormat(
       "E dd.MM.yyyy",
       FlutterI18n.currentLocale(context)?.languageCode ?? "de-DE",
     );
@@ -111,8 +111,8 @@ class MealAccordionInfo extends StatelessWidget {
                   "mealDetails.frequency",
                   translationParams: {
                     "frequency": _frequency.toString(),
-                    "lastServed": _dateFormat.format(_lastServed),
-                    "nextServed": _dateFormat.format(_nextServed),
+                    "lastServed": dateFormat.format(_lastServed),
+                    "nextServed": dateFormat.format(_nextServed),
                   },
                 ),
                 style: const TextStyle(

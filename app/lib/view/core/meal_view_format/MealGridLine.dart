@@ -57,7 +57,7 @@ class MealGridLine extends StatelessWidget {
 class _PageScrollPhysics extends ScrollPhysics {
   final double _itemDimension;
 
-  const _PageScrollPhysics({required itemDimension, super.parent})
+  const _PageScrollPhysics({required double itemDimension, super.parent})
     : _itemDimension = itemDimension;
 
   @override

@@ -109,7 +109,7 @@ class MealListEntry extends StatelessWidget {
                             Expanded(
                               child: Text.rich(
                                 TextSpan(
-                                  text: _meal.name + " ",
+                                  text: "${_meal.name} ",
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,

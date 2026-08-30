@@ -448,7 +448,10 @@ class _FilterDialogState extends State<FilterDialog> {
     );
   }
 
-  static _setValueFrequency(Frequency frequency, FilterPreferences filter) {
+  static void _setValueFrequency(
+    Frequency frequency,
+    FilterPreferences filter,
+  ) {
     if (frequency == Frequency.newMeal) {
       filter.setNewFrequency();
       return;
@@ -568,7 +571,7 @@ class _FilterDialogState extends State<FilterDialog> {
     return entries;
   }
 
-  static _setValueCategory(int type, FilterPreferences access) {
+  static void _setValueCategory(int type, FilterPreferences access) {
     switch (type) {
       case 0:
         access.setAllCategories();

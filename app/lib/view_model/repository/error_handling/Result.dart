@@ -1,3 +1,5 @@
+library;
+
 /// These classes are responsible for error-handling.
 /// This happens with functional programming.
 

@@ -16,7 +16,7 @@ class MealSideEntry extends StatelessWidget {
   );
 
   /// Creates a MealSideEntry.
-  MealSideEntry({Key? key, required Side side}) : _side = side, super(key: key);
+  MealSideEntry({super.key, required Side side}) : _side = side;
 
   @override
   Widget build(BuildContext context) {

@@ -80,8 +80,6 @@ class AllergenIcon extends IAllergenIcon {
         return _buildSvgIcon('la', effectiveColor);
       case Allergen.gl:
         return _buildTextIcon('GL', effectiveColor);
-      default:
-        return SizedBox(width: width, height: height);
     }
   }
 

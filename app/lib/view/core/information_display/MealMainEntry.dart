@@ -17,7 +17,7 @@ class MealMainEntry extends StatelessWidget {
   );
 
   /// Creates a MealMainEntry.
-  MealMainEntry({Key? key, required Meal meal}) : _meal = meal, super(key: key);
+  MealMainEntry({super.key, required Meal meal}) : _meal = meal;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class MealMainEntry extends StatelessWidget {
           Expanded(
             child: RichText(
               text: TextSpan(
-                text: _meal.name + " ",
+                text: "${_meal.name} ",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,

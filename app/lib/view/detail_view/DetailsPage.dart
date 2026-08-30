@@ -13,7 +13,6 @@ import 'package:app/view/detail_view/RatingsOverview.dart';
 import 'package:app/view/detail_view/UploadImageDialog.dart';
 import 'package:app/view/images/MealImageDialog.dart';
 import 'package:app/view_model/logic/favorite/IFavoriteMealAccess.dart';
-import 'package:app/view_model/logic/image/IImageAccess.dart';
 import 'package:app/view_model/logic/meal/IMealAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/Meal.dart';
 import 'package:app/view_model/repository/data_classes/mealplan/Line.dart';
@@ -69,7 +68,6 @@ class DetailsPageState extends State<DetailsPage> {
   Widget build(BuildContext context) {
     // These provider are necessary for the synchronization of each other. They need to be initialized even if they are unused.
     IMealAccess mealAccess = Provider.of<IMealAccess>(context);
-    IImageAccess imageAccess = Provider.of<IImageAccess>(context);
     ThemeData themeData = Theme.of(context);
     return FutureBuilder(
       future: mealAccess.getMeal(widget._meal),
@@ -271,44 +269,37 @@ class DetailsPageState extends State<DetailsPage> {
                                             : 0,
                                       ),
                                     ),
-                                    ...?meal.sides
-                                        ?.map(
-                                          (e) => MealAccordion(
-                                            backgroundColor:
-                                                themeData.brightness ==
-                                                    Brightness.light
-                                                ? themeData.colorScheme.surface
-                                                : themeData
-                                                      .colorScheme
-                                                      .surfaceDim,
-                                            expandedColor:
-                                                themeData.brightness ==
-                                                    Brightness.light
-                                                ? themeData
-                                                      .colorScheme
-                                                      .surfaceDim
-                                                : themeData.colorScheme.surface,
-                                            sideEntry: MealSideEntry(side: e),
-                                            info: MealAccordionInfo(
-                                              additives: e.additives,
-                                              allergens: e.allergens,
-                                              nutritionData: e.nutritionData,
-                                              environmentInfo:
-                                                  e.environmentInfo,
-                                            ),
-                                            isExpanded:
-                                                expandedAccordionIndex ==
-                                                meal.sides!.indexOf(e) + 1,
-                                            onTap: () => setState(
-                                              () => expandedAccordionIndex =
-                                                  expandedAccordionIndex ==
-                                                      meal.sides!.indexOf(e) + 1
-                                                  ? null
-                                                  : meal.sides!.indexOf(e) + 1,
-                                            ),
-                                          ),
-                                        )
-                                        .toList(),
+                                    ...?meal.sides?.map(
+                                      (e) => MealAccordion(
+                                        backgroundColor:
+                                            themeData.brightness ==
+                                                Brightness.light
+                                            ? themeData.colorScheme.surface
+                                            : themeData.colorScheme.surfaceDim,
+                                        expandedColor:
+                                            themeData.brightness ==
+                                                Brightness.light
+                                            ? themeData.colorScheme.surfaceDim
+                                            : themeData.colorScheme.surface,
+                                        sideEntry: MealSideEntry(side: e),
+                                        info: MealAccordionInfo(
+                                          additives: e.additives,
+                                          allergens: e.allergens,
+                                          nutritionData: e.nutritionData,
+                                          environmentInfo: e.environmentInfo,
+                                        ),
+                                        isExpanded:
+                                            expandedAccordionIndex ==
+                                            meal.sides!.indexOf(e) + 1,
+                                        onTap: () => setState(
+                                          () => expandedAccordionIndex =
+                                              expandedAccordionIndex ==
+                                                  meal.sides!.indexOf(e) + 1
+                                              ? null
+                                              : meal.sides!.indexOf(e) + 1,
+                                        ),
+                                      ),
+                                    ),
                                     const SizedBox(height: 16),
                                     RatingsOverview(
                                       meal: meal,

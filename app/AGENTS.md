@@ -6,6 +6,7 @@ Make sure, you have done the following:
 
 - Your code is documented using doc comments.
 - You added unit tests to all your implemented functions.
+- You ran the CI checks (`flutter analyze`, `flutter test`, and `dart format`) and they all pass.
 
 ## Writing text
 

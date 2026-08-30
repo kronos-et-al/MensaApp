@@ -27,7 +27,7 @@ class MensaAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: Column(
         children: [
           SizedBox(height: _appBarHeight, child: _child),
-          if (_bottom != null) _bottom!,
+          if (_bottom != null) _bottom,
         ],
       ),
     );
