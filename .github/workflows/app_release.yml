@@ -27,7 +27,9 @@ jobs:
           cache: true
 
       - name: Create .env file
-        run: echo "${{ secrets.ENV_FILE }}" > .env
+        run: |
+          echo "API_URL=https://api.mensa-ka.de" > .env
+          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
 
       - name: Decode Keystore
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks

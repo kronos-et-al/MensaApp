@@ -49,7 +49,9 @@ jobs:
           fi
 
       - name: Create .env file
-        run: echo "${{ secrets.ENV_FILE }}" > .env
+        run: |
+          echo "API_URL=https://api.mensa-ka.de" > .env
+          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
 
       - name: Install dependencies
         run: flutter pub get
