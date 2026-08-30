@@ -24,7 +24,7 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
 
   Future<void> _init() async {
     _favorites = await _database.getFavorites();
-    refreshFavoriteMeals();
+    await refreshFavoriteMeals();
   }
 
   @override

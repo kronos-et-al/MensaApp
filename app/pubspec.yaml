@@ -59,8 +59,6 @@ dependencies:
   uuid: ^4.5.1
   package_info_plus: ^10.2.1
   url_launcher: ^6.1.12
-  sqlite3: ^2.4.0
-  sqlite3_flutter_libs: ^0.6.0+eol
   http: ^1.3.0
   http_parser: ^4.0.2
   gql_exec: any
