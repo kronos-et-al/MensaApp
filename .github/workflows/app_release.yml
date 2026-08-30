@@ -55,12 +55,12 @@ jobs:
         run: dart run build_runner build
 
       - name: Build App Bundle (AAB)
-        run: flutter build appbundle --release --obfuscate --split-debug-info=build/app/outputs/symbols --dart-define=API_URL=https://api.mensa-ka.de --dart-define=API_KEY=${{ secrets.API_KEY }}
+        run: flutter build appbundle --release --obfuscate --split-debug-info=build/app/outputs/symbols --extra-gen-snapshot-options=--strip --dart-define=API_URL=https://api.mensa-ka.de --dart-define=API_KEY=${{ secrets.API_KEY }}
         env:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=512m"
 
       - name: Build APK
-        run: flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols --dart-define=API_URL=https://api.mensa-ka.de --dart-define=API_KEY=${{ secrets.API_KEY }}
+        run: flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols --extra-gen-snapshot-options=--strip --dart-define=API_URL=https://api.mensa-ka.de --dart-define=API_KEY=${{ secrets.API_KEY }}
         env:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=512m"
 
