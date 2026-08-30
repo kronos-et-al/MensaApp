@@ -6,6 +6,7 @@ import 'box_meal.dart';
 class BoxFavorite {
   int id = 0;
 
+  @Property(type: PropertyType.date)
   DateTime servedDate;
 
   final line = ToOne<BoxLine>();

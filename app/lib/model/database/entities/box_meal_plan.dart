@@ -6,6 +6,7 @@ import 'box_meal.dart';
 class BoxMealPlan {
   int id = 0;
 
+  @Property(type: PropertyType.date)
   DateTime date;
   bool isClosed;
 

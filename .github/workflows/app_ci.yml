@@ -72,6 +72,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Upgrade dependencies
+        run: flutter pub upgrade
+
       - name: Run code generation
         run: dart run build_runner build
 

@@ -17,7 +17,9 @@ class BoxMeal {
   int individualRating;
   int numberOfRatings;
   double averageRating;
+  @Property(type: PropertyType.date)
   DateTime? lastServed;
+  @Property(type: PropertyType.date)
   DateTime? nextServed;
   String? relativeFrequency; // store enum name
   List<String> allergens;
