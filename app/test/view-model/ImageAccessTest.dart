@@ -23,18 +23,20 @@ void main() {
   final mediaType = MediaType("image", "jpeg");
 
   ImageData image = ImageData(
-      id: "42",
-      url: "url",
-      imageRank: 42,
-      positiveRating: 42,
-      negativeRating: 42);
+    id: "42",
+    url: "url",
+    imageRank: 42,
+    positiveRating: 42,
+    negativeRating: 42,
+  );
 
   final Meal meal = Meal(
-      id: "42",
-      name: "name",
-      foodType: FoodType.vegetarian,
-      price: Price(student: 100, employee: 200, pupil: 300, guest: 400),
-      images: [image]);
+    id: "42",
+    name: "name",
+    foodType: FoodType.vegetarian,
+    price: Price(student: 100, employee: 200, pupil: 300, guest: 400),
+    images: [image],
+  );
 
   ImageAccess images = ImageAccess(api, database);
 
@@ -98,19 +100,31 @@ void main() {
 
   group("link image", () {
     test("failed request", () async {
-      when(() => api.linkImage(imageFile, mediaType, meal)).thenAnswer((_) async => Failure(ImageUploadException("error")));
-      final result = switch (await images.linkImage(imageFile, mediaType, meal)) {
+      when(
+        () => api.linkImage(imageFile, mediaType, meal),
+      ).thenAnswer((_) async => Failure(ImageUploadException("error")));
+      final result = switch (await images.linkImage(
+        imageFile,
+        mediaType,
+        meal,
+      )) {
         Success(value: final value) => value,
-        Failure(exception: final exception) => exception
+        Failure(exception: final exception) => exception,
       };
       expect(result is ImageUploadException, isTrue);
     });
 
     test("successful request", () async {
-      when(() => api.linkImage(imageFile, mediaType, meal)).thenAnswer((_) async => const Success(true));
-      final result = switch (await images.linkImage(imageFile, mediaType, meal)) {
+      when(
+        () => api.linkImage(imageFile, mediaType, meal),
+      ).thenAnswer((_) async => const Success(true));
+      final result = switch (await images.linkImage(
+        imageFile,
+        mediaType,
+        meal,
+      )) {
         Success(value: final value) => value,
-        Failure(exception: final exception) => exception
+        Failure(exception: final exception) => exception,
       };
       expect(result, isTrue);
     });
@@ -118,19 +132,25 @@ void main() {
 
   group("report image", () {
     test("failed report", () async {
-      when(() => api.reportImage(image, ReportCategory.noMeal))
-          .thenAnswer((_) async => false);
-      expect(await images.reportImage(meal, image, ReportCategory.noMeal),
-          false);
+      when(
+        () => api.reportImage(image, ReportCategory.noMeal),
+      ).thenAnswer((_) async => false);
+      expect(
+        await images.reportImage(meal, image, ReportCategory.noMeal),
+        false,
+      );
     });
 
     test("successful report", () async {
-      when(() => api.reportImage(image, ReportCategory.noMeal))
-          .thenAnswer((_) async => true);
+      when(
+        () => api.reportImage(image, ReportCategory.noMeal),
+      ).thenAnswer((_) async => true);
       when(() => database.removeImage(image)).thenAnswer((_) async {});
 
-      expect(await images.reportImage(meal, image, ReportCategory.noMeal),
-          true);
+      expect(
+        await images.reportImage(meal, image, ReportCategory.noMeal),
+        true,
+      );
       verify(() => database.removeImage(image)).called(1);
     });
   });

@@ -25,17 +25,23 @@ void main() {
   final canteen = Canteen(id: "c1", name: "Canteen 1");
   final line = Line(id: "l1", name: "Line 1", canteen: canteen, position: 1);
   final meal = Meal(
-      id: "m1",
-      name: "Meal 1",
-      foodType: FoodType.vegan,
-      price: Price(student: 100, employee: 200, pupil: 300, guest: 400));
+    id: "m1",
+    name: "Meal 1",
+    foodType: FoodType.vegan,
+    price: Price(student: 100, employee: 200, pupil: 300, guest: 400),
+  );
   final date = DateTime(2023, 10, 12);
-  final mealPlan = MealPlan(date: date, line: line, isClosed: false, meals: [meal]);
+  final mealPlan = MealPlan(
+    date: date,
+    line: line,
+    isClosed: false,
+    meals: [meal],
+  );
 
   test("update and get meal plan", () async {
     await database.updateAll([mealPlan]);
     final result = await database.getMealPlan(date, canteen);
-    
+
     expect(result is Success, isTrue);
     final plans = (result as Success).value;
     expect(plans.length, 1);

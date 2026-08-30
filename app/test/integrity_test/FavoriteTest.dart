@@ -16,22 +16,36 @@ Future<void> main() async {
   final store = await openStore(directory: 'memory:favorite-test');
   ObjectBoxDatabaseAccess database = ObjectBoxDatabaseAccess(store);
   GraphQlServerAccess api = GraphQlServerAccess(
-      testServer, testApiKey, "1f16dcca-963e-4ceb-a8ca-843a7c9277a5");
+    testServer,
+    testApiKey,
+    "1f16dcca-963e-4ceb-a8ca-843a7c9277a5",
+  );
   FavoriteMealAccess access = FavoriteMealAccess(database, api);
 
   final meal = Meal(
-      id: "bd3c88f9-5dc8-4773-85dc-53305930e7b6",
-      name: "Best meal",
-      foodType: FoodType.vegetarian,
-      price: Price(student: 1, employee: 23, pupil: 5, guest: 15));
+    id: "bd3c88f9-5dc8-4773-85dc-53305930e7b6",
+    name: "Best meal",
+    foodType: FoodType.vegetarian,
+    price: Price(student: 1, employee: 23, pupil: 5, guest: 15),
+  );
 
   final line = Line(
-      id: "id",
-      name: "name",
-      canteen: Canteen(id: "id", name: "name"),
-      position: 1);
+    id: "id",
+    name: "name",
+    canteen: Canteen(id: "id", name: "name"),
+    position: 1,
+  );
 
-  setUpAll(() async => await database.updateAll([MealPlan(date: DateTime.now(), line: line, isClosed: false, meals: [meal])]));
+  setUpAll(
+    () async => await database.updateAll([
+      MealPlan(
+        date: DateTime.now(),
+        line: line,
+        isClosed: false,
+        meals: [meal],
+      ),
+    ]),
+  );
 
   test("add favorite meal", () async {
     await access.addFavoriteMeal(meal, DateTime.now(), line);

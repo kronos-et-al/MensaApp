@@ -12,21 +12,26 @@ void main() {
   const String id = "42";
   const String name = "vegan Meal";
   const FoodType foodType = FoodType.vegan;
-  final Price price =
-      Price(student: 200, employee: 300, pupil: 400, guest: 500);
+  final Price price = Price(
+    student: 200,
+    employee: 300,
+    pupil: 400,
+    guest: 500,
+  );
   const List<Allergen> allergens = [Allergen.ei, Allergen.ka];
   const List<Additive> additives = [
     Additive.antioxidantAgents,
-    Additive.alcohol
+    Additive.alcohol,
   ];
   final List<Side> sides = [
     Side(
-        id: id,
-        name: name,
-        foodType: foodType,
-        price: price,
-        allergens: allergens,
-        additives: additives)
+      id: id,
+      name: name,
+      foodType: foodType,
+      price: price,
+      allergens: allergens,
+      additives: additives,
+    ),
   ];
   const int numberOfRatings = 100;
   const double averageRating = 2000;
@@ -35,11 +40,12 @@ void main() {
   const Frequency relativeFrequency = Frequency.newMeal;
   final List<ImageData> images = [
     ImageData(
-        id: id,
-        url: "url",
-        imageRank: 2000,
-        positiveRating: 234,
-        negativeRating: 234)
+      id: id,
+      url: "url",
+      imageRank: 2000,
+      positiveRating: 234,
+      negativeRating: 234,
+    ),
   ];
   const int numberOfOccurances = 2345;
 
@@ -47,22 +53,23 @@ void main() {
   bool isFavortie = false;
 
   Meal meal = Meal(
-      id: id,
-      name: name,
-      foodType: foodType,
-      price: price,
-      allergens: allergens,
-      additives: additives,
-      sides: sides,
-      numberOfRatings: numberOfRatings,
-      averageRating: averageRating,
-      lastServed: lastServed,
-      nextServed: nextServed,
-      relativeFrequency: relativeFrequency,
-      images: images,
-      numberOfOccurance: numberOfOccurances,
-      individualRating: individualRating,
-      isFavorite: isFavortie);
+    id: id,
+    name: name,
+    foodType: foodType,
+    price: price,
+    allergens: allergens,
+    additives: additives,
+    sides: sides,
+    numberOfRatings: numberOfRatings,
+    averageRating: averageRating,
+    lastServed: lastServed,
+    nextServed: nextServed,
+    relativeFrequency: relativeFrequency,
+    images: images,
+    numberOfOccurance: numberOfOccurances,
+    individualRating: individualRating,
+    isFavorite: isFavortie,
+  );
 
   group("constructor", () {
     test("id", () => expect(meal.id, id));
@@ -76,7 +83,9 @@ void main() {
     test("sides", () => expect(meal.sides, sides));
 
     test(
-        "numberOfRatings", () => expect(meal.numberOfRatings, numberOfRatings));
+      "numberOfRatings",
+      () => expect(meal.numberOfRatings, numberOfRatings),
+    );
 
     test("averageRating", () => expect(meal.averageRating, averageRating));
 
@@ -84,16 +93,22 @@ void main() {
 
     test("nextServed", () => expect(meal.nextServed, nextServed));
 
-    test("relativeFrequency",
-        () => expect(meal.relativeFrequency, relativeFrequency));
+    test(
+      "relativeFrequency",
+      () => expect(meal.relativeFrequency, relativeFrequency),
+    );
 
     test("images", () => expect(meal.images, images));
 
-    test("numberOfOccurances",
-        () => expect(meal.numberOfOccurance, numberOfOccurances));
+    test(
+      "numberOfOccurances",
+      () => expect(meal.numberOfOccurance, numberOfOccurances),
+    );
 
-    test("individualRating",
-        () => expect(meal.individualRating, individualRating));
+    test(
+      "individualRating",
+      () => expect(meal.individualRating, individualRating),
+    );
 
     test("isFavorite", () => expect(meal.isFavorite, isFavortie));
 
@@ -116,7 +131,9 @@ void main() {
     test("sides", () => expect(copy.sides, sides));
 
     test(
-        "numberOfRatings", () => expect(copy.numberOfRatings, numberOfRatings));
+      "numberOfRatings",
+      () => expect(copy.numberOfRatings, numberOfRatings),
+    );
 
     test("averageRating", () => expect(copy.averageRating, averageRating));
 
@@ -124,16 +141,22 @@ void main() {
 
     test("nextServed", () => expect(copy.nextServed, nextServed));
 
-    test("relativeFrequency",
-        () => expect(copy.relativeFrequency, relativeFrequency));
+    test(
+      "relativeFrequency",
+      () => expect(copy.relativeFrequency, relativeFrequency),
+    );
 
     test("images", () => expect(copy.images, images));
 
-    test("numberOfOccurances",
-        () => expect(copy.numberOfOccurance, numberOfOccurances));
+    test(
+      "numberOfOccurances",
+      () => expect(copy.numberOfOccurance, numberOfOccurances),
+    );
 
-    test("individualRating",
-        () => expect(copy.individualRating, individualRating));
+    test(
+      "individualRating",
+      () => expect(copy.individualRating, individualRating),
+    );
 
     test("isFavorite", () => expect(copy.isFavorite, isFavortie));
 
@@ -144,11 +167,13 @@ void main() {
 
   group("copy constructor nothing copied", () {
     final Meal min = Meal(
-        id: "id",
-        name: "name",
-        foodType: FoodType.vegetarian,
-        price: Price(student: 0, employee: 0, pupil: 0, guest: 0));
-    final Meal copy = Meal.copy(meal: min,
+      id: "id",
+      name: "name",
+      foodType: FoodType.vegetarian,
+      price: Price(student: 0, employee: 0, pupil: 0, guest: 0),
+    );
+    final Meal copy = Meal.copy(
+      meal: min,
       id: id,
       name: name,
       foodType: foodType,
@@ -178,7 +203,9 @@ void main() {
     test("sides", () => expect(copy.sides, sides));
 
     test(
-        "numberOfRatings", () => expect(copy.numberOfRatings, numberOfRatings));
+      "numberOfRatings",
+      () => expect(copy.numberOfRatings, numberOfRatings),
+    );
 
     test("averageRating", () => expect(copy.averageRating, averageRating));
 
@@ -186,16 +213,22 @@ void main() {
 
     test("nextServed", () => expect(copy.nextServed, nextServed));
 
-    test("relativeFrequency",
-        () => expect(copy.relativeFrequency, relativeFrequency));
+    test(
+      "relativeFrequency",
+      () => expect(copy.relativeFrequency, relativeFrequency),
+    );
 
     test("images", () => expect(copy.images, images));
 
-    test("numberOfOccurances",
-        () => expect(copy.numberOfOccurance, numberOfOccurances));
+    test(
+      "numberOfOccurances",
+      () => expect(copy.numberOfOccurance, numberOfOccurances),
+    );
 
-    test("individualRating",
-        () => expect(copy.individualRating, individualRating));
+    test(
+      "individualRating",
+      () => expect(copy.individualRating, individualRating),
+    );
 
     test("isFavorite", () => expect(copy.isFavorite, isFavortie));
 

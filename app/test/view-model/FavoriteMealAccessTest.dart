@@ -21,38 +21,50 @@ void main() {
   late FavoriteMealAccess favorites;
 
   final meal1 = Meal(
-      id: "1",
-      name: "vegan Meal",
-      foodType: FoodType.vegan,
-      price: Price(student: 200, employee: 300, pupil: 400, guest: 500));
+    id: "1",
+    name: "vegan Meal",
+    foodType: FoodType.vegan,
+    price: Price(student: 200, employee: 300, pupil: 400, guest: 500),
+  );
   final meal2 = Meal(
-      id: "42",
-      name: "vegetarian Meal",
-      foodType: FoodType.vegetarian,
-      price: Price(student: 200, employee: 300, pupil: 400, guest: 500));
+    id: "42",
+    name: "vegetarian Meal",
+    foodType: FoodType.vegetarian,
+    price: Price(student: 200, employee: 300, pupil: 400, guest: 500),
+  );
   final meal3 = Meal(
-      id: "12",
-      name: "fishi Meal",
-      foodType: FoodType.fish,
-      price: Price(student: 200, employee: 300, pupil: 400, guest: 500));
+    id: "12",
+    name: "fishi Meal",
+    foodType: FoodType.fish,
+    price: Price(student: 200, employee: 300, pupil: 400, guest: 500),
+  );
   var meals = [meal1, meal2];
 
   final line = Line(
-      id: "sdf",
-      name: "name",
-      canteen: Canteen(id: "id", name: "name"),
-      position: 1);
+    id: "sdf",
+    name: "name",
+    canteen: Canteen(id: "id", name: "name"),
+    position: 1,
+  );
 
   setUpAll(() {
-    when(() => database.getFavorites())
-        .thenAnswer((_) async => _getFavoriteMeals(meals, line));
-    when(() => api.getMeal(meal1, line, any())).thenAnswer((_) async => Failure(NoMealException("error")));
-    when(() => api.getMeal(meal2, line, any())).thenAnswer((_) async => Failure(NoMealException("error")));
+    when(
+      () => database.getFavorites(),
+    ).thenAnswer((_) async => _getFavoriteMeals(meals, line));
+    when(
+      () => api.getMeal(meal1, line, any()),
+    ).thenAnswer((_) async => Failure(NoMealException("error")));
+    when(
+      () => api.getMeal(meal2, line, any()),
+    ).thenAnswer((_) async => Failure(NoMealException("error")));
     favorites = FavoriteMealAccess(database, api);
   });
 
   test("Test initialisation", () async {
-    _listEquals(await favorites.getFavoriteMeals(), _getFavoriteMeals(meals, line));
+    _listEquals(
+      await favorites.getFavoriteMeals(),
+      _getFavoriteMeals(meals, line),
+    );
   });
 
   group("Favorite check", () {
@@ -69,21 +81,31 @@ void main() {
     test("add meal already in meals", () async {
       await favorites.addFavoriteMeal(meal1, DateTime.now(), line);
       verifyNever(() => database.addFavorite(meal1, any(), line));
-      expect(await favorites.getFavoriteMeals(), _getFavoriteMeals(meals, line));
+      expect(
+        await favorites.getFavoriteMeals(),
+        _getFavoriteMeals(meals, line),
+      );
     });
 
     test("remove meal not in meals", () async {
       await favorites.removeFavoriteMeal(meal3);
       verifyNever(() => database.deleteFavorite(meal3));
-      expect(await favorites.getFavoriteMeals(), _getFavoriteMeals(meals, line));
+      expect(
+        await favorites.getFavoriteMeals(),
+        _getFavoriteMeals(meals, line),
+      );
     });
 
     test("add meal to meals (not in meals)", () async {
       final favoriteMeals = _getFavoriteMeals(meals, line);
       favoriteMeals.add(FavoriteMeal(meal3, DateTime.now(), line));
 
-      when(() => database.getFavorites()).thenAnswer((_) async => favoriteMeals);
-      when(() => database.addFavorite(meal3, any(), line)).thenAnswer((_) async {});
+      when(
+        () => database.getFavorites(),
+      ).thenAnswer((_) async => favoriteMeals);
+      when(
+        () => database.addFavorite(meal3, any(), line),
+      ).thenAnswer((_) async {});
       await favorites.addFavoriteMeal(meal3, DateTime.now(), line);
       verify(() => database.addFavorite(meal3, any(), line)).called(1);
 
@@ -91,7 +113,9 @@ void main() {
     });
 
     test("remove meal from meals (that is in meals)", () async {
-      when(() => database.getFavorites()).thenAnswer((_) async => _getFavoriteMeals(meals, line));
+      when(
+        () => database.getFavorites(),
+      ).thenAnswer((_) async => _getFavoriteMeals(meals, line));
       when(() => database.deleteFavorite(meal1)).thenAnswer((_) async {});
       await favorites.removeFavoriteMeal(meal1);
       verify(() => database.deleteFavorite(meal1)).called(1);

@@ -21,25 +21,29 @@ Future<void> main() async {
 
   SharedPreferencesMock mock = SharedPreferencesMock();
 
-  SharedPreferenceAccess pref = SharedPreferenceAccess(await SharedPreferences.getInstance());
+  SharedPreferenceAccess pref = SharedPreferenceAccess(
+    await SharedPreferences.getInstance(),
+  );
   SharedPreferenceAccess prefMock = SharedPreferenceAccess(mock);
 
   FilterPreferences filter = FilterPreferences(
-      categories: [FoodType.vegetarian, FoodType.vegan],
-      allergens: [Allergen.ca, Allergen.di],
-      price: 800,
-      rating: 3,
-      frequency: [Frequency.rare],
-      onlyFavorite: true,
-      sortedBy: Sorting.rating,
-      ascending: false
+    categories: [FoodType.vegetarian, FoodType.vegan],
+    allergens: [Allergen.ca, Allergen.di],
+    price: 800,
+    rating: 3,
+    frequency: [Frequency.rare],
+    onlyFavorite: true,
+    sortedBy: Sorting.rating,
+    ascending: false,
   );
   late FilterPreferences filterResult;
 
   group("empty preferences", () {
     test("id", () {
       when(() => mock.getString('clientIdentifier')).thenReturn(null);
-      when(() => mock.setString('clientIdentifier', any())).thenAnswer((_) async => true);
+      when(
+        () => mock.setString('clientIdentifier', any()),
+      ).thenAnswer((_) async => true);
       prefMock.getClientIdentifier();
 
       verify(() => mock.setString('clientIdentifier', any())).called(1);
