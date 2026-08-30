@@ -33,6 +33,11 @@ jobs:
           flutter-version-file: app/pubspec.yaml
           cache: true
 
+      - name: Print versions
+        run: |
+          flutter --version
+          dart --version
+
       - name: Verify version bump
         if: github.event_name == 'pull_request'
         run: |
@@ -73,7 +78,7 @@ jobs:
         run: flutter pub get
 
       - name: Upgrade dependencies
-        run: flutter pub upgrade
+        run: flutter packages upgrade
 
       - name: Run code generation
         run: dart run build_runner build

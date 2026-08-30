@@ -1,5 +1,12 @@
 # Instructions for AI Agents
 
+## General
+
+Make sure, you have done the following:
+
+- Your code is documented using doc comments.
+- You added unit tests to all your implemented functions.
+
 ## Writing text
 
 Don't write any user-facing text that is longer than a few words (i.e. sentences) by yourself.
