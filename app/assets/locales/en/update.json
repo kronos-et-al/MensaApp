@@ -5,7 +5,7 @@
     "1_3_0": {
       "0": "A new caching solution allows for **much shorter loading times**.",
       "1": "Switching between days is now much more responsive.",
-      "2": "**Note:** Because of the new caching solution your locally saved favorites sadly had to be reset. Sorry!"
+      "2": "**Note:** Because of the new caching solution, your locally saved **favorites sadly had to be reset**. Sorry!"
     }
   }
 }
