@@ -1,0 +1,13 @@
+{
+  "updateRatingSuccess": "Rating updated successfully.",
+  "updateRatingError": "Could not update rating. Please try again later.",
+  "refreshMealPlanError": "Could not refresh meal plan. Please try again later.",
+
+  "voteError": "Could not apply vote. Please try again later.",
+  "linkImageSuccess": "Image linked successfully.",
+  "linkImageError": "Could not link image. Please try again later.",
+  "reportImageSuccess": "Image reported successfully.",
+  "reportImageError": "Could not report image. Please try again later.",
+
+  "refreshFavoriteError": "Could not refresh favorites. Please try again later."
+}

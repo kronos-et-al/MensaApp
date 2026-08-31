@@ -1,0 +1,16 @@
+{
+  "title": "Tip:",
+  "tempFilter": "Press and hold the filter icon to temporarily disable filters.",
+  "reportImages": "Inappropriate images can be reported in the app.",
+  "imageView": "Tapping an image in the detail view opens the gallery for this meal.",
+  "hint": "Tips can also be displayed in the settings. Try tapping on it!",
+  "allergens": "Meals can be filtered by allergens.",
+  "rate1": "Meals can be rated with just one star to highlight them negatively.",
+  "favorite": "Meals can be favorited to highlight them positively and easily access them.",
+  "imageVote": "Images can be voted on so the best image represents the meal.",
+  "expandMeals": "In the detail view, meals can be expanded to view nutritional values, eco score, and more.",
+  "priceCategories": "In the settings, the price category can be changed.",
+  "openSource": "The app's source code is available on GitHub. There you can suggest features and contribute to further development.",
+  "openAPI": "You can also use the MensaKA App API for your own projects.",
+  "sort": "You can change the order of meals in the filter settings."
+}

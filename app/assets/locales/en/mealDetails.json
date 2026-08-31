@@ -1,0 +1,6 @@
+{
+  "lastServed": "Last offered on: {lastServed}",
+  "nextServed": "Offered again on: {nextServed}",
+  "frequency": "Offered {frequency} time(s) in the last 3 months\n(last on {lastServed}, next time on {nextServed})",
+  "titleStatistics": "Statistics"
+}
