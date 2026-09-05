@@ -74,45 +74,39 @@ class _ImageReportState extends State<ImageReportDialog> {
                 "semantics.imageSubmitReport",
               ),
               onPressed: () async {
-                var result = await context.read<IImageAccess>().reportImage(
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
+                final result = await context.read<IImageAccess>().reportImage(
                   widget._meal,
                   widget._image,
                   _reason,
                 );
                 if (!context.mounted) return;
+
+                final String messageKey = result
+                    ? "snackbar.reportImageSuccess"
+                    : "snackbar.reportImageError";
+                final String translatedMessage = FlutterI18n.translate(
+                  context,
+                  messageKey,
+                );
+
                 Navigator.pop(context);
 
-                if (result) {
-                  final snackBar = SnackBar(
+                scaffoldMessenger.showSnackBar(
+                  SnackBar(
                     content: Text(
-                      FlutterI18n.translate(
-                        context,
-                        "snackbar.reportImageSuccess",
-                      ),
+                      translatedMessage,
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        color: result
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : Theme.of(context).colorScheme.onError,
                       ),
                     ),
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                  );
-
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                } else {
-                  final snackBar = SnackBar(
-                    content: Text(
-                      FlutterI18n.translate(
-                        context,
-                        "snackbar.reportImageError",
-                      ),
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onError,
-                      ),
-                    ),
-                    backgroundColor: Theme.of(context).colorScheme.error,
-                  );
-
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                }
+                    backgroundColor: result
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.error,
+                  ),
+                );
               },
               text: FlutterI18n.translate(context, "image.reportButton"),
             ),

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
 import 'package:app/model/database/ObjectBoxDatabaseAccess.dart';
 import 'package:app/model/database/objectbox.g.dart';
@@ -58,6 +60,15 @@ void main() async {
     },
   );
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Handle background async errors (e.g. gql_http_link double completion on timeout)
+  PlatformDispatcher.instance.onError = (error, stack) {
+    if (error.toString().contains("Future already completed")) {
+      debugPrint("Caught background GraphQL link timeout error: $error");
+      return true; // handled, prevent unhandled exception crash
+    }
+    return false;
+  };
 
   final store = await openStore();
 
