@@ -1,7 +1,8 @@
-import 'dart:io';
+import 'dart:ui';
 
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
-import 'package:app/model/database/SQLiteDatabaseAccess.dart';
+import 'package:app/model/database/ObjectBoxDatabaseAccess.dart';
+import 'package:app/model/database/objectbox.g.dart';
 import 'package:app/model/local_storage/SharedPreferenceAccess.dart';
 import 'package:app/view/core/MainPage.dart';
 import 'package:app/view_model/logic/favorite/FavoriteMealAccess.dart';
@@ -18,16 +19,13 @@ import 'package:app/view_model/repository/interface/ILocalStorage.dart';
 import 'package:app/view_model/repository/interface/IServerAccess.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 /// The main function of the app.
 void main() async {
-  await dotenv.load(fileName: ".env");
   final FlutterI18nDelegate delegate = FlutterI18nDelegate(
     translationLoader: NamespaceFileTranslationLoader(
       namespaces: [
@@ -49,6 +47,7 @@ void main() async {
         "environmentInfo",
         "tag",
         "hint",
+        "update",
       ],
       useCountryCode: false,
       basePath: 'assets/locales',
@@ -62,23 +61,35 @@ void main() async {
   );
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (Platform.isWindows || Platform.isLinux) {
-    sqfliteFfiInit();
-  }
+  // Handle background async errors (e.g. gql_http_link double completion on timeout)
+  PlatformDispatcher.instance.onError = (error, stack) {
+    if (error.toString().contains("Future already completed")) {
+      debugPrint("Caught background GraphQL link timeout error: $error");
+      return true; // handled, prevent unhandled exception crash
+    }
+    return false;
+  };
 
-  runApp(MensaApp(delegate: delegate));
+  final store = await openStore();
+
+  runApp(MensaApp(delegate: delegate, store: store));
 }
 
 /// The main app widget.
 class MensaApp extends StatelessWidget {
   final FlutterI18nDelegate _delegate;
+  final Store _store;
 
   /// Creates a new [MensaApp]
   ///
   /// [delegate] is the [FlutterI18nDelegate] used for localization.
   /// [key] is the key of the widget.
-  const MensaApp({super.key, required FlutterI18nDelegate delegate})
-    : _delegate = delegate;
+  const MensaApp({
+    super.key,
+    required FlutterI18nDelegate delegate,
+    required Store store,
+  }) : _delegate = delegate,
+       _store = store;
 
   // This widget is the root of your application.
   @override
@@ -95,18 +106,20 @@ class MensaApp extends StatelessWidget {
         ILocalStorage sharedPreferencesAccess = SharedPreferenceAccess(
           sharedPreferences.requireData,
         );
-        IDatabaseAccess db = SQLiteDatabaseAccess();
+        IDatabaseAccess db = ObjectBoxDatabaseAccess(_store);
         IServerAccess api = GraphQlServerAccess(
-          dotenv.env["API_URL"] ?? "",
-          dotenv.env["API_KEY"] ?? "",
+          const String.fromEnvironment(
+            "API_URL",
+            defaultValue: "https://api.mensa-ka.de",
+          ),
+          const String.fromEnvironment("API_KEY"),
           sharedPreferencesAccess.getClientIdentifier() ?? "",
         );
         return MultiProvider(
           providers: [
             ChangeNotifierProvider<IMealAccess>(
-              create:
-                  (context) =>
-                      CombinedMealPlanAccess(sharedPreferencesAccess, api, db),
+              create: (context) =>
+                  CombinedMealPlanAccess(sharedPreferencesAccess, api, db),
             ),
             ChangeNotifierProvider<IFavoriteMealAccess>(
               create: (context) => FavoriteMealAccess(db, api),
@@ -119,63 +132,62 @@ class MensaApp extends StatelessWidget {
             ),
           ],
           child: Consumer<IPreferenceAccess>(
-            builder:
-                (context, preferenceAccess, child) => MaterialApp(
-                  title: 'Mensa KA',
-                  themeMode: (() {
-                    switch (preferenceAccess.getColorScheme()) {
-                      case MensaColorScheme.light:
-                        return ThemeMode.light;
-                      case MensaColorScheme.dark:
-                        return ThemeMode.dark;
-                      case MensaColorScheme.system:
-                        return ThemeMode.system;
-                    }
-                  }()),
-                  localizationsDelegates: [
-                    _delegate,
-                    ...GlobalMaterialLocalizations.delegates,
-                    GlobalWidgetsLocalizations.delegate,
-                  ],
-                  supportedLocales: const [Locale('de')],
-                  theme: ThemeData(
-                    useMaterial3: true,
-                    brightness: Brightness.light,
-                    colorScheme: const ColorScheme(
-                      brightness: Brightness.light,
-                      primary: Color(0xFF7AAC2B),
-                      onPrimary: Color(0xFFFFFFFF),
-                      secondary: Color(0xFFAC2B7A),
-                      onSecondary: Color(0xFFFFFFFF),
-                      tertiary: Color(0xFF2B7AAC),
-                      error: Color(0xFFD32F2F),
-                      onError: Color(0xFFFFFFFF),
-                      surface: Color(0xFFFFFFFF),
-                      surfaceDim: Color(0xFFF6F6F6),
-                      surfaceTint: Color(0xFFD2D2D2),
-                      onSurface: Color(0xFF000000),
-                    ),
-                  ),
-                  darkTheme: ThemeData(
-                    useMaterial3: true,
-                    brightness: Brightness.dark,
-                    colorScheme: const ColorScheme(
-                      brightness: Brightness.dark,
-                      primary: Color(0xFF7AAC2B),
-                      onPrimary: Color(0xFFFFFFFF),
-                      secondary: Color(0xFFAC2B7A),
-                      onSecondary: Color(0xFFFFFFFF),
-                      tertiary: Color(0xFF2B7AAC),
-                      error: Color(0xFFD32F2F),
-                      onError: Color(0xFFFFFFFF),
-                      surface: Color(0xFF1E1E1E),
-                      surfaceDim: Color(0xFF333333),
-                      surfaceTint: Color(0xFF202020),
-                      onSurface: Color(0xFFFFFFFF),
-                    ),
-                  ),
-                  home: const MainPage(),
+            builder: (context, preferenceAccess, child) => MaterialApp(
+              title: 'Mensa KA',
+              themeMode: (() {
+                switch (preferenceAccess.getColorScheme()) {
+                  case MensaColorScheme.light:
+                    return ThemeMode.light;
+                  case MensaColorScheme.dark:
+                    return ThemeMode.dark;
+                  case MensaColorScheme.system:
+                    return ThemeMode.system;
+                }
+              }()),
+              localizationsDelegates: [
+                _delegate,
+                ...GlobalMaterialLocalizations.delegates,
+                GlobalWidgetsLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('de')],
+              theme: ThemeData(
+                useMaterial3: true,
+                brightness: Brightness.light,
+                colorScheme: const ColorScheme(
+                  brightness: Brightness.light,
+                  primary: Color(0xFF7AAC2B),
+                  onPrimary: Color(0xFFFFFFFF),
+                  secondary: Color(0xFFAC2B7A),
+                  onSecondary: Color(0xFFFFFFFF),
+                  tertiary: Color(0xFF2B7AAC),
+                  error: Color(0xFFD32F2F),
+                  onError: Color(0xFFFFFFFF),
+                  surface: Color(0xFFFFFFFF),
+                  surfaceDim: Color(0xFFF6F6F6),
+                  surfaceTint: Color(0xFFD2D2D2),
+                  onSurface: Color(0xFF000000),
                 ),
+              ),
+              darkTheme: ThemeData(
+                useMaterial3: true,
+                brightness: Brightness.dark,
+                colorScheme: const ColorScheme(
+                  brightness: Brightness.dark,
+                  primary: Color(0xFF7AAC2B),
+                  onPrimary: Color(0xFFFFFFFF),
+                  secondary: Color(0xFFAC2B7A),
+                  onSecondary: Color(0xFFFFFFFF),
+                  tertiary: Color(0xFF2B7AAC),
+                  error: Color(0xFFD32F2F),
+                  onError: Color(0xFFFFFFFF),
+                  surface: Color(0xFF1E1E1E),
+                  surfaceDim: Color(0xFF333333),
+                  surfaceTint: Color(0xFF202020),
+                  onSurface: Color(0xFFFFFFFF),
+                ),
+              ),
+              home: const MainPage(),
+            ),
           ),
         );
       },

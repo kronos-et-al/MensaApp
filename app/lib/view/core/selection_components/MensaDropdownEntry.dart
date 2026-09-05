@@ -7,8 +7,8 @@ class MensaDropdownEntry<T> extends StatelessWidget {
 
   /// Creates a new MensaDropdownEntry.
   const MensaDropdownEntry({super.key, required value, required label})
-      : _value = value,
-        _label = label;
+    : _value = value,
+      _label = label;
 
   /// Builds the widget.
   @override

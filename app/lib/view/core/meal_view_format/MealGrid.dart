@@ -8,7 +8,7 @@ class MealGrid extends StatelessWidget {
 
   /// Creates a MealGrid.
   const MealGrid({super.key, required List<MealPlan> mealPlans})
-      : _mealPlans = mealPlans;
+    : _mealPlans = mealPlans;
 
   @override
   Widget build(BuildContext context) {

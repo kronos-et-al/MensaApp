@@ -1,0 +1,130 @@
+name: App CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'app/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'app/**'
+  workflow_dispatch:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Project
+        uses: ./.github/actions/setup-mensa-app
+        with:
+          java-version: '25'
+          upgrade: 'true'
+
+      - name: Verify version bump
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin ${{ github.base_ref }} --depth=1
+          BASE_VERSION=$(git show origin/${{ github.base_ref }}:app/pubspec.yaml | grep "^version:" | cut -d' ' -f2)
+          NEW_VERSION=$(grep "^version:" pubspec.yaml | cut -d' ' -f2)
+          
+          echo "Base version: $BASE_VERSION"
+          echo "New version: $NEW_VERSION"
+          
+          if [ "$BASE_VERSION" == "$NEW_VERSION" ]; then
+            echo "::error file=app/pubspec.yaml::The app version must be bumped in pubspec.yaml for pull requests to main."
+            exit 1
+          fi
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze code
+        if: always()
+        run: flutter analyze
+
+      - name: Run tests
+        if: always()
+        run: flutter test
+
+  build-android:
+    needs: lint-and-test
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    env:
+      HAS_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Project
+        uses: ./.github/actions/setup-mensa-app
+        with:
+          java-version: '25'
+
+      - name: Decode Keystore
+        if: env.HAS_KEYSTORE == 'true'
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+
+      - name: Create key.properties
+        if: env.HAS_KEYSTORE == 'true'
+        run: |
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=upload-keystore.jks" >> android/key.properties
+
+      - name: Ensure debug keystore exists (for release fallback)
+        if: env.HAS_KEYSTORE != 'true'
+        run: |
+          mkdir -p ~/.android
+          keytool -genkey -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+
+      - name: Build APK (Release)
+        run: flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols --extra-gen-snapshot-options=--strip --dart-define=API_URL=https://api.mensa-ka.de --dart-define=API_KEY=${{ secrets.API_KEY }}
+        env:
+          ALLOW_DEBUG_SIGNING_FOR_RELEASE: 'true'
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=512m"
+
+      - name: Upload APK artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: warn
+
+  build-ios:
+    needs: lint-and-test
+    if: always() && !cancelled()
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Project
+        uses: ./.github/actions/setup-mensa-app
+
+      - name: Build iOS (No codesign)
+        run: flutter build ios --release --no-codesign --obfuscate --split-debug-info=build/app/outputs/symbols --extra-gen-snapshot-options=--strip --dart-define=API_URL=https://api.mensa-ka.de --dart-define=API_KEY=${{ secrets.API_KEY }}
+
+      - name: Upload iOS artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-ios
+          path: app/build/ios/iphoneos/Runner.app
+          if-no-files-found: warn
+
+  app-ci-final-check:
+    needs: [lint-and-test, build-android, build-ios]
+    runs-on: ubuntu-latest
+    steps:
+      - name: All checks passed
+        run: echo "The CI pipeline finished successfully."

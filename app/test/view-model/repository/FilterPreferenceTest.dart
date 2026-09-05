@@ -49,12 +49,16 @@ void main() {
       }
       expect(filter.categories.length, categories.length);
     });
-    test("allergens",
-        () => expect(listEquals(filter.allergens, allergens), isTrue));
+    test(
+      "allergens",
+      () => expect(listEquals(filter.allergens, allergens), isTrue),
+    );
     test("price", () => expect(filter.price, price));
     test("rating", () => expect(filter.rating, rating));
-    test("frequency",
-        () => expect(listEquals(filter.frequency, frequency), isTrue));
+    test(
+      "frequency",
+      () => expect(listEquals(filter.frequency, frequency), isTrue),
+    );
     test("onlyFavorites", () => expect(filter.onlyFavorite, onlyFavorites));
     test("sorting", () => expect(filter.sortedBy, sorting));
     test("ascending", () => expect(filter.ascending, ascending));
@@ -62,14 +66,20 @@ void main() {
 
   group("constructor without values", () {
     standard = FilterPreferences();
-    test("categories",
-        () => expect(listEquals(standard.categories, FoodType.values), isTrue));
-    test("allergens",
-        () => expect(listEquals(standard.allergens, Allergen.values), isTrue));
+    test(
+      "categories",
+      () => expect(listEquals(standard.categories, FoodType.values), isTrue),
+    );
+    test(
+      "allergens",
+      () => expect(listEquals(standard.allergens, Allergen.values), isTrue),
+    );
     test("price", () => expect(standard.price, 1000));
     test("rating", () => expect(standard.rating, 1));
-    test("frequency",
-        () => expect(listEquals(standard.frequency, Frequency.values), isTrue));
+    test(
+      "frequency",
+      () => expect(listEquals(standard.frequency, Frequency.values), isTrue),
+    );
     test("onlyFavorites", () => expect(standard.onlyFavorite, false));
     test("sorting", () => expect(standard.sortedBy, Sorting.line));
     test("ascending", () => expect(standard.ascending, true));
@@ -110,9 +120,13 @@ void main() {
     test("set categories vegan and vegetarian", () {
       filter.setCategoriesVegetarian();
       expect(
-          listEquals(filter.categories,
-              [FoodType.vegan, FoodType.vegetarian, FoodType.unknown]),
-          isTrue);
+        listEquals(filter.categories, [
+          FoodType.vegan,
+          FoodType.vegetarian,
+          FoodType.unknown,
+        ]),
+        isTrue,
+      );
     });
 
     // meat categories add and remove with wrong category
@@ -123,8 +137,10 @@ void main() {
 
     test("set categories vegan", () {
       filter.setCategoriesVegan();
-      expect(listEquals(filter.categories, [FoodType.vegan, FoodType.unknown]),
-          isTrue);
+      expect(
+        listEquals(filter.categories, [FoodType.vegan, FoodType.unknown]),
+        isTrue,
+      );
     });
 
     test("add Meat Category with wrong category", () {

@@ -4,11 +4,13 @@
   "about": "Über die App",
   "version": "Softwareversion:",
   "licence": "Der Quellcode der App ist unter der MIT-Lizenz verfügbar.",
-  "gitHubLink": "Auf Github ansehen",
+  "gitHubLink": "Auf GitHub ansehen",
   "legalInformation": "Rechtliche Informationen",
   "privacyPolicy": "Datenschutzerklärung",
   "contactDetails": "Kontakt",
   "clientID": "Client ID: {clientID}",
   "snackBarCopiedToClipboard": "In die Zwischenablage kopiert",
-  "hint": "Tipp"
+  "hint": "Tipp",
+  "notifications": "Benachrichtigungen",
+  "showUpdatePopup": "Update-Informationen anzeigen"
 }

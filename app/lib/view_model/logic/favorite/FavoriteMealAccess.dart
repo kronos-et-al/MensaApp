@@ -24,7 +24,7 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
 
   Future<void> _init() async {
     _favorites = await _database.getFavorites();
-    refreshFavoriteMeals();
+    await refreshFavoriteMeals();
   }
 
   @override
@@ -33,13 +33,21 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
 
     //update favorites
     for (final favorite in favorites) {
-      final Meal? meal = switch (await _api.getMeal(favorite.meal, favorite.servedLine, favorite.servedDate)) {
+      final Meal? meal = switch (await _api.getMeal(
+        favorite.meal,
+        favorite.servedLine,
+        favorite.servedDate,
+      )) {
         Success(value: final value) => value,
         Failure(exception: _) => null,
       };
 
       if (meal != null) {
-        await _database.addFavorite(meal, meal.lastServed ?? favorite.servedDate, favorite.servedLine);
+        await _database.addFavorite(
+          meal,
+          meal.lastServed ?? favorite.servedDate,
+          favorite.servedLine,
+        );
         await _database.updateMeal(meal);
       } else {
         return false;
@@ -53,7 +61,10 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
 
   @override
   Future<void> addFavoriteMeal(
-      Meal meal, DateTime servedDate, Line servedLine) async {
+    Meal meal,
+    DateTime servedDate,
+    Line servedLine,
+  ) async {
     await _doneInitialization;
 
     if (await isFavoriteMeal(meal)) {
@@ -76,7 +87,8 @@ class FavoriteMealAccess extends ChangeNotifier implements IFavoriteMealAccess {
   Future<bool> isFavoriteMeal(Meal meal) async {
     await _doneInitialization;
     return Future.value(
-        _favorites.map((favorite) => favorite.meal.id).contains(meal.id));
+      _favorites.map((favorite) => favorite.meal.id).contains(meal.id),
+    );
   }
 
   @override

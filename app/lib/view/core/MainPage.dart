@@ -1,6 +1,4 @@
-import 'package:app/view/core/icons/navigation/NavigationFavoritesIcon.dart';
-import 'package:app/view/core/icons/navigation/NavigationMealPlanIcon.dart';
-import 'package:app/view/core/icons/navigation/NavigationSettingsIcon.dart';
+import 'package:app/view/core/icons/mensa_icons.dart';
 import 'package:app/view/favorites/Favorites.dart';
 import 'package:app/view/mealplan/MealPlanView.dart';
 import 'package:app/view/settings/Settings.dart';
@@ -37,15 +35,15 @@ class _MainPageState extends State<MainPage> {
             selectedItemColor: Theme.of(context).colorScheme.primary,
             items: [
               BottomNavigationBarItem(
-                icon: const NavigationMealPlanIcon(),
+                icon: const MensaIcon(MensaIcons.navMealPlan),
                 label: FlutterI18n.translate(context, "common.mealPlan"),
               ),
               BottomNavigationBarItem(
-                icon: const NavigationFavoritesIcon(),
+                icon: const MensaIcon(MensaIcons.navFavorites),
                 label: FlutterI18n.translate(context, "common.favorites"),
               ),
               BottomNavigationBarItem(
-                icon: const NavigationSettingsIcon(),
+                icon: const MensaIcon(MensaIcons.navSettings),
                 label: FlutterI18n.translate(context, "common.settings"),
               ),
             ],

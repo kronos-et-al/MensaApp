@@ -40,12 +40,12 @@ class FilterPreferences {
   List<FoodType> get categories => _categories;
 
   /// Sets the categories so all meals are shown.
-  setAllCategories() {
+  void setAllCategories() {
     _categories = _getAllFoodTypes();
   }
 
   /// Adds a special type of meat or the category unknown to the categories that are shown.
-  addMeatCategory(FoodType foodType) {
+  void addMeatCategory(FoodType foodType) {
     if ([
       FoodType.beef,
       FoodType.fish,
@@ -57,7 +57,7 @@ class FilterPreferences {
   }
 
   /// Removes a special type of meat or the category unknown from the categories that are shown.
-  removeMeatCategory(FoodType foodType) {
+  void removeMeatCategory(FoodType foodType) {
     if ([
       FoodType.beef,
       FoodType.fish,
@@ -69,22 +69,22 @@ class FilterPreferences {
   }
 
   /// Sets the categories so only vegetarian categories are shown.
-  setCategoriesVegetarian() {
+  void setCategoriesVegetarian() {
     _categories = [FoodType.vegan, FoodType.vegetarian, FoodType.unknown];
   }
 
   /// Sets the categories so only vegan categories are shown.
-  setCategoriesVegan() {
+  void setCategoriesVegan() {
     _categories = [FoodType.vegan, FoodType.unknown];
   }
 
   /// Adds the unknown category to the categories that are shown.
-  addCategoryUnknown() {
+  void addCategoryUnknown() {
     _categories.add(FoodType.unknown);
   }
 
   /// Removes the unknown category from the categories that are shown.
-  removeCategoryUnknown() {
+  void removeCategoryUnknown() {
     _categories.remove(FoodType.unknown);
   }
 
@@ -124,17 +124,17 @@ class FilterPreferences {
   List<Frequency> get frequency => _frequency;
 
   /// Sets the frequency so only new meals are shown.
-  setNewFrequency() {
+  void setNewFrequency() {
     _frequency = [Frequency.newMeal];
   }
 
   /// only rare meals are to be shown
-  setRareFrequency() {
+  void setRareFrequency() {
     _frequency = [Frequency.rare, Frequency.newMeal];
   }
 
   /// Sets the frequency so all meals are shown.
-  setAllFrequencies() {
+  void setAllFrequencies() {
     _frequency = _getAllFrequencies();
   }
 

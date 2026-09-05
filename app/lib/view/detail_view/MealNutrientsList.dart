@@ -10,12 +10,12 @@ class MealNutrientsList extends StatelessWidget {
   final List<Additive> _additives;
 
   /// Creates a MealNutrientsList widget.
-  const MealNutrientsList(
-      {super.key,
-      required NutritionData nutritionData,
-      required List<Additive> additives})
-      : _nutritionData = nutritionData,
-        _additives = additives;
+  const MealNutrientsList({
+    super.key,
+    required NutritionData nutritionData,
+    required List<Additive> additives,
+  }) : _nutritionData = nutritionData,
+       _additives = additives;
 
   @override
   Widget build(BuildContext context) {
@@ -23,22 +23,32 @@ class MealNutrientsList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(children: [
-          Expanded(
+        Row(
+          children: [
+            Expanded(
               child: Ink(
-            decoration: BoxDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? theme.colorScheme.surfaceDim
-                    : theme.colorScheme.surface),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              child: Text(
-                FlutterI18n.translate(context, "nutritionData.nutritionTitle"),
-                style: const TextStyle(fontWeight: FontWeight.w500),
+                decoration: BoxDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? theme.colorScheme.surfaceDim
+                      : theme.colorScheme.surface,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 2,
+                  ),
+                  child: Text(
+                    FlutterI18n.translate(
+                      context,
+                      "nutritionData.nutritionTitle",
+                    ),
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ),
               ),
             ),
-          ))
-        ]),
+          ],
+        ),
         MealNutrientsItem(
           name: FlutterI18n.translate(context, "nutritionData.energy"),
           value: _nutritionData.energy,
@@ -53,8 +63,10 @@ class MealNutrientsList extends StatelessWidget {
         MealNutrientsItem(
           name: FlutterI18n.translate(context, "nutritionData.carbohydrates"),
           value: _nutritionData.carbohydrates,
-          unit:
-              FlutterI18n.translate(context, "nutritionData.carbohydratesUnit"),
+          unit: FlutterI18n.translate(
+            context,
+            "nutritionData.carbohydratesUnit",
+          ),
         ),
         MealNutrientsItem(
           name: FlutterI18n.translate(context, "nutritionData.sugar"),
@@ -69,57 +81,79 @@ class MealNutrientsList extends StatelessWidget {
           unit: FlutterI18n.translate(context, "nutritionData.fatUnit"),
         ),
         MealNutrientsItem(
-            name: FlutterI18n.translate(context, "nutritionData.saturatedFat"),
-            value: _nutritionData.saturatedFat,
-            even: true,
-            indent: true,
-            unit: FlutterI18n.translate(
-                context, "nutritionData.saturatedFatUnit")),
+          name: FlutterI18n.translate(context, "nutritionData.saturatedFat"),
+          value: _nutritionData.saturatedFat,
+          even: true,
+          indent: true,
+          unit: FlutterI18n.translate(
+            context,
+            "nutritionData.saturatedFatUnit",
+          ),
+        ),
         MealNutrientsItem(
           name: FlutterI18n.translate(context, "nutritionData.salt"),
           value: _nutritionData.salt,
           unit: FlutterI18n.translate(context, "nutritionData.saltUnit"),
         ),
         _additives.isNotEmpty
-            ? Row(children: [
-                Expanded(
+            ? Row(
+                children: [
+                  Expanded(
                     child: Ink(
-                  decoration: BoxDecoration(
-                      color: theme.brightness == Brightness.dark
-                          ? theme.colorScheme.surfaceDim
-                          : theme.colorScheme.surface),
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    child: Text(
-                      FlutterI18n.translate(context, "additive.additiveTitle"),
-                      style: const TextStyle(fontWeight: FontWeight.w500),
+                      decoration: BoxDecoration(
+                        color: theme.brightness == Brightness.dark
+                            ? theme.colorScheme.surfaceDim
+                            : theme.colorScheme.surface,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
+                        child: Text(
+                          FlutterI18n.translate(
+                            context,
+                            "additive.additiveTitle",
+                          ),
+                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                      ),
                     ),
                   ),
-                ))
-              ])
+                ],
+              )
             : const SizedBox(),
         _additives.isNotEmpty
-            ? Row(children: [
-                Expanded(
+            ? Row(
+                children: [
+                  Expanded(
                     child: Ink(
-                  decoration: BoxDecoration(
-                      color: theme.brightness == Brightness.dark
-                          ? theme.colorScheme.surfaceDim
-                          : theme.colorScheme.surface),
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    child: Text(
-                      _additives
-                          .map((e) => FlutterI18n.translate(
-                              context, "additive.${e.name}"))
-                          .join(", "),
-                      style: const TextStyle(fontWeight: FontWeight.w300),
+                      decoration: BoxDecoration(
+                        color: theme.brightness == Brightness.dark
+                            ? theme.colorScheme.surfaceDim
+                            : theme.colorScheme.surface,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
+                        child: Text(
+                          _additives
+                              .map(
+                                (e) => FlutterI18n.translate(
+                                  context,
+                                  "additive.${e.name}",
+                                ),
+                              )
+                              .join(", "),
+                          style: const TextStyle(fontWeight: FontWeight.w300),
+                        ),
+                      ),
                     ),
                   ),
-                ))
-              ])
+                ],
+              )
             : const SizedBox(),
       ],
     );

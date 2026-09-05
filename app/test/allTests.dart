@@ -17,7 +17,7 @@ import './view-model/PreferenceAccessTest.dart' as preference;
 
 import './model/SharedPreferencesTest.dart' as storage;
 import './model/api_server/GraphQlServerAccess_test.dart' as api;
-import './model/SqLiteAccessTest.dart' as database;
+import './model/ObjectBoxDatabaseAccessTest.dart' as database;
 
 void main() async {
   group("canteen", () => canteen.main());

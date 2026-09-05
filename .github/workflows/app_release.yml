@@ -1,0 +1,112 @@
+name: App Release
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      track:
+        description: 'Google Play track (internal, alpha, beta, production)'
+        required: true
+        default: 'internal'
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Project
+        uses: ./.github/actions/setup-mensa-app
+        with:
+          java-version: '25'
+
+      - name: Decode Keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+
+      - name: Create key.properties
+        run: |
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=upload-keystore.jks" >> android/key.properties
+
+      - name: Build App Bundle (AAB)
+        run: flutter build appbundle --release --obfuscate --split-debug-info=build/app/outputs/symbols --extra-gen-snapshot-options=--strip --dart-define=API_URL=https://api.mensa-ka.de --dart-define=API_KEY=${{ secrets.API_KEY }}
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=512m"
+
+      - name: Build APK
+        run: flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols --extra-gen-snapshot-options=--strip --dart-define=API_URL=https://api.mensa-ka.de --dart-define=API_KEY=${{ secrets.API_KEY }}
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=512m"
+
+      - name: Upload to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonKey: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
+          packageName: de.mensa_ka.app
+          releaseFiles: app/build/app/outputs/bundle/release/app-release.aab
+          track: ${{ github.event.inputs.track || 'internal' }}
+          status: completed
+          mappingFile: app/build/app/outputs/mapping/release/mapping.txt
+          debugSymbols: app/build/app/outputs/symbols/
+
+      - name: Upload artifacts to Action run
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-assets-android
+          path: |
+            app/build/app/outputs/bundle/release/app-release.aab
+            app/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: warn
+
+      - name: Upload AAB to GitHub Release
+        if: github.event_name == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: app/build/app/outputs/bundle/release/app-release.aab
+          asset_name: app-release.aab
+          tag: ${{ github.ref }}
+          overwrite: true
+
+      - name: Upload APK to GitHub Release
+        if: github.event_name == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: app/build/app/outputs/flutter-apk/app-release.apk
+          asset_name: app-release.apk
+          tag: ${{ github.ref }}
+          overwrite: true
+
+  build-ios:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Project
+        uses: ./.github/actions/setup-mensa-app
+
+      - name: Build iOS IPA (No codesign)
+        run: flutter build ios --release --no-codesign --obfuscate --split-debug-info=build/app/outputs/symbols --extra-gen-snapshot-options=--strip --dart-define=API_URL=https://api.mensa-ka.de --dart-define=API_KEY=${{ secrets.API_KEY }}
+
+      - name: Upload artifacts to Action run
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-assets-ios
+          path: app/build/ios/iphoneos/Runner.app
+          if-no-files-found: warn

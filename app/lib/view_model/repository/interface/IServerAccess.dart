@@ -21,7 +21,9 @@ abstract class IServerAccess {
 
   /// The [Result] of the request in form of the [MealPlan] of the committed date and canteen or an [MealPlanException] is returned.
   Future<Result<List<MealPlan>, MealPlanException>> updateCanteen(
-      Canteen canteen, DateTime date);
+    Canteen canteen,
+    DateTime date,
+  );
 
   /// Returns the [Meal] with the committed id or an [Exception].
   Future<Result<Meal, Exception>> getMeal(Meal meal, Line line, DateTime date);
@@ -32,7 +34,11 @@ abstract class IServerAccess {
 
   /// This method link the committed url to the committed image.
   /// Returns 'true' if the linking was uploaded successfully, otherwise 'false'.
-  Future<Result<bool, ImageUploadException>> linkImage(Uint8List imageFile, MediaType mimeType, Meal meal);
+  Future<Result<bool, ImageUploadException>> linkImage(
+    Uint8List imageFile,
+    MediaType mimeType,
+    Meal meal,
+  );
 
   /// This method adds an upvote to an image.
   /// Returns 'true' if the rating was updated successfully, otherwise 'false'.
