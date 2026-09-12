@@ -18,7 +18,10 @@ class LegacyMigration {
   /// Migrates favorites from old SQLite database to new storage
   /// This creates minimal meal objects with just IDs - the actual meal data
   /// will be fetched from the API by the existing refresh logic
-  static Future<void> migrateFavoritesIfNeeded(IDatabaseAccess newDb, {IServerAccess? api}) async {
+  static Future<void> migrateFavoritesIfNeeded(
+    IDatabaseAccess newDb, {
+    IServerAccess? api,
+  }) async {
     try {
       print('[LegacyMigration] Starting legacy migration check...');
 
@@ -41,15 +44,23 @@ class LegacyMigration {
         );
 
         if (favorites.isEmpty) {
-          print('[LegacyMigration] Old database found but no favorites to migrate');
+          print(
+            '[LegacyMigration] Old database found but no favorites to migrate',
+          );
           return; // No favorites to migrate
         }
 
-        print('[LegacyMigration] Found ${favorites.length} favorites to migrate');
+        print(
+          '[LegacyMigration] Found ${favorites.length} favorites to migrate',
+        );
 
         // Get line and canteen data
-        final lines = await oldDb.rawQuery('SELECT lineID, canteenID, name, position FROM line');
-        final canteens = await oldDb.rawQuery('SELECT canteenID, name FROM canteen');
+        final lines = await oldDb.rawQuery(
+          'SELECT lineID, canteenID, name, position FROM line',
+        );
+        final canteens = await oldDb.rawQuery(
+          'SELECT canteenID, name FROM canteen',
+        );
 
         // Create lookup maps
         final canteenMap = <String, Canteen>{};
@@ -88,7 +99,12 @@ class LegacyMigration {
             id: mealId,
             name: '', // Will be updated from API
             foodType: FoodType.unknown, // Will be updated from API
-            price: Price(student: 0, employee: 0, pupil: 0, guest: 0), // Will be updated from API
+            price: Price(
+              student: 0,
+              employee: 0,
+              pupil: 0,
+              guest: 0,
+            ), // Will be updated from API
             allergens: [],
             additives: [],
             sides: [],
@@ -107,7 +123,7 @@ class LegacyMigration {
         }
 
         print('[LegacyMigration] Migration completed successfully');
-        
+
         // Rename the old database to prevent re-migration
         try {
           final oldDbFile = File(dbPath);
@@ -117,12 +133,11 @@ class LegacyMigration {
         } catch (e) {
           print('[LegacyMigration] Failed to rename old database: $e');
         }
-        
+
         // If API access is provided, try to refresh the migrated favorites
         if (api != null) {
           await _refreshMigratedFavorites(newDb, api);
         }
-
       } finally {
         oldDb.close();
       }
@@ -134,12 +149,15 @@ class LegacyMigration {
   }
 
   /// Refreshes the migrated favorites by fetching current data from API
-  static Future<void> _refreshMigratedFavorites(IDatabaseAccess db, IServerAccess api) async {
+  static Future<void> _refreshMigratedFavorites(
+    IDatabaseAccess db,
+    IServerAccess api,
+  ) async {
     print('[LegacyMigration] Refreshing migrated favorites from API...');
-    
+
     try {
       final favorites = await db.getFavorites();
-      
+
       for (final favorite in favorites) {
         // Try to get current meal data from API
         final result = await api.getMeal(
@@ -147,17 +165,23 @@ class LegacyMigration {
           favorite.servedLine,
           favorite.servedDate,
         );
-        
+
         if (result case Success(value: final meal)) {
           // Update the meal with current data from API
           await db.updateMeal(meal);
-          await db.addFavorite(meal, meal.lastServed ?? favorite.servedDate, favorite.servedLine);
+          await db.addFavorite(
+            meal,
+            meal.lastServed ?? favorite.servedDate,
+            favorite.servedLine,
+          );
           print('[LegacyMigration] Refreshed meal ${meal.id} from API');
         } else {
-          print('[LegacyMigration] Could not refresh meal ${favorite.meal.id} from API');
+          print(
+            '[LegacyMigration] Could not refresh meal ${favorite.meal.id} from API',
+          );
         }
       }
-      
+
       print('[LegacyMigration] Favorite refresh completed');
     } catch (e) {
       print('[LegacyMigration] Failed to refresh favorites: $e');

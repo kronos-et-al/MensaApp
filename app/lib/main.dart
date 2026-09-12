@@ -93,7 +93,7 @@ class MensaApp extends StatelessWidget {
   }) : _delegate = delegate,
        _store = store;
 
-   // This widget is the root of your application.
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -105,21 +105,21 @@ class MensaApp extends StatelessWidget {
         if (sharedPreferences.hasError) {
           return Center(child: Text(sharedPreferences.error.toString()));
         }
-         ILocalStorage sharedPreferencesAccess = SharedPreferenceAccess(
-           sharedPreferences.requireData,
-         );
-         IDatabaseAccess db = ObjectBoxDatabaseAccess(_store);
-         IServerAccess api = GraphQlServerAccess(
-           const String.fromEnvironment(
-             "API_URL",
-             defaultValue: "https://api.mensa-ka.de",
-           ),
-           const String.fromEnvironment("API_KEY"),
-           sharedPreferencesAccess.getClientIdentifier() ?? "",
-         );
-         
-         // Run legacy migration if needed (migrates old SQLite favorites to ObjectBox)
-         LegacyMigration.migrateFavoritesIfNeeded(db, api: api);
+        ILocalStorage sharedPreferencesAccess = SharedPreferenceAccess(
+          sharedPreferences.requireData,
+        );
+        IDatabaseAccess db = ObjectBoxDatabaseAccess(_store);
+        IServerAccess api = GraphQlServerAccess(
+          const String.fromEnvironment(
+            "API_URL",
+            defaultValue: "https://api.mensa-ka.de",
+          ),
+          const String.fromEnvironment("API_KEY"),
+          sharedPreferencesAccess.getClientIdentifier() ?? "",
+        );
+
+        // Run legacy migration if needed (migrates old SQLite favorites to ObjectBox)
+        LegacyMigration.migrateFavoritesIfNeeded(db, api: api);
         return MultiProvider(
           providers: [
             ChangeNotifierProvider<IMealAccess>(
@@ -129,13 +129,12 @@ class MensaApp extends StatelessWidget {
             ChangeNotifierProvider<IFavoriteMealAccess>(
               create: (context) => FavoriteMealAccess(db, api),
             ),
-             ChangeNotifierProvider<IPreferenceAccess>(
-               create: (context) => PreferenceAccess(sharedPreferencesAccess),
-             ),
-             ChangeNotifierProvider<IImageAccess>(
-               create: (context) => ImageAccess(api, db),
-             ),
-
+            ChangeNotifierProvider<IPreferenceAccess>(
+              create: (context) => PreferenceAccess(sharedPreferencesAccess),
+            ),
+            ChangeNotifierProvider<IImageAccess>(
+              create: (context) => ImageAccess(api, db),
+            ),
           ],
           child: Consumer<IPreferenceAccess>(
             builder: (context, preferenceAccess, child) => MaterialApp(
