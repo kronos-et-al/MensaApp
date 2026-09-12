@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
 import 'package:app/model/database/ObjectBoxDatabaseAccess.dart';
+import 'package:app/model/database/LegacyMigration.dart';
 import 'package:app/model/database/objectbox.g.dart';
 import 'package:app/model/local_storage/SharedPreferenceAccess.dart';
 import 'package:app/view/core/MainPage.dart';
@@ -17,6 +18,7 @@ import 'package:app/view_model/repository/data_classes/settings/MensaColorScheme
 import 'package:app/view_model/repository/interface/IDatabaseAccess.dart';
 import 'package:app/view_model/repository/interface/ILocalStorage.dart';
 import 'package:app/view_model/repository/interface/IServerAccess.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
@@ -91,7 +93,7 @@ class MensaApp extends StatelessWidget {
   }) : _delegate = delegate,
        _store = store;
 
-  // This widget is the root of your application.
+   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -103,18 +105,21 @@ class MensaApp extends StatelessWidget {
         if (sharedPreferences.hasError) {
           return Center(child: Text(sharedPreferences.error.toString()));
         }
-        ILocalStorage sharedPreferencesAccess = SharedPreferenceAccess(
-          sharedPreferences.requireData,
-        );
-        IDatabaseAccess db = ObjectBoxDatabaseAccess(_store);
-        IServerAccess api = GraphQlServerAccess(
-          const String.fromEnvironment(
-            "API_URL",
-            defaultValue: "https://api.mensa-ka.de",
-          ),
-          const String.fromEnvironment("API_KEY"),
-          sharedPreferencesAccess.getClientIdentifier() ?? "",
-        );
+         ILocalStorage sharedPreferencesAccess = SharedPreferenceAccess(
+           sharedPreferences.requireData,
+         );
+         IDatabaseAccess db = ObjectBoxDatabaseAccess(_store);
+         IServerAccess api = GraphQlServerAccess(
+           const String.fromEnvironment(
+             "API_URL",
+             defaultValue: "https://api.mensa-ka.de",
+           ),
+           const String.fromEnvironment("API_KEY"),
+           sharedPreferencesAccess.getClientIdentifier() ?? "",
+         );
+         
+         // Run legacy migration if needed (migrates old SQLite favorites to ObjectBox)
+         LegacyMigration.migrateFavoritesIfNeeded(db, api: api);
         return MultiProvider(
           providers: [
             ChangeNotifierProvider<IMealAccess>(
@@ -124,12 +129,13 @@ class MensaApp extends StatelessWidget {
             ChangeNotifierProvider<IFavoriteMealAccess>(
               create: (context) => FavoriteMealAccess(db, api),
             ),
-            ChangeNotifierProvider<IPreferenceAccess>(
-              create: (context) => PreferenceAccess(sharedPreferencesAccess),
-            ),
-            ChangeNotifierProvider<IImageAccess>(
-              create: (context) => ImageAccess(api, db),
-            ),
+             ChangeNotifierProvider<IPreferenceAccess>(
+               create: (context) => PreferenceAccess(sharedPreferencesAccess),
+             ),
+             ChangeNotifierProvider<IImageAccess>(
+               create: (context) => ImageAccess(api, db),
+             ),
+
           ],
           child: Consumer<IPreferenceAccess>(
             builder: (context, preferenceAccess, child) => MaterialApp(
