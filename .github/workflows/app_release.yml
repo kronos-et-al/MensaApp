@@ -52,13 +52,12 @@ jobs:
       - name: Upload to Play Store
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJsonKey: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
           packageName: de.mensa_ka.app
           releaseFiles: app/build/app/outputs/bundle/release/app-release.aab
           track: ${{ github.event.inputs.track || 'internal' }}
           status: draft
           mappingFile: app/build/app/outputs/mapping/release/mapping.txt
-          debugSymbols: app/build/app/outputs/symbols/
 
       - name: Upload artifacts to Action run
         if: always()
