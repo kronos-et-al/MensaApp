@@ -93,21 +93,18 @@ class Favorites extends StatelessWidget {
                   );
                 }
               },
-              child: Column(
-                children: [
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: mealPlan.length,
-                    itemBuilder: (context, index) {
-                      return MealListEntry(
-                        enableFavoriteHighlight: false,
-                        meal: mealPlan[index].meal,
-                        line: mealPlan[index].servedLine,
-                        date: mealPlan[index].servedDate,
-                      );
-                    },
-                  ),
-                ],
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                scrollDirection: Axis.vertical,
+                itemCount: mealPlan.length,
+                itemBuilder: (context, index) {
+                  return MealListEntry(
+                    enableFavoriteHighlight: false,
+                    meal: mealPlan[index].meal,
+                    line: mealPlan[index].servedLine,
+                    date: mealPlan[index].servedDate,
+                  );
+                },
               ),
             ),
           );
