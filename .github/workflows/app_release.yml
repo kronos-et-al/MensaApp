@@ -56,7 +56,7 @@ jobs:
           packageName: de.mensa_ka.app
           releaseFiles: app/build/app/outputs/bundle/release/app-release.aab
           track: ${{ github.event.inputs.track || 'internal' }}
-          status: completed
+          status: draft
           mappingFile: app/build/app/outputs/mapping/release/mapping.txt
           debugSymbols: app/build/app/outputs/symbols/
 
