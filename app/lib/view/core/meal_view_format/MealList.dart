@@ -8,7 +8,7 @@ class MealList extends StatelessWidget {
 
   /// Creates a MealList.
   const MealList({super.key, required List<MealPlan> mealPlans})
-      : _mealPlans = mealPlans;
+    : _mealPlans = mealPlans;
 
   @override
   Widget build(BuildContext context) {

@@ -26,7 +26,9 @@ abstract class IDatabaseAccess {
   /// Returns the [MealPlan] of the committed date of the committed canteen.
   /// If the mealplan does not exists, it returns an [MealPlanException].
   Future<Result<List<MealPlan>, MealPlanException>> getMealPlan(
-      DateTime date, Canteen canteen);
+    DateTime date,
+    Canteen canteen,
+  );
 
   /// Returns the [Meal] with the id of [meal].
   Future<Result<Meal, NoMealException>> getMeal(Meal meal);

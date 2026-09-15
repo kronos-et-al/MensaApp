@@ -40,4 +40,16 @@ abstract class ILocalStorage {
 
   /// Sets the committed MealPlanFormat.
   Future<void> setMealPlanFormat(MealPlanFormat format);
+
+  /// Returns the last seen app version.
+  String? getLastSeenVersion();
+
+  /// Sets the last seen app version.
+  Future<void> setLastSeenVersion(String version);
+
+  /// Returns true if the update popup should be shown.
+  bool shouldShowUpdatePopup();
+
+  /// Sets if the update popup should be shown.
+  Future<void> setShouldShowUpdatePopup(bool show);
 }

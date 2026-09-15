@@ -12,56 +12,67 @@ class RatingsOverview extends StatelessWidget {
 
   /// Creates a new RatingsOverview.
   RatingsOverview({super.key, required Meal meal, Color? backgroundColor})
-      : _meal = meal,
-        _backgroundColor = backgroundColor;
+    : _meal = meal,
+      _backgroundColor = backgroundColor;
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(FlutterI18n.translate(context, "ratings.titleRatings"),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          FlutterI18n.translate(context, "ratings.titleRatings"),
           textAlign: TextAlign.left,
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurface,
             fontSize: 20,
             fontWeight: FontWeight.bold,
-          )),
-      const SizedBox(height: 8),
-      Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: _backgroundColor ?? Theme.of(context).colorScheme.surfaceDim,
-          borderRadius: BorderRadius.circular(4),
+          ),
         ),
-        child: Column(
-          children: [
-            Text(_numberFormat.format(_meal.averageRating),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: _backgroundColor ?? Theme.of(context).colorScheme.surfaceDim,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Column(
+            children: [
+              Text(
+                _numberFormat.format(_meal.averageRating),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                   fontSize: 28,
-                )),
-            const SizedBox(height: 4),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              MensaRatingInput(
-                value: _meal.averageRating,
-                onChanged: (p0) => {},
-                disabled: true,
-                color: Theme.of(context).colorScheme.onSurface,
-                size: 20,
-                max: 5,
-              )
-            ]),
-            const SizedBox(height: 8),
-            Text(
+                ),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MensaRatingInput(
+                    value: _meal.averageRating,
+                    onChanged: (p0) => {},
+                    disabled: true,
+                    color: Theme.of(context).colorScheme.onSurface,
+                    size: 20,
+                    max: 5,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
                 '${_meal.numberOfRatings.toString()} ${FlutterI18n.translate(context, "ratings.labelRatingsCount")}',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.w300,
                   fontSize: 12,
-                )),
-          ],
+                ),
+              ),
+            ],
+          ),
         ),
-      )
-    ]);
+      ],
+    );
   }
 }

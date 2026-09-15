@@ -8,44 +8,44 @@ class EnvironmentInfo {
   final int _rainforestRating;
   final int _maxRating;
 
-  EnvironmentInfo(
-      {required int averageRating,
-      required int co2Rating,
-      required int co2Value,
-      required int waterRating,
-      required int waterValue,
-      required int animalWelfareRating,
-      required int rainforestRating,
-      required int maxRating})
-      : _averageRating = averageRating,
-        _co2Rating = co2Rating,
-        _co2Value = co2Value,
-        _waterRating = waterRating,
-        _waterValue = waterValue,
-        _animalWelfareRating = animalWelfareRating,
-        _rainforestRating = rainforestRating,
-        _maxRating = maxRating;
+  EnvironmentInfo({
+    required int averageRating,
+    required int co2Rating,
+    required int co2Value,
+    required int waterRating,
+    required int waterValue,
+    required int animalWelfareRating,
+    required int rainforestRating,
+    required int maxRating,
+  }) : _averageRating = averageRating,
+       _co2Rating = co2Rating,
+       _co2Value = co2Value,
+       _waterRating = waterRating,
+       _waterValue = waterValue,
+       _animalWelfareRating = animalWelfareRating,
+       _rainforestRating = rainforestRating,
+       _maxRating = maxRating;
 
-  EnvironmentInfo.copy(
-      {required EnvironmentInfo environmentInfo,
-      int? averageRating,
-      int? co2Rating,
-      int? co2Value,
-      int? waterRating,
-      int? waterValue,
-      int? animalWelfareRating,
-      int? rainforestRating,
-      int? maxRating})
-      : _averageRating = averageRating ?? environmentInfo._averageRating,
-        _co2Rating = co2Rating ?? environmentInfo._co2Rating,
-        _co2Value = co2Value ?? environmentInfo._co2Value,
-        _waterRating = waterRating ?? environmentInfo._waterRating,
-        _waterValue = waterValue ?? environmentInfo._waterValue,
-        _animalWelfareRating =
-            animalWelfareRating ?? environmentInfo._animalWelfareRating,
-        _rainforestRating =
-            rainforestRating ?? environmentInfo._rainforestRating,
-        _maxRating = maxRating ?? environmentInfo._maxRating;
+  EnvironmentInfo.copy({
+    required EnvironmentInfo environmentInfo,
+    int? averageRating,
+    int? co2Rating,
+    int? co2Value,
+    int? waterRating,
+    int? waterValue,
+    int? animalWelfareRating,
+    int? rainforestRating,
+    int? maxRating,
+  }) : _averageRating = averageRating ?? environmentInfo._averageRating,
+       _co2Rating = co2Rating ?? environmentInfo._co2Rating,
+       _co2Value = co2Value ?? environmentInfo._co2Value,
+       _waterRating = waterRating ?? environmentInfo._waterRating,
+       _waterValue = waterValue ?? environmentInfo._waterValue,
+       _animalWelfareRating =
+           animalWelfareRating ?? environmentInfo._animalWelfareRating,
+       _rainforestRating =
+           rainforestRating ?? environmentInfo._rainforestRating,
+       _maxRating = maxRating ?? environmentInfo._maxRating;
 
   int get averageRating => _averageRating;
 

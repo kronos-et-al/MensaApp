@@ -15,10 +15,10 @@ class Line {
     required String name,
     required Canteen canteen,
     required int position,
-  })  : _id = id,
-        _name = name,
-        _canteen = canteen,
-        _position = position;
+  }) : _id = id,
+       _name = name,
+       _canteen = canteen,
+       _position = position;
 
   /// This method returns the id of the line.
   String get id => _id;

@@ -43,5 +43,5 @@ enum Additive {
   glazingWithCacao,
 
   /// the food includes pressed fish
-  pressedFish
+  pressedFish,
 }

@@ -4,5 +4,5 @@ enum MealPlanFormat {
   list,
 
   /// the meal plan is displayed as a grid
-  grid
+  grid,
 }

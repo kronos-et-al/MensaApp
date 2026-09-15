@@ -1,6 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:app/model/api_server/requests/querys.graphql.dart';
 import 'package:app/model/api_server/requests/schema.graphql.dart';
@@ -23,13 +23,22 @@ import 'package:app/view_model/repository/error_handling/MealPlanException.dart'
 import 'package:app/view_model/repository/error_handling/NoMealException.dart';
 import 'package:app/view_model/repository/error_handling/Result.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import "package:http/http.dart" as http;
+import 'package:http/io_client.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:intl/intl.dart';
 
 import '../../view_model/repository/interface/IServerAccess.dart';
 import 'requests/mutations.graphql.dart';
+
+HttpClient _createHttpClient() {
+  final client = HttpClient();
+  client.connectionTimeout = const Duration(seconds: 30);
+  client.idleTimeout = const Duration(minutes: 1);
+  return client;
+}
 
 class _MensaClient extends http.BaseClient {
   final http.Client _client;
@@ -40,7 +49,7 @@ class _MensaClient extends http.BaseClient {
   static const String _authenticationScheme = "Mensa";
 
   _MensaClient(this._clientId, this._apiKey, [http.Client? client])
-    : _client = client ?? http.Client();
+    : _client = client ?? IOClient(_createHttpClient());
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
@@ -98,46 +107,86 @@ class GraphQlServerAccess implements IServerAccess {
 
   @override
   Future<bool> deleteDownvote(ImageData image) async {
-    final result = await _client.mutate$RemoveDownvote(
-      Options$Mutation$RemoveDownvote(
-        variables: Variables$Mutation$RemoveDownvote(imageId: image.id),
-      ),
-    );
+    try {
+      final result = await _client.mutate$RemoveDownvote(
+        Options$Mutation$RemoveDownvote(
+          variables: Variables$Mutation$RemoveDownvote(imageId: image.id),
+        ),
+      );
 
-    return result.parsedData?.removeDownvote ?? false;
+      if (result.hasException) {
+        debugPrint("deleteDownvote mutation failed: ${result.exception}");
+        return false;
+      }
+
+      return result.parsedData?.removeDownvote ?? false;
+    } catch (e, stack) {
+      debugPrint("deleteDownvote exception: $e\n$stack");
+      return false;
+    }
   }
 
   @override
   Future<bool> deleteUpvote(ImageData image) async {
-    final result = await _client.mutate$RemoveUpvote(
-      Options$Mutation$RemoveUpvote(
-        variables: Variables$Mutation$RemoveUpvote(imageId: image.id),
-      ),
-    );
+    try {
+      final result = await _client.mutate$RemoveUpvote(
+        Options$Mutation$RemoveUpvote(
+          variables: Variables$Mutation$RemoveUpvote(imageId: image.id),
+        ),
+      );
 
-    return result.parsedData?.removeUpvote ?? false;
+      if (result.hasException) {
+        debugPrint("deleteUpvote mutation failed: ${result.exception}");
+        return false;
+      }
+
+      return result.parsedData?.removeUpvote ?? false;
+    } catch (e, stack) {
+      debugPrint("deleteUpvote exception: $e\n$stack");
+      return false;
+    }
   }
 
   @override
   Future<bool> downvoteImage(ImageData image) async {
-    final result = await _client.mutate$AddDownvote(
-      Options$Mutation$AddDownvote(
-        variables: Variables$Mutation$AddDownvote(imageId: image.id),
-      ),
-    );
+    try {
+      final result = await _client.mutate$AddDownvote(
+        Options$Mutation$AddDownvote(
+          variables: Variables$Mutation$AddDownvote(imageId: image.id),
+        ),
+      );
 
-    return result.parsedData?.addDownvote ?? false;
+      if (result.hasException) {
+        debugPrint("downvoteImage mutation failed: ${result.exception}");
+        return false;
+      }
+
+      return result.parsedData?.addDownvote ?? false;
+    } catch (e, stack) {
+      debugPrint("downvoteImage exception: $e\n$stack");
+      return false;
+    }
   }
 
   @override
   Future<bool> upvoteImage(ImageData image) async {
-    final result = await _client.mutate$AddUpvote(
-      Options$Mutation$AddUpvote(
-        variables: Variables$Mutation$AddUpvote(imageId: image.id),
-      ),
-    );
+    try {
+      final result = await _client.mutate$AddUpvote(
+        Options$Mutation$AddUpvote(
+          variables: Variables$Mutation$AddUpvote(imageId: image.id),
+        ),
+      );
 
-    return result.parsedData?.addUpvote ?? false;
+      if (result.hasException) {
+        debugPrint("upvoteImage mutation failed: ${result.exception}");
+        return false;
+      }
+
+      return result.parsedData?.addUpvote ?? false;
+    } catch (e, stack) {
+      debugPrint("upvoteImage exception: $e\n$stack");
+      return false;
+    }
   }
 
   @override
@@ -146,67 +195,111 @@ class GraphQlServerAccess implements IServerAccess {
     MediaType mimeType,
     Meal meal,
   ) async {
-    final image = http.MultipartFile.fromBytes(
-      "",
-      imageFile,
-      filename: "image",
-      contentType: mimeType,
-    );
-    final hash = base64Encode(sha512.convert(imageFile).bytes);
-    assert(image.filename != null);
+    try {
+      final image = http.MultipartFile.fromBytes(
+        "",
+        imageFile,
+        filename: "image",
+        contentType: mimeType,
+      );
+      final hash = base64Encode(sha512.convert(imageFile).bytes);
+      assert(image.filename != null);
 
-    final result = await _client.mutate$LinkImage(
-      Options$Mutation$LinkImage(
-        variables: Variables$Mutation$LinkImage(
-          image: image,
-          mealId: meal.id,
-          hash: hash,
+      final result = await _client.mutate$LinkImage(
+        Options$Mutation$LinkImage(
+          variables: Variables$Mutation$LinkImage(
+            image: image,
+            mealId: meal.id,
+            hash: hash,
+          ),
         ),
-      ),
-    );
+      );
 
-    if (result.hasException) {
-      if (result.exception!.linkException != null) {
-        return Failure(ImageUploadException("Verbindungsfehler"));
-      } else if (result.exception!.graphqlErrors.isNotEmpty) {
-        return Failure(
-          ImageUploadException(result.exception!.graphqlErrors[0].message),
-        );
+      if (result.hasException) {
+        final rawError = result.exception.toString();
+        debugPrint("linkImage mutation error: $rawError");
+
+        if (result.exception!.linkException != null) {
+          return Failure(
+            ImageUploadException("snackbar.noConnection", rawError),
+          );
+        } else if (result.exception!.graphqlErrors.isNotEmpty) {
+          final graphqlMsg = result.exception!.graphqlErrors[0].message;
+          if (graphqlMsg.toLowerCase().contains(
+                "image could not be verified",
+              ) ||
+              graphqlMsg.toLowerCase().contains("could not be verified")) {
+            return Failure(
+              ImageUploadException(
+                "snackbar.imageVerificationError",
+                graphqlMsg,
+              ),
+            );
+          }
+          return Failure(
+            ImageUploadException("snackbar.linkImageError", graphqlMsg),
+          );
+        }
+        return Failure(ImageUploadException("snackbar.unknownError", rawError));
       }
-      return Failure(ImageUploadException("Unbekannter Fehler"));
-    }
 
-    return Success(result.parsedData?.addImage ?? false);
+      return const Success(true);
+    } catch (e, stack) {
+      debugPrint("linkImage exception: $e\n$stack");
+      return Failure(
+        ImageUploadException("snackbar.noConnection", "$e\n$stack"),
+      );
+    }
   }
 
   @override
   Future<bool> reportImage(ImageData image, ReportCategory reportReason) async {
-    final convertedReason = _convertToReportReason(reportReason);
+    try {
+      final convertedReason = _convertToReportReason(reportReason);
 
-    final result = await _client.mutate$ReportImage(
-      Options$Mutation$ReportImage(
-        variables: Variables$Mutation$ReportImage(
-          imageId: image.id,
-          reason: convertedReason,
+      final result = await _client.mutate$ReportImage(
+        Options$Mutation$ReportImage(
+          variables: Variables$Mutation$ReportImage(
+            imageId: image.id,
+            reason: convertedReason,
+          ),
         ),
-      ),
-    );
+      );
 
-    return result.parsedData?.reportImage ?? false;
+      if (result.hasException) {
+        debugPrint("reportImage mutation failed: ${result.exception}");
+        return false;
+      }
+
+      return result.parsedData?.reportImage ?? false;
+    } catch (e, stack) {
+      debugPrint("reportImage exception: $e\n$stack");
+      return false;
+    }
   }
 
   @override
   Future<bool> updateMealRating(int rating, Meal meal) async {
-    final result = await _client.mutate$UpdateRating(
-      Options$Mutation$UpdateRating(
-        variables: Variables$Mutation$UpdateRating(
-          mealId: meal.id,
-          rating: rating,
+    try {
+      final result = await _client.mutate$UpdateRating(
+        Options$Mutation$UpdateRating(
+          variables: Variables$Mutation$UpdateRating(
+            mealId: meal.id,
+            rating: rating,
+          ),
         ),
-      ),
-    );
+      );
 
-    return result.parsedData?.setRating ?? false;
+      if (result.hasException) {
+        debugPrint("updateMealRating mutation failed: ${result.exception}");
+        return false;
+      }
+
+      return result.parsedData?.setRating ?? false;
+    } catch (e, stack) {
+      debugPrint("updateMealRating exception: $e\n$stack");
+      return false;
+    }
   }
 
   // ---------------------- queries ----------------------
@@ -222,32 +315,40 @@ class GraphQlServerAccess implements IServerAccess {
     // TODO parallel?
     for (int offset = 0; offset < daysToParse; offset++) {
       final date = today.add(Duration(days: offset));
-      final result = await _client.query$GetMealPlanForDay(
-        Options$Query$GetMealPlanForDay(
-          fetchPolicy: FetchPolicy.networkOnly,
-          variables: Variables$Query$GetMealPlanForDay(
-            date: _dateFormat.format(date),
+      try {
+        final result = await _client.query$GetMealPlanForDay(
+          Options$Query$GetMealPlanForDay(
+            fetchPolicy: FetchPolicy.networkOnly,
+            variables: Variables$Query$GetMealPlanForDay(
+              date: _dateFormat.format(date),
+            ),
           ),
-        ),
-      );
+        );
 
-      final exception = result.exception;
-      if (exception != null) {
-        return Failure(NoConnectionException(exception.toString()));
-      }
+        final exception = result.exception;
+        if (exception != null) {
+          debugPrint(
+            "updateAll query exception for offset $offset: $exception",
+          );
+          return Failure(NoConnectionException(exception.toString()));
+        }
 
-      final mealPlan = _convertMealPlan(
-        result.parsedData?.getCanteens ?? [],
-        date,
-      );
+        final mealPlan = _convertMealPlan(
+          result.parsedData?.getCanteens ?? [],
+          date,
+        );
 
-      switch (mealPlan) {
-        case Success(value: final mealPlan):
-          {
-            completeList.addAll(mealPlan);
-          }
-        case Failure(exception: _):
-          {}
+        switch (mealPlan) {
+          case Success(value: final mealPlan):
+            {
+              completeList.addAll(mealPlan);
+            }
+          case Failure(exception: _):
+            {}
+        }
+      } catch (e, stack) {
+        debugPrint("updateAll exception for offset $offset: $e\n$stack");
+        return Failure(NoConnectionException(e.toString()));
       }
     }
     return Success(completeList);
@@ -259,28 +360,35 @@ class GraphQlServerAccess implements IServerAccess {
     Line line,
     DateTime date,
   ) async {
-    final result = await _client.query$GetMeal(
-      Options$Query$GetMeal(
-        fetchPolicy: FetchPolicy.networkOnly,
-        variables: Variables$Query$GetMeal(
-          date: _dateFormat.format(date),
-          mealId: meal.id,
-          lineId: line.id,
+    try {
+      final result = await _client.query$GetMeal(
+        Options$Query$GetMeal(
+          fetchPolicy: FetchPolicy.networkOnly,
+          variables: Variables$Query$GetMeal(
+            date: _dateFormat.format(date),
+            mealId: meal.id,
+            lineId: line.id,
+          ),
         ),
-      ),
-    );
+      );
 
-    final mealData = result.parsedData?.getMeal;
-    final exception = result.exception;
-    if (exception != null) {
-      return Failure(NoConnectionException(exception.toString()));
+      final mealData = result.parsedData?.getMeal;
+      final exception = result.exception;
+      if (exception != null) {
+        debugPrint("getMeal query exception: $exception");
+        return Failure(NoConnectionException(exception.toString()));
+      }
+
+      if (mealData == null) {
+        debugPrint("getMeal returned null mealData");
+        return Failure(NoMealException("Could not request meal from api"));
+      }
+
+      return Success(_convertMeal(mealData));
+    } catch (e, stack) {
+      debugPrint("getMeal exception: $e\n$stack");
+      return Failure(NoConnectionException(e.toString()));
     }
-
-    if (mealData == null) {
-      return Failure(NoMealException("Could not request meal from api"));
-    }
-
-    return Success(_convertMeal(mealData));
   }
 
   @override
@@ -288,66 +396,86 @@ class GraphQlServerAccess implements IServerAccess {
     Canteen canteen,
     DateTime date,
   ) async {
-    final result = await _client.query$GetCanteenDate(
-      Options$Query$GetCanteenDate(
-        fetchPolicy: FetchPolicy.networkOnly,
-        variables: Variables$Query$GetCanteenDate(
-          canteenId: canteen.id,
-          date: _dateFormat.format(date),
+    try {
+      final result = await _client.query$GetCanteenDate(
+        Options$Query$GetCanteenDate(
+          fetchPolicy: FetchPolicy.networkOnly,
+          variables: Variables$Query$GetCanteenDate(
+            canteenId: canteen.id,
+            date: _dateFormat.format(date),
+          ),
         ),
-      ),
-    );
+      );
 
-    final exception = result.exception;
-    if (exception != null) {
-      return Failure(NoConnectionException(exception.toString()));
+      final exception = result.exception;
+      if (exception != null) {
+        debugPrint("updateCanteen query exception: $exception");
+        return Failure(NoConnectionException(exception.toString()));
+      }
+
+      final mealPlan = _convertMealPlan(
+        [result.parsedData?.getCanteen].nonNulls.toList(),
+        date,
+      );
+      return mealPlan;
+    } catch (e, stack) {
+      debugPrint("updateCanteen exception: $e\n$stack");
+      return Failure(NoConnectionException(e.toString()));
     }
-
-    final mealPlan = _convertMealPlan(
-      [result.parsedData?.getCanteen].nonNulls.toList(),
-      date,
-    );
-    return mealPlan;
   }
 
   @override
   Future<Canteen?> getDefaultCanteen() async {
-    final result = await _client.query$GetDefaultCanteen(
-      Options$Query$GetDefaultCanteen(),
-    );
+    try {
+      final result = await _client.query$GetDefaultCanteen(
+        Options$Query$GetDefaultCanteen(),
+      );
 
-    final exception = result.exception;
-    if (exception != null) {
+      final exception = result.exception;
+      if (exception != null) {
+        debugPrint("getDefaultCanteen query exception: $exception");
+        return null;
+      }
+
+      var canteen = result.parsedData?.getCanteens.first;
+
+      if (canteen == null) {
+        debugPrint("getDefaultCanteen returned no canteen");
+        return null;
+      }
+      return _convertCanteen(canteen);
+    } catch (e, stack) {
+      debugPrint("getDefaultCanteen exception: $e\n$stack");
       return null;
     }
-
-    var canteen = result.parsedData?.getCanteens.first;
-
-    if (canteen == null) {
-      return null;
-    }
-    return _convertCanteen(canteen);
   }
 
   @override
   Future<List<Canteen>?> getCanteens() async {
-    final result = await _client.query$GetDefaultCanteen(
-      Options$Query$GetDefaultCanteen(),
-    );
+    try {
+      final result = await _client.query$GetDefaultCanteen(
+        Options$Query$GetDefaultCanteen(),
+      );
 
-    final exception = result.exception;
-    if (exception != null) {
+      final exception = result.exception;
+      if (exception != null) {
+        debugPrint("getCanteens query exception: $exception");
+        return null;
+      }
+
+      var canteen = result.parsedData?.getCanteens.first;
+
+      if (canteen == null) {
+        debugPrint("getCanteens returned no canteen");
+        return null;
+      }
+      return result.parsedData?.getCanteens
+          .map((e) => _convertCanteen(e))
+          .toList();
+    } catch (e, stack) {
+      debugPrint("getCanteens exception: $e\n$stack");
       return null;
     }
-
-    var canteen = result.parsedData?.getCanteens.first;
-
-    if (canteen == null) {
-      return null;
-    }
-    return result.parsedData?.getCanteens
-        .map((e) => _convertCanteen(e))
-        .toList();
   }
 
   // --------------- utility helper methods ---------------
@@ -365,29 +493,27 @@ class GraphQlServerAccess implements IServerAccess {
     return Success(
       mealPlans
           .expand(
-            (mealPlan) =>
-                mealPlan.lines
-                    .asMap()
-                    .map(
-                      (idx, line) => MapEntry(
-                        idx,
-                        MealPlan(
-                          date: date,
-                          line: Line(
-                            id: line.id,
-                            name: line.name,
-                            canteen: _convertCanteen(line.canteen),
-                            position: idx,
-                          ),
-                          // mensa closed when data available but no meals in list
-                          isClosed: line.meals!.isEmpty,
-                          meals:
-                              line.meals!.map((e) => _convertMeal(e)).toList(),
-                        ),
+            (mealPlan) => mealPlan.lines
+                .asMap()
+                .map(
+                  (idx, line) => MapEntry(
+                    idx,
+                    MealPlan(
+                      date: date,
+                      line: Line(
+                        id: line.id,
+                        name: line.name,
+                        canteen: _convertCanteen(line.canteen),
+                        position: idx,
                       ),
-                    )
-                    .values
-                    .toList(),
+                      // mensa closed when data available but no meals in list
+                      isClosed: line.meals!.isEmpty,
+                      meals: line.meals!.map((e) => _convertMeal(e)).toList(),
+                    ),
+                  ),
+                )
+                .values
+                .toList(),
           )
           .toList(),
     );
@@ -399,18 +525,20 @@ class GraphQlServerAccess implements IServerAccess {
       name: meal.name,
       foodType: _convertFoodType(meal.mealType),
       price: _convertPrice(meal.price),
-      additives:
-          meal.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
-      allergens:
-          meal.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
-      nutritionData:
-          meal.nutritionData != null
-              ? _convertNutritionData(meal.nutritionData!)
-              : null,
-      environmentInfo:
-          meal.environmentInfo != null
-              ? _convertEnvironmentInfo(meal.environmentInfo!)
-              : null,
+      additives: meal.additives
+          .map((e) => _convertAdditive(e))
+          .nonNulls
+          .toList(),
+      allergens: meal.allergens
+          .map((e) => _convertAllergen(e))
+          .nonNulls
+          .toList(),
+      nutritionData: meal.nutritionData != null
+          ? _convertNutritionData(meal.nutritionData!)
+          : null,
+      environmentInfo: meal.environmentInfo != null
+          ? _convertEnvironmentInfo(meal.environmentInfo!)
+          : null,
       averageRating: meal.ratings.averageRating,
       individualRating: meal.ratings.personalRating,
       numberOfRatings: meal.ratings.ratingsCount,
@@ -456,14 +584,12 @@ Side _convertSide(Fragment$mealInfo$sides e) {
     price: _convertPrice(e.price),
     allergens: e.allergens.map((e) => _convertAllergen(e)).nonNulls.toList(),
     additives: e.additives.map((e) => _convertAdditive(e)).nonNulls.toList(),
-    environmentInfo:
-        e.environmentInfo != null
-            ? _convertEnvironmentInfo(e.environmentInfo!)
-            : null,
-    nutritionData:
-        e.nutritionData != null
-            ? _convertNutritionData(e.nutritionData!)
-            : null,
+    environmentInfo: e.environmentInfo != null
+        ? _convertEnvironmentInfo(e.environmentInfo!)
+        : null,
+    nutritionData: e.nutritionData != null
+        ? _convertNutritionData(e.nutritionData!)
+        : null,
   );
 }
 
@@ -474,12 +600,11 @@ ImageData _convertImage(Fragment$mealInfo$images e) {
     imageRank: e.rank,
     positiveRating: e.upvotes,
     negativeRating: e.downvotes,
-    individualRating:
-        e.personalUpvote
-            ? 1
-            : e.personalDownvote
-            ? -1
-            : 0,
+    individualRating: e.personalUpvote
+        ? 1
+        : e.personalDownvote
+        ? -1
+        : 0,
   );
 }
 

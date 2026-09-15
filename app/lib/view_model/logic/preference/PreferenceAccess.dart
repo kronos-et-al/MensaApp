@@ -82,4 +82,25 @@ class PreferenceAccess extends ChangeNotifier implements IPreferenceAccess {
     await _access.setPriceCategory(category);
     notifyListeners();
   }
+
+  @override
+  String? getLastSeenVersion() {
+    return _access.getLastSeenVersion();
+  }
+
+  @override
+  Future<void> setLastSeenVersion(String version) async {
+    await _access.setLastSeenVersion(version);
+  }
+
+  @override
+  bool shouldShowUpdatePopup() {
+    return _access.shouldShowUpdatePopup();
+  }
+
+  @override
+  Future<void> setShouldShowUpdatePopup(bool show) async {
+    await _access.setShouldShowUpdatePopup(show);
+    notifyListeners();
+  }
 }

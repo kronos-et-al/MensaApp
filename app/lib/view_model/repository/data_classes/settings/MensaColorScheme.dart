@@ -7,5 +7,5 @@ enum MensaColorScheme {
   dark,
 
   /// The color scheme chosen in the system.
-  system
+  system,
 }

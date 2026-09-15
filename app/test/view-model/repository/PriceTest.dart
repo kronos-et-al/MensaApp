@@ -8,8 +8,12 @@ void main() {
   const int pupil = 400;
   const int guest = 500;
 
-  Price price =
-      Price(student: student, employee: employee, pupil: pupil, guest: guest);
+  Price price = Price(
+    student: student,
+    employee: employee,
+    pupil: pupil,
+    guest: guest,
+  );
 
   group("constructor", () {
     test("student", () => expect(price.student, student));
@@ -19,8 +23,14 @@ void main() {
   });
 
   group("get price by category", () {
-    test("student", () => expect(price.getPrice(PriceCategory.student), student));
-    test("employee", () => expect(price.getPrice(PriceCategory.employee), employee));
+    test(
+      "student",
+      () => expect(price.getPrice(PriceCategory.student), student),
+    );
+    test(
+      "employee",
+      () => expect(price.getPrice(PriceCategory.employee), employee),
+    );
     test("pupil", () => expect(price.getPrice(PriceCategory.pupil), pupil));
     test("guest", () => expect(price.getPrice(PriceCategory.guest), guest));
   });

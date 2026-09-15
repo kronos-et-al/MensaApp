@@ -6,5 +6,5 @@
   "noDataException": "Für diesen Tag liegen keine Daten vor.",
   "noConnectionException": "Gerichte konnten nicht geladen werden",
   "noConnectionButton": "Erneut versuchen",
-  "initialisationException": "Leider konnten die aktuellsten Daten nicht geladen werden. Bitte prüfe deine Internetverbindung uns versuche es erneut."
+  "initialisationException": "Leider konnten die aktuellsten Daten nicht geladen werden. Bitte prüfe deine Internetverbindung und versuche es erneut."
 }

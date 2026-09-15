@@ -1,0 +1,54 @@
+name: 'Setup Mensa App'
+description: 'Sets up the environment and prepares the Flutter project'
+inputs:
+  java-version:
+    description: 'Java version to set up (e.g. 25). Skip if empty.'
+    required: false
+    default: ''
+  working-directory:
+    description: 'The directory containing the Flutter project'
+    required: false
+    default: 'app'
+  upgrade:
+    description: 'Whether to run flutter packages upgrade'
+    required: false
+    default: 'false'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Java
+      if: ${{ inputs.java-version != '' }}
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: ${{ inputs.java-version }}
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        flutter-version-file: ${{ inputs.working-directory }}/pubspec.yaml
+        cache: true
+
+    - name: Print versions
+      shell: bash
+      run: |
+        flutter --version
+        dart --version
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: flutter pub get
+
+    - name: Upgrade dependencies
+      if: ${{ inputs.upgrade == 'true' }}
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: flutter packages upgrade
+
+    - name: Run code generation
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: dart run build_runner build

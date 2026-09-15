@@ -10,7 +10,6 @@ import '../../repository/error_handling/Result.dart';
 
 /// This class is the interface for the access to the meal data. The access can be done via the database or the server.
 abstract class IMealAccess with ChangeNotifier {
-
   bool failedInitializing = false;
 
   Future<void> reInit();
@@ -76,4 +75,25 @@ abstract class IMealAccess with ChangeNotifier {
 
   /// Returns true if the filter is active.
   Future<bool> isFilterActive();
+
+  /// Returns true if the filter is active.
+  bool get filterActive;
+
+  /// Returns the currently selected [Canteen].
+  Canteen get canteen;
+
+  /// Returns all available canteens.
+  List<Canteen> get availableCanteens;
+
+  /// Returns the currently displayed date.
+  DateTime get date;
+
+  /// Returns true if the meal plan is currently loading.
+  bool get isLoading;
+
+  /// Returns the current meal plan result.
+  Result<List<MealPlan>, MealPlanException> get mealPlanResult;
+
+  /// Returns true if the app has finished initializing.
+  bool get initialized;
 }

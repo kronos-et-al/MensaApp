@@ -1,5 +1,5 @@
 import 'package:app/view/core/buttons/MensaButton.dart';
-import 'package:app/view/core/icons/exceptions/ErrorExceptionIcon.dart';
+import 'package:app/view/core/icons/mensa_icons.dart';
 import 'package:app/view_model/logic/meal/IMealAccess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
@@ -13,42 +13,50 @@ class MealPlanError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<IMealAccess>(
-        builder: (context, mealAccess, child) => Center(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const ErrorExceptionIcon(size: 48),
-                    const SizedBox(height: 16),
-                    Text(
-                      FlutterI18n.translate(
-                          context, "mealplanException.noConnectionException"),
-                      style: const TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
+      builder: (context, mealAccess, child) => Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const MensaIcon(MensaIcons.errorException, size: 48),
+            const SizedBox(height: 16),
+            Text(
+              FlutterI18n.translate(
+                context,
+                "mealplanException.noConnectionException",
+              ),
+              style: const TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            MensaButton(
+              semanticLabel: FlutterI18n.translate(
+                context,
+                "semantics.mealPlanRefresh",
+              ),
+              onPressed: () async {
+                final temporalMessage =
+                    await mealAccess.refreshMealplan() ?? "";
+                if (!context.mounted) return;
+                if (temporalMessage.isNotEmpty) {
+                  final snackBar = SnackBar(
+                    content: Text(
+                      FlutterI18n.translate(context, temporalMessage),
                     ),
-                    const SizedBox(height: 16),
-                    MensaButton(
-                        semanticLabel: FlutterI18n.translate(
-                            context, "semantics.mealPlanRefresh"),
-                        onPressed: () async {
-                          final temporalMessage =
-                              await mealAccess.refreshMealplan() ?? "";
-                          if (!context.mounted) return;
-                          if (temporalMessage.isNotEmpty) {
-                            final snackBar = SnackBar(
-                              content: Text(FlutterI18n.translate(
-                                  context, temporalMessage)),
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.onError,
-                            );
+                    backgroundColor: Theme.of(context).colorScheme.onError,
+                  );
 
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackBar);
-                          }
-                        },
-                        text: FlutterI18n.translate(
-                            context, "mealplanException.noConnectionButton")),
-                  ]),
-            ));
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
+              },
+              text: FlutterI18n.translate(
+                context,
+                "mealplanException.noConnectionButton",
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

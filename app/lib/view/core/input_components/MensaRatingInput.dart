@@ -11,20 +11,20 @@ class MensaRatingInput extends StatelessWidget {
   final double _size;
 
   /// Creates a new MensaRatingInput.
-  const MensaRatingInput(
-      {super.key,
-      required Function(int) onChanged,
-      required double value,
-      int max = 5,
-      Color? color,
-      bool disabled = false,
-      double size = 24})
-      : _onChanged = onChanged,
-        _value = value,
-        _max = max,
-        _color = color,
-        _disabled = disabled,
-        _size = size;
+  const MensaRatingInput({
+    super.key,
+    required Function(int) onChanged,
+    required double value,
+    int max = 5,
+    Color? color,
+    bool disabled = false,
+    double size = 24,
+  }) : _onChanged = onChanged,
+       _value = value,
+       _max = max,
+       _color = color,
+       _disabled = disabled,
+       _size = size;
 
   /// Builds the widget.
   @override
@@ -35,57 +35,58 @@ class MensaRatingInput extends StatelessWidget {
           AbsorbPointer(
             absorbing: _disabled,
             child: Padding(
-                padding: EdgeInsets.all(_size * .1),
-                child: GestureDetector(
-                  onTap: () => {if (!_disabled) _onChanged(i + 1)},
-                  child: i < _value.floor()
-                      ? SvgPicture.asset(
-                          'assets/icons/star_filled.svg',
-                          colorFilter: ColorFilter.mode(
+              padding: EdgeInsets.all(_size * .1),
+              child: GestureDetector(
+                onTap: () => {if (!_disabled) _onChanged(i + 1)},
+                child: i < _value.floor()
+                    ? SvgPicture.asset(
+                        'assets/icons/star_filled.svg',
+                        colorFilter: ColorFilter.mode(
+                          _color ?? Theme.of(context).colorScheme.primary,
+                          BlendMode.srcIn,
+                        ),
+                        width: _size,
+                        height: _size,
+                      )
+                    : i < _value && _value < i + 1
+                    ? Stack(
+                        //fit: StackFit.expand,
+                        children: [
+                          SvgPicture.asset(
+                            'assets/icons/star_outlined.svg',
+                            colorFilter: ColorFilter.mode(
                               _color ?? Theme.of(context).colorScheme.primary,
-                              BlendMode.srcIn),
-                          width: _size,
-                          height: _size,
-                        )
-                      : i < _value && _value < i + 1
-                          ? Stack(
-                              //fit: StackFit.expand,
-                              children: [
-                                SvgPicture.asset(
-                                  'assets/icons/star_outlined.svg',
-                                  colorFilter: ColorFilter.mode(
-                                      _color ??
-                                          Theme.of(context).colorScheme.primary,
-                                      BlendMode.srcIn),
-                                  width: _size,
-                                  height: _size,
-                                ),
-                                ClipRect(
-                                    clipper: _Clipper(part: _value - i),
-                                    child: SvgPicture.asset(
-                                      'assets/icons/star_filled.svg',
-                                      colorFilter: ColorFilter.mode(
-                                          _color ??
-                                              Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                          BlendMode.srcIn),
-                                      width: _size,
-                                      height: _size,
-                                    ))
-                              ],
-                            )
-                          : SvgPicture.asset(
-                              'assets/icons/star_outlined.svg',
+                              BlendMode.srcIn,
+                            ),
+                            width: _size,
+                            height: _size,
+                          ),
+                          ClipRect(
+                            clipper: _Clipper(part: _value - i),
+                            child: SvgPicture.asset(
+                              'assets/icons/star_filled.svg',
                               colorFilter: ColorFilter.mode(
-                                  _color ??
-                                      Theme.of(context).colorScheme.primary,
-                                  BlendMode.srcIn),
+                                _color ?? Theme.of(context).colorScheme.primary,
+                                BlendMode.srcIn,
+                              ),
                               width: _size,
                               height: _size,
                             ),
-                )),
-          )
+                          ),
+                        ],
+                      )
+                    : SvgPicture.asset(
+                        'assets/icons/star_outlined.svg',
+                        colorFilter: ColorFilter.mode(
+                          _color ?? Theme.of(context).colorScheme.primary,
+                          BlendMode.srcIn,
+                        ),
+                        width: _size,
+                        height: _size,
+                      ),
+              ),
+            ),
+          ),
       ],
     );
   }

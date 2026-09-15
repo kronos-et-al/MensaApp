@@ -82,5 +82,5 @@ enum Allergen {
   la,
 
   /// the food includes gelatine
-  gl
+  gl,
 }

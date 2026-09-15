@@ -8,14 +8,14 @@ class MensaFilterIconCheckboxGroup<T> extends StatelessWidget {
   final Function(List<T>) _onChanged;
 
   /// Creates a MensaFilterIconCheckboxGroup widget.
-  const MensaFilterIconCheckboxGroup(
-      {super.key,
-      required List<MensaFilterIconCheckbox<T>> items,
-      required List<T> selectedValues,
-      required Function(List<T>) onChanged})
-      : _items = items,
-        _selectedValues = selectedValues,
-        _onChanged = onChanged;
+  const MensaFilterIconCheckboxGroup({
+    super.key,
+    required List<MensaFilterIconCheckbox<T>> items,
+    required List<T> selectedValues,
+    required Function(List<T>) onChanged,
+  }) : _items = items,
+       _selectedValues = selectedValues,
+       _onChanged = onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -26,18 +26,21 @@ class MensaFilterIconCheckboxGroup<T> extends StatelessWidget {
     }
     double spacing = ((width - (count * 80)) / (count - 1));
     return Wrap(
-        runAlignment: WrapAlignment.center,
-        spacing: spacing,
-        runSpacing: 8,
-        children: _items
-            .map((e) => e.build(context, _selectedValues.contains(e.value), () {
-                  if (_selectedValues.contains(e.value)) {
-                    _selectedValues.remove(e.value);
-                  } else {
-                    _selectedValues.add(e.value);
-                  }
-                  _onChanged(_selectedValues);
-                }))
-            .toList());
+      runAlignment: WrapAlignment.center,
+      spacing: spacing,
+      runSpacing: 8,
+      children: _items
+          .map(
+            (e) => e.build(context, _selectedValues.contains(e.value), () {
+              if (_selectedValues.contains(e.value)) {
+                _selectedValues.remove(e.value);
+              } else {
+                _selectedValues.add(e.value);
+              }
+              _onChanged(_selectedValues);
+            }),
+          )
+          .toList(),
+    );
   }
 }

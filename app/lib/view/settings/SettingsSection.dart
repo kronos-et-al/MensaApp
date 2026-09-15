@@ -8,8 +8,8 @@ class SettingsSection extends StatelessWidget {
 
   /// Creates a new SettingsSection.
   const SettingsSection({super.key, required heading, required children})
-      : _heading = heading,
-        _children = children;
+    : _heading = heading,
+      _children = children;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class SettingsSection extends StatelessWidget {
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        ..._children
+        ..._children,
       ],
     );
   }

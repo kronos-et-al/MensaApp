@@ -6,21 +6,20 @@ class MensaTextField extends StatelessWidget {
 
   /// Creates a new MensaTextField.
   const MensaTextField({super.key, required TextEditingController controller})
-      : _controller = controller;
+    : _controller = controller;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceDim,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: TextField(
-          controller: _controller,
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-          ),
-        ));
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceDim,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: TextField(
+        controller: _controller,
+        decoration: const InputDecoration(border: InputBorder.none),
+      ),
+    );
   }
 }

@@ -33,8 +33,9 @@ class SharedPreferenceAccess implements ILocalStorage {
   MensaColorScheme? getColorScheme() {
     final colorScheme = _pref.getString('colorScheme');
     return MensaColorScheme.values.firstWhere(
-        (e) => e.toString() == colorScheme,
-        orElse: () => MensaColorScheme.system);
+      (e) => e.toString() == colorScheme,
+      orElse: () => MensaColorScheme.system,
+    );
   }
 
   @override
@@ -52,20 +53,32 @@ class SharedPreferenceAccess implements ILocalStorage {
     // convert values to right format
     List<FoodType>? foodTypeEnum;
     if (categories != null) {
-      foodTypeEnum = List.of(categories.map((e) =>
-          FoodType.values.firstWhere((element) => element.toString() == e)));
+      foodTypeEnum = List.of(
+        categories.map(
+          (e) =>
+              FoodType.values.firstWhere((element) => element.toString() == e),
+        ),
+      );
     }
 
     List<Allergen>? allergensEnum;
     if (allergens != null) {
-      allergensEnum = List.of(allergens.map((e) =>
-          Allergen.values.firstWhere((element) => element.toString() == e)));
+      allergensEnum = List.of(
+        allergens.map(
+          (e) =>
+              Allergen.values.firstWhere((element) => element.toString() == e),
+        ),
+      );
     }
 
     List<Frequency>? frequencyEnum;
     if (frequency != null) {
-      frequencyEnum = List.of(frequency.map((e) =>
-          Frequency.values.firstWhere((element) => element.toString() == e)));
+      frequencyEnum = List.of(
+        frequency.map(
+          (e) =>
+              Frequency.values.firstWhere((element) => element.toString() == e),
+        ),
+      );
     }
 
     Sorting? sortedByEnum;
@@ -75,29 +88,33 @@ class SharedPreferenceAccess implements ILocalStorage {
 
     // return filter preferences
     return FilterPreferences(
-        categories: foodTypeEnum,
-        allergens: allergensEnum,
-        price: price,
-        rating: rating,
-        frequency: frequencyEnum,
-        onlyFavorite: onlyFavorites,
-        sortedBy: sortedByEnum,
-        ascending: ascending);
+      categories: foodTypeEnum,
+      allergens: allergensEnum,
+      price: price,
+      rating: rating,
+      frequency: frequencyEnum,
+      onlyFavorite: onlyFavorites,
+      sortedBy: sortedByEnum,
+      ascending: ascending,
+    );
   }
 
   @override
   MealPlanFormat? getMealPlanFormat() {
     final mealPlanFormat = _pref.getString('mealPlanFormat');
     return MealPlanFormat.values.firstWhere(
-        (e) => e.toString() == mealPlanFormat,
-        orElse: () => MealPlanFormat.grid);
+      (e) => e.toString() == mealPlanFormat,
+      orElse: () => MealPlanFormat.grid,
+    );
   }
 
   @override
   PriceCategory? getPriceCategory() {
     final String? priceCategory = _pref.getString('priceCategory');
-    return PriceCategory.values.firstWhere((e) => e.toString() == priceCategory,
-        orElse: () => PriceCategory.student);
+    return PriceCategory.values.firstWhere(
+      (e) => e.toString() == priceCategory,
+      orElse: () => PriceCategory.student,
+    );
   }
 
   @override
@@ -112,14 +129,20 @@ class SharedPreferenceAccess implements ILocalStorage {
 
   @override
   Future<void> setFilterPreferences(FilterPreferences filter) async {
-    await _pref.setStringList('filterCategories',
-        List.of(filter.categories.map((e) => e.toString())));
     await _pref.setStringList(
-        'filterAllergens', List.of(filter.allergens.map((e) => e.toString())));
+      'filterCategories',
+      List.of(filter.categories.map((e) => e.toString())),
+    );
+    await _pref.setStringList(
+      'filterAllergens',
+      List.of(filter.allergens.map((e) => e.toString())),
+    );
     await _pref.setInt('filterPrice', filter.price);
     await _pref.setInt('filterRating', filter.rating);
     await _pref.setStringList(
-        'filterFrequency', List.of(filter.frequency.map((e) => e.toString())));
+      'filterFrequency',
+      List.of(filter.frequency.map((e) => e.toString())),
+    );
     await _pref.setBool('filterFavorite', filter.onlyFavorite);
     await _pref.setString('filterSort', filter.sortedBy.toString());
     await _pref.setBool('filterSortAscending', filter.ascending);
@@ -144,5 +167,25 @@ class SharedPreferenceAccess implements ILocalStorage {
   @override
   Future<void> setCanteen(String canteen) async {
     await _pref.setString('canteen', canteen);
+  }
+
+  @override
+  String? getLastSeenVersion() {
+    return _pref.getString('lastSeenVersion');
+  }
+
+  @override
+  Future<void> setLastSeenVersion(String version) async {
+    await _pref.setString('lastSeenVersion', version);
+  }
+
+  @override
+  bool shouldShowUpdatePopup() {
+    return _pref.getBool('shouldShowUpdatePopup') ?? true;
+  }
+
+  @override
+  Future<void> setShouldShowUpdatePopup(bool show) async {
+    await _pref.setBool('shouldShowUpdatePopup', show);
   }
 }

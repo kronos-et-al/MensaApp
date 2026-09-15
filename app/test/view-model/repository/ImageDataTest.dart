@@ -11,11 +11,12 @@ void main() {
   int individualRating = 0;
 
   ImageData image = ImageData(
-      id: id,
-      url: url,
-      imageRank: imageRank,
-      positiveRating: positiveRating,
-      negativeRating: negativeRating);
+    id: id,
+    url: url,
+    imageRank: imageRank,
+    positiveRating: positiveRating,
+    negativeRating: negativeRating,
+  );
 
   group("constructor", () {
     test("id", () => expect(image.id, id));
@@ -23,7 +24,10 @@ void main() {
     test("imageRank", () => expect(image.imageRank, imageRank));
     test("positiveRating", () => expect(image.positiveRating, positiveRating));
     test("negativeRating", () => expect(image.negativeRating, negativeRating));
-    test("individualRating", () => expect(image.individualRating, individualRating));
+    test(
+      "individualRating",
+      () => expect(image.individualRating, individualRating),
+    );
   });
 
   group("votes", () {

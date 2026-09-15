@@ -1,0 +1,10 @@
+{
+  "filterException": "No results were found matching your filter settings.",
+  "filterButton": "Temporarily disable filter",
+
+  "closedCanteenException": "The canteen is closed on this day.",
+  "noDataException": "No data available for this day.",
+  "noConnectionException": "Could not load meals",
+  "noConnectionButton": "Try again",
+  "initialisationException": "Unfortunately, the latest data could not be loaded. Please check your internet connection and try again."
+}

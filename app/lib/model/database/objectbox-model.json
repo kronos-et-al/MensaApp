@@ -1,0 +1,450 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:3817210057852712931",
+      "lastPropertyId": "3:4827334884010759694",
+      "name": "BoxCanteen",
+      "properties": [
+        {
+          "id": "1:2649732420941415140",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:170632413318437485",
+          "name": "canteenId",
+          "indexId": "1:5768614307367459386",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:4827334884010759694",
+          "name": "name",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:4295454626124848142",
+      "lastPropertyId": "9:3957372712960991627",
+      "name": "BoxEnvironmentInfo",
+      "properties": [
+        {
+          "id": "1:1161473145433939521",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6509765101273578497",
+          "name": "averageRating",
+          "type": 6
+        },
+        {
+          "id": "3:5850799354807366172",
+          "name": "co2Rating",
+          "type": 6
+        },
+        {
+          "id": "4:5900178249204955285",
+          "name": "co2Value",
+          "type": 6
+        },
+        {
+          "id": "5:5527377359847689771",
+          "name": "waterRating",
+          "type": 6
+        },
+        {
+          "id": "6:9059214093040029124",
+          "name": "waterValue",
+          "type": 6
+        },
+        {
+          "id": "7:3967992521277753275",
+          "name": "animalWelfareRating",
+          "type": 6
+        },
+        {
+          "id": "8:3639721218384404207",
+          "name": "rainforestRating",
+          "type": 6
+        },
+        {
+          "id": "9:3957372712960991627",
+          "name": "maxRating",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:8132295531209874788",
+      "lastPropertyId": "4:9101469244605882263",
+      "name": "BoxFavorite",
+      "properties": [
+        {
+          "id": "1:2045225975826850390",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:781922858928449756",
+          "name": "servedDate",
+          "type": 10
+        },
+        {
+          "id": "3:5191842999068727169",
+          "name": "lineId",
+          "indexId": "2:3184481365658373957",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "BoxLine"
+        },
+        {
+          "id": "4:9101469244605882263",
+          "name": "mealId",
+          "indexId": "3:3215730344549723290",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "BoxMeal"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:7511441867471522421",
+      "lastPropertyId": "7:1094478244437589937",
+      "name": "BoxImage",
+      "properties": [
+        {
+          "id": "1:3556847374816772762",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2755195491754093647",
+          "name": "imageId",
+          "indexId": "4:7742349363044265797",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:2675370848481458070",
+          "name": "url",
+          "type": 9
+        },
+        {
+          "id": "4:6405055621979508021",
+          "name": "imageRank",
+          "type": 8
+        },
+        {
+          "id": "5:4807439361182843147",
+          "name": "positiveRating",
+          "type": 6
+        },
+        {
+          "id": "6:6925467354723490709",
+          "name": "negativeRating",
+          "type": 6
+        },
+        {
+          "id": "7:1094478244437589937",
+          "name": "individualRating",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "5:8799569497714019689",
+      "lastPropertyId": "5:998746968706398340",
+      "name": "BoxLine",
+      "properties": [
+        {
+          "id": "1:1181511987964126247",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:9018638237928766927",
+          "name": "lineId",
+          "indexId": "5:9195358958713809118",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:3088719851810249772",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "4:4687897854616913311",
+          "name": "position",
+          "type": 6
+        },
+        {
+          "id": "5:998746968706398340",
+          "name": "canteenId",
+          "indexId": "6:5293412522772638108",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "BoxCanteen"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "6:5024585443129332492",
+      "lastPropertyId": "16:4982559107250620589",
+      "name": "BoxMeal",
+      "properties": [
+        {
+          "id": "1:5025197088946566834",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6722409852427274639",
+          "name": "mealId",
+          "indexId": "7:5202868280912375582",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:686333250679235081",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "4:6254603270428881817",
+          "name": "foodType",
+          "type": 9
+        },
+        {
+          "id": "5:8871290286664604273",
+          "name": "individualRating",
+          "type": 6
+        },
+        {
+          "id": "6:5697787844354215850",
+          "name": "numberOfRatings",
+          "type": 6
+        },
+        {
+          "id": "7:1121950248199557154",
+          "name": "averageRating",
+          "type": 8
+        },
+        {
+          "id": "8:6496999180586875407",
+          "name": "lastServed",
+          "type": 10
+        },
+        {
+          "id": "9:749981875112601933",
+          "name": "nextServed",
+          "type": 10
+        },
+        {
+          "id": "10:8493263792280088319",
+          "name": "relativeFrequency",
+          "type": 9
+        },
+        {
+          "id": "11:3782041969457566333",
+          "name": "allergens",
+          "type": 30
+        },
+        {
+          "id": "12:8479947017200125035",
+          "name": "additives",
+          "type": 30
+        },
+        {
+          "id": "13:4754243712520803113",
+          "name": "isSide",
+          "type": 1
+        },
+        {
+          "id": "14:4566294199468176617",
+          "name": "priceId",
+          "indexId": "8:3653856692375610128",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "BoxPrice"
+        },
+        {
+          "id": "15:7085156816954279177",
+          "name": "nutritionDataId",
+          "indexId": "9:9050970587630946483",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "BoxNutritionData"
+        },
+        {
+          "id": "16:4982559107250620589",
+          "name": "environmentInfoId",
+          "indexId": "10:4201271577673220638",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "BoxEnvironmentInfo"
+        }
+      ],
+      "relations": [
+        {
+          "id": "1:6006422487478654321",
+          "name": "images",
+          "targetId": "4:7511441867471522421"
+        },
+        {
+          "id": "2:8317884564876140122",
+          "name": "sides",
+          "targetId": "6:5024585443129332492"
+        }
+      ]
+    },
+    {
+      "id": "7:484292830215502667",
+      "lastPropertyId": "4:1626148177439781425",
+      "name": "BoxMealPlan",
+      "properties": [
+        {
+          "id": "1:7424569589970016118",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5337037483719562666",
+          "name": "date",
+          "type": 10
+        },
+        {
+          "id": "3:7338514319593143489",
+          "name": "isClosed",
+          "type": 1
+        },
+        {
+          "id": "4:1626148177439781425",
+          "name": "lineId",
+          "indexId": "11:5291445113089352518",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "BoxLine"
+        }
+      ],
+      "relations": [
+        {
+          "id": "3:9064263383869844221",
+          "name": "meals",
+          "targetId": "6:5024585443129332492"
+        }
+      ]
+    },
+    {
+      "id": "8:6683889209576327146",
+      "lastPropertyId": "8:4879151912454684196",
+      "name": "BoxNutritionData",
+      "properties": [
+        {
+          "id": "1:8144812251842088384",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2114009757727339475",
+          "name": "energy",
+          "type": 6
+        },
+        {
+          "id": "3:4755718662381792852",
+          "name": "protein",
+          "type": 6
+        },
+        {
+          "id": "4:3757988596613090312",
+          "name": "carbohydrates",
+          "type": 6
+        },
+        {
+          "id": "5:7472691894059898029",
+          "name": "sugar",
+          "type": 6
+        },
+        {
+          "id": "6:6867484231065833497",
+          "name": "fat",
+          "type": 6
+        },
+        {
+          "id": "7:3093684830303746171",
+          "name": "saturatedFat",
+          "type": 6
+        },
+        {
+          "id": "8:4879151912454684196",
+          "name": "salt",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "9:1956759277178655427",
+      "lastPropertyId": "5:1788372805442355906",
+      "name": "BoxPrice",
+      "properties": [
+        {
+          "id": "1:8028489037442039335",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:894341519048027289",
+          "name": "student",
+          "type": 6
+        },
+        {
+          "id": "3:7468831347946299215",
+          "name": "employee",
+          "type": 6
+        },
+        {
+          "id": "4:2698820800180151300",
+          "name": "pupil",
+          "type": 6
+        },
+        {
+          "id": "5:1788372805442355906",
+          "name": "guest",
+          "type": 6
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "9:1956759277178655427",
+  "lastIndexId": "11:5291445113089352518",
+  "lastRelationId": "3:9064263383869844221",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}

@@ -8,7 +8,6 @@ import 'package:mocktail/mocktail.dart';
 
 import '../model/mocks/SharedPreferencesMock.dart';
 
-
 void main() {
   SharedPreferencesMock mock = SharedPreferencesMock();
   SharedPreferenceAccess localStorage = SharedPreferenceAccess(mock);
@@ -25,10 +24,12 @@ void main() {
     when(() => mock.getString("priceCategory")).thenAnswer((_) => null);
     when(() => mock.getString("mealPlanFormat")).thenAnswer((_) => null);
 
-    when(() => mock.setString("priceCategory", "student"))
-        .thenAnswer((_) async => true);
-    when(() => mock.setString("clientIdentifier", any()))
-        .thenAnswer((_) async => true);
+    when(
+      () => mock.setString("priceCategory", "student"),
+    ).thenAnswer((_) async => true);
+    when(
+      () => mock.setString("clientIdentifier", any()),
+    ).thenAnswer((_) async => true);
 
     preferences = PreferenceAccess(localStorage);
 
@@ -51,14 +52,22 @@ void main() {
 
   group("initialization with values", () {
     when(() => mock.getString("clientIdentifier")).thenAnswer((_) => id);
-    when(() => mock.getString("colorScheme")).thenAnswer((_) => colorScheme.toString());
-    when(() => mock.getString("priceCategory")).thenAnswer((_) => priceCategory.toString());
-    when(() => mock.getString("mealPlanFormat")).thenAnswer((_) => mealPlanFormat.toString());
+    when(
+      () => mock.getString("colorScheme"),
+    ).thenAnswer((_) => colorScheme.toString());
+    when(
+      () => mock.getString("priceCategory"),
+    ).thenAnswer((_) => priceCategory.toString());
+    when(
+      () => mock.getString("mealPlanFormat"),
+    ).thenAnswer((_) => mealPlanFormat.toString());
 
-    when(() => mock.setString("priceCategory", "student"))
-        .thenAnswer((_) async => true);
-    when(() => mock.setString("clientIdentifier", any()))
-        .thenAnswer((_) async => true);
+    when(
+      () => mock.setString("priceCategory", "student"),
+    ).thenAnswer((_) async => true);
+    when(
+      () => mock.setString("clientIdentifier", any()),
+    ).thenAnswer((_) async => true);
 
     preferences = PreferenceAccess(localStorage);
 
@@ -81,8 +90,9 @@ void main() {
 
   group("test setters", () {
     test("set ClientIdentifier", () async {
-      when(() => mock.setString("clientIdentifier", any()))
-          .thenAnswer((_) async => true);
+      when(
+        () => mock.setString("clientIdentifier", any()),
+      ).thenAnswer((_) async => true);
 
       await preferences.setClientIdentifier(id);
       verify(() => mock.setString("clientIdentifier", id)).called(1);
@@ -90,29 +100,38 @@ void main() {
     });
 
     test("set Color Scheme", () async {
-      when(() => mock.setString("colorScheme", colorScheme.toString()))
-          .thenAnswer((_) async => true);
+      when(
+        () => mock.setString("colorScheme", colorScheme.toString()),
+      ).thenAnswer((_) async => true);
 
       await preferences.setColorScheme(colorScheme);
-      verify(() => mock.setString("colorScheme", colorScheme.toString())).called(1);
+      verify(
+        () => mock.setString("colorScheme", colorScheme.toString()),
+      ).called(1);
       expect(preferences.getColorScheme(), colorScheme);
     });
 
     test("set Meal Plan Format", () async {
-      when(() => mock.setString("mealPlanFormat", mealPlanFormat.toString()))
-          .thenAnswer((_) async => true);
+      when(
+        () => mock.setString("mealPlanFormat", mealPlanFormat.toString()),
+      ).thenAnswer((_) async => true);
 
       await preferences.setMealPlanFormat(mealPlanFormat);
-      verify(() => mock.setString("mealPlanFormat", mealPlanFormat.toString())).called(1);
+      verify(
+        () => mock.setString("mealPlanFormat", mealPlanFormat.toString()),
+      ).called(1);
       expect(preferences.getMealPlanFormat(), mealPlanFormat);
     });
 
     test("set Price Category", () async {
-      when(() => mock.setString("priceCategory", priceCategory.toString()))
-          .thenAnswer((_) async => true);
+      when(
+        () => mock.setString("priceCategory", priceCategory.toString()),
+      ).thenAnswer((_) async => true);
 
       await preferences.setPriceCategory(priceCategory);
-      verify(() => mock.setString("priceCategory", priceCategory.toString())).called(1);
+      verify(
+        () => mock.setString("priceCategory", priceCategory.toString()),
+      ).called(1);
       expect(preferences.getPriceCategory(), priceCategory);
     });
   });

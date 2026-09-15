@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:app/model/api_server/GraphQlServerAccess.dart';
-import 'package:app/model/database/SQLiteDatabaseAccess.dart';
+import 'package:app/model/database/ObjectBoxDatabaseAccess.dart';
+import 'package:app/model/database/objectbox.g.dart';
 import 'package:app/view_model/logic/image/ImageAccess.dart';
 import 'package:app/view_model/repository/data_classes/meal/FoodType.dart';
 import 'package:app/view_model/repository/data_classes/meal/ImageData.dart';
@@ -15,10 +16,14 @@ import 'package:http_parser/http_parser.dart';
 
 import '../model/api_server/config.dart';
 
-void main() {
+Future<void> main() async {
+  final store = await openStore(directory: 'memory:image-test');
   final GraphQlServerAccess api = GraphQlServerAccess(
-      testServer, testApiKey, "1f16dcca-963e-4ceb-a8ca-843a7c9277a5");
-  final SQLiteDatabaseAccess database = SQLiteDatabaseAccess();
+    testServer,
+    testApiKey,
+    "1f16dcca-963e-4ceb-a8ca-843a7c9277a5",
+  );
+  final ObjectBoxDatabaseAccess database = ObjectBoxDatabaseAccess(store);
 
   final ImageAccess access = ImageAccess(api, database);
 
@@ -28,10 +33,10 @@ void main() {
   setUpAll(() async {
     final List<MealPlan> mealPlan = switch (await api.updateAll()) {
       Success(value: final value) => value,
-      Failure(exception: _) => []
+      Failure(exception: _) => [],
     };
 
-    database.updateAll(mealPlan);
+    await database.updateAll(mealPlan);
     meal = mealPlan.map((e) => e.meals).first.first;
 
     if (meal.images == null || meal.images!.isEmpty) {
@@ -64,7 +69,7 @@ void main() {
     final message = await access.reportImage(meal, image, ReportCategory.other);
     final Meal result = switch (await database.getMeal(meal)) {
       Success(value: final value) => value,
-      Failure(exception: _) => meal
+      Failure(exception: _) => meal,
     };
 
     expect(message, "snackbar.reportImageSuccess");
@@ -72,18 +77,19 @@ void main() {
   });
 
   final imageFile = File("test/test.jpg").readAsBytesSync();
-  final mediaType
-  = MediaType("image", "jpeg");
+  final mediaType = MediaType("image", "jpeg");
 
   test("link image", () async {
     final message = await access.linkImage(
-        imageFile,
-        mediaType,
-        Meal(
-            id: "bd3c88f9-5dc8-4773-85dc-53305930e7b6",
-            name: "Best meal",
-            foodType: FoodType.vegetarian,
-            price: Price(student: 1, employee: 23, pupil: 5, guest: 15)));
+      imageFile,
+      mediaType,
+      Meal(
+        id: "bd3c88f9-5dc8-4773-85dc-53305930e7b6",
+        name: "Best meal",
+        foodType: FoodType.vegetarian,
+        price: Price(student: 1, employee: 23, pupil: 5, guest: 15),
+      ),
+    );
     expect(message, "snackbar.linkImageSuccess");
   });
 }

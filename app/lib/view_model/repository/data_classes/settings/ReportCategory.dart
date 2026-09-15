@@ -16,5 +16,5 @@ enum ReportCategory {
   violatesRights,
 
   /// The report reason is not one of the other reasons.
-  other
+  other,
 }

@@ -8,48 +8,64 @@ class MealGridLine extends StatelessWidget {
 
   /// Creates a MealListLine.
   const MealGridLine({super.key, required MealPlan mealPlan})
-      : _mealPlan = mealPlan;
+    : _mealPlan = mealPlan;
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-        child: Text(_mealPlan.line.name,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-      ),
-      LayoutBuilder(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+          child: Text(
+            _mealPlan.line.name,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+        ),
+        LayoutBuilder(
           builder: (context, constraints) => SingleChildScrollView(
-                physics: _PageScrollPhysics(
-                    itemDimension: constraints.maxWidth * 0.9 < 500 ? constraints.maxWidth * 0.9 : 500.toDouble()),
-                scrollDirection: Axis.horizontal,
-                child: IntrinsicHeight(
-                    child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _mealPlan.meals
-                      .map((e) => MealGridEntry(
-                            meal: e,
-                            line: _mealPlan.line,
-                            date: _mealPlan.date,
-                            width: constraints.maxWidth * 0.9 < 500 ? constraints.maxWidth * 0.9 : 500,
-                          ))
-                      .toList(),
-                )),
-              )),
-    ]);
+            physics: _PageScrollPhysics(
+              itemDimension: constraints.maxWidth * 0.9 < 500
+                  ? constraints.maxWidth * 0.9
+                  : 500.toDouble(),
+            ),
+            scrollDirection: Axis.horizontal,
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: _mealPlan.meals
+                    .map(
+                      (e) => MealGridEntry(
+                        meal: e,
+                        line: _mealPlan.line,
+                        date: _mealPlan.date,
+                        width: constraints.maxWidth * 0.9 < 500
+                            ? constraints.maxWidth * 0.9
+                            : 500,
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
 class _PageScrollPhysics extends ScrollPhysics {
   final double _itemDimension;
 
-  const _PageScrollPhysics({required itemDimension, super.parent})
-      : _itemDimension = itemDimension;
+  const _PageScrollPhysics({required double itemDimension, super.parent})
+    : _itemDimension = itemDimension;
 
   @override
   _PageScrollPhysics applyTo(ScrollPhysics? ancestor) {
     return _PageScrollPhysics(
-        itemDimension: _itemDimension, parent: buildParent(ancestor));
+      itemDimension: _itemDimension,
+      parent: buildParent(ancestor),
+    );
   }
 
   double _getPage(ScrollMetrics position) {
@@ -61,7 +77,10 @@ class _PageScrollPhysics extends ScrollPhysics {
   }
 
   double _getTargetPixels(
-      ScrollMetrics position, Tolerance tolerance, double velocity) {
+    ScrollMetrics position,
+    Tolerance tolerance,
+    double velocity,
+  ) {
     double page = _getPage(position);
     if (velocity < -tolerance.velocity) {
       page -= 0.5;
@@ -73,7 +92,9 @@ class _PageScrollPhysics extends ScrollPhysics {
 
   @override
   Simulation? createBallisticSimulation(
-      ScrollMetrics position, double velocity) {
+    ScrollMetrics position,
+    double velocity,
+  ) {
     if ((velocity <= 0.0 && position.pixels <= position.minScrollExtent) ||
         (velocity >= 0.0 && position.pixels >= position.maxScrollExtent)) {
       return super.createBallisticSimulation(position, velocity);
@@ -81,8 +102,13 @@ class _PageScrollPhysics extends ScrollPhysics {
     final Tolerance tolerance = toleranceFor(position);
     final double target = _getTargetPixels(position, tolerance, velocity);
     if (target != position.pixels) {
-      return ScrollSpringSimulation(spring, position.pixels, target, velocity,
-          tolerance: tolerance);
+      return ScrollSpringSimulation(
+        spring,
+        position.pixels,
+        target,
+        velocity,
+        tolerance: tolerance,
+      );
     }
     return null;
   }

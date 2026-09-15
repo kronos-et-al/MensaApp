@@ -18,12 +18,12 @@ class ImageData {
     int? individualRating,
     required int positiveRating,
     required int negativeRating,
-  })  : _id = id,
-        _url = url,
-        _imageRank = imageRank,
-        _individualRating = individualRating ?? 0,
-        _positiveRating = positiveRating,
-        _negativeRating = negativeRating;
+  }) : _id = id,
+       _url = url,
+       _imageRank = imageRank,
+       _individualRating = individualRating ?? 0,
+       _positiveRating = positiveRating,
+       _negativeRating = negativeRating;
 
   /// Returns the number of negative ratings.
   int get negativeRating => _negativeRating;
@@ -46,21 +46,21 @@ class ImageData {
 
   /// This method sets the individual rating.
   set individualRating(int value) {
-    if(value != _individualRating) {
-      if(value == 1) {
+    if (value != _individualRating) {
+      if (value == 1) {
         _positiveRating++;
-        if(_individualRating == -1) {
+        if (_individualRating == -1) {
           _negativeRating--;
         }
-      } else if(value == -1) {
+      } else if (value == -1) {
         _negativeRating++;
-        if(_individualRating == 1) {
+        if (_individualRating == 1) {
           _positiveRating--;
         }
       } else {
-        if(_individualRating == 1) {
+        if (_individualRating == 1) {
           _positiveRating--;
-        } else if(_individualRating == -1) {
+        } else if (_individualRating == -1) {
           _negativeRating--;
         }
       }

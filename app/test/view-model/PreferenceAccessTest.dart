@@ -7,7 +7,7 @@ import 'package:mocktail/mocktail.dart';
 
 import '../model/mocks/LocalStorageMock.dart';
 
-void main () {
+void main() {
   final localStorage = LocalStorageMock();
 
   late PreferenceAccess preferences;
@@ -19,8 +19,9 @@ void main () {
     when(() => localStorage.getPriceCategory()).thenAnswer((_) => null);
     when(() => localStorage.getMealPlanFormat()).thenAnswer((_) => null);
 
-    when(() => localStorage.setPriceCategory(PriceCategory.student))
-        .thenAnswer((_) async {});
+    when(
+      () => localStorage.setPriceCategory(PriceCategory.student),
+    ).thenAnswer((_) async {});
 
     preferences = PreferenceAccess(localStorage);
 
@@ -44,8 +45,9 @@ void main () {
   group("test setters", () {
     test("set ClientIdentifier", () async {
       const string = "42";
-      when(() => localStorage.setClientIdentifier(string))
-          .thenAnswer((_) async {});
+      when(
+        () => localStorage.setClientIdentifier(string),
+      ).thenAnswer((_) async {});
 
       await preferences.setClientIdentifier(string);
       verify(() => localStorage.setClientIdentifier(string)).called(1);
@@ -63,8 +65,9 @@ void main () {
 
     test("set Meal Plan Format", () async {
       const format = MealPlanFormat.list;
-      when(() => localStorage.setMealPlanFormat(format))
-          .thenAnswer((_) async {});
+      when(
+        () => localStorage.setMealPlanFormat(format),
+      ).thenAnswer((_) async {});
 
       await preferences.setMealPlanFormat(format);
       verify(() => localStorage.setMealPlanFormat(format)).called(1);
@@ -83,15 +86,19 @@ void main () {
 
   group("initialization with non standard values", () {
     when(() => localStorage.getClientIdentifier()).thenAnswer((_) => "42");
-    when(() => localStorage.getColorScheme())
-        .thenAnswer((_) => MensaColorScheme.light);
-    when(() => localStorage.getPriceCategory())
-        .thenAnswer((_) => PriceCategory.employee);
-    when(() => localStorage.getMealPlanFormat())
-        .thenAnswer((_) => MealPlanFormat.list);
+    when(
+      () => localStorage.getColorScheme(),
+    ).thenAnswer((_) => MensaColorScheme.light);
+    when(
+      () => localStorage.getPriceCategory(),
+    ).thenAnswer((_) => PriceCategory.employee);
+    when(
+      () => localStorage.getMealPlanFormat(),
+    ).thenAnswer((_) => MealPlanFormat.list);
 
-    when(() => localStorage.setPriceCategory(PriceCategory.student))
-        .thenAnswer((_) async {});
+    when(
+      () => localStorage.setPriceCategory(PriceCategory.student),
+    ).thenAnswer((_) async {});
 
     preferencesPredefined = PreferenceAccess(localStorage);
 

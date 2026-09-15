@@ -49,3 +49,30 @@ app.*.map.json
 secret.json
 /android/app/src/main/java/de/mensa_ka/app/MainActivity.java
 /.env
+local_config.json
+
+
+**/*.graphql.dart
+
+# Android build artifacts
+android/app/.cxx/
+
+# ObjectBox generated code
+objectbox.g.dart
+
+# Flutter devtools
+devtools_options.yaml
+
+# Flutter engine build files
+windows/flutter/CMakeLists.txt
+linux/flutter/CMakeLists.txt
+
+# Generated plugin files
+**/generated_plugin_registrant.*
+**/GeneratedPluginRegistrant.*
+**/generated_plugins.cmake
+
+# Desktop ephemeral directories
+linux/flutter/ephemeral/
+macos/Flutter/ephemeral/
+windows/flutter/ephemeral/

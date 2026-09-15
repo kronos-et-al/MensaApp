@@ -7,30 +7,49 @@ class MensaDialog extends StatelessWidget {
   final Widget? _actions;
 
   /// Creates a new dialog instance.
-  const MensaDialog(
-      {super.key, required String title, Widget? content, Widget? actions})
-      : _title = title,
-        _content = content,
-        _actions = actions;
+  const MensaDialog({
+    super.key,
+    required String title,
+    Widget? content,
+    Widget? actions,
+  }) : _title = title,
+       _content = content,
+       _actions = actions;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-        child: SingleChildScrollView(
-      child: Dialog(
+      child: SingleChildScrollView(
+        child: Dialog(
           backgroundColor: Theme.of(context).colorScheme.surface,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
-          child: Column(children: [
-            Align(alignment: AlignmentDirectional.centerStart, child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                child: Text(_title,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4.0),
+          ),
+          child: Column(
+            children: [
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 16,
+                  ),
+                  child: Text(
+                    _title,
                     style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold), textAlign: TextAlign.left,))),
-            _content ?? Container(),
-            _actions ?? Container()
-          ])),
-    ));
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              ),
+              _content ?? Container(),
+              _actions ?? Container(),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

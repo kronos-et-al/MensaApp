@@ -18,10 +18,10 @@ class MealPlan {
     required Line line,
     required bool isClosed,
     required List<Meal> meals,
-  })  : _date = date,
-        _line = line,
-        _isClosed = isClosed,
-        _meals = meals;
+  }) : _date = date,
+       _line = line,
+       _isClosed = isClosed,
+       _meals = meals;
 
   /// This constructor creates a new meal plan with the committed values.
   /// If any values are not committed these values are replaced with the values of the committed [mealPlan].
@@ -31,10 +31,10 @@ class MealPlan {
     Line? line,
     bool? isClosed,
     List<Meal>? meals,
-  })  : _date = date ?? mealPlan.date,
-        _line = line ?? mealPlan.line,
-        _isClosed = isClosed ?? mealPlan.isClosed,
-        _meals = meals ?? mealPlan.meals;
+  }) : _date = date ?? mealPlan.date,
+       _line = line ?? mealPlan.line,
+       _isClosed = isClosed ?? mealPlan.isClosed,
+       _meals = meals ?? mealPlan.meals;
 
   /// Returns the date of the meal plan.
   DateTime get date => _date;

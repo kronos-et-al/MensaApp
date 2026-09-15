@@ -6,11 +6,7 @@ class Canteen {
   /// constructor that creates a new canteen.
   ///
   /// The required values are the [id] and the [name] of the canteen.
-  Canteen({
-    required String id,
-    required String name,
-  })  : _id = id,
-        _name = name;
+  Canteen({required String id, required String name}) : _id = id, _name = name;
 
   /// Returns the id of the canteen.
   String get id => _id;

@@ -11,16 +11,16 @@ class SettingsDropdownEntry<T> extends StatelessWidget {
   final String _heading;
 
   /// Creates a new MensaDropdown with heading.
-  const SettingsDropdownEntry(
-      {super.key,
-      required Function(T?)? onChanged,
-      required T value,
-      required List<MensaDropdownEntry<T>> items,
-      required String heading})
-      : _onChanged = onChanged,
-        _value = value,
-        _items = items,
-        _heading = heading;
+  const SettingsDropdownEntry({
+    super.key,
+    required Function(T?)? onChanged,
+    required T value,
+    required List<MensaDropdownEntry<T>> items,
+    required String heading,
+  }) : _onChanged = onChanged,
+       _value = value,
+       _items = items,
+       _heading = heading;
 
   /// Builds the widget.
   @override
@@ -33,15 +33,18 @@ class SettingsDropdownEntry<T> extends StatelessWidget {
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        Row(children: [
-          Expanded(
-            child: MensaDropdown<T>(
+        Row(
+          children: [
+            Expanded(
+              child: MensaDropdown<T>(
                 backgroundColor: Theme.of(context).colorScheme.surfaceDim,
                 onChanged: _onChanged,
                 value: _value,
-                items: _items),
-          )
-        ])
+                items: _items,
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }

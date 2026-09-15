@@ -1,0 +1,17 @@
+{
+  "reportImageTitle": "Report Image",
+  "reportDescription": "Please specify why the image should be removed.",
+  "reportButton": "Report Image",
+  "newImageButton": "Add Image",
+  "linkImageTitle": "Upload Image",
+  "linkDescription": "Please follow the steps below to add an image.",
+  "linkFirstPoint": "Images are displayed to other users.\nBy uploading images, I agree to release them under ",
+  "linkFirstLink": "CC0 1.0",
+  "linkFirstPointSecondText": " (Public Domain / No Rights Reserved).\nMake sure to only upload images that do not violate copyright or personal rights of others.",
+  "linkButton": "Upload",
+  "labelSelectImage": "Select image",
+  "labelTakeImage": "Take photo",
+  "uploadException": {
+    "noMeal": "Error loading"
+  }
+}

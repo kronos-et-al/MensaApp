@@ -14,10 +14,10 @@ class Price {
     required int employee,
     required int pupil,
     required int guest,
-  })  : _student = student,
-        _employee = employee,
-        _pupil = pupil,
-        _guest = guest;
+  }) : _student = student,
+       _employee = employee,
+       _pupil = pupil,
+       _guest = guest;
 
   /// Returns the price for the committed price category.
   int getPrice(PriceCategory category) {

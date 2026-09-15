@@ -11,5 +11,4 @@ enum Frequency {
 
   /// The meal is not new and is not rare.
   normal,
-
 }

@@ -9,33 +9,34 @@ class MensaTapable extends StatelessWidget {
   final String _semanticLabel;
 
   /// Creates a tapable button.
-  const MensaTapable(
-      {super.key,
-      required Widget child,
-      Color? color,
-      required Function() onTap,
-      Function()? onLongPress,
-      required String semanticLabel})
-      : _child = child,
-        _color = color,
-        _onTap = onTap,
-        _onLongPress = onLongPress,
-        _semanticLabel = semanticLabel;
+  const MensaTapable({
+    super.key,
+    required Widget child,
+    Color? color,
+    required Function() onTap,
+    Function()? onLongPress,
+    required String semanticLabel,
+  }) : _child = child,
+       _color = color,
+       _onTap = onTap,
+       _onLongPress = onLongPress,
+       _semanticLabel = semanticLabel;
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
-        button: true,
-        label: _semanticLabel,
-        child: Material(
-          color: _color ?? Colors.transparent,
+      button: true,
+      label: _semanticLabel,
+      child: Material(
+        color: _color ?? Colors.transparent,
+        borderRadius: BorderRadius.circular(4),
+        child: InkWell(
           borderRadius: BorderRadius.circular(4),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(4),
-            onTap: _onTap,
-            onLongPress: _onLongPress,
-            child: _child,
-          ),
-        ));
+          onTap: _onTap,
+          onLongPress: _onLongPress,
+          child: _child,
+        ),
+      ),
+    );
   }
 }

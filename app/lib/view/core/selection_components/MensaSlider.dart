@@ -10,37 +10,38 @@ class MensaSlider extends StatelessWidget {
   final String? _label;
 
   /// Creates a new MensaSlider.
-  const MensaSlider(
-      {super.key,
-      required Function(double)? onChanged,
-      required double value,
-      double min = 0.0,
-      double max = 1.0,
-      int? divisions,
-      String? label})
-      : _onChanged = onChanged,
-        _value = value,
-        _min = min,
-        _max = max,
-        _divisions = divisions,
-        _label = label;
+  const MensaSlider({
+    super.key,
+    required Function(double)? onChanged,
+    required double value,
+    double min = 0.0,
+    double max = 1.0,
+    int? divisions,
+    String? label,
+  }) : _onChanged = onChanged,
+       _value = value,
+       _min = min,
+       _max = max,
+       _divisions = divisions,
+       _label = label;
 
   /// Builds the widget.
   @override
   Widget build(BuildContext context) {
     return SliderTheme(
-        data: SliderThemeData(
-          trackHeight: 2,
-          showValueIndicator: ShowValueIndicator.always,
-          inactiveTrackColor: Theme.of(context).colorScheme.surfaceDim,
-        ),
-        child: Slider(
-          min: _min,
-          max: _max,
-          divisions: _divisions,
-          label: _label,
-          value: _value,
-          onChanged: _onChanged,
-        ));
+      data: SliderThemeData(
+        trackHeight: 2,
+        showValueIndicator: ShowValueIndicator.onDrag,
+        inactiveTrackColor: Theme.of(context).colorScheme.surfaceDim,
+      ),
+      child: Slider(
+        min: _min,
+        max: _max,
+        divisions: _divisions,
+        label: _label,
+        value: _value,
+        onChanged: _onChanged,
+      ),
+    );
   }
 }

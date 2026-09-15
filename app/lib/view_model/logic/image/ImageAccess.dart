@@ -65,7 +65,10 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
 
   @override
   Future<Result<bool, ImageUploadException>> linkImage(
-      Uint8List imageFile, MediaType mimeType, Meal meal) async {
+    Uint8List imageFile,
+    MediaType mimeType,
+    Meal meal,
+  ) async {
     final result = await _api.linkImage(imageFile, mimeType, meal);
 
     switch (result) {
@@ -78,7 +81,10 @@ class ImageAccess extends ChangeNotifier implements IImageAccess {
 
   @override
   Future<bool> reportImage(
-      Meal meal, ImageData image, ReportCategory reportReason) async {
+    Meal meal,
+    ImageData image,
+    ReportCategory reportReason,
+  ) async {
     final result = await _api.reportImage(image, reportReason);
 
     if (!result) {
